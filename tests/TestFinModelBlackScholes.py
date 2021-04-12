@@ -5,18 +5,18 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
 
-from financepy.finutils.FinGlobalTypes import FinOptionTypes
+from financepy.finutils.turing_global_types import FinOptionTypes
 
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.models.FinModelBlackScholes import FinModelBlackScholes
-from financepy.models.FinModelBlackScholes import FinModelBlackScholesTypes
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.models.turing_model_black_scholes import FinModelBlackScholesTypes
 
-from financepy.products.equity.FinEquityVanillaOption import FinEquityVanillaOption
-from financepy.products.equity.FinEquityAmericanOption import FinEquityAmericanOption
+from financepy.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
+from financepy.products.equity.turing_equity_american_option import FinEquityAmericanOption
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

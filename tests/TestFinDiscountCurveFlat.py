@@ -5,9 +5,9 @@
 import sys
 sys.path.append("..")
 
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.finutils.FinDate import FinDate
-from financepy.finutils.FinFrequency import FinFrequencyTypes
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_frequency import FinFrequencyTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

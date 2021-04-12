@@ -7,13 +7,13 @@ sys.path.append("..")
 
 import numpy as np
 
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.market.volatility.FinFXVolSurface import FinFXVolSurface
-from financepy.market.volatility.FinFXVolSurfacePlus import FinFXVolSurfacePlus
-from financepy.market.volatility.FinFXVolSurfacePlus import FinFXATMMethod
-from financepy.market.volatility.FinFXVolSurfacePlus import FinFXDeltaMethod
-from financepy.finutils.FinDate import FinDate
-from financepy.models.FinModelVolatilityFns import FinVolFunctionTypes
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.volatility.turing_fx_vol_surface import FinFXVolSurface
+from financepy.market.volatility.turing_fx_vol_surface_plus import FinFXVolSurfacePlus
+from financepy.market.volatility.turing_fx_vol_surface_plus import FinFXATMMethod
+from financepy.market.volatility.turing_fx_vol_surface_plus import FinFXDeltaMethod
+from financepy.finutils.turing_date import FinDate
+from financepy.models.turing_model_volatility_fns import FinVolFunctionTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

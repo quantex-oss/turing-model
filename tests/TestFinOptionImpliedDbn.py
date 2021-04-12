@@ -8,18 +8,18 @@ sys.path.append("..")
 import numpy as np
 import matplotlib.pyplot as plt
 
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.finutils.FinDate import FinDate
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.finutils.turing_date import FinDate
 
-from financepy.models.FinModelVolatilityFns import FinVolFunctionTypes
-from financepy.models.FinModelVolatilityFns import volFunctionClark
+from financepy.models.turing_model_volatility_fns import FinVolFunctionTypes
+from financepy.models.turing_model_volatility_fns import volFunctionClark
 
-from financepy.models.FinModelBlackScholes import FinModelBlackScholes
-from financepy.models.FinModelOptionImpliedDbn import optionImpliedDbn
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.models.turing_model_option_implied_dbn import optionImpliedDbn
 
-from financepy.market.volatility.FinFXVolSurface import FinFXVolSurface
-from financepy.market.volatility.FinFXVolSurface import FinFXATMMethod
-from financepy.market.volatility.FinFXVolSurface import FinFXDeltaMethod
+from financepy.market.volatility.turing_fx_vol_surface import FinFXVolSurface
+from financepy.market.volatility.turing_fx_vol_surface import FinFXATMMethod
+from financepy.market.volatility.turing_fx_vol_surface import FinFXDeltaMethod
 
 
 from FinTestCases import FinTestCases, globalTestCaseMode

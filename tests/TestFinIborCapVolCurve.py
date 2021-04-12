@@ -7,9 +7,9 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinDate import FinDate
-from financepy.market.volatility.FinIborCapVolCurve import FinIborCapVolCurve
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.market.volatility.turing_ibor_cap_vol_curve import FinIborCapVolCurve
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

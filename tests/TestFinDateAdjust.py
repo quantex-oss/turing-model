@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.finutils.FinSchedule import FinSchedule
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinCalendar import FinCalendarTypes
-from financepy.finutils.FinCalendar import FinBusDayAdjustTypes
-from financepy.finutils.FinCalendar import FinDateGenRuleTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_schedule import FinSchedule
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
+from financepy.finutils.turing_calendar import FinDateGenRuleTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

@@ -7,13 +7,13 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinCalendar import FinDateGenRuleTypes
-from financepy.finutils.FinCalendar import FinBusDayAdjustTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinCalendar import FinCalendarTypes
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDate import FinDate, setDateFormatType, FinDateFormatTypes
-from financepy.products.bonds.FinBondAnnuity import FinBondAnnuity
+from financepy.finutils.turing_calendar import FinDateGenRuleTypes
+from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_date import FinDate, setDateFormatType, FinDateFormatTypes
+from financepy.products.bonds.turing_bond_annuity import FinBondAnnuity
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

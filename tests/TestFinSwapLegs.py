@@ -5,18 +5,18 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinMath import ONE_MILLION
-from financepy.finutils.FinGlobalTypes import FinSwapTypes
-from financepy.finutils.FinCalendar import FinBusDayAdjustTypes
-from financepy.finutils.FinCalendar import FinDateGenRuleTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinAmount import FinAmount
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinCalendar import FinCalendarTypes
-from financepy.finutils.FinDate import FinDate
-from financepy.products.rates.FinFixedLeg import FinFixedLeg
-from financepy.products.rates.FinFloatLeg import FinFloatLeg
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
+from financepy.finutils.turing_calendar import FinDateGenRuleTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_amount import FinAmount
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.products.rates.turing_fixed_leg import FinFixedLeg
+from financepy.products.rates.turing_float_leg import FinFloatLeg
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

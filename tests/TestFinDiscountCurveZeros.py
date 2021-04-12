@@ -8,11 +8,11 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDate import FinDate
-from financepy.market.curves.FinInterpolator import FinInterpTypes
-from financepy.market.curves.FinDiscountCurveZeros import FinDiscountCurveZeros
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_interpolator import FinInterpTypes
+from financepy.market.curves.turing_discount_curve_zeros import FinDiscountCurveZeros
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

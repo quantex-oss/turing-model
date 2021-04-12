@@ -8,20 +8,20 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
 
-from financepy.products.rates.FinIborSwap import FinIborSwap
-from financepy.products.rates.FinIborDeposit import FinIborDeposit
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
+from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
 
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.products.bonds.FinBond import FinBond
-from financepy.products.bonds.FinBondEmbeddedOption import FinBondEmbeddedOption
-from financepy.finutils.FinGlobalTypes import FinSwapTypes
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.products.bonds.turing_bond import FinBond
+from financepy.products.bonds.turing_bond_embedded_option import FinBondEmbeddedOption
+from financepy.finutils.turing_global_types import FinSwapTypes
 
-from financepy.models.FinModelRatesBK import FinModelRatesBK
+from financepy.models.turing_model_rates_bk import FinModelRatesBK
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

@@ -7,14 +7,14 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinDate import FinDate
-from financepy.products.inflation.FinInflationBond import FinInflationBond
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.products.inflation.turing_inflation_bond import FinInflationBond
 from financepy.products.bonds import FinYTMCalcType
-from financepy.products.inflation.FinInflationIndexCurve import FinInflationIndexCurve
-from financepy.market.curves.FinDiscountCurveZeros import FinDiscountCurveZeros
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
+from financepy.products.inflation.turing_inflation_index_curve import FinInflationIndexCurve
+from financepy.market.curves.turing_discount_curve_zeros import FinDiscountCurveZeros
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

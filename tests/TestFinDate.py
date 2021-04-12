@@ -8,9 +8,9 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate, dateRange
-from financepy.finutils.FinDate import FinDateFormatTypes
-from financepy.finutils.FinDate import setDateFormatType
+from financepy.finutils.turing_date import FinDate, dateRange
+from financepy.finutils.turing_date import FinDateFormatTypes
+from financepy.finutils.turing_date import setDateFormatType
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

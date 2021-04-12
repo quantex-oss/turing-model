@@ -8,22 +8,22 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.products.credit.FinCDS import FinCDS
-from financepy.finutils.FinMath import ONE_MILLION
-from financepy.market.curves.FinInterpolator import FinInterpTypes
-from financepy.products.rates.FinIborSwap import FinIborSwap
-from financepy.products.rates.FinIborDeposit import FinIborDeposit
-from financepy.market.curves.FinDiscountCurve import FinDiscountCurve
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
-from financepy.products.credit.FinCDSCurve import FinCDSCurve
-from financepy.finutils.FinGlobalVariables import gDaysInYear
-from financepy.finutils.FinCalendar import FinBusDayAdjustTypes
-from financepy.finutils.FinCalendar import FinDateGenRuleTypes
-from financepy.finutils.FinCalendar import FinCalendarTypes
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinDate import FinDate
-from financepy.finutils.FinGlobalTypes import FinSwapTypes
+from financepy.products.credit.turing_cds import FinCDS
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.market.curves.turing_interpolator import FinInterpTypes
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
+from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.credit.turing_cds_curve import FinCDSCurve
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
+from financepy.finutils.turing_calendar import FinDateGenRuleTypes
+from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_global_types import FinSwapTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

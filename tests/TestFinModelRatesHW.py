@@ -9,15 +9,15 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.models.FinModelRatesHW import FinModelRatesHW, FinHWEuropeanCalcType
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.products.bonds.FinBond import FinBond
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinGlobalVariables import gDaysInYear
-from financepy.finutils.FinHelperFunctions import printTree
-from financepy.finutils.FinGlobalTypes import FinExerciseTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.models.turing_model_rates_hw import FinModelRatesHW, FinHWEuropeanCalcType
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.products.bonds.turing_bond import FinBond
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_helper_functions import printTree
+from financepy.finutils.turing_global_types import FinExerciseTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

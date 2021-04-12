@@ -8,9 +8,9 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.market.curves.FinDiscountCurveNSS import FinDiscountCurveNSS
-from financepy.finutils.FinMath import scale
+from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve_nss import FinDiscountCurveNSS
+from financepy.finutils.turing_math import scale
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

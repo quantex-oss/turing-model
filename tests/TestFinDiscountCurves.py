@@ -8,17 +8,17 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import *
-from financepy.market.curves.FinInterpolator import FinInterpTypes
-from financepy.market.curves.FinDiscountCurve import FinDiscountCurve
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.market.curves.FinDiscountCurveNS import FinDiscountCurveNS
-from financepy.market.curves.FinDiscountCurveNSS import FinDiscountCurveNSS
-from financepy.market.curves.FinDiscountCurvePWF import FinDiscountCurvePWF
-from financepy.market.curves.FinDiscountCurvePWL import FinDiscountCurvePWL
-from financepy.market.curves.FinDiscountCurveZeros import FinDiscountCurveZeros
-from financepy.market.curves.FinDiscountCurvePoly import FinDiscountCurvePoly
-from financepy.finutils.FinGlobalVariables import gDaysInYear
+from financepy.finutils.turing_date import *
+from financepy.market.curves.turing_interpolator import FinInterpTypes
+from financepy.market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_ns import FinDiscountCurveNS
+from financepy.market.curves.turing_discount_curve_nss import FinDiscountCurveNSS
+from financepy.market.curves.turing_discount_curve_pwf import FinDiscountCurvePWF
+from financepy.market.curves.turing_discount_curve_pwl import FinDiscountCurvePWL
+from financepy.market.curves.turing_discount_curve_zeros import FinDiscountCurveZeros
+from financepy.market.curves.turing_discount_curve_poly import FinDiscountCurvePoly
+from financepy.finutils.turing_global_variables import gDaysInYear
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

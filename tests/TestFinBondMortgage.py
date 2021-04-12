@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
+from financepy.finutils.turing_date import FinDate
 
-from financepy.products.bonds.FinBondMortgage import FinBondMortgage
-from financepy.products.bonds.FinBondMortgage import FinBondMortgageTypes
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
+from financepy.products.bonds.turing_bond_mortgage import FinBondMortgage
+from financepy.products.bonds.turing_bond_mortgage import FinBondMortgageTypes
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

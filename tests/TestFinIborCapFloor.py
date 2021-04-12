@@ -9,38 +9,38 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinGlobalTypes import FinCapFloorTypes
-from financepy.products.rates.FinIborCapFloor import FinIborCapFloor
-from financepy.products.rates.FinIborSwap import FinIborSwap
-from financepy.products.rates.FinIborSwap import FinSwapTypes
-from financepy.products.rates.FinIborDeposit import FinIborDeposit
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
+from financepy.finutils.turing_global_types import FinCapFloorTypes
+from financepy.products.rates.turing_ibor_cap_floor import FinIborCapFloor
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
+from financepy.products.rates.turing_ibor_swap import FinSwapTypes
+from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
 
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinDate import FinDate
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_date import FinDate
 
-from financepy.finutils.FinCalendar import FinCalendarTypes
-from financepy.finutils.FinCalendar import FinBusDayAdjustTypes
-from financepy.finutils.FinCalendar import FinDateGenRuleTypes
+from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
+from financepy.finutils.turing_calendar import FinDateGenRuleTypes
 
-from financepy.finutils.FinGlobalTypes import FinSwapTypes
+from financepy.finutils.turing_global_types import FinSwapTypes
 
-from financepy.market.curves.FinDiscountCurveZeros import FinDiscountCurveZeros
-from financepy.market.curves.FinInterpolator import FinInterpTypes
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_zeros import FinDiscountCurveZeros
+from financepy.market.curves.turing_interpolator import FinInterpTypes
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
 
-from financepy.models.FinModelBlack import FinModelBlack
-from financepy.models.FinModelBachelier import FinModelBachelier
-from financepy.models.FinModelBlackShifted import FinModelBlackShifted
-from financepy.models.FinModelSABR import FinModelSABR
-from financepy.models.FinModelSABRShifted import FinModelSABRShifted
-from financepy.models.FinModelRatesHW import FinModelRatesHW
+from financepy.models.turing_model_black import FinModelBlack
+from financepy.models.turing_model_bachelier import FinModelBachelier
+from financepy.models.turing_model_black_shifted import FinModelBlackShifted
+from financepy.models.turing_model_sabr import FinModelSABR
+from financepy.models.turing_model_sabr_shifted import FinModelSABRShifted
+from financepy.models.turing_model_rates_hw import FinModelRatesHW
 
-from financepy.finutils.FinGlobalVariables import gDaysInYear
+from financepy.finutils.turing_global_variables import gDaysInYear
 
-from financepy.market.volatility.FinIborCapVolCurve import FinIborCapVolCurve
-from financepy.finutils.FinSchedule import FinSchedule
+from financepy.market.volatility.turing_ibor_cap_vol_curve import FinIborCapVolCurve
+from financepy.finutils.turing_schedule import FinSchedule
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

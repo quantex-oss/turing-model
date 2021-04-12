@@ -9,18 +9,18 @@ from os.path import dirname, join
 import sys
 sys.path.append("..")
 
-from financepy.products.credit.FinCDSIndexPortfolio import FinCDSIndexPortfolio
-from financepy.products.credit.FinCDSBasket import FinCDSBasket
-from financepy.products.credit.FinCDS import FinCDS
-from financepy.products.rates.FinIborSwap import FinIborSwap
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
-from financepy.products.credit.FinCDSCurve import FinCDSCurve
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinMath import corrMatrixGenerator
-from financepy.finutils.FinDate import FinDate
-from financepy.models.FinGBMProcess import getPathsAssets
-from financepy.finutils.FinGlobalTypes import FinSwapTypes
+from financepy.products.credit.turing_cds_index_portfolio import FinCDSIndexPortfolio
+from financepy.products.credit.turing_cds_basket import FinCDSBasket
+from financepy.products.credit.turing_cds import FinCDS
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.credit.turing_cds_curve import FinCDSCurve
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_math import corrMatrixGenerator
+from financepy.finutils.turing_date import FinDate
+from financepy.models.turing_gbm_process import getPathsAssets
+from financepy.finutils.turing_global_types import FinSwapTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

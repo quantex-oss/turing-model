@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.FinEquityOneTouchOption import FinEquityOneTouchOption
-from financepy.products.equity.FinEquityOneTouchOption import FinTouchOptionPayoffTypes
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.models.FinModelBlackScholes import FinModelBlackScholes
-from financepy.finutils.FinDate import FinDate
+from financepy.products.equity.turing_equity_one_touch_option import FinEquityOneTouchOption
+from financepy.products.equity.turing_equity_one_touch_option import FinTouchOptionPayoffTypes
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.finutils.turing_date import FinDate
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

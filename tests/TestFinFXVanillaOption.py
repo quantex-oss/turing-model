@@ -7,15 +7,15 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinGlobalTypes import FinOptionTypes
-from financepy.products.fx.FinFXVanillaOption import FinFXVanillaOption
-from financepy.models.FinModelBlackScholes import FinModelBlackScholes
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinCalendar import FinCalendarTypes
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
-from financepy.products.rates.FinIborDeposit import FinIborDeposit
-from financepy.finutils.FinDate import FinDate
+from financepy.finutils.turing_global_types import FinOptionTypes
+from financepy.products.fx.turing_fx_vanilla_option import FinFXVanillaOption
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.finutils.turing_date import FinDate
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

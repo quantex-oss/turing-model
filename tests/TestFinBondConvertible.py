@@ -9,11 +9,11 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.products.bonds.FinBondConvertible import FinBondConvertible
-from financepy.finutils.FinDate import FinDate
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
+from financepy.products.bonds.turing_bond_convertible import FinBondConvertible
+from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

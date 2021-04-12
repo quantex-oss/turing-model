@@ -7,27 +7,27 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinFrequency import FinFrequencyTypes
+from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_frequency import FinFrequencyTypes
 
-from financepy.products.rates.FinIborDeposit import FinIborDeposit
-from financepy.products.rates.FinIborSwap import FinIborSwap
-from financepy.products.rates.FinIborSwaption import FinIborSwaption
-from financepy.products.rates.FinIborSwaption import FinSwapTypes
+from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
+from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
+from financepy.products.rates.turing_ibor_swaption import FinSwapTypes
 
-from financepy.models.FinModelBlack import FinModelBlack
-from financepy.models.FinModelBlackShifted import FinModelBlackShifted
-from financepy.models.FinModelSABR import FinModelSABR
-from financepy.models.FinModelSABRShifted import FinModelSABRShifted
-from financepy.models.FinModelRatesHW import FinModelRatesHW
-from financepy.models.FinModelRatesBK import FinModelRatesBK
-from financepy.models.FinModelRatesBDT import FinModelRatesBDT
+from financepy.models.turing_model_black import FinModelBlack
+from financepy.models.turing_model_black_shifted import FinModelBlackShifted
+from financepy.models.turing_model_sabr import FinModelSABR
+from financepy.models.turing_model_sabr_shifted import FinModelSABRShifted
+from financepy.models.turing_model_rates_hw import FinModelRatesHW
+from financepy.models.turing_model_rates_bk import FinModelRatesBK
+from financepy.models.turing_model_rates_bdt import FinModelRatesBDT
 
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.market.curves.FinDiscountCurveZeros import FinDiscountCurveZeros
-from financepy.market.curves.FinInterpolator import FinInterpTypes
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_zeros import FinDiscountCurveZeros
+from financepy.market.curves.turing_interpolator import FinInterpTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

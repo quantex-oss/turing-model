@@ -9,23 +9,23 @@ import time as time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinCalendar import FinCalendarTypes
-from financepy.products.rates.FinIborFRA import FinIborFRA
-from financepy.products.rates.FinIborFuture import FinIborFuture
-from financepy.products.rates.FinIborDeposit import FinIborDeposit
-from financepy.products.rates.FinIborSwap import FinIborSwap
-from financepy.finutils.FinCalendar import FinBusDayAdjustTypes
-from financepy.market.curves.FinInterpolator import FinInterpTypes
-from financepy.finutils.FinMath import ONE_MILLION
-from financepy.finutils.FinGlobalTypes import FinSwapTypes
-from financepy.market.curves.FinInterpolator import FinInterpTypes
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
-from financepy.products.rates.FinIborDualCurve import FinIborDualCurve
-from financepy.products.rates.FinOISCurve import FinOISCurve
-from financepy.products.rates.FinOIS import FinOIS
+from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.products.rates.turing_ibor_fra import FinIborFRA
+from financepy.products.rates.turing_ibor_future import FinIborFuture
+from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
+from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
+from financepy.market.curves.turing_interpolator import FinInterpTypes
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.market.curves.turing_interpolator import FinInterpTypes
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.rates.turing_ibor_dual_curve import FinIborDualCurve
+from financepy.products.rates.turing_ois_curve import FinOISCurve
+from financepy.products.rates.turing_ois import FinOIS
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

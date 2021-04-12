@@ -6,9 +6,9 @@ import sys
 sys.path.append("..")
 
 import numpy as np
-from financepy.models.FinModelSABR import volFunctionSABR
-from financepy.models.FinModelSABR import FinModelSABR
-from financepy.finutils.FinGlobalTypes import FinOptionTypes
+from financepy.models.turing_model_sabr import volFunctionSABR
+from financepy.models.turing_model_sabr import FinModelSABR
+from financepy.finutils.turing_global_types import FinOptionTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

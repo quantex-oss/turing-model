@@ -8,12 +8,12 @@ import os
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinDate import FinDate, fromDatetime
-from financepy.products.bonds.FinBond import FinBond
-from financepy.products.bonds.FinBondYieldCurve import FinBondYieldCurve
-from financepy.products.bonds.FinBondYieldCurveModel import *
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_date import FinDate, fromDatetime
+from financepy.products.bonds.turing_bond import FinBond
+from financepy.products.bonds.turing_bond_yield_curve import FinBondYieldCurve
+from financepy.products.bonds.turing_bond_yield_curve_model import *
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

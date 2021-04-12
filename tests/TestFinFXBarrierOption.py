@@ -5,13 +5,13 @@
 import sys
 sys.path.append("..")
 
-from financepy.models.FinProcessSimulator import FinProcessTypes
-from financepy.models.FinProcessSimulator import FinGBMNumericalScheme
-from financepy.models.FinModelBlackScholes import FinModelBlackScholes
-from financepy.products.fx.FinFXBarrierOption import FinFXBarrierTypes
-from financepy.products.fx.FinFXBarrierOption import FinFXBarrierOption
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.finutils.FinDate import FinDate
+from financepy.models.turing_process_simulator import FinProcessTypes
+from financepy.models.turing_process_simulator import FinGBMNumericalScheme
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.products.fx.turing_fx_barrier_option import FinFXBarrierTypes
+from financepy.products.fx.turing_fx_barrier_option import FinFXBarrierOption
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.finutils.turing_date import FinDate
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

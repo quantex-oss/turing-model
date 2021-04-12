@@ -5,14 +5,14 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
-from financepy.products.bonds.FinBondFRN import FinBondFRN
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinDate import *
-from financepy.products.rates.FinIborSwap import FinIborSwap
-from financepy.products.rates.FinIborDeposit import FinIborDeposit
-from financepy.finutils.FinGlobalTypes import FinSwapTypes
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.bonds.turing_bond_frn import FinBondFRN
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_date import *
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
+from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.finutils.turing_global_types import FinSwapTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

@@ -9,17 +9,17 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.market.curves.FinDiscountCurve import FinDiscountCurve
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
+from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
 
-from financepy.products.bonds.FinBond import FinBond
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinGlobalVariables import gDaysInYear
-from financepy.products.bonds.FinBondOption import FinBondOption
-from financepy.finutils.FinGlobalTypes import FinOptionTypes
-from financepy.models.FinModelRatesHW import FinModelRatesHW, FinHWEuropeanCalcType
+from financepy.products.bonds.turing_bond import FinBond
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.products.bonds.turing_bond_option import FinBondOption
+from financepy.finutils.turing_global_types import FinOptionTypes
+from financepy.models.turing_model_rates_hw import FinModelRatesHW, FinHWEuropeanCalcType
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

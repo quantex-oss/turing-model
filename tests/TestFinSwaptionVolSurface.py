@@ -7,10 +7,10 @@ sys.path.append("..")
 
 import numpy as np
 
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.market.volatility.FinSwaptionVolSurface import FinSwaptionVolSurface
-from financepy.finutils.FinDate import FinDate
-from financepy.models.FinModelVolatilityFns import FinVolFunctionTypes
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.volatility.turing_swaption_vol_surface import FinSwaptionVolSurface
+from financepy.finutils.turing_date import FinDate
+from financepy.models.turing_model_volatility_fns import FinVolFunctionTypes
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

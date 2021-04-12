@@ -5,8 +5,8 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.products.inflation.FinInflationIndexCurve import FinInflationIndexCurve
+from financepy.finutils.turing_date import FinDate
+from financepy.products.inflation.turing_inflation_index_curve import FinInflationIndexCurve
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

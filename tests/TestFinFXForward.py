@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.fx.FinFXForward import FinFXForward
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinCalendar import FinCalendarTypes
-from financepy.products.rates.FinIborSingleCurve import FinIborSingleCurve
-from financepy.products.rates.FinIborDeposit import FinIborDeposit
-from financepy.finutils.FinDate import FinDate
+from financepy.products.fx.turing_fx_forward import FinFXForward
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.finutils.turing_date import FinDate
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

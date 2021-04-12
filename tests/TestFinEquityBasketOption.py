@@ -7,11 +7,11 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.FinEquityBasketOption import FinEquityBasketOption
-from financepy.finutils.FinGlobalTypes import FinOptionTypes
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
-from financepy.finutils.FinHelperFunctions import betaVectorToCorrMatrix
-from financepy.finutils.FinDate import FinDate
+from financepy.products.equity.turing_equity_basket_option import FinEquityBasketOption
+from financepy.finutils.turing_global_types import FinOptionTypes
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.finutils.turing_helper_functions import betaVectorToCorrMatrix
+from financepy.finutils.turing_date import FinDate
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

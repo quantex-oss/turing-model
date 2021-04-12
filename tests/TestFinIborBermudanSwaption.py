@@ -5,20 +5,20 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.FinDate import FinDate
-from financepy.finutils.FinDayCount import FinDayCountTypes
-from financepy.finutils.FinFrequency import FinFrequencyTypes
-from financepy.finutils.FinGlobalTypes import FinSwapTypes
-from financepy.finutils.FinGlobalTypes import FinExerciseTypes
-from financepy.products.rates.FinIborSwaption import FinIborSwaption
-from financepy.products.rates.FinIborSwap import FinIborSwap
+from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.finutils.turing_global_types import FinExerciseTypes
+from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
 
-from financepy.products.rates.FinIborBermudanSwaption import FinIborBermudanSwaption
-from financepy.models.FinModelBlack import FinModelBlack
-from financepy.models.FinModelRatesBK import FinModelRatesBK
-from financepy.models.FinModelRatesHW import FinModelRatesHW
-from financepy.models.FinModelRatesBDT import FinModelRatesBDT
-from financepy.market.curves.FinDiscountCurveFlat import FinDiscountCurveFlat
+from financepy.products.rates.turing_ibor_bermudan_swaption import FinIborBermudanSwaption
+from financepy.models.turing_model_black import FinModelBlack
+from financepy.models.turing_model_rates_bk import FinModelRatesBK
+from financepy.models.turing_model_rates_hw import FinModelRatesHW
+from financepy.models.turing_model_rates_bdt import FinModelRatesBDT
+from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)

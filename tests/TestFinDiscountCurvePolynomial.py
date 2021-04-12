@@ -7,8 +7,8 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.market.curves.FinDiscountCurvePoly import FinDiscountCurvePoly
-from financepy.finutils.FinDate import FinDate
+from financepy.market.curves.turing_discount_curve_poly import FinDiscountCurvePoly
+from financepy.finutils.turing_date import FinDate
 
 from FinTestCases import FinTestCases, globalTestCaseMode
 testCases = FinTestCases(__file__, globalTestCaseMode)
