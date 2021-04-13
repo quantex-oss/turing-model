@@ -63,7 +63,7 @@ class FinIborIborXCcySwap(object):
                                              busDayAdjustType)
 
         if effectiveDate > self._maturityDate:
-            raise FinError("Start date after maturity date")
+            raise TuringError("Start date after maturity date")
 
         self._effectiveDate = effectiveDate
         self._notional = notional
@@ -175,7 +175,7 @@ class FinIborIborXCcySwap(object):
     def fixedDates(self):
         ''' return a vector of the fixed leg payment dates '''
         if self._adjustedFixedDates is None:
-            raise FinError("Fixed dates have not been generated")
+            raise TuringError("Fixed dates have not been generated")
 
         return self._adjustedFixedDates[1:]
 
@@ -184,7 +184,7 @@ class FinIborIborXCcySwap(object):
     def floatDates(self):
         ''' return a vector of the fixed leg payment dates '''
         if self._adjustedFloatDates is None:
-            raise FinError("Float dates have not been generated")
+            raise TuringError("Float dates have not been generated")
 
         return self._adjustedFloatDates[1:]
 
@@ -217,7 +217,7 @@ class FinIborIborXCcySwap(object):
         dfT = discountCurve.df(self._maturityDate)
 
         if abs(pv01) < gSmall:
-            raise FinError("PV01 is zero. Cannot compute swap rate.")
+            raise TuringError("PV01 is zero. Cannot compute swap rate.")
 
         cpn = (df0 - dfT) / pv01
         return cpn
@@ -312,7 +312,7 @@ class FinIborIborXCcySwap(object):
         m = TuringFrequency(frequencyType)
 
         if m == 0:
-            raise FinError("Frequency cannot be zero.")
+            raise TuringError("Frequency cannot be zero.")
 
         ''' The swap may have started in the past but we can only value
         payments that have occurred after the valuation date. '''
@@ -463,7 +463,7 @@ class FinIborIborXCcySwap(object):
         print(header)
 
         if self._fixedStartIndex is None:
-            raise FinError("Need to value swap before calling this function.")
+            raise TuringError("Need to value swap before calling this function.")
 
         startIndex = self._fixedStartIndex
 
