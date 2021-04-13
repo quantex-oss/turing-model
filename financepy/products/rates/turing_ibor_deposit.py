@@ -2,14 +2,14 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_calendar import TuringCalendar
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.finutils.turing_day_count import TuringDayCount
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_calendar import TuringCalendar
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.turingutils.turing_day_count import TuringDayCount
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 

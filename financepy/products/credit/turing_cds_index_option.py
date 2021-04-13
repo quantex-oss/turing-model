@@ -6,18 +6,18 @@
 from math import exp, log, sqrt
 
 
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
-from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import ONE_MILLION, INVROOT2PI, N
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+from financepy.turingutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import ONE_MILLION, INVROOT2PI, N
+from financepy.turingutils.turing_error import TuringError
 from financepy.products.credit.turing_cds_curve import FinCDSCurve
 from financepy.products.credit.turing_cds import FinCDS
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_helper_functions import labelToString
 
 RPV01_INDEX = 1  # 0 is FULL, 1 is CLEAN
 

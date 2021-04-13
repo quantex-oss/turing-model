@@ -4,12 +4,12 @@
 
 import numpy as np
 
-from ..finutils.turing_math import N
+from ..turingutils.turing_math import N
 
 from scipy import optimize
 
-from ..finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ..finutils.turing_error import TuringError
+from ..turingutils.turing_helper_functions import labelToString, checkArgumentTypes
+from ..turingutils.turing_error import TuringError
 from .turing_model_merton_credit import TuringModelMertonCredit
 
 ###############################################################################

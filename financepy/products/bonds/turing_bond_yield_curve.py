@@ -6,11 +6,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import scale
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import scale
+from financepy.turingutils.turing_helper_functions import labelToString
 
 from .turing_bond_yield_curve_model import TuringCurveFitPolynomial
 from .turing_bond_yield_curve_model import TuringCurveFitNelsonSiegel

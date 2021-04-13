@@ -5,9 +5,9 @@
 import numpy as np
 from numba import jit, njit, float64, int64 # , prange DOES NOT WORK ON GITHUB
 
-from ..finutils.turing_error import TuringError
-from ..finutils.turing_math import N
-from ..finutils.turing_math import norminvcdf
+from ..turingutils.turing_error import TuringError
+from ..turingutils.turing_math import N
+from ..turingutils.turing_math import norminvcdf
 from ..models.turing_sobol import getUniformSobol
 
 # TO DO: SHIFTED LOGNORMAL

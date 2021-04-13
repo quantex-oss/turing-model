@@ -5,10 +5,10 @@
 #TODO  Add Japan 
 
 
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
 
 
 from enum import Enum

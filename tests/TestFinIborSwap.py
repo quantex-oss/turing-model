@@ -6,18 +6,18 @@ import sys
 import numpy as np
 sys.path.append("..")
 
-from financepy.finutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_math import ONE_MILLION
 from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
 from financepy.products.rates.turing_ibor_fra import FinIborFRA
 from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.turingutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_global_types import TuringSwapTypes
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 from financepy.market.curves.turing_interpolator import FinInterpTypes
 

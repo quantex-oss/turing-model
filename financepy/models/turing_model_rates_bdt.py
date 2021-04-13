@@ -5,12 +5,12 @@
 import numpy as np
 from numba import njit, float64, int64
 
-from ..finutils.turing_error import TuringError
-from ..finutils.turing_math import accruedInterpolator
+from ..turingutils.turing_error import TuringError
+from ..turingutils.turing_math import accruedInterpolator
 from ..market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
-from ..finutils.turing_helper_functions import labelToString
-from ..finutils.turing_global_types import TuringExerciseTypes
-from ..finutils.turing_global_variables import gSmall
+from ..turingutils.turing_helper_functions import labelToString
+from ..turingutils.turing_global_types import TuringExerciseTypes
+from ..turingutils.turing_global_variables import gSmall
 
 interp = FinInterpTypes.FLAT_FWD_RATES.value
 

@@ -8,17 +8,17 @@ import datetime as dt
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.turingutils.turing_global_types import TuringSwapTypes
 from financepy.products.bonds.turing_bond import TuringYTMCalcType
 from financepy.products.bonds.turing_bond import TuringBond
 from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_date import TuringDate, fromDatetime
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_date import TuringDate, fromDatetime
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

@@ -6,10 +6,10 @@
 
 import numpy as np
 
-from ..finutils.turing_global_types import TuringOptionTypes
-from ..finutils.turing_error import TuringError
+from ..turingutils.turing_global_types import TuringOptionTypes
+from ..turingutils.turing_error import TuringError
 
-from ..finutils.turing_helper_functions import checkArgumentTypes
+from ..turingutils.turing_helper_functions import checkArgumentTypes
 
 from .turing_model import FinModel
 from .turing_model_crr_tree import crrTreeValAvg

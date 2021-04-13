@@ -4,18 +4,18 @@
 
 import numpy as np
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_global_types import TuringExerciseTypes
-from financepy.finutils.turing_global_types import TuringSwapTypes
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.turingutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_global_types import TuringExerciseTypes
+from financepy.turingutils.turing_global_types import TuringSwapTypes
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
 

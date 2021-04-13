@@ -2,23 +2,23 @@
 # # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 # ##############################################################################
 
-# from financepy.finutils.turing_global_variables import gDaysInYear
+# from financepy.turingutils.turing_global_variables import gDaysInYear
 # from financepy.models.turing_model_rates_hw import FinModelRatesHW
 # from financepy.models.turing_model_rates_bk import TuringModelRatesBK
-# from financepy.finutils.turing_error import TuringError
-# from financepy.finutils.turing_frequency import TuringFrequencyTypes
-# from financepy.finutils.turing_day_count import TuringDayCount
-# from financepy.finutils.turing_day_count import TuringDayCountTypes
+# from financepy.turingutils.turing_error import TuringError
+# from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+# from financepy.turingutils.turing_day_count import TuringDayCount
+# from financepy.turingutils.turing_day_count import TuringDayCountTypes
 # from financepy.products.bonds.turing_bond import TuringBond
 
 
-# from financepy.finutils.turing_date import TuringDate
-# from financepy.finutils.turing_calendar import TuringCalendar, TuringCalendarTypes
-# from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
-# from financepy.finutils.turing_schedule import TuringSchedule
-# from financepy.finutils.turing_math import ONE_MILLION
+# from financepy.turingutils.turing_date import TuringDate
+# from financepy.turingutils.turing_calendar import TuringCalendar, TuringCalendarTypes
+# from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+# from financepy.turingutils.turing_schedule import TuringSchedule
+# from financepy.turingutils.turing_math import ONE_MILLION
 
-# from financepy.finutils.turing_helper_functions import labelToString
+# from financepy.turingutils.turing_helper_functions import labelToString
 
 # from enum import Enum
 # import numpy as np

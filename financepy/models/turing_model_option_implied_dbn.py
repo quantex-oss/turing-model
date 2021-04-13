@@ -7,8 +7,8 @@
 import numpy as np
 from numba import njit, float64
 
-from ..finutils.turing_global_types import TuringOptionTypes
-from ..finutils.turing_error import TuringError
+from ..turingutils.turing_global_types import TuringOptionTypes
+from ..turingutils.turing_error import TuringError
 
 from .turing_model_black_scholes_analytical import bsValue
 

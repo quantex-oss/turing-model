@@ -8,9 +8,9 @@ from enum import Enum
 from numba import njit, float64, int64
 import numpy as np
 
-from ..finutils.turing_error import TuringError
-from ..finutils.turing_math import norminvcdf
-from ..finutils.turing_helper_functions import labelToString
+from ..turingutils.turing_error import TuringError
+from ..turingutils.turing_math import norminvcdf
+from ..turingutils.turing_helper_functions import labelToString
 
 ###############################################################################
 

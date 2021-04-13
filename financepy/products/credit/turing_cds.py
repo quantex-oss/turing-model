@@ -8,18 +8,18 @@ from numba import njit, float64, int64
 from math import exp, log
 from copy import deepcopy
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_calendar import TuringCalendar, TuringCalendarTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
-from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_helper_functions import labelToString, tableToString
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_calendar import TuringCalendar, TuringCalendarTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+from financepy.turingutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_helper_functions import labelToString, tableToString
 from financepy.market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
 
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
 
 useFlatHazardRateIntegral = True
 standardRecovery = 0.40

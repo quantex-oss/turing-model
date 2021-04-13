@@ -7,9 +7,9 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_date import TuringDate
 from financepy.products.inflation.turing_inflation_bond import TuringInflationBond
 from financepy.products.bonds import TuringYTMCalcType
 from financepy.products.inflation.turing_inflation_index_curve import TuringInflationIndexCurve

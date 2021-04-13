@@ -7,7 +7,7 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_statistics import mean, stdev, correlation
+from financepy.turingutils.turing_statistics import mean, stdev, correlation
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

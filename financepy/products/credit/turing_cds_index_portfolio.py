@@ -5,15 +5,15 @@
 
 from math import pow
 
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_error import TuringError
 from financepy.products.credit.turing_cds import FinCDS
 from financepy.products.credit.turing_cds_curve import FinCDSCurve
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_helper_functions import labelToString
 
 ###############################################################################
 # TODO: Move index spread details into class and then pass in issuer curves

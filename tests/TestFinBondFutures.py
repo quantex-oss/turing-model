@@ -7,9 +7,9 @@ sys.path.append("..")
 
 from financepy.products.bonds.turing_bond_future import TuringBondFuture
 from financepy.products.bonds.turing_bond import TuringBond
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

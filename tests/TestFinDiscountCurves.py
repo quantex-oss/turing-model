@@ -8,7 +8,7 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import *
+from financepy.turingutils.turing_date import *
 from financepy.market.curves.turing_interpolator import FinInterpTypes
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
@@ -18,7 +18,7 @@ from financepy.market.curves.turing_discount_curve_pwf import TuringDiscountCurv
 from financepy.market.curves.turing_discount_curve_pwl import TuringDiscountCurvePWL
 from financepy.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
 from financepy.market.curves.turing_discount_curve_poly import TuringDiscountCurvePoly
-from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_global_variables import gDaysInYear
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

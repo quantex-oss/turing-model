@@ -5,15 +5,15 @@
 import numpy as np
 import scipy.optimize as optimize
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_global_variables import gDaysInYear
 from financepy.market.curves.turing_interpolator import _uinterpolate, FinInterpTypes
-from financepy.finutils.turing_helper_functions import inputTime, tableToString
-from financepy.finutils.turing_day_count import TuringDayCount
-from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
-from financepy.finutils.turing_helper_functions import checkArgumentTypes, _funcName
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_helper_functions import inputTime, tableToString
+from financepy.turingutils.turing_day_count import TuringDayCount
+from financepy.turingutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes, _funcName
+from financepy.turingutils.turing_helper_functions import labelToString
 
 
 ###############################################################################

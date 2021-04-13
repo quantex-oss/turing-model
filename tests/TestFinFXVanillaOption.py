@@ -7,15 +7,15 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 from financepy.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
 from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

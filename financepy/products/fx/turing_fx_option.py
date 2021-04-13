@@ -4,8 +4,8 @@
 
 
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_helper_functions import labelToString
 
 ##########################################################################
 

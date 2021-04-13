@@ -7,10 +7,10 @@
 import numpy as np
 from scipy.stats import norm
 
-from ..finutils.turing_helper_functions import labelToString
-from ..finutils.turing_global_types import TuringOptionTypes
+from ..turingutils.turing_helper_functions import labelToString
+from ..turingutils.turing_global_types import TuringOptionTypes
 
-from ..finutils.turing_math import N
+from ..turingutils.turing_math import N
 
 ###############################################################################
 # NOTE: Keeping this separate from SABR for the moment.

@@ -8,25 +8,25 @@
 
 from typing import Optional
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_calendar import TuringCalendar
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_schedule import TuringSchedule
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_calendar import TuringCalendar
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.turingutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_schedule import TuringSchedule
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from financepy.models.turing_model_black import FinModelBlack
 from financepy.models.turing_model_black_shifted import TuringModelBlackShifted
 from financepy.models.turing_model_bachelier import FinModelBachelier
 from financepy.models.turing_model_sabr import FinModelSABR
 from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
 from financepy.models.turing_model_rates_hw import FinModelRatesHW
-from financepy.finutils.turing_global_types import TuringCapFloorTypes, TuringOptionTypes
+from financepy.turingutils.turing_global_types import TuringCapFloorTypes, TuringOptionTypes
 
 ##########################################################################
 

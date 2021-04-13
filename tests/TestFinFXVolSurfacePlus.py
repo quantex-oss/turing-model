@@ -12,7 +12,7 @@ from financepy.market.volatility.turing_fx_vol_surface import FinFXVolSurface
 from financepy.market.volatility.turing_fx_vol_surface_plus import TuringFXVolSurfacePlus
 from financepy.market.volatility.turing_fx_vol_surface_plus import TuringFXATMMethod
 from financepy.market.volatility.turing_fx_vol_surface_plus import TuringFXDeltaMethod
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_date import TuringDate
 from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

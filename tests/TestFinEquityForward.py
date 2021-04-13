@@ -6,8 +6,8 @@ import sys
 sys.path.append("..")
 
 from financepy.products.equity.turing_equity_forward import TuringEquityForward
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_global_types import TuringLongShort
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_global_types import TuringLongShort
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

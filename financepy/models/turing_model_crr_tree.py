@@ -2,7 +2,7 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ..finutils.turing_global_types import TuringOptionTypes
+from ..turingutils.turing_global_types import TuringOptionTypes
 
 import numpy as np
 from numba import njit, float64, int64

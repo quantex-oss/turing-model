@@ -8,11 +8,11 @@
 import numpy as np
 from numba import njit, float64, float64
 
-from ..finutils.turing_math import NVect, NPrimeVect
-from ..finutils.turing_global_variables import gSmall
-from ..finutils.turing_helper_functions import labelToString
-from ..finutils.turing_global_types import TuringOptionTypes
-from ..finutils.turing_error import TuringError
+from ..turingutils.turing_math import NVect, NPrimeVect
+from ..turingutils.turing_global_variables import gSmall
+from ..turingutils.turing_helper_functions import labelToString
+from ..turingutils.turing_global_types import TuringOptionTypes
+from ..turingutils.turing_error import TuringError
 
 ###############################################################################
 # TODO: Use Numba ?

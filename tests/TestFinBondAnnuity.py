@@ -7,12 +7,12 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
+from financepy.turingutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
 from financepy.products.bonds.turing_bond_annuity import TuringBondAnnuity
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

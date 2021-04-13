@@ -7,7 +7,7 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_date import TuringDate
 from financepy.market.volatility.turing_equity_vol_curve import TuringEquityVolCurve
 from financepy.products.equity.turing_equity_variance_swap import FinEquityVarianceSwap
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat

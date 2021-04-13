@@ -8,15 +8,15 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_date import TuringDate
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 from financepy.products.bonds.turing_bond import TuringBond
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_helper_functions import printTree
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_helper_functions import printTree
 from financepy.models.turing_model_rates_bk import TuringModelRatesBK
-from financepy.finutils.turing_global_types import TuringExerciseTypes
+from financepy.turingutils.turing_global_types import TuringExerciseTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

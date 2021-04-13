@@ -7,8 +7,8 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_date import TuringDate
 from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

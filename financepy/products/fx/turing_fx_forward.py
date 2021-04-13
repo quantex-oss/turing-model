@@ -5,10 +5,10 @@
 import numpy as np
 
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 # ALL CCY RATES MUST BE IN NUM UNITS OF DOMESTIC PER UNIT OF FOREIGN CURRENCY

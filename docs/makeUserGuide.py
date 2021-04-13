@@ -823,7 +823,7 @@ buildHead()
 buildIntro("..//README.md")
 
 if 1 == 1:
-    buildChapter("..//financepy//finutils")
+    buildChapter("..//financepy//turingutils")
     buildChapter("..//financepy//market//curves")
     buildChapter("..//financepy//market//volatility")
     buildChapter("..//financepy//products//equity")

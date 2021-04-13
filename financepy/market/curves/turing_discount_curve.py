@@ -7,16 +7,16 @@ import numpy as np
 
 from .turing_interpolator import FinInterpolator, FinInterpTypes, interpolate
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_global_variables import gDaysInYear, gSmall
-from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
-from financepy.finutils.turing_math import testMonotonicity
-from financepy.finutils.turing_schedule import TuringSchedule
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
-from financepy.finutils.turing_helper_functions import timesFromDates
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_global_variables import gDaysInYear, gSmall
+from financepy.turingutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.turingutils.turing_math import testMonotonicity
+from financepy.turingutils.turing_schedule import TuringSchedule
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_helper_functions import timesFromDates
+from financepy.turingutils.turing_helper_functions import labelToString
 
 ###############################################################################
 

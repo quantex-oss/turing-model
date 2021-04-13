@@ -9,16 +9,16 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_date import TuringDate
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from financepy.products.bonds.turing_bond import TuringBond
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_global_variables import gDaysInYear
 from financepy.products.bonds.turing_bond_option import TuringBondOption
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 from financepy.models.turing_model_rates_bk import TuringModelRatesBK
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

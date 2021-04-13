@@ -7,9 +7,9 @@ import numpy as np
 
 ###############################################################################
 
-from ..finutils.turing_math import N
-from ..finutils.turing_math import normpdf, norminvcdf, M
-from ..finutils.turing_error import TuringError
+from ..turingutils.turing_math import N
+from ..turingutils.turing_math import normpdf, norminvcdf, M
+from ..turingutils.turing_error import TuringError
 
 ###############################################################################
 

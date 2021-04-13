@@ -9,8 +9,8 @@ sys.path.append("..")
 import glob
 from os.path import dirname, basename, join
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_date import setDateFormatType, TuringDateFormatTypes
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_date import setDateFormatType, TuringDateFormatTypes
 setDateFormatType(TuringDateFormatTypes.UK_LONG)
 
 # I put this here to get the library loaded and header printed before loop

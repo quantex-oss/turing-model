@@ -9,14 +9,14 @@ import sys
 sys.path.append("..")
 
 from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
 from financepy.models.turing_model_black import FinModelBlack
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
 from financepy.products.rates.turing_ibor_swaption import TuringSwapTypes
 from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
-from financepy.finutils.turing_helper_functions import checkVectorDifferences
+from financepy.turingutils.turing_helper_functions import checkVectorDifferences
 from financepy.models.turing_model_rates_lmm import LMMSimulateFwdsNF
 from financepy.models.turing_model_rates_lmm import LMMSimulateFwds1F
 from financepy.models.turing_model_rates_lmm import LMMSimulateFwdsMF

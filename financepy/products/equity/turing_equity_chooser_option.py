@@ -6,16 +6,16 @@
 import numpy as np
 from scipy import optimize
 
-from financepy.finutils.turing_math import M
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_global_variables import gSmall
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_math import M
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_global_variables import gSmall
+from financepy.turingutils.turing_error import TuringError
 
 from financepy.products.equity.turing_equity_option import TuringEquityOption
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurve
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
 from financepy.models.turing_model_black_scholes import bsValue
 
 from scipy.stats import norm

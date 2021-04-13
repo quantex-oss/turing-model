@@ -9,10 +9,10 @@ from enum import Enum
 import numpy as np
 from numba import jit, njit, float64, int64
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import heaviside
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import heaviside
+from financepy.turingutils.turing_helper_functions import labelToString
 
 ###############################################################################
 

@@ -6,14 +6,14 @@
 import numpy as np
 from math import log, exp, sqrt
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_global_variables import gDaysInYear
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 from .turing_equity_vanilla_option import FinEquityVanillaOption
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 

@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_global_types import TuringSwapTypes
-from financepy.finutils.turing_global_types import TuringExerciseTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_global_types import TuringSwapTypes
+from financepy.turingutils.turing_global_types import TuringExerciseTypes
 from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
 

@@ -15,12 +15,12 @@ from financepy.products.credit.turing_cds import FinCDS
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
 from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from financepy.products.credit.turing_cds_curve import FinCDSCurve
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_math import corrMatrixGenerator
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_math import corrMatrixGenerator
+from financepy.turingutils.turing_date import TuringDate
 from financepy.models.turing_gbm_process import getPathsAssets
-from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.turingutils.turing_global_types import TuringSwapTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

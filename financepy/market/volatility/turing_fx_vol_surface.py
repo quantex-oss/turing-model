@@ -8,15 +8,15 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from numba import njit, float64, int64
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 from financepy.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
 from financepy.models.turing_model_option_implied_dbn import optionImpliedDbn
 from financepy.products.fx.turing_fx_mkt_conventions import TuringFXATMMethod
 from financepy.products.fx.turing_fx_mkt_conventions import TuringFXDeltaMethod
-from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes, labelToString
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
@@ -28,13 +28,13 @@ from financepy.models.turing_model_sabr import volFunctionSABR
 from financepy.models.turing_model_sabr import volFunctionSABR_BETA_ONE
 from financepy.models.turing_model_sabr import volFunctionSABR_BETA_HALF
 
-from financepy.finutils.turing_math import norminvcdf
+from financepy.turingutils.turing_math import norminvcdf
 
 from financepy.models.turing_model_black_scholes_analytical import bsValue
 from financepy.products.fx.turing_fx_vanilla_option import fastDelta
-from financepy.finutils.turing_distribution import TuringDistribution
+from financepy.turingutils.turing_distribution import TuringDistribution
 
-from financepy.finutils.turing_solvers_1d import newton_secant
+from financepy.turingutils.turing_solvers_1d import newton_secant
 
 ###############################################################################
 # TODO: Speed up search for strike by providing derivative function to go with

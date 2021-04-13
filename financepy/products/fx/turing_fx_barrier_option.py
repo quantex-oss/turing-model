@@ -7,13 +7,13 @@ import numpy as np
 from enum import Enum
 
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_math import N
-from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_math import N
+from financepy.turingutils.turing_global_variables import gDaysInYear
 from financepy.products.fx.turing_fx_option import TuringFXOption
 from financepy.models.turing_process_simulator import FinProcessSimulator
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
 
 ###############################################################################
 

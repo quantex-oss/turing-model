@@ -7,8 +7,8 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 from financepy.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat

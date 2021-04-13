@@ -5,15 +5,15 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_global_types import TuringSwapTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_amount import TuringAmount
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_global_types import TuringSwapTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.turingutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_amount import TuringAmount
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_date import TuringDate
 from financepy.products.rates.turing_fixed_leg import FinFixedLeg
 from financepy.products.rates.turing_float_leg import FinFloatLeg
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat

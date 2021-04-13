@@ -2,7 +2,7 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ..finutils.turing_error import TuringError
+from ..turingutils.turing_error import TuringError
 
 ###############################################################################
 

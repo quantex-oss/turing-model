@@ -5,7 +5,7 @@
 
 import numpy as np
 from scipy.interpolate import splev
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_helper_functions import labelToString
 
 ###############################################################################
 

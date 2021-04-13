@@ -8,12 +8,12 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_math import normcdf_integrate
-from financepy.finutils.turing_math import N
-from financepy.finutils.turing_math import normcdf_slow
+from financepy.turingutils.turing_math import normcdf_integrate
+from financepy.turingutils.turing_math import N
+from financepy.turingutils.turing_math import normcdf_slow
 
 
-from financepy.finutils.turing_math import norminvcdf
+from financepy.turingutils.turing_math import norminvcdf
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

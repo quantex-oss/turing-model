@@ -8,7 +8,7 @@ sys.path.append("..")
 from financepy.products.equity.turing_equity_chooser_option import TuringEquityChooserOption
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -4,14 +4,14 @@
 
 import numpy as np
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_math import testMonotonicity
-from financepy.finutils.turing_helper_functions import labelToString
-from financepy.finutils.turing_helper_functions import timesFromDates
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
-from financepy.finutils.turing_date import daysInMonth
-from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_math import testMonotonicity
+from financepy.turingutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_helper_functions import timesFromDates
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_date import daysInMonth
+from financepy.turingutils.turing_global_variables import gDaysInYear
 
 ###############################################################################
 

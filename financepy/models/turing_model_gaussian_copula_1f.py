@@ -7,8 +7,8 @@ import numpy as np
 
 ##########################################################################
 
-from ..finutils.turing_math import norminvcdf, N, INVROOT2PI
-from ..finutils.turing_error import TuringError
+from ..turingutils.turing_math import norminvcdf, N, INVROOT2PI
+from ..turingutils.turing_error import TuringError
 from .turing_model_loss_dbn_builder import indepLossDbnRecursionGCD
 from .turing_model_loss_dbn_builder import indepLossDbnHeterogeneousAdjBinomial
 from .turing_model_loss_dbn_builder import portfolioGCD

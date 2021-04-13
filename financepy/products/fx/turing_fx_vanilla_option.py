@@ -6,11 +6,11 @@ import numpy as np
 from scipy import optimize
 from numba import njit
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_math import nprime
-from financepy.finutils.turing_global_variables import gDaysInYear, gSmall
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_math import nprime
+from financepy.turingutils.turing_global_variables import gDaysInYear, gSmall
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 #from financepy.products.fx.FinFXModelTypes import FinFXModel
 #from financepy.products.fx.FinFXModelTypes import FinFXModelBlackScholes
 #from financepy.products.fx.FinFXModelTypes import FinFXModelSABR
@@ -23,9 +23,9 @@ from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 
 from financepy.models.turing_model_black_scholes_analytical import bsValue, bsDelta
 
-from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes, labelToString
 
-from financepy.finutils.turing_math import N
+from financepy.turingutils.turing_math import N
 
 
 ###############################################################################

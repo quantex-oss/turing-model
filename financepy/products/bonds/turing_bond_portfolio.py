@@ -6,9 +6,9 @@
 
 import numpy as np
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 from .turing_bond import TuringYTMCalcType
 

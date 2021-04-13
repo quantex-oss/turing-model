@@ -5,17 +5,17 @@
 
 import numpy as np
 
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.finutils.turing_calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
-from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.turingutils.turing_calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
+from financepy.turingutils.turing_schedule import TuringSchedule
 from financepy.products.equity.turing_equity_option import TuringEquityOption
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurve
 

@@ -8,11 +8,11 @@
 ###############################################################################
 
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from ..bonds.turing_bond import TuringBond, TuringYTMCalcType
 
 ###############################################################################

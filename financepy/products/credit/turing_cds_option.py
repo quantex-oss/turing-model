@@ -6,16 +6,16 @@ from math import sqrt, log
 from scipy import optimize
 
 
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import ONE_MILLION, N
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import ONE_MILLION, N
 from financepy.products.credit.turing_cds import FinCDS
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_error import TuringError
 
 ##########################################################################
 

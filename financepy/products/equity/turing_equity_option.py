@@ -5,10 +5,10 @@
 
 from enum import Enum
 
-from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_global_variables import gDaysInYear
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_date import TuringDate
 
 ###############################################################################
 

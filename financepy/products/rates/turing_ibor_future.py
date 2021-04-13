@@ -8,13 +8,13 @@
 
 import numpy as np
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_date import TuringDate
 
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from financepy.products.rates.turing_ibor_fra import FinIborFRA
 
 ###############################################################################

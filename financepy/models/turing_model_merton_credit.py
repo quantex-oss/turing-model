@@ -7,7 +7,7 @@ import numpy as np
 from scipy.stats import norm
 N = norm.cdf
 
-from ..finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from ..turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 # TODO: Redesign this class
 

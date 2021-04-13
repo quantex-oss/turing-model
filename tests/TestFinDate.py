@@ -8,9 +8,9 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import TuringDate, dateRange
-from financepy.finutils.turing_date import TuringDateFormatTypes
-from financepy.finutils.turing_date import setDateFormatType
+from financepy.turingutils.turing_date import TuringDate, dateRange
+from financepy.turingutils.turing_date import TuringDateFormatTypes
+from financepy.turingutils.turing_date import setDateFormatType
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

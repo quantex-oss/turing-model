@@ -4,7 +4,7 @@
 
 from numba import njit, float64, int64
 import numpy as np
-from ..finutils.turing_helper_functions import labelToString
+from ..turingutils.turing_helper_functions import labelToString
 
 ###############################################################################
 # CIR Process

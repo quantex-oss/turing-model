@@ -13,21 +13,21 @@ from financepy.models.turing_model_gaussian_copula_1f import trSurvProbAdjBinomi
 from financepy.models.turing_model_gaussian_copula_1f import trSurvProbRecursion
 from financepy.models.turing_model_gaussian_copula_lhp import trSurvProbLHP
 
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
 
 from financepy.products.credit.turing_cds import FinCDS
 from financepy.products.credit.turing_cds_curve import FinCDSCurve
 
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import ONE_MILLION
 from financepy.market.curves.turing_interpolator import FinInterpTypes, interpolate
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_error import TuringError
 
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
 
 ###############################################################################
 

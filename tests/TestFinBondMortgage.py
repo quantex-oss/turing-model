@@ -5,7 +5,7 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_date import TuringDate
 
 from financepy.products.bonds.turing_bond_mortgage import TuringBondMortgage
 from financepy.products.bonds.turing_bond_mortgage import TuringBondMortgageTypes

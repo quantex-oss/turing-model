@@ -7,7 +7,7 @@ sys.path.append("..")
 
 import numpy as np
 from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

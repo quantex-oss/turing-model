@@ -7,10 +7,10 @@ from scipy import integrate
 from math import exp, log, pi
 import numpy as np  # I USE NUMPY FOR EXP, LOG AND SQRT AS THEY HANDLE IMAGINARY PARTS
 
-from ..finutils.turing_global_variables import gDaysInYear
-from ..finutils.turing_global_types import TuringOptionTypes
-from ..finutils.turing_math import norminvcdf
-from ..finutils.turing_error import TuringError
+from ..turingutils.turing_global_variables import gDaysInYear
+from ..turingutils.turing_global_types import TuringOptionTypes
+from ..turingutils.turing_math import norminvcdf
+from ..turingutils.turing_error import TuringError
 
 ##########################################################################
 # Heston Process

@@ -9,7 +9,7 @@ from os.path import join, exists, split
 import time
 
 from enum import Enum
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_error import TuringError
 
 class TuringTestCaseMode(Enum):
     SAVE_TEST_CASES = 1

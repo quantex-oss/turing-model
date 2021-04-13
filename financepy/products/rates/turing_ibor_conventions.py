@@ -8,10 +8,10 @@
 
 from enum import Enum
 
-from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.turingutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
 
 ##########################################################################
 

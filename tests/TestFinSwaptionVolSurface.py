@@ -9,7 +9,7 @@ import numpy as np
 
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.market.volatility.turing_swaption_vol_surface import FinSwaptionVolSurface
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_date import TuringDate
 from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

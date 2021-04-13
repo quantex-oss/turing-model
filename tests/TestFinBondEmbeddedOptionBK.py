@@ -8,9 +8,9 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
 
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
 from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
@@ -19,7 +19,7 @@ from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCu
 from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.products.bonds.turing_bond import TuringBond
 from financepy.products.bonds.turing_bond_embedded_option import TuringBondEmbeddedOption
-from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.turingutils.turing_global_types import TuringSwapTypes
 
 from financepy.models.turing_model_rates_bk import TuringModelRatesBK
 

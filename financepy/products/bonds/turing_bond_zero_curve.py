@@ -7,17 +7,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import optimize
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_math import scale, testMonotonicity
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
-from financepy.finutils.turing_helper_functions import inputTime
-from financepy.finutils.turing_helper_functions import tableToString
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_math import scale, testMonotonicity
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.turingutils.turing_helper_functions import inputTime
+from financepy.turingutils.turing_helper_functions import tableToString
 from financepy.market.curves.turing_interpolator import FinInterpTypes, interpolate
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_helper_functions import labelToString
 
 ###############################################################################
 

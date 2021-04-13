@@ -7,17 +7,17 @@ import numpy as np
 from enum import Enum
 
 
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_error import TuringError
 from financepy.products.equity.turing_equity_option import TuringEquityOption
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 from financepy.models.turing_gbm_process import getPaths
 
 from numba import njit
 
-from financepy.finutils.turing_math import NVect
+from financepy.turingutils.turing_math import NVect
 
 ###############################################################################
 # TODO: Implement Sobol random numbers

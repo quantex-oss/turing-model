@@ -6,7 +6,7 @@ from math import sqrt
 import numpy as np
 from scipy.stats import t as student
 
-from ..finutils.turing_helper_functions import uniformToDefaultTime
+from ..turingutils.turing_helper_functions import uniformToDefaultTime
 
 ###############################################################################
 

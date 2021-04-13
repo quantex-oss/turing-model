@@ -4,8 +4,8 @@
 
 from numba import njit, float64, int64
 import numpy as np
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_global_variables import gSmall
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_global_variables import gSmall
 
 
 from scipy.interpolate import PchipInterpolator

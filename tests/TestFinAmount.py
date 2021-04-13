@@ -5,8 +5,8 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_amount import TuringAmount
-from financepy.finutils.turing_currency import TuringCurrencyTypes
+from financepy.turingutils.turing_amount import TuringAmount
+from financepy.turingutils.turing_currency import TuringCurrencyTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

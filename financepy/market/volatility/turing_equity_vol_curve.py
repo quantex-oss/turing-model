@@ -4,9 +4,9 @@
 
 import numpy as np
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_math import testMonotonicity
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_math import testMonotonicity
+from financepy.turingutils.turing_helper_functions import labelToString
 
 ###############################################################################
 # TODO: This should be deleted and replaced with TuringEquityVolSurface

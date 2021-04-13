@@ -14,16 +14,16 @@ THIS IS STILL IN PROTOPTYPE MODE. DO NOT USE. '''
 
 import numpy as np
 
-from financepy.finutils.turing_calendar import TuringCalendarTypes
-from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
-from financepy.finutils.turing_day_count import TuringDayCountTypes
-from financepy.finutils.turing_frequency import TuringFrequencyTypes
-from financepy.finutils.turing_day_count import TuringDayCount
-from financepy.finutils.turing_schedule import TuringSchedule
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
-from financepy.finutils.turing_date import TuringDate
+from financepy.turingutils.turing_calendar import TuringCalendarTypes
+from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.turingutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from financepy.turingutils.turing_day_count import TuringDayCount
+from financepy.turingutils.turing_schedule import TuringSchedule
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
 
 from financepy.models.turing_model_rates_lmm import LMMSimulateFwds1F
 from financepy.models.turing_model_rates_lmm import LMMSimulateFwdsMF
@@ -31,11 +31,11 @@ from financepy.models.turing_model_rates_lmm import LMMSimulateFwdsNF
 from financepy.models.turing_model_rates_lmm import TuringRateModelLMMModelTypes
 from financepy.models.turing_model_rates_lmm import LMMCapFlrPricer
 
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_math import ONE_MILLION
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_math import ONE_MILLION
 
-from financepy.finutils.turing_global_types import TuringSwapTypes
-from financepy.finutils.turing_global_types import TuringCapFloorTypes
+from financepy.turingutils.turing_global_types import TuringSwapTypes
+from financepy.turingutils.turing_global_types import TuringCapFloorTypes
 
 from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
 

@@ -5,16 +5,16 @@
 import numpy as np
 from typing import List
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_math import N, M
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_math import N, M
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_error import TuringError
 from financepy.models.turing_gbm_process import FinGBMProcess
 from financepy.products.equity.turing_equity_option import TuringEquityOption
 
 from enum import Enum
 
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
 
 ###############################################################################
 

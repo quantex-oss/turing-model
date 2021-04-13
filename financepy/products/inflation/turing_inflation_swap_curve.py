@@ -5,11 +5,11 @@
 import numpy as np
 from scipy import optimize
 
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_helper_functions import labelToString
-from financepy.finutils.turing_helper_functions import checkArgumentTypes, _funcName
-from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes, _funcName
+from financepy.turingutils.turing_global_variables import gDaysInYear
 from financepy.market.curves.turing_interpolator import FinInterpTypes
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 

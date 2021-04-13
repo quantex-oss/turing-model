@@ -5,11 +5,11 @@
 import numpy as np
 
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_global_types import TuringLongShort
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_global_types import TuringLongShort
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 # ADD START DATE TO CLASS ?

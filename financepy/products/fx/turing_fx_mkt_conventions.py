@@ -2,9 +2,9 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_error import TuringError
 from enum import Enum
-from financepy.finutils.turing_helper_functions import labelToString
+from financepy.turingutils.turing_helper_functions import labelToString
 
 # Non exhaustive list of country codes and currency names
 

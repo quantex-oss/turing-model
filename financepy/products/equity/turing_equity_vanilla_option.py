@@ -7,13 +7,13 @@ import numpy as np
 from numba import njit
 
 # from scipy import optimize
-from financepy.finutils.turing_solvers_1d import newton_secant, bisection, newton
+from financepy.turingutils.turing_solvers_1d import newton_secant, bisection, newton
 
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.finutils.turing_error import TuringError
-from financepy.finutils.turing_global_types import TuringOptionTypes
-from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_global_variables import gDaysInYear
+from financepy.turingutils.turing_error import TuringError
+from financepy.turingutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes, labelToString
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 from financepy.models.turing_model import FinModel
@@ -34,7 +34,7 @@ from financepy.models.turing_model_black_scholes_mc import _valueMC_NUMBA_ONLY
 from financepy.models.turing_model_black_scholes_mc import _valueMC_NUMPY_ONLY
 from financepy.models.turing_model_black_scholes_mc import _valueMC_NUMBA_PARALLEL
 
-from financepy.finutils.turing_math import N
+from financepy.turingutils.turing_math import N
 
 ###############################################################################
 

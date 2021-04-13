@@ -5,14 +5,14 @@
 import numpy as np
 from enum import Enum
 
-from financepy.finutils.turing_math import N
-from financepy.finutils.turing_global_variables import gDaysInYear, gSmall
-from financepy.finutils.turing_error import TuringError
+from financepy.turingutils.turing_math import N
+from financepy.turingutils.turing_global_variables import gDaysInYear, gSmall
+from financepy.turingutils.turing_error import TuringError
 from financepy.models.turing_gbm_process import FinGBMProcess
 from financepy.products.fx.turing_fx_option import TuringFXOption
-from financepy.finutils.turing_helper_functions import checkArgumentTypes
-from financepy.finutils.turing_date import TuringDate
-from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.turingutils.turing_helper_functions import checkArgumentTypes
+from financepy.turingutils.turing_date import TuringDate
+from financepy.turingutils.turing_global_types import TuringOptionTypes
 from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 ##########################################################################
