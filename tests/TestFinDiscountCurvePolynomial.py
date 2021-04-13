@@ -7,8 +7,8 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.market.curves.turing_discount_curve_poly import TuringDiscountCurvePoly
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.market.curves.turing_discount_curve_poly import TuringDiscountCurvePoly
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -8,10 +8,10 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.models.turing_model_heston import TuringModelHeston, TuringHestonNumericalScheme
-from financepy.turingutils.turing_global_types import TuringOptionTypes
-from financepy.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.models.turing_model_heston import TuringModelHeston, TuringHestonNumericalScheme
+from turingmodel.turingutils.turing_global_types import TuringOptionTypes
+from turingmodel.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

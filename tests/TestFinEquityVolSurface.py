@@ -7,10 +7,10 @@ sys.path.append("..")
 
 import numpy as np
 
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.market.volatility.turing_equity_vol_surface import TuringEquityVolSurface
-from financepy.turingutils.turing_date import TuringDate
-from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.market.volatility.turing_equity_vol_surface import TuringEquityVolSurface
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

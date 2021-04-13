@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from financepy.market.curves.turing_interpolator import FinInterpolator, FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import FinInterpolator, FinInterpTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -9,8 +9,8 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.models.turing_model_gaussian_copula_1f import lossDbnRecursionGCD
-from financepy.models.turing_model_gaussian_copula_1f import lossDbnHeterogeneousAdjBinomial
+from turingmodel.models.turing_model_gaussian_copula_1f import lossDbnRecursionGCD
+from turingmodel.models.turing_model_gaussian_copula_1f import lossDbnHeterogeneousAdjBinomial
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

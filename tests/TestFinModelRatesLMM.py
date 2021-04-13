@@ -8,27 +8,27 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
-from financepy.turingutils.turing_date import TuringDate
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.models.turing_model_black import FinModelBlack
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.products.rates.turing_ibor_swaption import TuringSwapTypes
-from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
-from financepy.turingutils.turing_helper_functions import checkVectorDifferences
-from financepy.models.turing_model_rates_lmm import LMMSimulateFwdsNF
-from financepy.models.turing_model_rates_lmm import LMMSimulateFwds1F
-from financepy.models.turing_model_rates_lmm import LMMSimulateFwdsMF
-from financepy.models.turing_model_rates_lmm import LMMSwaptionPricer
-from financepy.models.turing_model_rates_lmm import LMMSimSwaptionVol
-from financepy.models.turing_model_rates_lmm import LMMSwaptionVolApprox
-from financepy.models.turing_model_rates_lmm import LMMCapFlrPricer
-from financepy.models.turing_model_rates_lmm import LMMPriceCapsBlack
-from financepy.models.turing_model_rates_lmm import LMMSwapPricer
-from financepy.models.turing_model_rates_lmm import LMMFwdFwdCorrelation
-from financepy.models.turing_model_rates_lmm import LMMRatchetCapletPricer
-from financepy.models.turing_model_rates_lmm import LMMStickyCapletPricer
+from turingmodel.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.products.rates.turing_ibor_swaption import TuringSwapTypes
+from turingmodel.products.rates.turing_ibor_swaption import FinIborSwaption
+from turingmodel.turingutils.turing_helper_functions import checkVectorDifferences
+from turingmodel.models.turing_model_rates_lmm import LMMSimulateFwdsNF
+from turingmodel.models.turing_model_rates_lmm import LMMSimulateFwds1F
+from turingmodel.models.turing_model_rates_lmm import LMMSimulateFwdsMF
+from turingmodel.models.turing_model_rates_lmm import LMMSwaptionPricer
+from turingmodel.models.turing_model_rates_lmm import LMMSimSwaptionVol
+from turingmodel.models.turing_model_rates_lmm import LMMSwaptionVolApprox
+from turingmodel.models.turing_model_rates_lmm import LMMCapFlrPricer
+from turingmodel.models.turing_model_rates_lmm import LMMPriceCapsBlack
+from turingmodel.models.turing_model_rates_lmm import LMMSwapPricer
+from turingmodel.models.turing_model_rates_lmm import LMMFwdFwdCorrelation
+from turingmodel.models.turing_model_rates_lmm import LMMRatchetCapletPricer
+from turingmodel.models.turing_model_rates_lmm import LMMStickyCapletPricer
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

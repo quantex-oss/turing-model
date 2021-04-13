@@ -5,9 +5,9 @@
 import sys
 sys.path.append("..")
 
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.turingutils.turing_date import TuringDate
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

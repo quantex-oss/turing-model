@@ -7,14 +7,14 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_date import TuringDate
-from financepy.products.inflation.turing_inflation_bond import TuringInflationBond
-from financepy.products.bonds import TuringYTMCalcType
-from financepy.products.inflation.turing_inflation_index_curve import TuringInflationIndexCurve
-from financepy.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.products.inflation.turing_inflation_bond import TuringInflationBond
+from turingmodel.products.bonds import TuringYTMCalcType
+from turingmodel.products.inflation.turing_inflation_index_curve import TuringInflationIndexCurve
+from turingmodel.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

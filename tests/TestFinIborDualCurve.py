@@ -9,23 +9,23 @@ import time as time
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_date import TuringDate
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_calendar import TuringCalendarTypes
-from financepy.products.rates.turing_ibor_fra import FinIborFRA
-from financepy.products.rates.turing_ibor_future import FinIborFuture
-from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
-from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.turingutils.turing_math import ONE_MILLION
-from financepy.turingutils.turing_global_types import TuringSwapTypes
-from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from financepy.products.rates.turing_ibor_dual_curve import TuringIborDualCurve
-from financepy.products.rates.turing_ois_curve import TuringOISCurve
-from financepy.products.rates.turing_ois import FinOIS
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
+from turingmodel.products.rates.turing_ibor_fra import FinIborFRA
+from turingmodel.products.rates.turing_ibor_future import FinIborFuture
+from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
+from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.turingutils.turing_math import ONE_MILLION
+from turingmodel.turingutils.turing_global_types import TuringSwapTypes
+from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turingmodel.products.rates.turing_ibor_dual_curve import TuringIborDualCurve
+from turingmodel.products.rates.turing_ois_curve import TuringOISCurve
+from turingmodel.products.rates.turing_ois import FinOIS
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

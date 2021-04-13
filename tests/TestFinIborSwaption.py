@@ -7,27 +7,27 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_date import TuringDate
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 
-from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
-from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
-from financepy.products.rates.turing_ibor_swaption import TuringSwapTypes
+from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
+from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swaption import FinIborSwaption
+from turingmodel.products.rates.turing_ibor_swaption import TuringSwapTypes
 
-from financepy.models.turing_model_black import FinModelBlack
-from financepy.models.turing_model_black_shifted import TuringModelBlackShifted
-from financepy.models.turing_model_sabr import FinModelSABR
-from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
-from financepy.models.turing_model_rates_hw import FinModelRatesHW
-from financepy.models.turing_model_rates_bk import TuringModelRatesBK
-from financepy.models.turing_model_rates_bdt import TuringModelRatesBDT
+from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.models.turing_model_black_shifted import TuringModelBlackShifted
+from turingmodel.models.turing_model_sabr import FinModelSABR
+from turingmodel.models.turing_model_sabr_shifted import TuringModelSABRShifted
+from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.models.turing_model_rates_bk import TuringModelRatesBK
+from turingmodel.models.turing_model_rates_bdt import TuringModelRatesBDT
 
-from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
-from financepy.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from turingmodel.market.curves.turing_interpolator import FinInterpTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

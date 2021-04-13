@@ -6,7 +6,7 @@ The test is based on the prior creation of a Golden version of the file output w
 
 globalTestCaseMode = TuringTestCaseMode.SAVE_TEST_CASES
 
-This can be found under finutils/FinTestCase.py
+This can be found under TuringTestCases.py
 
 When you wish to run the tests to check if anything has changed, you need to set the global flag to
 

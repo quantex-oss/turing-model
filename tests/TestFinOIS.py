@@ -5,13 +5,13 @@
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_math import ONE_MILLION
-from financepy.products.rates.turing_ois import FinOIS
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_date import TuringDate
-from financepy.turingutils.turing_global_types import TuringSwapTypes
+from turingmodel.turingutils.turing_math import ONE_MILLION
+from turingmodel.products.rates.turing_ois import FinOIS
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

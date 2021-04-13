@@ -8,14 +8,14 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_binomial_tree import FinEquityBinomialTree
-from financepy.products.equity.turing_equity_binomial_tree import FinEquityTreeExerciseTypes
-from financepy.products.equity.turing_equity_binomial_tree import FinEquityTreePayoffTypes
-from financepy.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
-from financepy.turingutils.turing_global_types import TuringOptionTypes
-from financepy.turingutils.turing_date import TuringDate
-from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.products.equity.turing_equity_binomial_tree import FinEquityBinomialTree
+from turingmodel.products.equity.turing_equity_binomial_tree import FinEquityTreeExerciseTypes
+from turingmodel.products.equity.turing_equity_binomial_tree import FinEquityTreePayoffTypes
+from turingmodel.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
+from turingmodel.turingutils.turing_global_types import TuringOptionTypes
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

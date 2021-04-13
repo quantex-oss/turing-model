@@ -5,13 +5,13 @@
 import sys
 sys.path.append("..")
 
-from financepy.models.turing_process_simulator import FinProcessTypes
-from financepy.models.turing_process_simulator import FinGBMNumericalScheme
-from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.products.fx.turing_fx_barrier_option import TuringFXBarrierTypes
-from financepy.products.fx.turing_fx_barrier_option import TuringFXBarrierOption
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.models.turing_process_simulator import FinProcessTypes
+from turingmodel.models.turing_process_simulator import FinGBMNumericalScheme
+from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.products.fx.turing_fx_barrier_option import TuringFXBarrierTypes
+from turingmodel.products.fx.turing_fx_barrier_option import TuringFXBarrierOption
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

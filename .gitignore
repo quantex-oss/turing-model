@@ -43,7 +43,7 @@ TestFin*_COMPARE.testLog
 
 # MYPY
 .mypy_cache
-financepy/__init__.py
+turingmodel/__init__.py
 
 # bytecode
 *.py[cod]

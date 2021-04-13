@@ -5,20 +5,20 @@
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_date import TuringDate
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_global_types import TuringSwapTypes
-from financepy.turingutils.turing_global_types import TuringExerciseTypes
-from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
-from financepy.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_global_types import TuringSwapTypes
+from turingmodel.turingutils.turing_global_types import TuringExerciseTypes
+from turingmodel.products.rates.turing_ibor_swaption import FinIborSwaption
+from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
 
-from financepy.products.rates.turing_ibor_bermudan_swaption import FinIborBermudanSwaption
-from financepy.models.turing_model_black import FinModelBlack
-from financepy.models.turing_model_rates_bk import TuringModelRatesBK
-from financepy.models.turing_model_rates_hw import FinModelRatesHW
-from financepy.models.turing_model_rates_bdt import TuringModelRatesBDT
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.products.rates.turing_ibor_bermudan_swaption import FinIborBermudanSwaption
+from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.models.turing_model_rates_bk import TuringModelRatesBK
+from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.models.turing_model_rates_bdt import TuringModelRatesBDT
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

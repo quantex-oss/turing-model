@@ -5,8 +5,8 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.rates.turing_ibor_future import FinIborFuture
-from financepy.turingutils.turing_date import *
+from turingmodel.products.rates.turing_ibor_future import FinIborFuture
+from turingmodel.turingutils.turing_date import *
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

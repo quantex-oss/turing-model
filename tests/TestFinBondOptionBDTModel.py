@@ -9,17 +9,17 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_date import TuringDate
-from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from financepy.products.bonds.turing_bond import TuringBond
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_global_variables import gDaysInYear
-from financepy.products.bonds.turing_bond_option import TuringBondOption
-from financepy.turingutils.turing_global_types import TuringOptionTypes
-from financepy.models.turing_model_rates_bdt import TuringModelRatesBDT
+from turingmodel.products.bonds.turing_bond import TuringBond
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_global_variables import gDaysInYear
+from turingmodel.products.bonds.turing_bond_option import TuringBondOption
+from turingmodel.turingutils.turing_global_types import TuringOptionTypes
+from turingmodel.models.turing_model_rates_bdt import TuringModelRatesBDT
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

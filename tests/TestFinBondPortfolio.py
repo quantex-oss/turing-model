@@ -8,10 +8,10 @@ import datetime as dt
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_date import TuringDate, fromDatetime
-from financepy.products.bonds.turing_bond import TuringBond
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_date import TuringDate, fromDatetime
+from turingmodel.products.bonds.turing_bond import TuringBond
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

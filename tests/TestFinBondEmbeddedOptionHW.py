@@ -8,17 +8,17 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_global_types import TuringSwapTypes
-from financepy.turingutils.turing_date import TuringDate
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.turingutils.turing_global_types import TuringSwapTypes
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
 
-from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.products.bonds.turing_bond import TuringBond
-from financepy.products.bonds.turing_bond_embedded_option import TuringBondEmbeddedOption
+from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.products.bonds.turing_bond import TuringBond
+from turingmodel.products.bonds.turing_bond_embedded_option import TuringBondEmbeddedOption
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

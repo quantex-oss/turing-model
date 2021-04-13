@@ -7,9 +7,9 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_date import TuringDate
-from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

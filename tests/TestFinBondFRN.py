@@ -5,14 +5,14 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from financepy.products.bonds.turing_bond_frn import TuringBondFRN
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_date import *
-from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
-from financepy.turingutils.turing_global_types import TuringSwapTypes
+from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turingmodel.products.bonds.turing_bond_frn import TuringBondFRN
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_date import *
+from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
+from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

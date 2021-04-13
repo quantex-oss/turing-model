@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_date import TuringDate
 
-from financepy.products.bonds.turing_bond_mortgage import TuringBondMortgage
-from financepy.products.bonds.turing_bond_mortgage import TuringBondMortgageTypes
-from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turingmodel.products.bonds.turing_bond_mortgage import TuringBondMortgage
+from turingmodel.products.bonds.turing_bond_mortgage import TuringBondMortgageTypes
+from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

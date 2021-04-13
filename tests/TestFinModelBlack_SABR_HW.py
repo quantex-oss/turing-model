@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from financepy.models.turing_model_sabr import FinModelSABR
-from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
+from turingmodel.models.turing_model_sabr import FinModelSABR
+from turingmodel.models.turing_model_sabr_shifted import TuringModelSABRShifted
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

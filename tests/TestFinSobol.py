@@ -5,7 +5,7 @@ from numba import jit
 import sys
 sys.path.append("..")
 
-from financepy.models.turing_sobol import getUniformSobol, getGaussianSobol
+from turingmodel.models.turing_sobol import getUniformSobol, getGaussianSobol
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

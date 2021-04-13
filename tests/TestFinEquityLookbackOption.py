@@ -7,11 +7,11 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_float_lookback_option import TuringEquityFloatLookbackOption
-from financepy.products.equity.turing_equity_fixed_lookback_option import TuringEquityFixedLookbackOption
-from financepy.turingutils.turing_global_types import TuringOptionTypes
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.products.equity.turing_equity_float_lookback_option import TuringEquityFloatLookbackOption
+from turingmodel.products.equity.turing_equity_fixed_lookback_option import TuringEquityFixedLookbackOption
+from turingmodel.turingutils.turing_global_types import TuringOptionTypes
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

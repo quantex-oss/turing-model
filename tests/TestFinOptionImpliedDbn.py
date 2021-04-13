@@ -8,18 +8,18 @@ sys.path.append("..")
 import numpy as np
 import matplotlib.pyplot as plt
 
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_date import TuringDate
 
-from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
-from financepy.models.turing_model_volatility_fns import volFunctionClark
+from turingmodel.models.turing_model_volatility_fns import TuringVolFunctionTypes
+from turingmodel.models.turing_model_volatility_fns import volFunctionClark
 
-from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.models.turing_model_option_implied_dbn import optionImpliedDbn
+from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_option_implied_dbn import optionImpliedDbn
 
-from financepy.market.volatility.turing_fx_vol_surface import FinFXVolSurface
-from financepy.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
-from financepy.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
+from turingmodel.market.volatility.turing_fx_vol_surface import FinFXVolSurface
+from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
+from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
 
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

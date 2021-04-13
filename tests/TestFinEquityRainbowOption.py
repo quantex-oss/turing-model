@@ -9,11 +9,11 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_rainbow_option import TuringEquityRainbowOption
-from financepy.products.equity.turing_equity_rainbow_option import FinEquityRainbowOptionTypes
-from financepy.turingutils.turing_helper_functions import betaVectorToCorrMatrix
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.products.equity.turing_equity_rainbow_option import TuringEquityRainbowOption
+from turingmodel.products.equity.turing_equity_rainbow_option import FinEquityRainbowOptionTypes
+from turingmodel.turingutils.turing_helper_functions import betaVectorToCorrMatrix
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

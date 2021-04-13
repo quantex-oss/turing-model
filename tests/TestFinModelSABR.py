@@ -6,9 +6,9 @@ import sys
 sys.path.append("..")
 
 import numpy as np
-from financepy.models.turing_model_sabr import volFunctionSABR
-from financepy.models.turing_model_sabr import FinModelSABR
-from financepy.turingutils.turing_global_types import TuringOptionTypes
+from turingmodel.models.turing_model_sabr import volFunctionSABR
+from turingmodel.models.turing_model_sabr import FinModelSABR
+from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

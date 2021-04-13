@@ -8,17 +8,17 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_date import *
-from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.market.curves.turing_discount_curve_ns import TuringDiscountCurveNS
-from financepy.market.curves.turing_discount_curve_nss import TuringDiscountCurveNSS
-from financepy.market.curves.turing_discount_curve_pwf import TuringDiscountCurvePWF
-from financepy.market.curves.turing_discount_curve_pwl import TuringDiscountCurvePWL
-from financepy.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
-from financepy.market.curves.turing_discount_curve_poly import TuringDiscountCurvePoly
-from financepy.turingutils.turing_global_variables import gDaysInYear
+from turingmodel.turingutils.turing_date import *
+from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.market.curves.turing_discount_curve_ns import TuringDiscountCurveNS
+from turingmodel.market.curves.turing_discount_curve_nss import TuringDiscountCurveNSS
+from turingmodel.market.curves.turing_discount_curve_pwf import TuringDiscountCurvePWF
+from turingmodel.market.curves.turing_discount_curve_pwl import TuringDiscountCurvePWL
+from turingmodel.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from turingmodel.market.curves.turing_discount_curve_poly import TuringDiscountCurvePoly
+from turingmodel.turingutils.turing_global_variables import gDaysInYear
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

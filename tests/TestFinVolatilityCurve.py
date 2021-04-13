@@ -6,8 +6,8 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.market.volatility.turing_equity_vol_curve import TuringEquityVolCurve
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.market.volatility.turing_equity_vol_curve import TuringEquityVolCurve
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

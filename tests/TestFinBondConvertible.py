@@ -9,11 +9,11 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.products.bonds.turing_bond_convertible import TuringBondConvertible
-from financepy.turingutils.turing_date import TuringDate
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.products.bonds.turing_bond_convertible import TuringBondConvertible
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

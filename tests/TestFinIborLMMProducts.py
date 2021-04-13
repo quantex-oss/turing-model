@@ -7,17 +7,17 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
-from financepy.turingutils.turing_date import TuringDate
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.models.turing_model_black import FinModelBlack
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.products.rates.turing_ibor_swaption import TuringSwapTypes
-from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
-from financepy.turingutils.turing_global_types import TuringCapFloorTypes
-from financepy.products.rates.turing_ibor_lmm_products import FinIborLMMProducts
-from financepy.products.rates.turing_ibor_cap_floor import FinIborCapFloor
+from turingmodel.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
+from turingmodel.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.products.rates.turing_ibor_swaption import TuringSwapTypes
+from turingmodel.products.rates.turing_ibor_swaption import FinIborSwaption
+from turingmodel.turingutils.turing_global_types import TuringCapFloorTypes
+from turingmodel.products.rates.turing_ibor_lmm_products import FinIborLMMProducts
+from turingmodel.products.rates.turing_ibor_cap_floor import FinIborCapFloor
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

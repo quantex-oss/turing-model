@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from financepy.models.turing_process_simulator import FinVasicekNumericalScheme
-from financepy.models.turing_process_simulator import FinCIRNumericalScheme
-from financepy.models.turing_process_simulator import FinHestonNumericalScheme
-from financepy.models.turing_process_simulator import FinGBMNumericalScheme
-from financepy.models.turing_process_simulator import FinProcessTypes
-from financepy.models.turing_process_simulator import FinProcessSimulator
+from turingmodel.models.turing_process_simulator import FinVasicekNumericalScheme
+from turingmodel.models.turing_process_simulator import FinCIRNumericalScheme
+from turingmodel.models.turing_process_simulator import FinHestonNumericalScheme
+from turingmodel.models.turing_process_simulator import FinGBMNumericalScheme
+from turingmodel.models.turing_process_simulator import FinProcessTypes
+from turingmodel.models.turing_process_simulator import FinProcessSimulator
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

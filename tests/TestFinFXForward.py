@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.fx.turing_fx_forward import TuringFXForward
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_calendar import TuringCalendarTypes
-from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.products.fx.turing_fx_forward import TuringFXForward
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
+from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

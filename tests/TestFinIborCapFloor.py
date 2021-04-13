@@ -9,38 +9,38 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_global_types import TuringCapFloorTypes
-from financepy.products.rates.turing_ibor_cap_floor import FinIborCapFloor
-from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.products.rates.turing_ibor_swap import TuringSwapTypes
-from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
-from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turingmodel.turingutils.turing_global_types import TuringCapFloorTypes
+from turingmodel.products.rates.turing_ibor_cap_floor import FinIborCapFloor
+from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swap import TuringSwapTypes
+from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
+from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_date import TuringDate
 
-from financepy.turingutils.turing_calendar import TuringCalendarTypes
-from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.turingutils.turing_calendar import TuringDateGenRuleTypes
+from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
+from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from turingmodel.turingutils.turing_calendar import TuringDateGenRuleTypes
 
-from financepy.turingutils.turing_global_types import TuringSwapTypes
+from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 
-from financepy.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
-from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from financepy.models.turing_model_black import FinModelBlack
-from financepy.models.turing_model_bachelier import FinModelBachelier
-from financepy.models.turing_model_black_shifted import TuringModelBlackShifted
-from financepy.models.turing_model_sabr import FinModelSABR
-from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
-from financepy.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.models.turing_model_bachelier import FinModelBachelier
+from turingmodel.models.turing_model_black_shifted import TuringModelBlackShifted
+from turingmodel.models.turing_model_sabr import FinModelSABR
+from turingmodel.models.turing_model_sabr_shifted import TuringModelSABRShifted
+from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
 
-from financepy.turingutils.turing_global_variables import gDaysInYear
+from turingmodel.turingutils.turing_global_variables import gDaysInYear
 
-from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
-from financepy.turingutils.turing_schedule import TuringSchedule
+from turingmodel.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
+from turingmodel.turingutils.turing_schedule import TuringSchedule
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

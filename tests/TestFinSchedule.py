@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from financepy.turingutils.turing_calendar import TuringDateGenRuleTypes
-from financepy.turingutils.turing_schedule import TuringSchedule
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_calendar import TuringCalendarTypes, TuringCalendar
-from financepy.turingutils.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
+from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from turingmodel.turingutils.turing_calendar import TuringDateGenRuleTypes
+from turingmodel.turingutils.turing_schedule import TuringSchedule
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_calendar import TuringCalendarTypes, TuringCalendar
+from turingmodel.turingutils.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

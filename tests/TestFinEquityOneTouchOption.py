@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_one_touch_option import TuringEquityOneTouchOption
-from financepy.products.equity.turing_equity_one_touch_option import TuringTouchOptionPayoffTypes
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.products.equity.turing_equity_one_touch_option import TuringEquityOneTouchOption
+from turingmodel.products.equity.turing_equity_one_touch_option import TuringTouchOptionPayoffTypes
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

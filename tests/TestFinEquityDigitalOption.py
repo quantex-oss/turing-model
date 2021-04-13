@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from financepy.turingutils.turing_global_types import TuringOptionTypes
-from financepy.products.equity.turing_equity_digital_option import TuringEquityDigitalOption, FinDigitalOptionTypes
-from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.turingutils.turing_global_types import TuringOptionTypes
+from turingmodel.products.equity.turing_equity_digital_option import TuringEquityDigitalOption, FinDigitalOptionTypes
+from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

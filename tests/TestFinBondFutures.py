@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.bonds.turing_bond_future import TuringBondFuture
-from financepy.products.bonds.turing_bond import TuringBond
-from financepy.turingutils.turing_frequency import TuringFrequencyTypes
-from financepy.turingutils.turing_day_count import TuringDayCountTypes
-from financepy.turingutils.turing_date import TuringDate
+from turingmodel.products.bonds.turing_bond_future import TuringBondFuture
+from turingmodel.products.bonds.turing_bond import TuringBond
+from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -823,19 +823,19 @@ buildHead()
 buildIntro("..//README.md")
 
 if 1 == 1:
-    buildChapter("..//financepy//turingutils")
-    buildChapter("..//financepy//market//curves")
-    buildChapter("..//financepy//market//volatility")
-    buildChapter("..//financepy//products//equity")
-    buildChapter("..//financepy//products//credit")
-    buildChapter("..//financepy//products//bonds")
-    buildChapter("..//financepy//products//rates")
-    buildChapter("..//financepy//products//fx")
-    buildChapter("..//financepy//models")
-#    buildChapter("..//financepy//portfolio")
-#    buildChapter("..//financepy//risk")
-#    buildChapter(".//financepy//tests")
-#    buildChapter(".//financepy//docs")
+    buildChapter("..//turingmodel//turingutils")
+    buildChapter("..//turingmodel//market//curves")
+    buildChapter("..//turingmodel//market//volatility")
+    buildChapter("..//turingmodel//products//equity")
+    buildChapter("..//turingmodel//products//credit")
+    buildChapter("..//turingmodel//products//bonds")
+    buildChapter("..//turingmodel//products//rates")
+    buildChapter("..//turingmodel//products//fx")
+    buildChapter("..//turingmodel//models")
+#    buildChapter("..//turingmodel//portfolio")
+#    buildChapter("..//turingmodel//risk")
+#    buildChapter(".//turingmodel//tests")
+#    buildChapter(".//turingmodel//docs")
 
 buildTail()
 
@@ -851,8 +851,8 @@ if 1 == 1:
     pdfFileName1 = fileName + ".pdf"
     pdfFileName2 = '..\\' + pdfFileName1
 
-    # TODO: Only works if you have financepy-examples-git
-    # Maybe add `financepy-examples-git` as a submodule?
+    # TODO: Only works if you have turingmodel-examples-git
+    # Maybe add `turingmodel-examples-git` as a submodule?
 
     print("Removing unneeded files.")
     os.remove(fileName + ".out")
