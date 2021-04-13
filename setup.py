@@ -2,10 +2,10 @@ from datetime import datetime
 from version import __version__
 import setuptools
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
-with open("version.py", "r") as fh:
+with open("version.py", "r", encoding='utf-8') as fh:
     version_number = fh.read()
     start = version_number.find("\"")
     end = version_number[start+1:].find("\"")
@@ -43,7 +43,7 @@ setuptools.setup(
     description="A Finance Library",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/domokane/FinancePy",
+    url="https://gitlab.iquantex.com/turing/model/FinancePy.git",
     keywords=['FINANCE', 'OPTIONS', 'BONDS', 'VALUATION', 'DERIVATIVES'],
     install_requires=['numpy', 'numba', 'scipy'],
     package_data={'': ['*.npz'], },

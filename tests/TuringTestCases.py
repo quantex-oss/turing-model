@@ -27,7 +27,7 @@ verbose = False
 # TESTING
 
 
-globalTestCaseMode = TuringTestCaseMode.SAVE_TEST_CASES
+# globalTestCaseMode = TuringTestCaseMode.SAVE_TEST_CASES
 globalTestCaseMode = TuringTestCaseMode.ANALYSE_TEST_CASES
 #globalTestCaseMode = TuringTestCaseMode.DEBUG_TEST_CASES
 

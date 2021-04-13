@@ -577,7 +577,7 @@ class FinFixedFixedXCcySwap(object):
         s += labelToString("TERMINATION DATE", self._terminationDate)
         s += labelToString("MATURITY DATE", self._maturityDate)
         s += labelToString("NOTIONAL", self._notional)
-        s += labelToString("SWAP TYPE", self._swapType)
+        # s += labelToString("SWAP TYPE", self._swapType)
         s += labelToString("FIXED COUPON", self._fixedCoupon)
         s += labelToString("FLOAT SPREAD", self._floatSpread)
         s += labelToString("FIXED FREQUENCY", self._fixedFrequencyType)
