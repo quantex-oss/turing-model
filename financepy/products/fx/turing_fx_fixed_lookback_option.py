@@ -6,14 +6,14 @@ from math import exp, log, sqrt
 import numpy as np
 
 
-from ...finutils.turing_math import N
-from ...finutils.turing_global_variables import gDaysInYear, gSmall
-from ...finutils.turing_error import FinError
-from ...models.turing_gbm_process import FinGBMProcess
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_types import FinOptionTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_math import N
+from financepy.finutils.turing_global_variables import gDaysInYear, gSmall
+from financepy.finutils.turing_error import TuringError
+from financepy.models.turing_gbm_process import FinGBMProcess
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 ##########################################################################
 # TODO: Attempt control variate adjustment to monte carlo
@@ -28,12 +28,12 @@ from ...market.curves.turing_discount_curve import FinDiscountCurve
 ##########################################################################
 
 
-class FinFXFixedLookbackOption():
+class TuringFXFixedLookbackOption():
     ''' The Class for FX Fixed Strike Lookback options. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
-                 optionType: FinOptionTypes,
+                 expiryDate: TuringDate,
+                 optionType: TuringOptionTypes,
                  optionStrike: float):
         ''' Create option with expiry date, option type and the option strike
         '''
@@ -47,10 +47,10 @@ class FinFXFixedLookbackOption():
 ##########################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              domesticCurve: FinDiscountCurve,
-              foreignCurve: FinDiscountCurve,
+              domesticCurve: TuringDiscountCurve,
+              foreignCurve: TuringDiscountCurve,
               volatility: float,
               stockMinMax: float):
         ''' Value FX Fixed Lookback Option using Black Scholes model and
@@ -70,15 +70,15 @@ class FinFXFixedLookbackOption():
         smin = 0.0
         smax = 0.0
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             smax = stockMinMax
             if smax < s0:
-                raise FinError(
+                raise TuringError(
                     "The Smax value must be >= the stock price.")
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             smin = stockMinMax
             if smin > s0:
-                raise FinError(
+                raise TuringError(
                     "The Smin value must be <= the stock price.")
 
         # There is a risk of an overflow in the limit of q=r which
@@ -94,7 +94,7 @@ class FinFXFixedLookbackOption():
         expbt = exp(b * t)
 
         # Taken from Hull Page 536 (6th edition) and Haug Page 143
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
 
             if k > smax:
                 d1 = (log(s0/k) + (b+v*v/2.0)*t)/v/sqrt(t)
@@ -125,7 +125,7 @@ class FinFXFixedLookbackOption():
                 v = df * (smax - k) + s0 * dq * N(e1) - \
                     smax * df * N(e2) + s0 * df * u * term
 
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
 
             if k >= smin:
                 f1 = (log(s0 / smin) + (b + v * v / 2.0) * t) / v / sqrt(t)
@@ -156,18 +156,18 @@ class FinFXFixedLookbackOption():
                 v = k * df * N(-d2) - s0 * dq * N(-d1) + s0 * df * u * term
 
         else:
-            raise FinError("Unknown lookback option type:" +
-                           str(self._optionType))
+            raise TuringError("Unknown lookback option type:" +
+                              str(self._optionType))
 
         return v
 
 ###############################################################################
 
     def valueMC(self,
-                valueDate: FinDate,
+                valueDate: TuringDate,
                 spotFXRate: float,  # FORDOM
-                domesticCurve: FinDiscountCurve,
-                foreignCurve: FinDiscountCurve,
+                domesticCurve: TuringDiscountCurve,
+                foreignCurve: TuringDiscountCurve,
                 volatility: float,
                 spotFXRateMinMax: float,
                 numPaths:int = 10000,
@@ -194,15 +194,15 @@ class FinFXFixedLookbackOption():
         smin = 0.0
         smax = 0.0
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             smax = spotFXRateMinMax
             if smax < S0:
-                raise FinError(
+                raise TuringError(
                     "Smax must be greater than or equal to the stock price.")
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             smin = spotFXRateMinMax
             if smin > S0:
-                raise FinError(
+                raise TuringError(
                     "Smin must be less than or equal to the stock price.")
 
         model = FinGBMProcess()
@@ -219,18 +219,18 @@ class FinFXFixedLookbackOption():
         numPaths = 2 * numPaths
         payoff = np.zeros(numPaths)
 
-        if optionType == FinOptionTypes.EUROPEAN_CALL:
+        if optionType == TuringOptionTypes.EUROPEAN_CALL:
             SMax = np.max(Sall, axis=1)
             smaxs = np.ones(numPaths) * smax
             payoff = np.maximum(SMax - k, 0.0)
             payoff = np.maximum(payoff, smaxs - k)
-        elif optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif optionType == TuringOptionTypes.EUROPEAN_PUT:
             SMin = np.min(Sall, axis=1)
             smins = np.ones(numPaths) * smin
             payoff = np.maximum(k - SMin, 0.0)
             payoff = np.maximum(payoff, k - smins)
         else:
-            raise FinError("Unknown lookback option type:" + str(optionType))
+            raise TuringError("Unknown lookback option type:" + str(optionType))
 
         v = payoff.mean() * exp(-rd*t)
         return v

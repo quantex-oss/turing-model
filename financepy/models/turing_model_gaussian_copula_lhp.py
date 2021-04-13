@@ -9,7 +9,7 @@ import numpy as np
 
 from ..finutils.turing_math import N
 from ..finutils.turing_math import normpdf, norminvcdf, M
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 
 ###############################################################################
 
@@ -30,7 +30,7 @@ def trSurvProbLHP(k1,
         return 0.0
 
     if k1 >= k2:
-        raise FinError("K1 >= K2")
+        raise TuringError("K1 >= K2")
 
     p = 0.0
     portfolioEL = 0.0
@@ -214,7 +214,7 @@ def LHPAnalyticalDensity(k, p, r, beta):
 def ExpMinLK(k, p, r, n, beta):
 
     if abs(beta) > 1.0:
-        raise FinError("Beta > 100%")
+        raise TuringError("Beta > 100%")
 
     if abs(beta) < 1e-10:
         beta = 1e-10

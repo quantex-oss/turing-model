@@ -2,14 +2,14 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 
 ###############################################################################
 
 from enum import Enum
 
 
-class FinFrequencyTypes(Enum):
+class TuringFrequencyTypes(Enum):
     SIMPLE = 0
     ANNUAL = 1
     SEMI_ANNUAL = 2
@@ -21,26 +21,26 @@ class FinFrequencyTypes(Enum):
 ###############################################################################
 
 
-def FinFrequency(freqType):
+def TuringFrequency(freqType):
     ''' This is a function that takes in a Frequency Type and returns an
     integer for the number of times a year a payment occurs.'''
-    if isinstance(freqType, FinFrequencyTypes) is False:
-        print("FinFrequency:", freqType)
-        raise FinError("Unknown frequency type")
+    if isinstance(freqType, TuringFrequencyTypes) is False:
+        print("TuringFrequency:", freqType)
+        raise TuringError("Unknown frequency type")
 
-    if freqType == FinFrequencyTypes.CONTINUOUS:
+    if freqType == TuringFrequencyTypes.CONTINUOUS:
         return -1
-    elif freqType == FinFrequencyTypes.SIMPLE:
+    elif freqType == TuringFrequencyTypes.SIMPLE:
         return 0
-    elif freqType == FinFrequencyTypes.ANNUAL:
+    elif freqType == TuringFrequencyTypes.ANNUAL:
         return 1
-    elif freqType == FinFrequencyTypes.SEMI_ANNUAL:
+    elif freqType == TuringFrequencyTypes.SEMI_ANNUAL:
         return 2
-    elif freqType == FinFrequencyTypes.TRI_ANNUAL:
+    elif freqType == TuringFrequencyTypes.TRI_ANNUAL:
         return 3
-    elif freqType == FinFrequencyTypes.QUARTERLY:
+    elif freqType == TuringFrequencyTypes.QUARTERLY:
         return 4
-    elif freqType == FinFrequencyTypes.MONTHLY:
+    elif freqType == TuringFrequencyTypes.MONTHLY:
         return 12
 
 ###############################################################################

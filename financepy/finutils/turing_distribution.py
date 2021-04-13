@@ -4,18 +4,18 @@
 
 
 import numpy as np
-from .turing_error import FinError
+from .turing_error import TuringError
 
 
-class FinDistribution():
+class TuringDistribution():
     ''' Container class for a probability density function. ''' 
     
     def __init__(self, x, y):
-        ''' Initialise FinDistribution with x values and associated vector of 
+        ''' Initialise TuringDistribution with x values and associated vector of
         density times dx values. '''
 
         if len(x) != len(y):
-            raise FinError("Length of x and y not the same")
+            raise TuringError("Length of x and y not the same")
 
         self._x = np.array(x)
         self._densitydx = np.array(y)

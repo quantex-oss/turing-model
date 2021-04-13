@@ -9,18 +9,18 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_date import TuringDate
 from financepy.models.turing_model_rates_hw import FinModelRatesHW, FinHWEuropeanCalcType
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.products.bonds.turing_bond import FinBond
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.products.bonds.turing_bond import TuringBond
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
 from financepy.finutils.turing_global_variables import gDaysInYear
 from financepy.finutils.turing_helper_functions import printTree
-from financepy.finutils.turing_global_types import FinExerciseTypes
+from financepy.finutils.turing_global_types import TuringExerciseTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -34,8 +34,8 @@ def test_HullWhiteExampleOne():
     zeros = np.array(zeros)
     dfs = np.exp(-zeros*times)
 
-    startDate = FinDate(1, 12, 2019)
-    endDate = FinDate(1, 12, 2022)
+    startDate = TuringDate(1, 12, 2019)
+    endDate = TuringDate(1, 12, 2022)
     sigma = 0.01
     a = 0.1
     numTimeSteps = 3
@@ -65,7 +65,7 @@ def test_HullWhiteExampleTwo():
     zeros = np.array(zeroRates) / 100.0
     dfs = np.exp(-zeros*times)
 
-    startDate = FinDate(1, 12, 2019)
+    startDate = TuringDate(1, 12, 2019)
     sigma = 0.01
     a = 0.1
     strike = 63.0
@@ -124,14 +124,14 @@ def test_HullWhiteExampleTwo():
 def test_HullWhiteBondOption():
     # Valuation of a European option on a coupon bearing bond
 
-    settlementDate = FinDate(1, 12, 2019)
-    issueDate = FinDate(1, 12, 2018)
+    settlementDate = TuringDate(1, 12, 2019)
+    issueDate = TuringDate(1, 12, 2018)
     expiryDate = settlementDate.addTenor("18m")
     maturityDate = settlementDate.addTenor("10Y")
     coupon = 0.05
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
-    bond = FinBond(issueDate, maturityDate, coupon, freqType, accrualType)
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
+    bond = TuringBond(issueDate, maturityDate, coupon, freqType, accrualType)
 
     couponTimes = []
     couponFlows = []
@@ -185,7 +185,7 @@ def test_HullWhiteBondOption():
         model = FinModelRatesHW(sigma, a, numTimeSteps, FinHWEuropeanCalcType.EXPIRY_ONLY)
         model.buildTree(texp, times, dfs)
 
-        exerciseType = FinExerciseTypes.EUROPEAN
+        exerciseType = TuringExerciseTypes.EUROPEAN
 
         v1 = model.bondOption(texp, strikePrice, face,
                               couponTimes, couponFlows, exerciseType)
@@ -218,13 +218,13 @@ def test_HullWhiteBondOption():
 def test_HullWhiteCallableBond():
     # Valuation of a European option on a coupon bearing bond
 
-    settlementDate = FinDate(1, 12, 2019)
-    issueDate = FinDate(1, 12, 2018)
+    settlementDate = TuringDate(1, 12, 2019)
+    issueDate = TuringDate(1, 12, 2018)
     maturityDate = settlementDate.addTenor("10Y")
     coupon = 0.05
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
-    bond = FinBond(issueDate, maturityDate, coupon, freqType, accrualType)
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
+    bond = TuringBond(issueDate, maturityDate, coupon, freqType, accrualType)
 
     couponTimes = []
     couponFlows = []
@@ -279,7 +279,7 @@ def test_HullWhiteCallableBond():
     ###########################################################################
 
     tmat = (maturityDate - settlementDate) / gDaysInYear
-    curve = FinDiscountCurveFlat(settlementDate, 0.05, FinFrequencyTypes.CONTINUOUS)
+    curve = TuringDiscountCurveFlat(settlementDate, 0.05, TuringFrequencyTypes.CONTINUOUS)
 
     dfs = []
     times = []

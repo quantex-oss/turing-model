@@ -5,14 +5,14 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_date import TuringDate
 
-from financepy.products.bonds.turing_bond_mortgage import FinBondMortgage
-from financepy.products.bonds.turing_bond_mortgage import FinBondMortgageTypes
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.bonds.turing_bond_mortgage import TuringBondMortgage
+from financepy.products.bonds.turing_bond_mortgage import TuringBondMortgageTypes
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 
 ###############################################################################
@@ -21,12 +21,12 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 def test_FinBondMortgage():
 
     principal = 130000
-    startDate = FinDate(23, 2, 2018)
+    startDate = TuringDate(23, 2, 2018)
     endDate = startDate.addTenor("10Y")
-    mortgage = FinBondMortgage(startDate, endDate, principal)
+    mortgage = TuringBondMortgage(startDate, endDate, principal)
 
     rate = 0.035
-    mortgage.generateFlows(rate, FinBondMortgageTypes.REPAYMENT)
+    mortgage.generateFlows(rate, TuringBondMortgageTypes.REPAYMENT)
 
     numFlows = len(mortgage._schedule._adjustedDates)
 
@@ -40,7 +40,7 @@ def test_FinBondMortgage():
                         mortgage._principalRemaining[i],
                         mortgage._totalFlows[i])
 
-    mortgage.generateFlows(rate, FinBondMortgageTypes.INTEREST_ONLY)
+    mortgage.generateFlows(rate, TuringBondMortgageTypes.INTEREST_ONLY)
 
     testCases.header("PAYMENT DATE", "INTEREST", "PRINCIPAL", "OUTSTANDING",
                      "TOTAL")

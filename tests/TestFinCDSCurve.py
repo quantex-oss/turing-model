@@ -10,28 +10,28 @@ sys.path.append("..")
 from financepy.products.credit.turing_cds import FinCDS
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
 from financepy.products.credit.turing_cds_curve import FinCDSCurve
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_types import TuringSwapTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 
 def test_FinCDSCurve():
 
-    curveDate = FinDate(20, 12, 2018)
+    curveDate = TuringDate(20, 12, 2018)
 
     swaps = []
     depos = []
     fras = []
 
-    fixedDCC = FinDayCountTypes.ACT_365F
-    fixedFreq = FinFrequencyTypes.SEMI_ANNUAL
+    fixedDCC = TuringDayCountTypes.ACT_365F
+    fixedFreq = TuringFrequencyTypes.SEMI_ANNUAL
     fixedCoupon = 0.05
 
     for i in range(1, 11):
@@ -39,13 +39,13 @@ def test_FinCDSCurve():
         maturityDate = curveDate.addMonths(12 * i)
         swap = FinIborSwap(curveDate,
                            maturityDate,
-                           FinSwapTypes.PAY,
+                           TuringSwapTypes.PAY,
                            fixedCoupon,
                            fixedFreq,
                            fixedDCC)
         swaps.append(swap)
 
-    libor_curve = FinIborSingleCurve(curveDate, depos, fras, swaps)
+    libor_curve = TuringIborSingleCurve(curveDate, depos, fras, swaps)
 
     cdsContracts = []
 

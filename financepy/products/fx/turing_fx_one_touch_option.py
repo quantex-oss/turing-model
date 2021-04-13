@@ -7,17 +7,17 @@ import numpy as np
 from enum import Enum
 
 
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_error import FinError
-from ...products.equity.turing_equity_option import FinEquityOption
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...models.turing_gbm_process import getPaths
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+from financepy.products.equity.turing_equity_option import TuringEquityOption
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.models.turing_gbm_process import getPaths
 
 from numba import njit
 
-from ...finutils.turing_math import NVect
+from financepy.finutils.turing_math import NVect
 
 ###############################################################################
 # TODO: Implement Sobol random numbers
@@ -25,7 +25,7 @@ from ...finutils.turing_math import NVect
 ###############################################################################
 
 
-class FinTouchOptionPayoffTypes(Enum):
+class TuringTouchOptionPayoffTypes(Enum):
     DOWN_AND_IN_CASH_AT_HIT = 1,         # S0>H pays $1 at hit time from above
     UP_AND_IN_CASH_AT_HIT = 2,           # S0<H pays $1 at hit time from below
     DOWN_AND_IN_CASH_AT_EXPIRY = 3,      # S0>H pays $1 at T if hit from below
@@ -136,8 +136,8 @@ def _barrierPayAssetAtExpiryUpOut(s, H):
 ###############################################################################
 
 
-class FinFXOneTouchOption(FinEquityOption):
-    ''' A FinFXOneTouchOption is an option in which the buyer receives one
+class TuringFXOneTouchOption(TuringEquityOption):
+    ''' A TuringFXOneTouchOption is an option in which the buyer receives one
     unit of currency if the FX rate touches a barrier at any time
     before the option expiry date and zero otherwise. The single barrier 
     payoff must define whether the option pays or cancels if the barrier is 
@@ -145,8 +145,8 @@ class FinFXOneTouchOption(FinEquityOption):
     All of these variants are members of the FinTouchOptionTypes type. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
-                 optionType: FinTouchOptionPayoffTypes,
+                 expiryDate: TuringDate,
+                 optionType: TuringTouchOptionPayoffTypes,
                  barrierFXRate: float,
                  paymentSize: float = 1.0):
         ''' Create the one touch option by defining its expiry date and the
@@ -162,10 +162,10 @@ class FinFXOneTouchOption(FinEquityOption):
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               spotFXRate: (float, np.ndarray),
-              domCurve: FinDiscountCurve,
-              forCurve: FinDiscountCurve,
+              domCurve: TuringDiscountCurve,
+              forCurve: TuringDiscountCurve,
               model):
         ''' FX One-Touch Option valuation using the Black-Scholes model
         assuming a continuous (American) barrier from value date to expiry.
@@ -176,7 +176,7 @@ class FinFXOneTouchOption(FinEquityOption):
         print("USE WITH CAUTION. MORE TESTING REQUIRED.")
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after expiry date.")
+            raise TuringError("Value date after expiry date.")
 
         t = (self._expiryDate - valueDate) / gDaysInYear
         t = max(t, 1e-6)
@@ -206,11 +206,11 @@ class FinFXOneTouchOption(FinEquityOption):
             print("mu", mu)
             print("lam", lam)
 
-        if self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_HIT:
+        if self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_HIT:
             # HAUG 1
 
             if np.any(s0 <= H):
-                raise FinError("FX Rate is currently below barrier.")
+                raise TuringError("FX Rate is currently below barrier.")
 
             eta = 1.0
             z = np.log(H/s0) / v / sqrtT + lam * v * sqrtT
@@ -219,11 +219,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (A5_1 + A5_2) * K
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_HIT:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_HIT:
             # HAUG 2
 
             if np.any(s0 >= H):
-                raise FinError("FX Rate is currently above barrier.")
+                raise TuringError("FX Rate is currently above barrier.")
 
             eta = -1.0
             z = np.log(H/s0) / v / sqrtT + lam * v * sqrtT
@@ -232,11 +232,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (A5_1 + A5_2) * K
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_HIT:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_HIT:
             # HAUG 3
 
             if np.any(s0 <= H):
-                raise FinError("FX Rate is currently below barrier.")
+                raise TuringError("FX Rate is currently below barrier.")
 
             eta = 1.0
             K = H
@@ -246,11 +246,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (A5_1 + A5_2) * K
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_HIT:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_HIT:
             # HAUG 4
 
             if np.any(s0 >= H):
-                raise FinError("FX Rate is currently above barrier.")
+                raise TuringError("FX Rate is currently above barrier.")
 
             eta = -1.0
             K = H
@@ -260,11 +260,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (A5_1 + A5_2) * K
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_EXPIRY:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_EXPIRY:
             # HAUG 5
 
             if np.any(s0 <= H):
-                raise FinError("FX Rate is currently below barrier.")
+                raise TuringError("FX Rate is currently below barrier.")
 
             eta = +1.0
             phi = -1.0
@@ -275,11 +275,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (B2 + B4)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_EXPIRY:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_EXPIRY:
             # HAUG 6
 
             if np.any(s0 >= H):
-                raise FinError("FX Rate is currently above barrier.")
+                raise TuringError("FX Rate is currently above barrier.")
 
             eta = -1.0
             phi = +1.0
@@ -291,11 +291,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (B2 + B4)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_EXPIRY:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_EXPIRY:
             # HAUG 7
 
             if np.any(s0 <= H):
-                raise FinError("FX Rate is currently below barrier.")
+                raise TuringError("FX Rate is currently below barrier.")
 
             eta = +1.0
             phi = -1.0
@@ -307,11 +307,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (A2 + A4)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_EXPIRY:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_EXPIRY:
             # HAUG 8
 
             if np.any(s0 >= H):
-                raise FinError("FX Rate is currently above barrier.")
+                raise TuringError("FX Rate is currently above barrier.")
 
             eta = -1.0
             phi = +1.0
@@ -323,11 +323,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (A2 + A4)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_OUT_CASH_OR_NOTHING:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_OUT_CASH_OR_NOTHING:
             # HAUG 9
 
             if np.any(s0 <= H):
-                raise FinError("FX Rate is currently below barrier.")
+                raise TuringError("FX Rate is currently below barrier.")
 
             eta = +1.0
             phi = +1.0
@@ -339,11 +339,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (B2 - B4)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_OUT_CASH_OR_NOTHING:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_OUT_CASH_OR_NOTHING:
             # HAUG 10
 
             if np.any(s0 >= H):
-                raise FinError("FX Rate is currently above barrier.")
+                raise TuringError("FX Rate is currently above barrier.")
 
             eta = -1.0
             phi = -1.0
@@ -355,11 +355,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (B2 - B4)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_OUT_ASSET_OR_NOTHING:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_OUT_ASSET_OR_NOTHING:
             # HAUG 11
 
             if np.any(s0 <= H):
-                raise FinError("FX Rate is currently below barrier.")
+                raise TuringError("FX Rate is currently below barrier.")
 
             eta = +1.0
             phi = +1.0
@@ -372,11 +372,11 @@ class FinFXOneTouchOption(FinEquityOption):
             v = (A2 - A4)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_OUT_ASSET_OR_NOTHING:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_OUT_ASSET_OR_NOTHING:
             # HAUG 12
 
             if np.any(s0 >= H):
-                raise FinError("FX Rate is currently above barrier.")
+                raise TuringError("FX Rate is currently above barrier.")
 
             eta = -1.0
             phi = -1.0
@@ -390,17 +390,17 @@ class FinFXOneTouchOption(FinEquityOption):
             return v
 
         else:
-            raise FinError("Unknown option type.")
+            raise TuringError("Unknown option type.")
 
         return v
 
 ###############################################################################
 
     def valueMC(self,
-                valueDate: FinDate,
+                valueDate: TuringDate,
                 stockPrice: float,
-                domCurve: FinDiscountCurve,
-                forCurve: FinDiscountCurve,
+                domCurve: TuringDiscountCurve,
+                forCurve: TuringDiscountCurve,
                 model,
                 numPaths: int = 10000,
                 numStepsPerYear: int = 252,
@@ -432,123 +432,123 @@ class FinFXOneTouchOption(FinEquityOption):
 
         v = 0.0
 
-        if self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_HIT:
+        if self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_HIT:
             # HAUG 1
 
             if s0 <= H:
-                raise FinError("Barrier has ALREADY been crossed.")
+                raise TuringError("Barrier has ALREADY been crossed.")
 
             v = _barrierPayOneAtHitPVDown(s, H, rd, dt)
             v = v * X
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_HIT:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_HIT:
             # HAUG 2
 
             if s0 >= H:
-                raise FinError("Barrier has ALREADY been crossed.")
+                raise TuringError("Barrier has ALREADY been crossed.")
 
             v = _barrierPayOneAtHitPVUp(s, H, rd, dt)
             v = v * X
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_HIT:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_HIT:
             # HAUG 3
 
             if s0 <= H:
-                raise FinError("Stock price is currently below barrier.")
+                raise TuringError("Stock price is currently below barrier.")
 
             v = _barrierPayOneAtHitPVDown(s, H, rd, dt) * H
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_HIT:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_HIT:
             # HAUG 4
 
             if s0 >= H:
-                raise FinError("Stock price is currently below barrier.")
+                raise TuringError("Stock price is currently below barrier.")
 
             v = _barrierPayOneAtHitPVUp(s, H, rd, dt) * H
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_EXPIRY:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_EXPIRY:
             # HAUG 5
 
             if s0 <= H:
-                raise FinError("Barrier has  ALREADY been crossed.")
+                raise TuringError("Barrier has  ALREADY been crossed.")
 
             v = _barrierPayOneAtHitPVDown(s, H, 0.0, dt)
             v = v * X * np.exp(-rd*t)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_EXPIRY:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_EXPIRY:
             # HAUG 6
 
             if s0 >= H:
-                raise FinError("Barrier has ALREADY been crossed.")
+                raise TuringError("Barrier has ALREADY been crossed.")
 
             v = _barrierPayOneAtHitPVUp(s, H, 0.0, dt)
             v = v * X * np.exp(-rd*t)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_EXPIRY:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_EXPIRY:
             # HAUG 7
 
             if s0 <= H:
-                raise FinError("Stock price is currently below barrier.")
+                raise TuringError("Stock price is currently below barrier.")
 
             v = _barrierPayOneAtHitPVDown(s, H, 0.0, dt) * H
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_EXPIRY:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_EXPIRY:
             # HAUG 8
 
             if s0 >= H:
-                raise FinError("Stock price is currently below barrier.")
+                raise TuringError("Stock price is currently below barrier.")
 
             v = _barrierPayOneAtHitPVUp(s, H, 0.0, dt) * H
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_OUT_CASH_OR_NOTHING:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_OUT_CASH_OR_NOTHING:
             # HAUG 9
 
             if s0 <= H:
-                raise FinError("Barrier has ALREADY been crossed.")
+                raise TuringError("Barrier has ALREADY been crossed.")
 
             v = 1.0 - _barrierPayOneAtHitPVDown(s, H, 0.0, dt)
             v = v * X * np.exp(-rd*t)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_OUT_CASH_OR_NOTHING:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_OUT_CASH_OR_NOTHING:
             # HAUG 10
 
             if s0 >= H:
-                raise FinError("Barrier has ALREADY been crossed.")
+                raise TuringError("Barrier has ALREADY been crossed.")
 
             v = 1.0 - _barrierPayOneAtHitPVUp(s, H, 0.0, dt)
             v = v * X * np.exp(-rd*t)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.DOWN_AND_OUT_ASSET_OR_NOTHING:
+        elif self._optionType == TuringTouchOptionPayoffTypes.DOWN_AND_OUT_ASSET_OR_NOTHING:
             # HAUG 11
 
             if s0 <= H:
-                raise FinError("Stock price is currently below barrier.")
+                raise TuringError("Stock price is currently below barrier.")
 
             v = _barrierPayAssetAtExpiryDownOut(s, H)
             v = v * np.exp(-rd*t)
             return v
 
-        elif self._optionType == FinTouchOptionPayoffTypes.UP_AND_OUT_ASSET_OR_NOTHING:
+        elif self._optionType == TuringTouchOptionPayoffTypes.UP_AND_OUT_ASSET_OR_NOTHING:
             # HAUG 12
 
             if s0 >= H:
-                raise FinError("Stock price is currently below barrier.")
+                raise TuringError("Stock price is currently below barrier.")
 
             v = _barrierPayAssetAtExpiryUpOut(s, H)
             v = v * np.exp(-rd*t)
             return v
         else:
-            raise FinError("Unknown option type.")
+            raise TuringError("Unknown option type.")
 
         return v
 

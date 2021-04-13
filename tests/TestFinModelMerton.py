@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from financepy.models.turing_model_merton_credit import FinModelMertonCredit
-from financepy.models.turing_model_merton_credit_mkt import FinModelMertonCreditMkt
+from financepy.models.turing_model_merton_credit import TuringModelMertonCredit
+from financepy.models.turing_model_merton_credit_mkt import TuringModelMertonCreditMkt
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -24,12 +24,12 @@ def test_FinModelMertonCredit():
     assetGrowthRate = [0.0306, 0.03, 0.031, 0.0302, 0.0305]
     timeToMaturity = 1.0 # np.linspace(0.1, 10, 100)
 
-    model = FinModelMertonCreditMkt(equityValue,
-                                    bondFace,
-                                    timeToMaturity,
-                                    riskFreeRate,
-                                    assetGrowthRate,
-                                    equityVol)
+    model = TuringModelMertonCreditMkt(equityValue,
+                                       bondFace,
+                                       timeToMaturity,
+                                       riskFreeRate,
+                                       assetGrowthRate,
+                                       equityVol)
 
     testCases.header("MERTON MARKET MODEL", "VALUE")    
     testCases.print("ASSET VALUE", model._A)
@@ -46,12 +46,12 @@ def test_FinModelMertonCredit():
     assetValue = model._A
     assetVol = model._vA
     
-    model = FinModelMertonCredit(assetValue,
-                                 bondFace,
-                                 timeToMaturity,
-                                 riskFreeRate,
-                                 assetGrowthRate,
-                                 assetVol)
+    model = TuringModelMertonCredit(assetValue,
+                                    bondFace,
+                                    timeToMaturity,
+                                    riskFreeRate,
+                                    assetGrowthRate,
+                                    assetVol)
 
     testCases.header("BASIC MERTON MODEL", "VALUE")    
 
@@ -74,12 +74,12 @@ def test_FinModelMertonCredit():
     assetGrowthRate = 0.05
     assetVol = 0.20
 
-    model = FinModelMertonCredit(assetValue,
-                                 bondFace,
-                                 timeToMaturity,
-                                 riskFreeRate,
-                                 assetGrowthRate,
-                                 assetVol)
+    model = TuringModelMertonCredit(assetValue,
+                                    bondFace,
+                                    timeToMaturity,
+                                    riskFreeRate,
+                                    assetGrowthRate,
+                                    assetVol)
 
     testCases.header("BASIC MERTON MODEL", "VALUE")    
 

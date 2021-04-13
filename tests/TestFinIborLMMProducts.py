@@ -7,20 +7,20 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.market.volatility.turing_ibor_cap_vol_curve import FinIborCapVolCurve
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
 from financepy.models.turing_model_black import FinModelBlack
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.products.rates.turing_ibor_swaption import FinSwapTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.products.rates.turing_ibor_swaption import TuringSwapTypes
 from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
-from financepy.finutils.turing_global_types import FinCapFloorTypes
+from financepy.finutils.turing_global_types import TuringCapFloorTypes
 from financepy.products.rates.turing_ibor_lmm_products import FinIborLMMProducts
 from financepy.products.rates.turing_ibor_cap_floor import FinIborCapFloor
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 # This is in progress and needs to be completed
 
@@ -32,16 +32,16 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 
 #     startYear = 2020
 #     endYear = 2030
-#     valuationDate = FinDate(1, 1, startYear)
-#     exerciseDate = FinDate(1, 1, 2023)
+#     valuationDate = TuringDate(1, 1, startYear)
+#     exerciseDate = TuringDate(1, 1, 2023)
 #     settlementDate = valuationDate
-#     maturityDate = FinDate(1, 1, endYear)
+#     maturityDate = TuringDate(1, 1, endYear)
 #     fixedCoupon = 0.04
 
 #     # DEFINE THE DISCOUNT CURVE
-#     discountCurve = FinDiscountCurveFlat(valuationDate,
+#     discountCurve = TuringDiscountCurveFlat(valuationDate,
 #                                          0.04,
-#                                          FinFrequencyTypes.ANNUAL)
+#                                          TuringFrequencyTypes.ANNUAL)
 
 #     swaptionVol = 15.54
 
@@ -50,8 +50,8 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 #                                      maturityDate,
 #                                      FinIborSwaptionTypes.PAY,
 #                                      fixedCoupon,
-#                                      FinFrequencyTypes.ANNUAL,
-#                                      FinDayCountTypes.ACT_360)
+#                                      TuringFrequencyTypes.ANNUAL,
+#                                      TuringDayCountTypes.ACT_360)
 
 #     model = FinModelBlack(swaptionVol/100.0)
 #     v_BLK = liborSwaption.value(valuationDate, discountCurve, model)
@@ -100,18 +100,18 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 #         swapVolSim1F = LMMSimSwaptionVol(a, b, fwd0, fwds1F, taus)
 #         swapVolSimNF = LMMSimSwaptionVol(a, b, fwd0, fwdsNF, taus)
 
-#         valuationDate = FinDate(1, 1, 2010)
-#         liborCurve = FinDiscountCurveFlat(valuationDate, r,
-#                                           FinFrequencyTypes.QUARTERLY)
+#         valuationDate = TuringDate(1, 1, 2010)
+#         liborCurve = TuringDiscountCurveFlat(valuationDate, r,
+#                                           TuringFrequencyTypes.QUARTERLY)
 #         settlementDate = valuationDate
 #         exerciseDate = settlementDate.addMonths(a*3)
 #         maturityDate = settlementDate.addMonths(b*3)
 
 #         fixedCoupon = strike
-#         fixedFrequencyType = FinFrequencyTypes.QUARTERLY
-#         fixedDayCountType = FinDayCountTypes.ACT_ACT_ISDA
-#         floatFrequencyType = FinFrequencyTypes.QUARTERLY
-#         floatDayCountType = FinDayCountTypes.ACT_ACT_ISDA
+#         fixedFrequencyType = TuringFrequencyTypes.QUARTERLY
+#         fixedDayCountType = TuringDayCountTypes.ACT_ACT_ISDA
+#         floatFrequencyType = TuringFrequencyTypes.QUARTERLY
+#         floatDayCountType = TuringDayCountTypes.ACT_ACT_ISDA
 #         notional = 1.0
 
 #         # Pricing a PAY
@@ -146,17 +146,17 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 #     # years which in our convention means we are modelling 10 forwards
 #     startYear = 2020
 #     endYear = 2030
-#     valuationDate = FinDate(1, 1, startYear)
+#     valuationDate = TuringDate(1, 1, startYear)
 #     settlementDate = valuationDate
-#     capMaturityDate = FinDate(1, 1, endYear)
-#     freqType = FinFrequencyTypes.ANNUAL
-#     dayCountType = FinDayCountTypes.ACT_360
+#     capMaturityDate = TuringDate(1, 1, endYear)
+#     freqType = TuringFrequencyTypes.ANNUAL
+#     dayCountType = TuringDayCountTypes.ACT_360
 #     capFloorRate = 0.04
 
 #     # DEFINE THE DISCOUNT CURVE
-#     discountCurve = FinDiscountCurveFlat(valuationDate,
+#     discountCurve = TuringDiscountCurveFlat(valuationDate,
 #                                          0.04,
-#                                          FinFrequencyTypes.ANNUAL)
+#                                          TuringFrequencyTypes.ANNUAL)
 
 #     capVol = 15.54
 
@@ -165,8 +165,8 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 #                                 FinIborCapFloorTypes.CAP,
 #                                 capFloorRate,
 #                                 None,
-#                                 FinFrequencyTypes.ANNUAL,
-#                                 FinDayCountTypes.ACT_360)
+#                                 TuringFrequencyTypes.ANNUAL,
+#                                 TuringDayCountTypes.ACT_360)
 
 #     model = FinModelBlack(capVol/100.0)
 #     v_BLK = liborCap.value(valuationDate, discountCurve, model)
@@ -197,8 +197,8 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 #     capVolatilities[0] = 0.0
 #     capVolatilities = np.array(capVolatilities)/100.0
 
-#     dayCountType = FinDayCountTypes.ACT_ACT_ISDA
-#     volCurve = FinIborCapVolCurve(valuationDate,
+#     dayCountType = TuringDayCountTypes.ACT_ACT_ISDA
+#     volCurve = TuringIborCapVolCurve(valuationDate,
 #                                    capVolDates,
 #                                    capVolatilities,
 #                                    dayCountType)
@@ -226,8 +226,8 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 #                                           capMaturityDate,
 #                                           FinIborCapFloorTypes.CAP,
 #                                           capFloorRate,
-#                                           FinFrequencyTypes.ANNUAL,
-#                                           FinDayCountTypes.ACT_360)
+#                                           TuringFrequencyTypes.ANNUAL,
+#                                           TuringDayCountTypes.ACT_360)
 
 #         err = v_lmm - v_BLK
 #         testCases.print(numPaths, v_lmm, v_BLK, err)

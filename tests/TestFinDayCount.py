@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##############################################################################
 
@@ -18,14 +18,14 @@ def test_FinDayCount():
 
     testCases.header("DAY_COUNT_METHOD", "START", "END", "ALPHA")
 
-    finFreq = FinFrequencyTypes.ANNUAL
+    finFreq = TuringFrequencyTypes.ANNUAL
 
-    for dayCountMethod in FinDayCountTypes:
+    for dayCountMethod in TuringDayCountTypes:
 
-        startDate = FinDate(1, 1, 2019)
+        startDate = TuringDate(1, 1, 2019)
         nextDate = startDate
         numDays = 20
-        dayCount = FinDayCount(dayCountMethod)
+        dayCount = TuringDayCount(dayCountMethod)
 
         for _ in range(0, numDays):
             nextDate = nextDate.addDays(7)

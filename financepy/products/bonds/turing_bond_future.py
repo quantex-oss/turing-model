@@ -2,10 +2,10 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ###############################################################################
 
-from ...finutils.turing_global_variables import gDaysInYear
-from ...products.bonds.turing_bond import FinBond
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.products.bonds.turing_bond import TuringBond
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 
 # TODO: Examine other exchange conventions.
@@ -13,14 +13,14 @@ from ...finutils.turing_helper_functions import labelToString, checkArgumentType
 ###############################################################################
 
 
-class FinBondFuture(object):
+class TuringBondFuture(object):
     ''' Class for managing futures contracts on government bonds that follows
     CME conventions and related analytics. '''
 
     def __init__(self,
                  tickerName: str,
-                 firstDeliveryDate: FinDate,
-                 lastDeliveryDate: FinDate,
+                 firstDeliveryDate: TuringDate,
+                 lastDeliveryDate: TuringDate,
                  contractSize: int,
                  coupon: float):
 
@@ -35,7 +35,7 @@ class FinBondFuture(object):
 ###############################################################################
 
     def conversionFactor(self,
-                         bond: FinBond):
+                         bond: TuringBond):
         ''' Determine the conversion factor for a specific bond using CME
         convention. To do this we need to know the contract standard coupon and
         must round the bond maturity (starting its life on the first delivery
@@ -51,14 +51,14 @@ class FinBondFuture(object):
         newMat = self._firstDeliveryDate.addMonths(roundedTmatInMonths)
         face = 1.0
 
-        issueDate = FinDate(newMat._d, newMat._m, 2000)
+        issueDate = TuringDate(newMat._d, newMat._m, 2000)
 
-        newBond = FinBond(issueDate,
-                          newMat,
-                          bond._coupon,
-                          bond._freqType,
-                          bond._accrualType,
-                          face)
+        newBond = TuringBond(issueDate,
+                             newMat,
+                             bond._coupon,
+                             bond._freqType,
+                             bond._accrualType,
+                             face)
 
         p = newBond.cleanPriceFromYTM(self._firstDeliveryDate,
                                       self._coupon)
@@ -70,7 +70,7 @@ class FinBondFuture(object):
 ###############################################################################
 
     def principalInvoicePrice(self,
-                              bond: FinBond,
+                              bond: TuringBond,
                               futuresPrice: float):
         ' The principal invoice price as defined by the CME.'''
         cf = self.conversionFactor(bond)
@@ -81,8 +81,8 @@ class FinBondFuture(object):
 ###############################################################################
 
     def totalInvoiceAmount(self,
-                           settlementDate: FinDate,
-                           bond: FinBond,
+                           settlementDate: TuringDate,
+                           bond: TuringBond,
                            futuresPrice: float):
         ' The total invoice amount paid to take delivery of bond. '
 
@@ -120,7 +120,7 @@ class FinBondFuture(object):
 ###############################################################################
 
     def deliveryGainLoss(self,
-                         bond: FinBond,
+                         bond: TuringBond,
                          bondCleanPrice: float,
                          futuresPrice: float):
         ''' Determination of what is received when the bond is delivered. '''

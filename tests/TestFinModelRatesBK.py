@@ -8,18 +8,18 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.market.curves.turing_discount_curve import FinDiscountCurve
-from financepy.products.bonds.turing_bond import FinBond
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.products.bonds.turing_bond import TuringBond
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
 from financepy.finutils.turing_global_variables import gDaysInYear
 from financepy.finutils.turing_helper_functions import printTree
-from financepy.models.turing_model_rates_bk import FinModelRatesBK
-from financepy.finutils.turing_global_types import FinExerciseTypes
+from financepy.models.turing_model_rates_bk import TuringModelRatesBK
+from financepy.finutils.turing_global_types import TuringExerciseTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -33,13 +33,13 @@ def test_BKExampleOne():
     zeros = np.array(zeros)
     dfs = np.exp(-zeros*times)
 
-    startDate = FinDate(1, 12, 2019)
-    endDate = FinDate(1, 6, 2021)
+    startDate = TuringDate(1, 12, 2019)
+    endDate = TuringDate(1, 6, 2021)
     sigma = 0.25
     a = 0.22
     numTimeSteps = 3
     tmat = (endDate - startDate)/gDaysInYear
-    model = FinModelRatesBK(sigma, a, numTimeSteps)
+    model = TuringModelRatesBK(sigma, a, numTimeSteps)
     model.buildTree(tmat, times, dfs)
 
     # Agrees with Figure 28.10 - Not exact as we have dt not exactly 0.50
@@ -60,14 +60,14 @@ def test_BKExampleTwo():
     # This follows example in Fig 28.11 of John Hull's book but does not
     # have the exact same dt so there are some differences
 
-    settlementDate = FinDate(1, 12, 2019)
-    issueDate = FinDate(1, 12, 2018)
+    settlementDate = TuringDate(1, 12, 2019)
+    issueDate = TuringDate(1, 12, 2018)
     expiryDate = settlementDate.addTenor("18m")
     maturityDate = settlementDate.addTenor("10Y")
     coupon = 0.05
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
-    bond = FinBond(issueDate, maturityDate, coupon, freqType, accrualType)
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
+    bond = TuringBond(issueDate, maturityDate, coupon, freqType, accrualType)
 
     couponTimes = []
     couponFlows = []
@@ -99,7 +99,7 @@ def test_BKExampleTwo():
     times = np.linspace(0, tmat, 11)
     dates = settlementDate.addYears(times)
     dfs = np.exp(-0.05*times)
-    curve = FinDiscountCurve(settlementDate, dates, dfs)
+    curve = TuringDiscountCurve(settlementDate, dates, dfs)
 
     price = bond.cleanPriceFromDiscountCurve(settlementDate, curve)
     testCases.header("LABEL", "VALUE")
@@ -109,21 +109,21 @@ def test_BKExampleTwo():
     a = 0.05
     numTimeSteps = 26
 
-    model = FinModelRatesBK(sigma, a, numTimeSteps)
+    model = TuringModelRatesBK(sigma, a, numTimeSteps)
     model.buildTree(tmat, times, dfs)
-    exerciseType = FinExerciseTypes.AMERICAN
+    exerciseType = TuringExerciseTypes.AMERICAN
     v = model.bondOption(texp, strikePrice, face, couponTimes,
                          couponFlows, exerciseType)
 
     # Test convergence
     numStepsList = [100, 200, 300, 500, 1000]
-    exerciseType = FinExerciseTypes.AMERICAN
+    exerciseType = TuringExerciseTypes.AMERICAN
 
     testCases.header("TIMESTEPS", "TIME", "VALUE")
     treeVector = []
     for numTimeSteps in numStepsList:
         start = time.time()
-        model = FinModelRatesBK(sigma, a, numTimeSteps)
+        model = TuringModelRatesBK(sigma, a, numTimeSteps)
         model.buildTree(tmat, times, dfs)
         v = model.bondOption(texp, strikePrice,
                              face, couponTimes, couponFlows, exerciseType)

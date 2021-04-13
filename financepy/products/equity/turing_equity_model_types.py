@@ -2,12 +2,12 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_helper_functions import labelToString
 
 ###############################################################################
 
 
-class FinEquityModel(object):
+class TuringEquityModel(object):
     ''' This is a parent class for equity models. '''
 
     def __init__(self):
@@ -16,17 +16,17 @@ class FinEquityModel(object):
 ###############################################################################
 
 
-# class FinEquityModelBlackScholes(FinEquityModel):
-#     def __init__(self, 
-#                  volatility: float, 
+# class TuringEquityModelBlackScholes(TuringEquityModel):
+#     def __init__(self,
+#                  volatility: float,
 #                  implementation, parameters):
-
+#
 #         checkArgumentTypes(self.__init__, locals())
-
+#
 #         self._volatility = volatility
-#         self._implementation = implementation 
+#         self._implementation = implementation
 #         self._parameters = parameters
-
+#
 #     def __repr__(self):
 #         s = labelToString("OBJECT TYPE", type(self).__name__)
 #         s += labelToString("VOLATILITY", self._volatility)
@@ -37,9 +37,9 @@ class FinEquityModel(object):
 ###############################################################################
 
 
-class FinEquityModelHeston(FinEquityModel):
+class TuringEquityModelHeston(TuringEquityModel):
     def __init__(self, volatility, meanReversion):
-        self._parentType = FinEquityModel
+        self._parentType = TuringEquityModel
         self._volatility = volatility
         self._meanReversion = meanReversion
         self._implementation = 0

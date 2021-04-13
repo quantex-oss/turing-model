@@ -7,15 +7,15 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.market.curves.turing_discount_curve_poly import FinDiscountCurvePoly
-from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve_poly import TuringDiscountCurvePoly
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##############################################################################
 # TODO
-# Inherit from FinDiscountCurve and add df method
+# Inherit from TuringDiscountCurve and add df method
 # Put in a convention for the rate
 # Use Frequency object
 ##############################################################################
@@ -25,10 +25,10 @@ PLOT_GRAPHS = False
 def test_FinDiscountCurvePolynomial():
 
     times = np.linspace(0.00, 10.0, 21)
-    curveDate = FinDate(2, 2, 2019)
+    curveDate = TuringDate(2, 2, 2019)
     dates = curveDate.addYears(times)
     coeffs = [0.0004, -0.0001, 0.00000010]
-    curve1 = FinDiscountCurvePoly(curveDate, coeffs)
+    curve1 = TuringDiscountCurvePoly(curveDate, coeffs)
     zeros = curve1.zeroRate(dates)
     fwds = curve1.fwd(dates)
 

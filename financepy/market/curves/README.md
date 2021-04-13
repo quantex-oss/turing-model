@@ -7,7 +7,7 @@ These modules create a family of curve types related to the term structures of i
 ## Best Fit Bond Curves
 The first category are FinBondYieldCurves.
 
-### FinBondYieldCurve
+### TuringBondYieldCurve
 This module describes a curve that is fitted to bond yields calculated from bond market prices supplied by the user. The curve is not guaranteed to fit all of the bond prices exactly and a least squares approach is used. A number of fitting forms are provided which consist of 
 
 * Polynomial 
@@ -17,7 +17,7 @@ This module describes a curve that is fitted to bond yields calculated from bond
 
 This fitted curve cannot be used for pricing as yields assume a flat term structure. It can be used for fitting and interpolating yields off a nicely constructed yield curve interpolation curve.
 
-### FinCurveFitMethod
+### TuringCurveFitMethod
 This module sets out a range of curve forms that can be fitted to the bond yields. These includes a number of parametric curves that can be used to fit yield curves. These include:
 * Polynomials of any degree 
 * Nelson-Siegel functional form. 
@@ -27,19 +27,19 @@ This module sets out a range of curve forms that can be fitted to the bond yield
 ## Discount Curves
 These are curves which supply a discount factor that can be used to present-value future payments.
 
-### FinDiscountCurve
+### TuringDiscountCurve
 This is a curve made from a Numpy array of times and discount factor values that represents a discount curve. It also requires a specific interpolation scheme. A function is also provided to return a survival probability so that this class can also be used to handle term structures of survival probabilities. Other curves inherit from this in order to share common functionality.
 
-### FinDiscountCurveFlat
+### TuringDiscountCurveFlat
 This is a class that takes in a single flat rate. 
 
-### FinDiscountCurveNS
+### TuringDiscountCurveNS
 Implementation of the Nelson-Siegel curve parametrisation.
 
-### FinDiscountCurveNSS
+### TuringDiscountCurveNSS
 Implementation of the Nelson-Siegel-Svensson curve parametrisation.
 
-### FinDiscountCurveZeros
+### TuringDiscountCurveZeros
 This is a discount curve that is made from a vector of times and zero rates.
 
 

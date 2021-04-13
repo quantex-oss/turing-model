@@ -8,13 +8,13 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.market.volatility.turing_ibor_cap_vol_curve import FinIborCapVolCurve
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
 from financepy.models.turing_model_black import FinModelBlack
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.products.rates.turing_ibor_swaption import FinSwapTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.products.rates.turing_ibor_swaption import TuringSwapTypes
 from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
 from financepy.finutils.turing_helper_functions import checkVectorDifferences
 from financepy.models.turing_model_rates_lmm import LMMSimulateFwdsNF
@@ -30,8 +30,8 @@ from financepy.models.turing_model_rates_lmm import LMMFwdFwdCorrelation
 from financepy.models.turing_model_rates_lmm import LMMRatchetCapletPricer
 from financepy.models.turing_model_rates_lmm import LMMStickyCapletPricer
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -51,7 +51,7 @@ def getCorrelationMatrix(numFwds, beta, dt):
 
 """ def getVolCurve(numFwds, dt, flatVol=None):
 
-    valuationDate = FinDate(1, 1, 2020)
+    valuationDate = TuringDate(1, 1, 2020)
 
     capVolDates = []
     capletVolTenor = "1Y"
@@ -72,8 +72,8 @@ def getCorrelationMatrix(numFwds, beta, dt):
         capVolatilities = np.array(capVolatilities)
         capVolatilities[0] = 0.0
 
-    dayCountType = FinDayCountTypes.ACT_ACT_ISDA
-    volCurve = FinIborCapVolCurve(valuationDate,
+    dayCountType = TuringDayCountTypes.ACT_ACT_ISDA
+    volCurve = TuringIborCapVolCurve(valuationDate,
                                    capVolDates,
                                    capVolatilities,
                                    dayCountType)
@@ -148,19 +148,19 @@ def getForwardCurve(numFwds, r):
 #         swapVolSim1F = LMMSimSwaptionVol(a, b, fwd0, fwds1F, taus)
 #         swapVolSimNF = LMMSimSwaptionVol(a, b, fwd0, fwdsNF, taus)
 
-#         valuationDate = FinDate(1, 1, 2010)
-#         liborCurve = FinDiscountCurveFlat(valuationDate, r,
-#                                           FinFrequencyTypes.QUARTERLY)
+#         valuationDate = TuringDate(1, 1, 2010)
+#         liborCurve = TuringDiscountCurveFlat(valuationDate, r,
+#                                           TuringFrequencyTypes.QUARTERLY)
 
 #         settlementDate = valuationDate
 #         exerciseDate = settlementDate.addMonths(a*3)
 #         maturityDate = settlementDate.addMonths(b*3)
 
 #         fixedCoupon = strike
-#         fixedFrequencyType = FinFrequencyTypes.QUARTERLY
-#         fixedDayCountType = FinDayCountTypes.ACT_ACT_ISDA
-#         floatFrequencyType = FinFrequencyTypes.QUARTERLY
-#         floatDayCountType = FinDayCountTypes.ACT_ACT_ISDA
+#         fixedFrequencyType = TuringFrequencyTypes.QUARTERLY
+#         fixedDayCountType = TuringDayCountTypes.ACT_ACT_ISDA
+#         floatFrequencyType = TuringFrequencyTypes.QUARTERLY
+#         floatDayCountType = TuringDayCountTypes.ACT_ACT_ISDA
 #         notional = 1.0
 
 #         # Pricing a PAY

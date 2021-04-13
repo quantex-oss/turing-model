@@ -5,7 +5,7 @@
 import numpy as np
 from numba import njit
 
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 from ..finutils.turing_math import N
 from ..market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
 from ..finutils.turing_helper_functions import labelToString
@@ -38,7 +38,7 @@ def P_Fast(t, T, Rt, delta, pt, ptd, pT, _sigma):
 ###############################################################################
 
 
-class FinModelRatesHL():
+class TuringModelRatesHL():
 
     def __init__(self, sigma):
         ''' Construct Ho-Lee model using single parameter of volatility. The
@@ -46,7 +46,7 @@ class FinModelRatesHL():
         fitting is done within functions below. '''
 
         if sigma < 0.0:
-            raise FinError("Negative volatility not allowed.")
+            raise TuringError("Negative volatility not allowed.")
 
         self._sigma = sigma
 
@@ -72,10 +72,10 @@ class FinModelRatesHL():
         date and maturity date. '''
 
         if texp > tmat:
-            raise FinError("Option expiry after bond matures.")
+            raise TuringError("Option expiry after bond matures.")
 
         if texp < 0.0:
-            raise FinError("Option expiry time negative.")
+            raise TuringError("Option expiry time negative.")
 
         ptexp = _uinterpolate(texp, dfTimes, dfValues, interp)
         ptmat = _uinterpolate(tmat, dfTimes, dfValues, interp)

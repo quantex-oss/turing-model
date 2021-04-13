@@ -10,17 +10,17 @@ from scipy import optimize
 from numba import njit
 
 
-from ...finutils.turing_math import N, phi2
-from ...finutils.turing_global_variables import gDaysInYear, gSmall
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_types import FinOptionTypes
+from financepy.finutils.turing_math import N, phi2
+from financepy.finutils.turing_global_variables import gDaysInYear, gSmall
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_types import TuringOptionTypes
 
-from ...products.equity.turing_equity_option import FinEquityOption
-from ...products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
-from ...market.curves.turing_discount_curve_flat import FinDiscountCurve
-from ...market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
+from financepy.products.equity.turing_equity_option import TuringEquityOption
+from financepy.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurve
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
 
 ###############################################################################
 # TODO: Vectorise pricer
@@ -38,7 +38,7 @@ def _f(s0, *args):
     value = args[5]
 
     if s0 <= 0.0:
-        raise FinError("Unable to solve for stock price that fits K1")
+        raise TuringError("Unable to solve for stock price that fits K1")
 
     objFn = self.value(valueDate,
                        s0,
@@ -124,11 +124,11 @@ def _valueOnce(stockPrice,
 
     for iNode in range(0, iTime + 1):
         s = stockValues[index + iNode]
-        if optionType2 == FinOptionTypes.EUROPEAN_CALL\
-           or optionType2 == FinOptionTypes.AMERICAN_CALL:
+        if optionType2 == TuringOptionTypes.EUROPEAN_CALL\
+           or optionType2 == TuringOptionTypes.AMERICAN_CALL:
             optionValues[index + iNode] = max(s - k2, 0.0)
-        elif optionType2 == FinOptionTypes.EUROPEAN_PUT\
-           or optionType2 == FinOptionTypes.AMERICAN_PUT:
+        elif optionType2 == TuringOptionTypes.EUROPEAN_PUT\
+           or optionType2 == TuringOptionTypes.AMERICAN_PUT:
             optionValues[index + iNode] = max(k2 - s, 0.0)
 
     # begin backward steps from expiry at t2 to first expiry at time t1
@@ -147,9 +147,9 @@ def _valueOnce(stockPrice,
 
             exerciseValue = 0.0 # NUMBA NEEDS HELP TO DETERMINE THE TYPE
 
-            if optionType1 == FinOptionTypes.AMERICAN_CALL:
+            if optionType1 == TuringOptionTypes.AMERICAN_CALL:
                 exerciseValue = max(s - k2, 0.0)
-            elif optionType1 == FinOptionTypes.AMERICAN_PUT:
+            elif optionType1 == TuringOptionTypes.AMERICAN_PUT:
                 exerciseValue = max(k2 - s, 0.0)
 
             optionValues[index + iNode] = max(exerciseValue, holdValue)
@@ -168,11 +168,11 @@ def _valueOnce(stockPrice,
         futureExpectedValue += (1.0 - probs[iTime]) * vDn
         holdValue = periodDiscountFactors[iTime] * futureExpectedValue
 
-        if optionType1 == FinOptionTypes.EUROPEAN_CALL\
-           or optionType1 == FinOptionTypes.AMERICAN_CALL:
+        if optionType1 == TuringOptionTypes.EUROPEAN_CALL\
+           or optionType1 == TuringOptionTypes.AMERICAN_CALL:
             optionValues[index + iNode] = max(holdValue - k1, 0.0)
-        elif optionType1 == FinOptionTypes.EUROPEAN_PUT\
-           or optionType1 == FinOptionTypes.AMERICAN_PUT:
+        elif optionType1 == TuringOptionTypes.EUROPEAN_PUT\
+           or optionType1 == TuringOptionTypes.AMERICAN_PUT:
             optionValues[index + iNode] = max(k1 - holdValue, 0.0)
 
     # begin backward steps from t1 expiry to value date
@@ -191,9 +191,9 @@ def _valueOnce(stockPrice,
 
             exerciseValue = 0.0 # NUMBA NEEDS HELP TO DETERMINE THE TYPE
 
-            if optionType1 == FinOptionTypes.AMERICAN_CALL:
+            if optionType1 == TuringOptionTypes.AMERICAN_CALL:
                 exerciseValue = max(holdValue - k1, 0.0)
-            elif optionType1 == FinOptionTypes.AMERICAN_PUT:
+            elif optionType1 == TuringOptionTypes.AMERICAN_PUT:
                 exerciseValue = max(k1 - holdValue, 0.0)
 
             optionValues[index + iNode] = max(exerciseValue, holdValue)
@@ -224,39 +224,39 @@ def _valueOnce(stockPrice,
 ###############################################################################
 
 
-class FinEquityCompoundOption(FinEquityOption):
-    ''' A FinEquityCompoundOption is a compound option which allows the holder
+class TuringEquityCompoundOption(TuringEquityOption):
+    ''' A TuringEquityCompoundOption is a compound option which allows the holder
     to either buy or sell another underlying option on a first expiry date that
     itself expires on a second expiry date. Both strikes are set at trade
     initiation. '''
 
     def __init__(self,
-                 cExpiryDate: FinDate,  # Compound Option expiry date
-                 cOptionType: FinOptionTypes,  # Compound option type
+                 cExpiryDate: TuringDate,  # Compound Option expiry date
+                 cOptionType: TuringOptionTypes,  # Compound option type
                  cStrikePrice: float,  # Compound option strike
-                 uExpiryDate: FinDate,  # Underlying option expiry date
-                 uOptionType: FinOptionTypes,  # Underlying option type
+                 uExpiryDate: TuringDate,  # Underlying option expiry date
+                 uOptionType: TuringOptionTypes,  # Underlying option type
                  uStrikePrice: float):  # Underlying option strike price
-        ''' Create the FinEquityCompoundOption by passing in the first and
+        ''' Create the TuringEquityCompoundOption by passing in the first and
         second expiry dates as well as the corresponding strike prices and
         option types. '''
 
         checkArgumentTypes(self.__init__, locals())
 
         if cExpiryDate > uExpiryDate:
-            raise FinError("Compound expiry date must precede underlying expiry date")
+            raise TuringError("Compound expiry date must precede underlying expiry date")
 
-        if cOptionType != FinOptionTypes.EUROPEAN_CALL and \
-            cOptionType != FinOptionTypes.AMERICAN_CALL and \
-            cOptionType != FinOptionTypes.EUROPEAN_PUT and \
-            cOptionType != FinOptionTypes.AMERICAN_PUT:
-                raise FinError("Compound option must be European or American call or put.")
+        if cOptionType != TuringOptionTypes.EUROPEAN_CALL and \
+            cOptionType != TuringOptionTypes.AMERICAN_CALL and \
+            cOptionType != TuringOptionTypes.EUROPEAN_PUT and \
+            cOptionType != TuringOptionTypes.AMERICAN_PUT:
+                raise TuringError("Compound option must be European or American call or put.")
 
-        if uOptionType != FinOptionTypes.EUROPEAN_CALL and \
-            uOptionType != FinOptionTypes.AMERICAN_CALL and \
-            uOptionType != FinOptionTypes.EUROPEAN_PUT and \
-            uOptionType != FinOptionTypes.AMERICAN_PUT:
-                raise FinError("Underlying Option must be European or American call or put.")
+        if uOptionType != TuringOptionTypes.EUROPEAN_CALL and \
+            uOptionType != TuringOptionTypes.AMERICAN_CALL and \
+            uOptionType != TuringOptionTypes.EUROPEAN_PUT and \
+            uOptionType != TuringOptionTypes.AMERICAN_PUT:
+                raise TuringError("Underlying Option must be European or American call or put.")
 
         self._cExpiryDate = cExpiryDate
         self._cStrikePrice = float(cStrikePrice)
@@ -269,10 +269,10 @@ class FinEquityCompoundOption(FinEquityOption):
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model,
               numSteps: int = 200):
         ''' Value the compound option using an analytical approach if it is
@@ -281,10 +281,10 @@ class FinEquityCompoundOption(FinEquityOption):
         Rubinstein (1991). See also Haug page 132. '''
 
         # If the option has any American feature then use the tree
-        if self._cOptionType == FinOptionTypes.AMERICAN_CALL or\
-            self._uOptionType == FinOptionTypes.AMERICAN_CALL or\
-            self._cOptionType == FinOptionTypes.AMERICAN_PUT or\
-                self._uOptionType == FinOptionTypes.AMERICAN_PUT:
+        if self._cOptionType == TuringOptionTypes.AMERICAN_CALL or\
+            self._uOptionType == TuringOptionTypes.AMERICAN_CALL or\
+            self._cOptionType == TuringOptionTypes.AMERICAN_PUT or\
+                self._uOptionType == TuringOptionTypes.AMERICAN_PUT:
 
             v = self._valueTree(valueDate,
                                 stockPrice,
@@ -335,8 +335,8 @@ class FinEquityCompoundOption(FinEquityOption):
 
         # Taken from Hull Page 532 (6th edition)
 
-        CALL = FinOptionTypes.EUROPEAN_CALL
-        PUT = FinOptionTypes.EUROPEAN_PUT
+        CALL = TuringOptionTypes.EUROPEAN_CALL
+        PUT = TuringOptionTypes.EUROPEAN_PUT
 
         if self._cOptionType == CALL and self._uOptionType == CALL:
             v = s0 * dqu * phi2(a1, b1, c) - ku * dfu * \
@@ -351,7 +351,7 @@ class FinEquityCompoundOption(FinEquityOption):
             v = s0 * dqu * phi2(a1, -b1, -c) - ku * dfu * \
                 phi2(a2, -b2, -c) + dfc * kc * N(a2)
         else:
-            raise FinError("Unknown option type")
+            raise TuringError("Unknown option type")
 
         return v
 
@@ -367,7 +367,7 @@ class FinEquityCompoundOption(FinEquityOption):
         ''' This function is called if the option has American features. '''
 
         if valueDate > self._cExpiryDate:
-            raise FinError("Value date is after expiry date.")
+            raise TuringError("Value date is after expiry date.")
 
         tc = (self._cExpiryDate - valueDate) / gDaysInYear
         tu = (self._uExpiryDate - valueDate) / gDaysInYear
@@ -410,8 +410,8 @@ class FinEquityCompoundOption(FinEquityOption):
 
         option = FinEquityVanillaOption(expiryDate2, strikePrice2, optionType2)
 
-        discountCurve = FinDiscountCurveFlat(expiryDate1, interestRate)
-        dividendCurve = FinDiscountCurveFlat(expiryDate1, dividendYield)
+        discountCurve = TuringDiscountCurveFlat(expiryDate1, interestRate)
+        dividendCurve = TuringDiscountCurveFlat(expiryDate1, dividendYield)
 
         argtuple = (option, expiryDate1, discountCurve, dividendCurve,
                     model, strikePrice1)

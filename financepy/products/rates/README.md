@@ -2,7 +2,7 @@
 
 This folder contains a set of funding-related products. These reflect contracts linked to funding indices such as Ibors and Overnight index rate swaps (OIS). It includes:
 
-## FinIborDeposit
+## TuringIborDeposit
 
 This is the basic Ibor instrument in which a party borrows an amount for a specified term and rate unsecured.
 
@@ -51,11 +51,11 @@ This is a contract to exchange IBOR coupons in two different currencies. This cl
 
 This is a contract to exchange the daily compounded Overnight index swap rate for a fixed rate agreed at contract initiation.
 
-### FinOISCurve
+### TuringOISCurve
 
 This is a discount curve that is extracted by bootstrapping a set of OIS rates. The internal representation of the curve are discount factors on each of the OIS dates. Between these dates, discount factors are interpolated according to a specified scheme.
 
-### FinIborSingleCurve
+### TuringIborSingleCurve
 
 This is a discount curve that is extracted by bootstrapping a set of Ibor deposits, Ibor FRAs and Ibor swap prices. The internal representation of the curve are discount factors on each of the deposit, FRA and swap maturity dates. Between these dates, discount factors are interpolated according to a specified scheme - see below.
 

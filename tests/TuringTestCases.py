@@ -9,9 +9,9 @@ from os.path import join, exists, split
 import time
 
 from enum import Enum
-from financepy.finutils.turing_error import FinError
+from financepy.finutils.turing_error import TuringError
 
-class FinTestCaseMode(Enum):
+class TuringTestCaseMode(Enum):
     SAVE_TEST_CASES = 1
     ANALYSE_TEST_CASES = 2
     DEBUG_TEST_CASES = 3
@@ -27,9 +27,9 @@ verbose = False
 # TESTING
 
 
-globalTestCaseMode = FinTestCaseMode.SAVE_TEST_CASES
-globalTestCaseMode = FinTestCaseMode.ANALYSE_TEST_CASES
-#globalTestCaseMode = FinTestCaseMode.DEBUG_TEST_CASES
+globalTestCaseMode = TuringTestCaseMode.SAVE_TEST_CASES
+globalTestCaseMode = TuringTestCaseMode.ANALYSE_TEST_CASES
+#globalTestCaseMode = TuringTestCaseMode.DEBUG_TEST_CASES
 
 tolerance = 1e-8
 
@@ -38,14 +38,14 @@ tolerance = 1e-8
 ###############################################################################
 
 
-class FinTestCases():
+class TuringTestCases():
     ''' Test case framework for FinancePy.
     - The basic step is that we generate a GOLDEN folder that creates an output
     file for each testcase which is assumed to be correct. This can be done by
     running the test cases Python file with the globalTestCaseMode flag set to
-    FinTestCaseMode.SAVE_TEST_CASES.
+    TuringTestCaseMode.SAVE_TEST_CASES.
     - The second step is that we change the value of globalTestCaseMode to
-    FinTestCaseMode.ANALYSE_TEST_CASES and then run the test scripts. This time
+    TuringTestCaseMode.ANALYSE_TEST_CASES and then run the test scripts. This time
     they save a copy of the output to the COMPARE folder.
     Finally, a function called compareTestCases() is used to compare the new
     output with the GOLDEN output and states whether anything has changed.
@@ -72,12 +72,12 @@ class FinTestCases():
         self._carefulMode = False
         self._verbose = False
 
-        if mode in FinTestCaseMode:
+        if mode in TuringTestCaseMode:
             self._mode = mode
         else:
-            raise FinError("Unknown TestCase Mode")
+            raise TuringError("Unknown TestCase Mode")
 
-        if mode == FinTestCaseMode.DEBUG_TEST_CASES:
+        if mode == TuringTestCaseMode.DEBUG_TEST_CASES:
             # Don't do anything
             self._verbose = True
             return
@@ -118,7 +118,7 @@ class FinTestCases():
         self._differencesFilename = join(self._differencesFolder,
                                          self._moduleName + "_DIFFS.testLog")
 
-        if self._mode == FinTestCaseMode.SAVE_TEST_CASES:
+        if self._mode == TuringTestCaseMode.SAVE_TEST_CASES:
 
             print("GOLDEN Test Case Creation for module:", moduleFilename)
 
@@ -163,7 +163,7 @@ class FinTestCases():
     def print(self, *args):
         ''' Print comma separated output to GOLDEN or COMPARE directory. '''
 
-        if self._mode == FinTestCaseMode.DEBUG_TEST_CASES:
+        if self._mode == TuringTestCaseMode.DEBUG_TEST_CASES:
             print(args)
             return
 
@@ -176,11 +176,11 @@ class FinTestCases():
         elif len(self._headerFields) != len(args):
             n1 = len(self._headerFields)
             n2 = len(args)
-            raise FinError("ERROR: Number of data columns is " + str(n1)
-                           + " but must equal " + str(n2)
-                           + " to align with headers.")
+            raise TuringError("ERROR: Number of data columns is " + str(n1)
+                              + " but must equal " + str(n2)
+                              + " to align with headers.")
 
-        if self._mode == FinTestCaseMode.SAVE_TEST_CASES:
+        if self._mode == TuringTestCaseMode.SAVE_TEST_CASES:
             filename = self._goldenFilename
         else:
             filename = self._compareFilename
@@ -203,7 +203,7 @@ class FinTestCases():
     def banner(self, txt):
         ''' Print a banner on a line to the GOLDEN or COMPARE directory. '''
 
-        if self._mode == FinTestCaseMode.DEBUG_TEST_CASES:
+        if self._mode == TuringTestCaseMode.DEBUG_TEST_CASES:
             print(txt)
             return
 
@@ -211,7 +211,7 @@ class FinTestCases():
             print("Cannot print as GOLDEN and COMPARE folders do not exist")
             return
 
-        if self._mode == FinTestCaseMode.SAVE_TEST_CASES:
+        if self._mode == TuringTestCaseMode.SAVE_TEST_CASES:
             filename = self._goldenFilename
         else:
             filename = self._compareFilename
@@ -229,7 +229,7 @@ class FinTestCases():
     def header(self, *args):
         ''' Print a header on a line to the GOLDEN or COMPARE directory. '''
 
-        if self._mode == FinTestCaseMode.DEBUG_TEST_CASES:
+        if self._mode == TuringTestCaseMode.DEBUG_TEST_CASES:
             self.printLog(args)
             return
 
@@ -242,7 +242,7 @@ class FinTestCases():
         if len(self._headerFields) == 0:
             self.printLog("ERROR: Number of header fields must be greater than 0")
 
-        if self._mode == FinTestCaseMode.SAVE_TEST_CASES:
+        if self._mode == TuringTestCaseMode.SAVE_TEST_CASES:
             filename = self._goldenFilename
         else:
             filename = self._compareFilename
@@ -344,11 +344,11 @@ class FinTestCases():
         
         self.startLog()
 
-        if self._mode == FinTestCaseMode.SAVE_TEST_CASES:
+        if self._mode == TuringTestCaseMode.SAVE_TEST_CASES:
             # Do nothing
             return
 
-        if self._mode == FinTestCaseMode.DEBUG_TEST_CASES:
+        if self._mode == TuringTestCaseMode.DEBUG_TEST_CASES:
             # Do nothing
             return
 

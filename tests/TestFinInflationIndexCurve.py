@@ -5,24 +5,24 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.products.inflation.turing_inflation_index_curve import FinInflationIndexCurve
+from financepy.finutils.turing_date import TuringDate
+from financepy.products.inflation.turing_inflation_index_curve import TuringInflationIndexCurve
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##############################################################################
 
 def test_FinInflationIndexCurve():
 
     # Create a curve from times and discount factors
-    indexDates = [FinDate(15,1,2008), FinDate(1,4,2008), FinDate(1,5,2008)]
+    indexDates = [TuringDate(15, 1, 2008), TuringDate(1, 4, 2008), TuringDate(1, 5, 2008)]
     indexValues = [209.49645, 214.823, 216.632]
     lag = 3 # months
 
-    curve = FinInflationIndexCurve(indexDates, indexValues, lag)
+    curve = TuringInflationIndexCurve(indexDates, indexValues, lag)
 
-    refDate = FinDate(22, 7, 2008)
+    refDate = TuringDate(22, 7, 2008)
     
     testCases.header("LABEL", "VALUE")
 

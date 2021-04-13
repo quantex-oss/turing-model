@@ -14,7 +14,7 @@ from ..finutils.turing_helper_functions import labelToString, checkArgumentTypes
 ###############################################################################
 
 
-class FinModelMertonCredit():
+class TuringModelMertonCredit():
     ''' Implementation of the Merton Credit Model according to the original
     formulation by Merton with the inputs being the asset value of the firm, 
     the liabilities (bond face), the time to maturity in years, the risk-free 

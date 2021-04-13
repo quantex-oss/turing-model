@@ -4,17 +4,17 @@
 
 import numpy as np
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gSmall
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes, FinFrequency
-from ...finutils.turing_calendar import FinCalendarTypes,  FinDateGenRuleTypes
-from ...finutils.turing_calendar import FinCalendar, FinBusDayAdjustTypes
-from ...finutils.turing_helper_functions import checkArgumentTypes, labelToString
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_global_types import FinSwapTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gSmall
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes, TuringFrequency
+from financepy.finutils.turing_calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
+from financepy.finutils.turing_calendar import TuringCalendar, TuringBusDayAdjustTypes
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 from .turing_fixed_leg import FinFixedLeg
 from .turing_float_leg import FinFloatLeg
@@ -37,19 +37,19 @@ class FinIborSwap(object):
     which the implied index rates are extracted. '''
     
     def __init__(self,
-                 effectiveDate: FinDate,  # Date interest starts to accrue
-                 terminationDateOrTenor: (FinDate, str),  # Date contract ends
-                 fixedLegType: FinSwapTypes,
+                 effectiveDate: TuringDate,  # Date interest starts to accrue
+                 terminationDateOrTenor: (TuringDate, str),  # Date contract ends
+                 fixedLegType: TuringSwapTypes,
                  fixedCoupon: float,  # Fixed coupon (annualised)
-                 fixedFreqType: FinFrequencyTypes,
-                 fixedDayCountType: FinDayCountTypes,
+                 fixedFreqType: TuringFrequencyTypes,
+                 fixedDayCountType: TuringDayCountTypes,
                  notional: float = ONE_MILLION,
                  floatSpread: float = 0.0,
-                 floatFreqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 floatDayCountType: FinDayCountTypes = FinDayCountTypes.THIRTY_E_360,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 floatFreqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 floatDayCountType: TuringDayCountTypes = TuringDayCountTypes.THIRTY_E_360,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
         ''' Create an interest rate swap contract giving the contract start
         date, its maturity, fixed coupon, fixed leg frequency, fixed leg day
         count convention and notional. The floating leg parameters have default
@@ -61,23 +61,23 @@ class FinIborSwap(object):
 
         checkArgumentTypes(self.__init__, locals())
 
-        if type(terminationDateOrTenor) == FinDate:
+        if type(terminationDateOrTenor) == TuringDate:
             self._terminationDate = terminationDateOrTenor
         else:
             self._terminationDate = effectiveDate.addTenor(terminationDateOrTenor)
 
-        calendar = FinCalendar(calendarType)
+        calendar = TuringCalendar(calendarType)
         self._maturityDate = calendar.adjust(self._terminationDate,
                                              busDayAdjustType)
 
         if effectiveDate > self._maturityDate:
-            raise FinError("Start date after maturity date")
+            raise TuringError("Start date after maturity date")
 
         self._effectiveDate = effectiveDate
 
-        floatLegType = FinSwapTypes.PAY
-        if fixedLegType == FinSwapTypes.PAY:
-            floatLegType = FinSwapTypes.RECEIVE
+        floatLegType = TuringSwapTypes.PAY
+        if fixedLegType == TuringSwapTypes.PAY:
+            floatLegType = TuringSwapTypes.RECEIVE
         
         paymentLag = 0
         principal = 0.0
@@ -111,9 +111,9 @@ class FinIborSwap(object):
 ###############################################################################
 
     def value(self,
-              valuationDate: FinDate,
-              discountCurve: FinDiscountCurve,
-              indexCurve: FinDiscountCurve=None,
+              valuationDate: TuringDate,
+              discountCurve: TuringDiscountCurve,
+              indexCurve: TuringDiscountCurve=None,
               firstFixingRate=None):
         ''' Value the interest rate swap on a value date given a single Ibor
         discount curve. '''
@@ -146,10 +146,10 @@ class FinIborSwap(object):
 
 ###############################################################################
 
-    def swapRate(self, 
-                 valuationDate:FinDate,
-                 discountCurve: FinDiscountCurve,
-                 indexCurve: FinDiscountCurve = None,
+    def swapRate(self,
+                 valuationDate:TuringDate,
+                 discountCurve: TuringDiscountCurve,
+                 indexCurve: TuringDiscountCurve = None,
                  firstFixing: float = None):
         ''' Calculate the fixed leg coupon that makes the swap worth zero.
         If the valuation date is before the swap payments start then this
@@ -163,7 +163,7 @@ class FinIborSwap(object):
         pv01 = self.pv01(valuationDate, discountCurve)
 
         if abs(pv01) < gSmall:
-            raise FinError("PV01 is zero. Cannot compute swap rate.")
+            raise TuringError("PV01 is zero. Cannot compute swap rate.")
 
         if valuationDate < self._effectiveDate:
             df0 = discountCurve.df(self._effectiveDate)
@@ -197,10 +197,10 @@ class FinIborSwap(object):
         used in the pricing of a cash-settled swaption in the FinIborSwaption
         class. This method does not affect the standard valuation methods.'''
 
-        m = FinFrequency(frequencyType)
+        m = TuringFrequency(frequencyType)
 
         if m == 0:
-            raise FinError("Frequency cannot be zero.")
+            raise TuringError("Frequency cannot be zero.")
 
         ''' The swap may have started in the past but we can only value
         payments that have occurred after the valuation date. '''

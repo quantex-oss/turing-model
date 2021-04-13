@@ -8,10 +8,10 @@ import numpy as np
 sys.path.append("..")
 
 from financepy.models.turing_model_black import FinModelBlack
-from financepy.finutils.turing_global_types import FinOptionTypes
+from financepy.finutils.turing_global_types import TuringOptionTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 
 def test_Black():
@@ -24,8 +24,8 @@ def test_Black():
 
     testCases.header("ITEM", "CALL", "PUT")
 
-    callOptionType = FinOptionTypes.EUROPEAN_CALL
-    putOptionType = FinOptionTypes.EUROPEAN_PUT
+    callOptionType = TuringOptionTypes.EUROPEAN_CALL
+    putOptionType = TuringOptionTypes.EUROPEAN_PUT
 
     df = np.exp(-riskFreeIR * timeToExpiry)
     model = FinModelBlack(volatility)

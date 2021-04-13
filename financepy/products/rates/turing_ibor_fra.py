@@ -3,14 +3,14 @@
 ##############################################################################
 
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_calendar import FinCalendar
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_calendar import TuringCalendar
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 ###############################################################################
 
@@ -44,14 +44,14 @@ class FinIborFRA(object):
     '''
 
     def __init__(self,
-                 startDate: FinDate,  # The date the FRA starts to accrue
-                 maturityDateOrTenor: (FinDate, str),  # End of the Ibor rate period
+                 startDate: TuringDate,  # The date the FRA starts to accrue
+                 maturityDateOrTenor: (TuringDate, str),  # End of the Ibor rate period
                  fraRate: float,  # The fixed contractual FRA rate
-                 dayCountType: FinDayCountTypes,  # For interest period
+                 dayCountType: TuringDayCountTypes,  # For interest period
                  notional: float = 100.0,
                  payFixedRate: bool = True,  # True if the FRA rate is being paid
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.MODIFIED_FOLLOWING):
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING):
         ''' Create a Forward Rate Agreeement object. '''
 
         checkArgumentTypes(self.__init__, locals())
@@ -59,16 +59,16 @@ class FinIborFRA(object):
         self._calendarType = calendarType
         self._busDayAdjustType = busDayAdjustType
 
-        if type(maturityDateOrTenor) == FinDate:
+        if type(maturityDateOrTenor) == TuringDate:
             maturityDate = maturityDateOrTenor
         else:
             maturityDate = startDate.addTenor(maturityDateOrTenor)
-            calendar = FinCalendar(self._calendarType)
+            calendar = TuringCalendar(self._calendarType)
             maturityDate = calendar.adjust(maturityDate,
                                            self._busDayAdjustType)
 
         if startDate > maturityDate:
-            raise FinError("Settlement date after maturity date")
+            raise TuringError("Settlement date after maturity date")
 
         self._startDate = startDate
         self._maturityDate = maturityDate
@@ -79,10 +79,10 @@ class FinIborFRA(object):
 
     ###########################################################################
 
-    def value(self, 
-              valuationDate: FinDate, 
-              discountCurve: FinDiscountCurve,
-              indexCurve: FinDiscountCurve = None):
+    def value(self,
+              valuationDate: TuringDate,
+              discountCurve: TuringDiscountCurve,
+              indexCurve: TuringDiscountCurve = None):
         ''' Determine mark to market value of a FRA contract based on the
         market FRA rate. We allow the pricing to have a different curve for
         the Libor index and the discounting of promised cashflows. '''
@@ -91,7 +91,7 @@ class FinIborFRA(object):
             indexCurve = discountCurve
 
         # Get the Libor index from the index curve
-        dc = FinDayCount(self._dayCountType)
+        dc = TuringDayCount(self._dayCountType)
         accFactor = dc.yearFrac(self._startDate, self._maturityDate)[0]
         dfIndex1 = indexCurve.df(self._startDate)
         dfIndex2 = indexCurve.df(self._maturityDate)
@@ -117,7 +117,7 @@ class FinIborFRA(object):
         the market FRA rate. In a dual-curve world, this is not the discount
         rate discount factor but the index curve discount factor. '''
 
-        dc = FinDayCount(self._dayCountType)
+        dc = TuringDayCount(self._dayCountType)
         df1 = indexCurve.df(self._startDate)
         accFactor = dc.yearFrac(self._startDate, self._maturityDate)[0]
         df2 = df1 / (1.0 + accFactor * self._fraRate)
@@ -129,7 +129,7 @@ class FinIborFRA(object):
         ''' Determine the value of the Deposit given a Ibor curve. '''
 
         flow_settle = self._notional
-        dc = FinDayCount(self._dayCountType)
+        dc = TuringDayCount(self._dayCountType)
         accFactor = dc.yearFrac(self._startDate, self._maturityDate)[0]
         flow_maturity = (1.0 + accFactor * self._fraRate) * self._notional
 

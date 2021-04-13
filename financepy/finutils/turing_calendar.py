@@ -9,8 +9,8 @@
 
 import datetime
 from enum import Enum
-from .turing_date import FinDate
-from .turing_error import FinError
+from .turing_date import TuringDate
+from .turing_error import TuringError
 
 # from numba import njit, jit, int64, boolean
 
@@ -46,7 +46,7 @@ easterMondayDay = [98, 90, 103, 95, 114, 106, 91, 111, 102, 87,
                    116, 101, 93, 112, 97, 89, 109, 100, 85, 105]
 
 
-class FinBusDayAdjustTypes(Enum):
+class TuringBusDayAdjustTypes(Enum):
     NONE = 1
     FOLLOWING = 2
     MODIFIED_FOLLOWING = 3
@@ -54,7 +54,7 @@ class FinBusDayAdjustTypes(Enum):
     MODIFIED_PRECEDING = 5
 
 
-class FinCalendarTypes(Enum):
+class TuringCalendarTypes(Enum):
     NONE = 1
     WEEKEND = 2
     AUSTRALIA = 3
@@ -72,14 +72,14 @@ class FinCalendarTypes(Enum):
     UNITED_KINGDOM = 15
 
 
-class FinDateGenRuleTypes(Enum):
+class TuringDateGenRuleTypes(Enum):
     FORWARD = 1
     BACKWARD = 2
 
 ###############################################################################
 
 
-class FinCalendar(object):
+class TuringCalendar(object):
     ''' Class to manage designation of payment dates as holidays according to
     a regional or country-specific calendar convention specified by the user.
     It also supplies an adjustment method which takes in an adjustment
@@ -87,11 +87,11 @@ class FinCalendar(object):
     specified calendar. '''
 
     def __init__(self,
-                 calendarType: FinCalendarTypes):
+                 calendarType: TuringCalendarTypes):
         ''' Create a calendar based on a specified calendar type. '''
 
-        if calendarType not in FinCalendarTypes:
-            raise FinError(
+        if calendarType not in TuringCalendarTypes:
+            raise TuringError(
                 "Need to pass FinCalendarType and not " +
                 str(calendarType))
 
@@ -100,18 +100,18 @@ class FinCalendar(object):
     ###########################################################################
 
     def adjust(self,
-               dt: FinDate,
-               busDayConventionType: FinBusDayAdjustTypes):
+               dt: TuringDate,
+               busDayConventionType: TuringBusDayAdjustTypes):
         ''' Adjust a payment date if it falls on a holiday according to the
         specified business day convention. '''
 
-        if type(busDayConventionType) != FinBusDayAdjustTypes:
-            raise FinError("Invalid type passed. Need FinBusDayConventionType")
+        if type(busDayConventionType) != TuringBusDayAdjustTypes:
+            raise TuringError("Invalid type passed. Need FinBusDayConventionType")
 
-        if busDayConventionType == FinBusDayAdjustTypes.NONE:
+        if busDayConventionType == TuringBusDayAdjustTypes.NONE:
             return dt
 
-        elif busDayConventionType == FinBusDayAdjustTypes.FOLLOWING:
+        elif busDayConventionType == TuringBusDayAdjustTypes.FOLLOWING:
 
             # step forward until we find a business day
             while self.isBusinessDay(dt) is False:
@@ -119,7 +119,7 @@ class FinCalendar(object):
 
             return dt
 
-        elif busDayConventionType == FinBusDayAdjustTypes.MODIFIED_FOLLOWING:
+        elif busDayConventionType == TuringBusDayAdjustTypes.MODIFIED_FOLLOWING:
 
             d_start = dt._d
             m_start = dt._m
@@ -133,13 +133,13 @@ class FinCalendar(object):
             # for previous first business day one day at a time
             # TODO: I could speed this up by starting it at initial date
             if dt._m != m_start:
-                dt = FinDate(d_start, m_start, y_start)
+                dt = TuringDate(d_start, m_start, y_start)
                 while self.isBusinessDay(dt) is False:
                     dt = dt.addDays(-1)
 
             return dt
 
-        elif busDayConventionType == FinBusDayAdjustTypes.PRECEDING:
+        elif busDayConventionType == TuringBusDayAdjustTypes.PRECEDING:
 
             # if the business day is in the next month look back
             # for previous first business day one day at a time
@@ -148,7 +148,7 @@ class FinCalendar(object):
 
             return dt
 
-        elif busDayConventionType == FinBusDayAdjustTypes.MODIFIED_PRECEDING:
+        elif busDayConventionType == TuringBusDayAdjustTypes.MODIFIED_PRECEDING:
 
             d_start = dt._d
             m_start = dt._m
@@ -162,7 +162,7 @@ class FinCalendar(object):
             # for previous first business day one day at a time
             # I could speed this up by starting it at initial date
             if dt._m != m_start:
-                dt = FinDate(d_start, m_start, y_start)
+                dt = TuringDate(d_start, m_start, y_start)
                 while self.isBusinessDay(dt) is False:
                     dt = dt.addDays(+1)
 
@@ -170,29 +170,29 @@ class FinCalendar(object):
 
         else:
 
-            raise FinError("Unknown adjustment convention" +
-                           str(busDayConventionType))
+            raise TuringError("Unknown adjustment convention" +
+                              str(busDayConventionType))
 
         return dt
 
 ###############################################################################
 
     def addBusinessDays(self,
-                        startDate: FinDate,
+                        startDate: TuringDate,
                         numDays: int):
-        ''' Returns a new date that is numDays business days after FinDate. 
+        ''' Returns a new date that is numDays business days after TuringDate.
         All holidays in the chosen calendar are assumed not business days. '''
 
         # TODO: REMOVE DATETIME DEPENDENCE HERE ???
 
         if isinstance(numDays, int) is False:
-            raise FinError("Num days must be an integer")
+            raise TuringError("Num days must be an integer")
 
         dt = datetime.date(startDate._y, startDate._m, startDate._d)
         d = dt.day
         m = dt.month
         y = dt.year
-        newDt = FinDate(d, m, y)
+        newDt = TuringDate(d, m, y)
 
         s = +1
         if numDays < 0:
@@ -204,7 +204,7 @@ class FinCalendar(object):
             d = dt.day
             m = dt.month
             y = dt.year
-            newDt = FinDate(d, m, y)
+            newDt = TuringDate(d, m, y)
 
             if self.isBusinessDay(newDt) is True:
                 numDays -= 1
@@ -214,7 +214,7 @@ class FinCalendar(object):
 ###############################################################################
 
     def isBusinessDay(self,
-                      dt: FinDate):
+                      dt: TuringDate):
         ''' Determines if a date is a business day according to the specified
         calendar. If it is it returns True, otherwise False. '''
 
@@ -231,12 +231,12 @@ class FinCalendar(object):
 ###############################################################################
 
     def isHoliday(self,
-                      dt: FinDate):
+                  dt: TuringDate):
         ''' Determines if a date is a Holiday according to the specified
         calendar. Weekends are not holidays unless the holiday falls on a 
         weekend date. '''
 
-        startDate = FinDate(1, 1, dt._y)
+        startDate = TuringDate(1, 1, dt._y)
         dayInYear = dt._excelDate - startDate._excelDate + 1
         weekday = dt._weekday
 
@@ -247,39 +247,39 @@ class FinCalendar(object):
         self._weekday = weekday
         self._dt = dt
 
-        if self._type == FinCalendarTypes.NONE:
+        if self._type == TuringCalendarTypes.NONE:
             return self.HOLIDAY_NONE()
-        elif self._type == FinCalendarTypes.WEEKEND:
+        elif self._type == TuringCalendarTypes.WEEKEND:
             return self.HOLIDAY_WEEKEND()
-        elif self._type == FinCalendarTypes.AUSTRALIA:
+        elif self._type == TuringCalendarTypes.AUSTRALIA:
             return self.HOLIDAY_AUSTRALIA()
-        elif self._type == FinCalendarTypes.CANADA:
+        elif self._type == TuringCalendarTypes.CANADA:
             return self.HOLIDAY_CANADA()
-        elif self._type == FinCalendarTypes.FRANCE:
+        elif self._type == TuringCalendarTypes.FRANCE:
             return self.HOLIDAY_FRANCE()
-        elif self._type == FinCalendarTypes.GERMANY:
+        elif self._type == TuringCalendarTypes.GERMANY:
             return self.HOLIDAY_GERMANY()
-        elif self._type == FinCalendarTypes.ITALY:
+        elif self._type == TuringCalendarTypes.ITALY:
             return self.HOLIDAY_ITALY()
-        elif self._type == FinCalendarTypes.JAPAN:
+        elif self._type == TuringCalendarTypes.JAPAN:
             return self.HOLIDAY_JAPAN()
-        elif self._type == FinCalendarTypes.NEW_ZEALAND:
+        elif self._type == TuringCalendarTypes.NEW_ZEALAND:
             return self.HOLIDAY_NEW_ZEALAND()
-        elif self._type == FinCalendarTypes.NORWAY:
+        elif self._type == TuringCalendarTypes.NORWAY:
             return self.HOLIDAY_NORWAY()
-        elif self._type == FinCalendarTypes.SWEDEN:
+        elif self._type == TuringCalendarTypes.SWEDEN:
             return self.HOLIDAY_SWEDEN()
-        elif self._type == FinCalendarTypes.SWITZERLAND:
+        elif self._type == TuringCalendarTypes.SWITZERLAND:
             return self.HOLIDAY_SWITZERLAND()
-        elif self._type == FinCalendarTypes.TARGET:
+        elif self._type == TuringCalendarTypes.TARGET:
             return self.HOLIDAY_TARGET()
-        elif self._type == FinCalendarTypes.UNITED_KINGDOM:
+        elif self._type == TuringCalendarTypes.UNITED_KINGDOM:
             return self.HOLIDAY_UNITED_KINGDOM()
-        elif self._type == FinCalendarTypes.UNITED_STATES:
+        elif self._type == TuringCalendarTypes.UNITED_STATES:
             return self.HOLIDAY_UNITED_STATES()
         else:
             print(self._type)
-            raise FinError("Unknown calendar")
+            raise TuringError("Unknown calendar")
 
 ###############################################################################
 
@@ -306,10 +306,10 @@ class FinCalendar(object):
         if m == 1 and d == 26:  # Australia day
             return True
 
-        if m == 1 and d == 27 and weekday == FinDate.MON:  # Australia day
+        if m == 1 and d == 27 and weekday == TuringDate.MON:  # Australia day
             return True
 
-        if m == 1 and d == 28 and weekday == FinDate.MON:  # Australia day
+        if m == 1 and d == 28 and weekday == TuringDate.MON:  # Australia day
             return True
 
         em = easterMondayDay[y - 1901]
@@ -323,34 +323,34 @@ class FinCalendar(object):
         if m == 4 and d == 25:  # Australia day
             return True
 
-        if m == 4 and d == 26 and weekday == FinDate.MON:  # Australia day
+        if m == 4 and d == 26 and weekday == TuringDate.MON:  # Australia day
             return True
 
-        if m == 6 and d > 7 and d < 15 and weekday == FinDate.MON:  # Queen 
+        if m == 6 and d > 7 and d < 15 and weekday == TuringDate.MON:  # Queen
             return True
 
-        if m == 8 and d < 8 and weekday == FinDate.MON:  # BANK holiday 
+        if m == 8 and d < 8 and weekday == TuringDate.MON:  # BANK holiday
             return True
 
-        if m == 10 and d < 8 and weekday == FinDate.MON:  # BANK holiday 
+        if m == 10 and d < 8 and weekday == TuringDate.MON:  # BANK holiday
             return True
 
         if m == 12 and d == 25:  # Xmas
             return True
 
-        if m == 12 and d == 26 and weekday == FinDate.MON:  # Xmas
+        if m == 12 and d == 26 and weekday == TuringDate.MON:  # Xmas
             return True
 
-        if m == 12 and d == 27 and weekday == FinDate.MON:  # Xmas
+        if m == 12 and d == 27 and weekday == TuringDate.MON:  # Xmas
             return True
 
         if m == 12 and d == 26:  # Boxing day
             return True
 
-        if m == 12 and d == 27 and weekday == FinDate.MON:  # Boxing
+        if m == 12 and d == 27 and weekday == TuringDate.MON:  # Boxing
             return True
 
-        if m == 12 and d == 28 and weekday == FinDate.MON:  # Boxing
+        if m == 12 and d == 28 and weekday == TuringDate.MON:  # Boxing
             return True
 
         return False
@@ -366,10 +366,10 @@ class FinCalendar(object):
         if m == 1 and d == 1:  # new years day
             return True
 
-        if m == 1 and d == 2 and weekday == FinDate.MON:  # new years day
+        if m == 1 and d == 2 and weekday == TuringDate.MON:  # new years day
             return True
 
-        if m == 1 and d == 3 and weekday == FinDate.MON:  # new years day
+        if m == 1 and d == 3 and weekday == TuringDate.MON:  # new years day
             return True
 
         em = easterMondayDay[y - 1901]
@@ -380,10 +380,10 @@ class FinCalendar(object):
         if dayInYear == em - 3:  # good friday
             return True
 
-        if m == 5 and d <= 7 and weekday == FinDate.MON:
+        if m == 5 and d <= 7 and weekday == TuringDate.MON:
             return True
 
-        if m == 5 and d >= 25 and weekday == FinDate.MON:
+        if m == 5 and d >= 25 and weekday == TuringDate.MON:
             return True
 
         if m == 6 and d == 2 and y == 2022: # SPRING BANK HOLIDAY
@@ -392,7 +392,7 @@ class FinCalendar(object):
         if m == 6 and d == 3 and y == 2022: # QUEEN PLAT JUB
             return True
 
-        if m == 8 and d > 24 and weekday == FinDate.MON:  # Late Summer
+        if m == 8 and d > 24 and weekday == TuringDate.MON:  # Late Summer
             return True
 
         if m == 12 and d == 25:  # Xmas
@@ -401,16 +401,16 @@ class FinCalendar(object):
         if m == 12 and d == 26:  # Boxing day
             return True
 
-        if m == 12 and d == 27 and weekday == FinDate.MON:  # Xmas
+        if m == 12 and d == 27 and weekday == TuringDate.MON:  # Xmas
             return True
 
-        if m == 12 and d == 27 and weekday == FinDate.TUE:  # Xmas
+        if m == 12 and d == 27 and weekday == TuringDate.TUE:  # Xmas
             return True
 
-        if m == 12 and d == 28 and weekday == FinDate.MON:  # Xmas
+        if m == 12 and d == 28 and weekday == TuringDate.MON:  # Xmas
             return True
 
-        if m == 12 and d == 28 and weekday == FinDate.TUE:  # Xmas
+        if m == 12 and d == 28 and weekday == TuringDate.TUE:  # Xmas
             return True
 
         return False
@@ -498,7 +498,7 @@ class FinCalendar(object):
         if m == 6 and d == 6: # June
             return True
 
-        if m == 6 and d > 18 and d < 26 and weekday == FinDate.FRI: # Midsummer
+        if m == 6 and d > 18 and d < 26 and weekday == TuringDate.FRI: # Midsummer
             return True
 
         if m == 12 and d == 24:  # Xmas eve
@@ -610,37 +610,37 @@ class FinCalendar(object):
         if m == 1 and d == 1:  # new years day
             return True
 
-        if m == 1 and d == 2 and weekday == FinDate.MON:  # bank holiday
+        if m == 1 and d == 2 and weekday == TuringDate.MON:  # bank holiday
             return True
 
-        if m == 1 and d == 3 and weekday == FinDate.MON:  # bank holiday
+        if m == 1 and d == 3 and weekday == TuringDate.MON:  # bank holiday
             return True
 
-        if m == 1 and d > 7 and d < 15 and weekday == FinDate.MON:  # coa
+        if m == 1 and d > 7 and d < 15 and weekday == TuringDate.MON:  # coa
             return True
 
         if m == 2 and d == 11:  # nfd
             return True
 
-        if m == 2 and d == 12 and weekday == FinDate.MON:  # nfd
+        if m == 2 and d == 12 and weekday == TuringDate.MON:  # nfd
             return True
 
         if m == 2 and d == 23:  # emperor's birthday
             return True
 
-        if m == 2 and d == 24 and weekday == FinDate.MON:  # emperor's birthday
+        if m == 2 and d == 24 and weekday == TuringDate.MON:  # emperor's birthday
             return True
 
         if m == 3 and d == 20:  # vernal equinox - NOT EXACT
             return True
 
-        if m == 3 and d == 21 and weekday == FinDate.MON:  
+        if m == 3 and d == 21 and weekday == TuringDate.MON:
             return True
 
         if m == 4 and d == 29:  # SHOWA greenery
             return True
 
-        if m == 4 and d == 30 and weekday == FinDate.MON:  # SHOWA greenery
+        if m == 4 and d == 30 and weekday == TuringDate.MON:  # SHOWA greenery
             return True
 
         if m == 5 and d == 3:  # Memorial Day
@@ -652,10 +652,10 @@ class FinCalendar(object):
         if m == 5 and d == 5:  # children
             return True
 
-        if m == 5 and d == 6 and weekday == FinDate.MON:  # children
+        if m == 5 and d == 6 and weekday == TuringDate.MON:  # children
             return True
 
-        if m == 7 and d > 14 and d < 22 and y != 2021 and weekday == FinDate.MON:
+        if m == 7 and d > 14 and d < 22 and y != 2021 and weekday == TuringDate.MON:
             return True
 
         if m == 7 and d == 22 and y == 2021: # OLYMPICS
@@ -668,30 +668,30 @@ class FinCalendar(object):
         if m == 8 and d == 11 and y != 2021:
             return True
 
-        if m == 8 and d == 12 and y != 2021 and weekday == FinDate.MON:
+        if m == 8 and d == 12 and y != 2021 and weekday == TuringDate.MON:
             return True
 
-        if m == 8 and d == 9 and y == 2021 and weekday == FinDate.MON:
+        if m == 8 and d == 9 and y == 2021 and weekday == TuringDate.MON:
             return True
 
         # Respect for aged
-        if m == 9 and d > 14 and d < 22 and weekday == FinDate.MON:
+        if m == 9 and d > 14 and d < 22 and weekday == TuringDate.MON:
             return True
 
         # Equinox - APPROXIMATE
         if m == 9 and d == 23:
             return True
 
-        if m == 9 and d == 24 and weekday == FinDate.MON:
+        if m == 9 and d == 24 and weekday == TuringDate.MON:
             return True
 
-        if m == 10 and d > 7 and d <= 14 and y != 2021 and weekday == FinDate.MON:  # HS
+        if m == 10 and d > 7 and d <= 14 and y != 2021 and weekday == TuringDate.MON:  # HS
             return True
 
         if m == 11 and d == 3:  # Culture
             return True
 
-        if m == 11 and d == 4 and weekday == FinDate.MON:  # Culture
+        if m == 11 and d == 4 and weekday == TuringDate.MON:  # Culture
             return True
 
         if m == 11 and d == 23:  # Thanksgiving
@@ -711,13 +711,13 @@ class FinCalendar(object):
         if m == 1 and d == 1:  # new years day
             return True
 
-        if m == 1 and d == 2 and weekday == FinDate.MON:  # new years day
+        if m == 1 and d == 2 and weekday == TuringDate.MON:  # new years day
             return True
 
-        if m == 1 and d == 3 and weekday == FinDate.MON:  # new years day
+        if m == 1 and d == 3 and weekday == TuringDate.MON:  # new years day
             return True
 
-        if m == 1 and d > 18 and d < 26 and weekday == FinDate.MON:  # Anniversary 
+        if m == 1 and d > 18 and d < 26 and weekday == TuringDate.MON:  # Anniversary
             return True
 
         if m == 2 and d == 6:  # Waitanga day
@@ -734,28 +734,28 @@ class FinCalendar(object):
         if m == 4 and d == 25:  # ANZAC day
             return True
 
-        if m == 6 and d < 8 and weekday == FinDate.MON:  # Queen 
+        if m == 6 and d < 8 and weekday == TuringDate.MON:  # Queen
             return True
 
-        if m == 10 and d > 21 and d < 29 and weekday == FinDate.MON:  # LABOR DAY 
+        if m == 10 and d > 21 and d < 29 and weekday == TuringDate.MON:  # LABOR DAY
             return True
 
         if m == 12 and d == 25:  # Xmas
             return True
 
-        if m == 12 and d == 26 and weekday == FinDate.MON:  # Xmas
+        if m == 12 and d == 26 and weekday == TuringDate.MON:  # Xmas
             return True
 
-        if m == 12 and d == 27 and weekday == FinDate.MON:  # Xmas
+        if m == 12 and d == 27 and weekday == TuringDate.MON:  # Xmas
             return True
 
         if m == 12 and d == 26:  # Boxing day
             return True
 
-        if m == 12 and d == 27 and weekday == FinDate.MON:  # Boxing
+        if m == 12 and d == 27 and weekday == TuringDate.MON:  # Boxing
             return True
 
-        if m == 12 and d == 28 and weekday == FinDate.MON:  # Boxing
+        if m == 12 and d == 28 and weekday == TuringDate.MON:  # Boxing
             return True
 
         return False
@@ -816,58 +816,58 @@ class FinCalendar(object):
         if m == 1 and d == 1:  # NYD
             return True
 
-        if m == 1 and d == 2 and weekday == FinDate.MON:  # NYD
+        if m == 1 and d == 2 and weekday == TuringDate.MON:  # NYD
             return True
 
-        if m == 1 and d == 3 and weekday == FinDate.MON:  # NYD
+        if m == 1 and d == 3 and weekday == TuringDate.MON:  # NYD
             return True
 
-        if m == 1 and d >= 15 and d < 22 and weekday == FinDate.MON:  # MLK
+        if m == 1 and d >= 15 and d < 22 and weekday == TuringDate.MON:  # MLK
             return True
 
-        if m == 2 and d >= 15 and d < 22 and weekday == FinDate.MON:  # GW
+        if m == 2 and d >= 15 and d < 22 and weekday == TuringDate.MON:  # GW
             return True
 
-        if m == 5 and d >= 25 and d <= 31 and weekday == FinDate.MON:  # MD
+        if m == 5 and d >= 25 and d <= 31 and weekday == TuringDate.MON:  # MD
             return True
 
         if m == 7 and d == 4:  # Indep day
             return True
 
-        if m == 7 and d == 5 and weekday == FinDate.MON:  # Indep day
+        if m == 7 and d == 5 and weekday == TuringDate.MON:  # Indep day
             return True
 
-        if m == 7 and d == 3 and weekday == FinDate.FRI:  # Indep day
+        if m == 7 and d == 3 and weekday == TuringDate.FRI:  # Indep day
             return True
 
-        if m == 9 and d >= 1 and d < 8 and weekday == FinDate.MON:  # Lab
+        if m == 9 and d >= 1 and d < 8 and weekday == TuringDate.MON:  # Lab
             return True
 
-        if m == 10 and d >= 8 and d < 15 and weekday == FinDate.MON:  # CD
+        if m == 10 and d >= 8 and d < 15 and weekday == TuringDate.MON:  # CD
             return True
 
         if m == 11 and d == 11:  # Veterans day
             return True
 
-        if m == 11 and d == 12 and weekday == FinDate.MON:  # Vets
+        if m == 11 and d == 12 and weekday == TuringDate.MON:  # Vets
             return True
 
-        if m == 11 and d == 10 and weekday == FinDate.FRI:  # Vets
+        if m == 11 and d == 10 and weekday == TuringDate.FRI:  # Vets
             return True
 
-        if m == 11 and d >= 22 and d < 29 and weekday == FinDate.THU:  # TG
+        if m == 11 and d >= 22 and d < 29 and weekday == TuringDate.THU:  # TG
             return True
 
-        if m == 12 and d == 24 and weekday == FinDate.FRI:  # Xmas holiday
+        if m == 12 and d == 24 and weekday == TuringDate.FRI:  # Xmas holiday
             return True
 
         if m == 12 and d == 25:  # Xmas holiday
             return True
 
-        if m == 12 and d == 26 and weekday == FinDate.MON:  # Xmas holiday
+        if m == 12 and d == 26 and weekday == TuringDate.MON:  # Xmas holiday
             return True
 
-        if m == 12 and d == 31 and weekday == FinDate.FRI:
+        if m == 12 and d == 31 and weekday == TuringDate.FRI:
             return True
 
         return False
@@ -883,13 +883,13 @@ class FinCalendar(object):
         if m == 1 and d == 1:  # NYD
             return True
 
-        if m == 1 and d == 2 and weekday == FinDate.MON:  # NYD
+        if m == 1 and d == 2 and weekday == TuringDate.MON:  # NYD
             return True
 
-        if m == 1 and d == 3 and weekday == FinDate.MON:  # NYD
+        if m == 1 and d == 3 and weekday == TuringDate.MON:  # NYD
             return True
 
-        if m == 2 and d >= 15 and d < 22 and weekday == FinDate.MON:  # FAMILY
+        if m == 2 and d >= 15 and d < 22 and weekday == TuringDate.MON:  # FAMILY
             return True
 
         em = easterMondayDay[y - 1901]
@@ -897,52 +897,52 @@ class FinCalendar(object):
         if dayInYear == em - 3:  # good friday
             return True
 
-        if m == 5 and d >= 18 and d < 25 and weekday == FinDate.MON:  # VICTORIA
+        if m == 5 and d >= 18 and d < 25 and weekday == TuringDate.MON:  # VICTORIA
             return True
 
         if m == 7 and d == 1:  # Canada day
             return True
 
-        if m == 7 and d == 2 and weekday == FinDate.MON:  # Canada day
+        if m == 7 and d == 2 and weekday == TuringDate.MON:  # Canada day
             return True
 
-        if m == 7 and d == 3 and weekday == FinDate.MON:  # Canada day
+        if m == 7 and d == 3 and weekday == TuringDate.MON:  # Canada day
             return True
 
-        if m == 8 and d < 8 and weekday == FinDate.MON:  # Provincial
+        if m == 8 and d < 8 and weekday == TuringDate.MON:  # Provincial
             return True
 
-        if m == 9 and d < 8 and weekday == FinDate.MON:  # Labor
+        if m == 9 and d < 8 and weekday == TuringDate.MON:  # Labor
             return True
 
-        if m == 10 and d >= 8 and d < 15 and weekday == FinDate.MON:  # THANKS
+        if m == 10 and d >= 8 and d < 15 and weekday == TuringDate.MON:  # THANKS
             return True
 
         if m == 11 and d == 11:  # Veterans day
             return True
 
-        if m == 11 and d == 12 and weekday == FinDate.MON:  # Vets
+        if m == 11 and d == 12 and weekday == TuringDate.MON:  # Vets
             return True
 
-        if m == 11 and d == 13 and weekday == FinDate.MON:  # Vets
+        if m == 11 and d == 13 and weekday == TuringDate.MON:  # Vets
             return True
 
         if m == 12 and d == 25:  # Xmas holiday
             return True
 
-        if m == 12 and d == 26 and weekday == FinDate.MON:  # Xmas holiday
+        if m == 12 and d == 26 and weekday == TuringDate.MON:  # Xmas holiday
             return True
 
-        if m == 12 and d == 27 and weekday == FinDate.MON:  # Xmas holiday
+        if m == 12 and d == 27 and weekday == TuringDate.MON:  # Xmas holiday
             return True
 
         if m == 12 and d == 26:  # Boxing holiday
             return True
 
-        if m == 12 and d == 27 and weekday == FinDate.MON:  # Boxing holiday
+        if m == 12 and d == 27 and weekday == TuringDate.MON:  # Boxing holiday
             return True
 
-        if m == 12 and d == 28 and weekday == FinDate.TUE:  # Boxing holiday
+        if m == 12 and d == 28 and weekday == TuringDate.TUE:  # Boxing holiday
             return True
 
         return False
@@ -1037,8 +1037,8 @@ class FinCalendar(object):
                        year: float):
         ''' generates a list of holidays in a specific year for the specified
         calendar. Useful for diagnostics. '''
-        startDate = FinDate(1, 1, year)
-        endDate = FinDate(1, 1, year+1)
+        startDate = TuringDate(1, 1, year)
+        endDate = TuringDate(1, 1, year + 1)
         holidayList = []
         while startDate < endDate:
             if self.isBusinessDay(startDate) is False and \
@@ -1057,11 +1057,11 @@ class FinCalendar(object):
         easy to compute so we rely on a pre-calculated array. '''
 
         if year > 2100:
-            raise FinError(
+            raise TuringError(
                 "Unable to determine Easter monday in year " + str(year))
 
         emDays = easterMondayDay[year - 1901]
-        startDate = FinDate(1, 1, year)
+        startDate = TuringDate(1, 1, year)
         em = startDate.addDays(emDays-1)
         return em
 

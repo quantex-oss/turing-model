@@ -4,31 +4,31 @@
 
 import numpy as np
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_variables import gSmall
-from ...finutils.turing_math import testMonotonicity
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_helper_functions import labelToString
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_helper_functions import timesFromDates
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_variables import gSmall
+from financepy.finutils.turing_math import testMonotonicity
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_helper_functions import timesFromDates
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 ###############################################################################
 
 
-class FinDiscountCurvePWF(FinDiscountCurve):
+class TuringDiscountCurvePWF(TuringDiscountCurve):
     ''' Curve is made up of a series of zero rates sections with each having
     a piecewise flat zero rate. The default compounding assumption is
-    continuous. The class inherits methods from FinDiscountCurve. '''
+    continuous. The class inherits methods from TuringDiscountCurve. '''
 
     def __init__(self,
-                 valuationDate: FinDate,
+                 valuationDate: TuringDate,
                  zeroDates: list,
                  zeroRates: (list, np.ndarray),
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.CONTINUOUS,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_ACT_ISDA):
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA):
         ''' Creates a discount curve using a vector of times and zero rates
         that assumes that the zero rates are piecewise flat. '''
 
@@ -37,10 +37,10 @@ class FinDiscountCurvePWF(FinDiscountCurve):
         self._valuationDate = valuationDate
 
         if len(zeroDates) != len(zeroRates):
-            raise FinError("Dates and rates vectors must have same length")
+            raise TuringError("Dates and rates vectors must have same length")
 
         if len(zeroDates) == 0:
-            raise FinError("Dates vector must have length > 0")
+            raise TuringError("Dates vector must have length > 0")
 
         self._zeroDates = zeroDates
         self._zeroRates = np.array(zeroRates)
@@ -54,7 +54,7 @@ class FinDiscountCurvePWF(FinDiscountCurve):
         self._times = np.array(dcTimes)
 
         if testMonotonicity(self._times) is False:
-            raise FinError("Times are not sorted in increasing order")
+            raise TuringError("Times are not sorted in increasing order")
 
 ###############################################################################
 
@@ -66,7 +66,7 @@ class FinDiscountCurvePWF(FinDiscountCurve):
             times = np.array([times])
 
         if np.any(times < 0.0):
-            raise FinError("All times must be positive")
+            raise TuringError("All times must be positive")
 
         times = np.maximum(times, gSmall)
 
@@ -120,7 +120,7 @@ class FinDiscountCurvePWF(FinDiscountCurve):
 ###############################################################################
 
     def df(self,
-           dates: (FinDate, list)):
+           dates: (TuringDate, list)):
         ''' Return discount factors given a single or vector of dates. The
         discount factor depends on the rate and this in turn depends on its
         compounding frequency and it defaults to continuous compounding. It

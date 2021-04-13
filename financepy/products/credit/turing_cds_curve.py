@@ -5,15 +5,15 @@
 import numpy as np
 import scipy.optimize as optimize
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_variables import gDaysInYear
-from ...market.curves.turing_interpolator import _uinterpolate, FinInterpTypes
-from ...finutils.turing_helper_functions import inputTime, tableToString
-from ...finutils.turing_day_count import FinDayCount
-from ...finutils.turing_frequency import FinFrequency, FinFrequencyTypes
-from ...finutils.turing_helper_functions import checkArgumentTypes, _funcName
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.market.curves.turing_interpolator import _uinterpolate, FinInterpTypes
+from financepy.finutils.turing_helper_functions import inputTime, tableToString
+from financepy.finutils.turing_day_count import TuringDayCount
+from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, _funcName
+from financepy.finutils.turing_helper_functions import labelToString
 
 
 ###############################################################################
@@ -42,7 +42,7 @@ class FinCDSCurve():
     the interpolation of the survival probabilities is also required. '''
 
     def __init__(self,
-                 valuationDate: FinDate,
+                 valuationDate: TuringDate,
                  cdsContracts: list,
                  liborCurve,
                  recoveryRate: float = 0.40,
@@ -55,7 +55,7 @@ class FinCDSCurve():
         checkArgumentTypes(getattr(self, _funcName(), None), locals())
 
         if valuationDate != liborCurve._valuationDate:
-            raise FinError("Ibor curve does not have same valuation date as Issuer curve.")
+            raise TuringError("Ibor curve does not have same valuation date as Issuer curve.")
 
         self._valuationDate = valuationDate
         self._cdsContracts = cdsContracts
@@ -80,13 +80,13 @@ class FinCDSCurve():
         ''' Ensure that contracts are in increasing maturity. '''
 
         if len(cdsContracts) == 0:
-            raise FinError("No CDS contracts have been supplied.")
+            raise TuringError("No CDS contracts have been supplied.")
 
         maturityDate = cdsContracts[0]._maturityDate
 
         for cds in cdsContracts[1:]:
             if cds._maturityDate <= maturityDate:
-                raise FinError("CDS contracts not in increasing maturity.")
+                raise TuringError("CDS contracts not in increasing maturity.")
 
             maturityDate = cds._maturityDate
 
@@ -96,7 +96,7 @@ class FinCDSCurve():
         ''' Extract the survival probability to date dt. This function
         supports vectorisation. '''
 
-        if isinstance(dt, FinDate):
+        if isinstance(dt, TuringDate):
             t = (dt - self._valuationDate) / gDaysInYear
         elif isinstance(dt, list):
             t = np.array(dt)
@@ -104,7 +104,7 @@ class FinCDSCurve():
             t = dt
 
         if np.any(t < 0.0):
-            raise FinError("Survival Date before curve anchor date")
+            raise TuringError("Survival Date before curve anchor date")
 
         if isinstance(t, np.ndarray):
             n = len(t)
@@ -122,7 +122,7 @@ class FinCDSCurve():
                               self._interpolationMethod.value)
             return q
         else:
-            raise FinError("Unknown time type")
+            raise TuringError("Unknown time type")
 
 ###############################################################################
 
@@ -130,7 +130,7 @@ class FinCDSCurve():
         ''' Extract the discount factor from the underlying Ibor curve. This
         function supports vectorisation. '''
 
-        if isinstance(dt, FinDate):
+        if isinstance(dt, TuringDate):
             t = (dt - self._valuationDate) / gDaysInYear
         elif isinstance(dt, list):
             t = np.array(dt)
@@ -185,12 +185,12 @@ class FinCDSCurve():
         according to the specified day count convention. '''
 
         if date1 < self._valuationDate:
-            raise FinError("Date1 before curve value date.")
+            raise TuringError("Date1 before curve value date.")
 
         if date2 < date1:
-            raise FinError("Date2 must not be before Date1")
+            raise TuringError("Date2 must not be before Date1")
 
-        dayCount = FinDayCount(dayCountType)
+        dayCount = TuringDayCount(dayCountType)
         yearFrac = dayCount.yearFrac(date1, date2)[0]
         df1 = self.df(date1)
         df2 = self.df(date2)
@@ -201,12 +201,12 @@ class FinCDSCurve():
 
     def zeroRate(self,
                  dt,
-                 freqType=FinFrequencyTypes.CONTINUOUS):
+                 freqType=TuringFrequencyTypes.CONTINUOUS):
         ''' Calculate the zero rate to date dt in the chosen compounding
         frequency where -1 is continuous is the default. '''
 
         t = inputTime(dt, self)
-        f = FinFrequency(freqType)
+        f = TuringFrequency(freqType)
         df = self.df(t)
         q = self.survProb(t)
         dfq = df * q

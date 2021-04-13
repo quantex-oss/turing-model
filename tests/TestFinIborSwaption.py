@@ -7,46 +7,46 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
 
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
 from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
-from financepy.products.rates.turing_ibor_swaption import FinSwapTypes
+from financepy.products.rates.turing_ibor_swaption import TuringSwapTypes
 
 from financepy.models.turing_model_black import FinModelBlack
-from financepy.models.turing_model_black_shifted import FinModelBlackShifted
+from financepy.models.turing_model_black_shifted import TuringModelBlackShifted
 from financepy.models.turing_model_sabr import FinModelSABR
-from financepy.models.turing_model_sabr_shifted import FinModelSABRShifted
+from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
 from financepy.models.turing_model_rates_hw import FinModelRatesHW
-from financepy.models.turing_model_rates_bk import FinModelRatesBK
-from financepy.models.turing_model_rates_bdt import FinModelRatesBDT
+from financepy.models.turing_model_rates_bk import TuringModelRatesBK
+from financepy.models.turing_model_rates_bdt import TuringModelRatesBDT
 
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.market.curves.turing_discount_curve_zeros import FinDiscountCurveZeros
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
 from financepy.market.curves.turing_interpolator import FinInterpTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 
 def test_FinIborDepositsAndSwaps(valuationDate):
 
-    depoBasis = FinDayCountTypes.THIRTY_E_360_ISDA
+    depoBasis = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
 
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
     depositRate = 0.05
 
-    depo1 = FinIborDeposit(settlementDate, "1M", depositRate, depoBasis)
-    depo2 = FinIborDeposit(settlementDate, "3M", depositRate, depoBasis)
-    depo3 = FinIborDeposit(settlementDate, "6M", depositRate, depoBasis)
+    depo1 = TuringIborDeposit(settlementDate, "1M", depositRate, depoBasis)
+    depo2 = TuringIborDeposit(settlementDate, "3M", depositRate, depoBasis)
+    depo3 = TuringIborDeposit(settlementDate, "6M", depositRate, depoBasis)
 
     depos.append(depo1)
     depos.append(depo2)
@@ -55,9 +55,9 @@ def test_FinIborDepositsAndSwaps(valuationDate):
     fras = []
 
     swaps = []
-    fixedBasis = FinDayCountTypes.ACT_365F
-    fixedFreq = FinFrequencyTypes.SEMI_ANNUAL
-    fixedLegType = FinSwapTypes.PAY
+    fixedBasis = TuringDayCountTypes.ACT_365F
+    fixedFreq = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedLegType = TuringSwapTypes.PAY
     
     swapRate = 0.05
     swap1 = FinIborSwap(settlementDate, "1Y",  fixedLegType, swapRate, fixedFreq, fixedBasis)
@@ -68,7 +68,7 @@ def test_FinIborDepositsAndSwaps(valuationDate):
     swaps.append(swap2)
     swaps.append(swap3)
 
-    liborCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     return liborCurve
 
@@ -81,14 +81,14 @@ def testFinIborSwaptionModels():
     # COMPARISON OF MODELS
     ##########################################################################
 
-    valuationDate = FinDate(1, 1, 2011)
+    valuationDate = TuringDate(1, 1, 2011)
     liborCurve = test_FinIborDepositsAndSwaps(valuationDate)
 
-    exerciseDate = FinDate(1, 1, 2012)
-    swapMaturityDate = FinDate(1, 1, 2017)
+    exerciseDate = TuringDate(1, 1, 2012)
+    swapMaturityDate = TuringDate(1, 1, 2017)
 
-    swapFixedFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    swapFixedDayCountType = FinDayCountTypes.ACT_365F
+    swapFixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    swapFixedDayCountType = TuringDayCountTypes.ACT_365F
 
     strikes = np.linspace(0.02, 0.08, 5)
 
@@ -96,16 +96,16 @@ def testFinIborSwaptionModels():
                      "SABR_SHFT", "HW", "BK")
 
     model1 = FinModelBlack(0.00001)
-    model2 = FinModelBlackShifted(0.00001, 0.0)
+    model2 = TuringModelBlackShifted(0.00001, 0.0)
     model3 = FinModelSABR(0.013, 0.5, 0.5, 0.5)
-    model4 = FinModelSABRShifted(0.013, 0.5, 0.5, 0.5, -0.008)
+    model4 = TuringModelSABRShifted(0.013, 0.5, 0.5, 0.5, -0.008)
     model5 = FinModelRatesHW(0.00001, 0.00001)
-    model6 = FinModelRatesBK(0.01, 0.01)
+    model6 = TuringModelRatesBK(0.01, 0.01)
 
     settlementDate = valuationDate.addWeekDays(2)
 
     for k in strikes:
-        swaptionType = FinSwapTypes.PAY
+        swaptionType = TuringSwapTypes.PAY
         swaption = FinIborSwaption(settlementDate,
                                    exerciseDate,
                                    swapMaturityDate,
@@ -126,7 +126,7 @@ def testFinIborSwaptionModels():
                      "SABR_SHFTD", "HW", "BK")
 
     for k in strikes:
-        swaptionType = FinSwapTypes.RECEIVE
+        swaptionType = TuringSwapTypes.RECEIVE
         swaption = FinIborSwaption(settlementDate,
                                     exerciseDate,
                                     swapMaturityDate,
@@ -148,26 +148,26 @@ def testFinIborSwaptionModels():
 
 def test_FinIborSwaptionQLExample():
 
-    valuationDate = FinDate(4, 3, 2014)
-    settlementDate = FinDate(4, 3, 2014)
+    valuationDate = TuringDate(4, 3, 2014)
+    settlementDate = TuringDate(4, 3, 2014)
 
-    depoDCCType = FinDayCountTypes.THIRTY_E_360_ISDA
+    depoDCCType = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
-    depo = FinIborDeposit(settlementDate, "1W", 0.0023, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "1W", 0.0023, depoDCCType)
     depos.append(depo)
-    depo = FinIborDeposit(settlementDate, "1M", 0.0023, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "1M", 0.0023, depoDCCType)
     depos.append(depo)
-    depo = FinIborDeposit(settlementDate, "3M", 0.0023, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "3M", 0.0023, depoDCCType)
     depos.append(depo)
-    depo = FinIborDeposit(settlementDate, "6M", 0.0023, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "6M", 0.0023, depoDCCType)
     depos.append(depo)
 
     # No convexity correction provided so I omit interest rate futures
 
     swaps = []
-    accType = FinDayCountTypes.ACT_365F
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedLegType = FinSwapTypes.PAY
+    accType = TuringDayCountTypes.ACT_365F
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedLegType = TuringSwapTypes.PAY
     
     swap = FinIborSwap(settlementDate, "3Y", fixedLegType, 0.00790, fixedFreqType, accType)
     swaps.append(swap)
@@ -194,18 +194,18 @@ def test_FinIborSwaptionQLExample():
     swap = FinIborSwap(settlementDate, "30Y", fixedLegType, 0.0354, fixedFreqType, accType)
     swaps.append(swap)
 
-    liborCurve = FinIborSingleCurve(valuationDate, depos, [], swaps,
-                                    FinInterpTypes.LINEAR_ZERO_RATES)
+    liborCurve = TuringIborSingleCurve(valuationDate, depos, [], swaps,
+                                       FinInterpTypes.LINEAR_ZERO_RATES)
 
     exerciseDate = settlementDate.addTenor("5Y")
     swapMaturityDate = exerciseDate.addTenor("5Y")
     swapFixedCoupon = 0.040852
-    swapFixedFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    swapFixedDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
-    swapFloatFrequencyType = FinFrequencyTypes.QUARTERLY
-    swapFloatDayCountType = FinDayCountTypes.ACT_360
+    swapFixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    swapFixedDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
+    swapFloatFrequencyType = TuringFrequencyTypes.QUARTERLY
+    swapFloatDayCountType = TuringDayCountTypes.ACT_360
     swapNotional = 1000000
-    swaptionType = FinSwapTypes.PAY
+    swaptionType = TuringSwapTypes.PAY
 
     swaption = FinIborSwaption(settlementDate,
                                exerciseDate,
@@ -224,7 +224,7 @@ def test_FinIborSwaptionQLExample():
     v = swaption.value(settlementDate, liborCurve, model)
     testCases.print(model.__class__, v)
 
-    model = FinModelBlackShifted(0.1533, -0.008)
+    model = TuringModelBlackShifted(0.1533, -0.008)
     v = swaption.value(settlementDate, liborCurve, model)
     testCases.print(model.__class__, v)
 
@@ -232,7 +232,7 @@ def test_FinIborSwaptionQLExample():
     v = swaption.value(settlementDate, liborCurve, model)
     testCases.print(model.__class__, v)
 
-    model = FinModelSABRShifted(0.352, 0.5, 0.15, 0.15, -0.005)
+    model = TuringModelSABRShifted(0.352, 0.5, 0.15, 0.15, -0.005)
     v = swaption.value(settlementDate, liborCurve, model)
     testCases.print(model.__class__, v)
 
@@ -247,28 +247,28 @@ def testFinIborCashSettledSwaption():
 
     testCases.header("LABEL", "VALUE")
 
-    valuationDate = FinDate(1, 1, 2020)
-    settlementDate = FinDate(1, 1, 2020)
+    valuationDate = TuringDate(1, 1, 2020)
+    settlementDate = TuringDate(1, 1, 2020)
 
-    depoDCCType = FinDayCountTypes.THIRTY_E_360_ISDA
+    depoDCCType = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
-    depo = FinIborDeposit(settlementDate, "1W", 0.0023, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "1W", 0.0023, depoDCCType)
     depos.append(depo)
-    depo = FinIborDeposit(settlementDate, "1M", 0.0023, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "1M", 0.0023, depoDCCType)
     depos.append(depo)
-    depo = FinIborDeposit(settlementDate, "3M", 0.0023, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "3M", 0.0023, depoDCCType)
     depos.append(depo)
-    depo = FinIborDeposit(settlementDate, "6M", 0.0023, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "6M", 0.0023, depoDCCType)
     depos.append(depo)
 
     # No convexity correction provided so I omit interest rate futures
 
-    settlementDate = FinDate(2, 1, 2020)
+    settlementDate = TuringDate(2, 1, 2020)
 
     swaps = []
-    accType = FinDayCountTypes.ACT_365F
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedLegType = FinSwapTypes.PAY
+    accType = TuringDayCountTypes.ACT_365F
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedLegType = TuringSwapTypes.PAY
     
     swap = FinIborSwap(settlementDate, "3Y", fixedLegType, 0.00790, fixedFreqType, accType)
     swaps.append(swap)
@@ -295,18 +295,18 @@ def testFinIborCashSettledSwaption():
     swap = FinIborSwap(settlementDate, "30Y", fixedLegType, 0.0354, fixedFreqType, accType)
     swaps.append(swap)
 
-    liborCurve = FinIborSingleCurve(valuationDate, depos, [], swaps,
-                               FinInterpTypes.LINEAR_ZERO_RATES)
+    liborCurve = TuringIborSingleCurve(valuationDate, depos, [], swaps,
+                                       FinInterpTypes.LINEAR_ZERO_RATES)
 
     exerciseDate = settlementDate.addTenor("5Y")
     swapMaturityDate = exerciseDate.addTenor("5Y")
     swapFixedCoupon = 0.040852
-    swapFixedFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    swapFixedDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
-    swapFloatFrequencyType = FinFrequencyTypes.QUARTERLY
-    swapFloatDayCountType = FinDayCountTypes.ACT_360
+    swapFixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    swapFixedDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
+    swapFloatFrequencyType = TuringFrequencyTypes.QUARTERLY
+    swapFloatDayCountType = TuringDayCountTypes.ACT_360
     swapNotional = 1000000
-    fixedLegType = FinSwapTypes.PAY
+    fixedLegType = TuringSwapTypes.PAY
 
     swaption = FinIborSwaption(settlementDate,
                                 exerciseDate,
@@ -361,22 +361,22 @@ def testFinIborSwaptionMatlabExamples():
     testCases.header("MATLAB EXAMPLE WITH FLAT TERM STRUCTURE")
     testCases.header("=======================================")
 
-    valuationDate = FinDate(1, 1, 2010)
-    liborCurve = FinDiscountCurveFlat(valuationDate, 0.06,
-                                      FinFrequencyTypes.CONTINUOUS,
-                                      FinDayCountTypes.THIRTY_E_360)
+    valuationDate = TuringDate(1, 1, 2010)
+    liborCurve = TuringDiscountCurveFlat(valuationDate, 0.06,
+                                         TuringFrequencyTypes.CONTINUOUS,
+                                         TuringDayCountTypes.THIRTY_E_360)
 
-    settlementDate = FinDate(1, 1, 2011)
-    exerciseDate = FinDate(1, 1, 2016)
-    maturityDate = FinDate(1, 1, 2019)
+    settlementDate = TuringDate(1, 1, 2011)
+    exerciseDate = TuringDate(1, 1, 2016)
+    maturityDate = TuringDate(1, 1, 2019)
 
     fixedCoupon = 0.062
-    fixedFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
+    fixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
     notional = 100.0
 
     # Pricing a PAY
-    swaptionType = FinSwapTypes.PAY
+    swaptionType = TuringSwapTypes.PAY
     swaption = FinIborSwaption(settlementDate,
                                 exerciseDate,
                                 maturityDate,
@@ -401,34 +401,34 @@ def testFinIborSwaptionMatlabExamples():
     testCases.header("MATLAB EXAMPLE WITH TERM STRUCTURE")
     testCases.header("===================================")
 
-    valuationDate = FinDate(1, 1, 2010)
+    valuationDate = TuringDate(1, 1, 2010)
 
-    dates = [FinDate(1, 1, 2011), FinDate(1, 1, 2012), FinDate(1, 1, 2013),
-             FinDate(1, 1, 2014), FinDate(1, 1, 2015)]
+    dates = [TuringDate(1, 1, 2011), TuringDate(1, 1, 2012), TuringDate(1, 1, 2013),
+             TuringDate(1, 1, 2014), TuringDate(1, 1, 2015)]
 
     zeroRates = [0.03, 0.034, 0.037, 0.039, 0.040]
 
-    contFreq = FinFrequencyTypes.CONTINUOUS
+    contFreq = TuringFrequencyTypes.CONTINUOUS
     interpType = FinInterpTypes.LINEAR_ZERO_RATES
-    dayCountType = FinDayCountTypes.THIRTY_E_360
+    dayCountType = TuringDayCountTypes.THIRTY_E_360
 
-    liborCurve = FinDiscountCurveZeros(valuationDate, dates,
-                                       zeroRates, contFreq,
-                                       dayCountType, interpType)
+    liborCurve = TuringDiscountCurveZeros(valuationDate, dates,
+                                          zeroRates, contFreq,
+                                          dayCountType, interpType)
 
-    settlementDate = FinDate(1, 1, 2011)
-    exerciseDate = FinDate(1, 1, 2012)
-    maturityDate = FinDate(1, 1, 2017)
+    settlementDate = TuringDate(1, 1, 2011)
+    exerciseDate = TuringDate(1, 1, 2012)
+    maturityDate = TuringDate(1, 1, 2017)
     fixedCoupon = 0.03
 
-    fixedFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedDayCountType = FinDayCountTypes.THIRTY_E_360
-    floatFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    floatDayCountType = FinDayCountTypes.THIRTY_E_360
+    fixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360
+    floatFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    floatDayCountType = TuringDayCountTypes.THIRTY_E_360
     notional = 1000.0
 
     # Pricing a put
-    swaptionType = FinSwapTypes.RECEIVE
+    swaptionType = TuringSwapTypes.RECEIVE
     swaption = FinIborSwaption(settlementDate,
                                 exerciseDate,
                                 maturityDate,
@@ -455,33 +455,33 @@ def testFinIborSwaptionMatlabExamples():
     testCases.header("MATLAB EXAMPLE WITH SHIFTED BLACK")
     testCases.header("===================================")
 
-    valuationDate = FinDate(1, 1, 2016)
+    valuationDate = TuringDate(1, 1, 2016)
 
-    dates = [FinDate(1, 1, 2017), FinDate(1, 1, 2018), FinDate(1, 1, 2019),
-             FinDate(1, 1, 2020), FinDate(1, 1, 2021)]
+    dates = [TuringDate(1, 1, 2017), TuringDate(1, 1, 2018), TuringDate(1, 1, 2019),
+             TuringDate(1, 1, 2020), TuringDate(1, 1, 2021)]
 
     zeroRates = np.array([-0.02, 0.024, 0.047, 0.090, 0.12])/100.0
 
-    contFreq = FinFrequencyTypes.ANNUAL
+    contFreq = TuringFrequencyTypes.ANNUAL
     interpType = FinInterpTypes.LINEAR_ZERO_RATES
-    dayCountType = FinDayCountTypes.THIRTY_E_360
+    dayCountType = TuringDayCountTypes.THIRTY_E_360
 
-    liborCurve = FinDiscountCurveZeros(valuationDate, dates, zeroRates,
-                                       contFreq, dayCountType, interpType)
+    liborCurve = TuringDiscountCurveZeros(valuationDate, dates, zeroRates,
+                                          contFreq, dayCountType, interpType)
 
-    settlementDate = FinDate(1, 1, 2016)
-    exerciseDate = FinDate(1, 1, 2017)
-    maturityDate = FinDate(1, 1, 2020)
+    settlementDate = TuringDate(1, 1, 2016)
+    exerciseDate = TuringDate(1, 1, 2017)
+    maturityDate = TuringDate(1, 1, 2020)
     fixedCoupon = -0.003
 
-    fixedFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
-    floatFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    floatDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
+    fixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
+    floatFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    floatDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
     notional = 1000.0
 
     # Pricing a PAY
-    swaptionType = FinSwapTypes.PAY
+    swaptionType = TuringSwapTypes.PAY
     swaption = FinIborSwaption(settlementDate,
                                 exerciseDate,
                                 maturityDate,
@@ -493,7 +493,7 @@ def testFinIborSwaptionMatlabExamples():
                                 floatFrequencyType,
                                 floatDayCountType)
 
-    model = FinModelBlackShifted(0.31, 0.008)
+    model = TuringModelBlackShifted(0.31, 0.008)
     v_finpy = swaption.value(valuationDate, liborCurve, model)
     v_matlab = 12.8301
 
@@ -510,32 +510,32 @@ def testFinIborSwaptionMatlabExamples():
 
     # https://fr.mathworks.com/help/fininst/swaptionbyhw.html
 
-    valuationDate = FinDate(1, 1, 2007)
+    valuationDate = TuringDate(1, 1, 2007)
 
-    dates = [FinDate(1, 1, 2007), FinDate(1, 7, 2007), FinDate(1, 1, 2008),
-             FinDate(1, 7, 2008), FinDate(1, 1, 2009), FinDate(1, 7, 2009),
-             FinDate(1, 1, 2010), FinDate(1, 7, 2010),
-             FinDate(1, 1, 2011), FinDate(1, 7, 2011), FinDate(1, 1, 2012)]
+    dates = [TuringDate(1, 1, 2007), TuringDate(1, 7, 2007), TuringDate(1, 1, 2008),
+             TuringDate(1, 7, 2008), TuringDate(1, 1, 2009), TuringDate(1, 7, 2009),
+             TuringDate(1, 1, 2010), TuringDate(1, 7, 2010),
+             TuringDate(1, 1, 2011), TuringDate(1, 7, 2011), TuringDate(1, 1, 2012)]
 
     zeroRates = np.array([0.075] * 11)
     interpType = FinInterpTypes.FLAT_FWD_RATES
-    dayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
-    contFreq = FinFrequencyTypes.SEMI_ANNUAL
+    dayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
+    contFreq = TuringFrequencyTypes.SEMI_ANNUAL
 
-    liborCurve = FinDiscountCurveZeros(valuationDate, dates, zeroRates,
-                                       contFreq,
-                                       dayCountType, interpType)
+    liborCurve = TuringDiscountCurveZeros(valuationDate, dates, zeroRates,
+                                          contFreq,
+                                          dayCountType, interpType)
 
     settlementDate = valuationDate
-    exerciseDate = FinDate(1, 1, 2010)
-    maturityDate = FinDate(1, 1, 2012)
+    exerciseDate = TuringDate(1, 1, 2010)
+    maturityDate = TuringDate(1, 1, 2012)
     fixedCoupon = 0.04
 
-    fixedFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
+    fixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
     notional = 100.0
 
-    swaptionType = FinSwapTypes.RECEIVE
+    swaptionType = TuringSwapTypes.RECEIVE
     swaption = FinIborSwaption(settlementDate,
                                 exerciseDate,
                                 maturityDate,
@@ -561,34 +561,34 @@ def testFinIborSwaptionMatlabExamples():
     testCases.header("====================================")
 
     # https://fr.mathworks.com/help/fininst/swaptionbybk.html
-    valuationDate = FinDate(1, 1, 2007)
+    valuationDate = TuringDate(1, 1, 2007)
 
-    dates = [FinDate(1, 1, 2007), FinDate(1, 7, 2007), FinDate(1, 1, 2008),
-             FinDate(1, 7, 2008), FinDate(1, 1, 2009), FinDate(1, 7, 2009),
-             FinDate(1, 1, 2010), FinDate(1, 7, 2010),
-             FinDate(1, 1, 2011), FinDate(1, 7, 2011), FinDate(1, 1, 2012)]
+    dates = [TuringDate(1, 1, 2007), TuringDate(1, 7, 2007), TuringDate(1, 1, 2008),
+             TuringDate(1, 7, 2008), TuringDate(1, 1, 2009), TuringDate(1, 7, 2009),
+             TuringDate(1, 1, 2010), TuringDate(1, 7, 2010),
+             TuringDate(1, 1, 2011), TuringDate(1, 7, 2011), TuringDate(1, 1, 2012)]
 
     zeroRates = np.array([0.07] * 11)
 
     interpType = FinInterpTypes.FLAT_FWD_RATES
-    dayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
-    contFreq = FinFrequencyTypes.SEMI_ANNUAL
+    dayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
+    contFreq = TuringFrequencyTypes.SEMI_ANNUAL
 
-    liborCurve = FinDiscountCurveZeros(valuationDate, dates, zeroRates,
-                                       contFreq, dayCountType, interpType)
+    liborCurve = TuringDiscountCurveZeros(valuationDate, dates, zeroRates,
+                                          contFreq, dayCountType, interpType)
 
     settlementDate = valuationDate
-    exerciseDate = FinDate(1, 1, 2011)
-    maturityDate = FinDate(1, 1, 2012)
+    exerciseDate = TuringDate(1, 1, 2011)
+    maturityDate = TuringDate(1, 1, 2012)
 
-    fixedFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
+    fixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
     notional = 100.0
 
-    model = FinModelRatesBK(0.1, 0.05, 200)
+    model = TuringModelRatesBK(0.1, 0.05, 200)
 
     fixedCoupon = 0.07
-    swaptionType = FinSwapTypes.PAY
+    swaptionType = TuringSwapTypes.PAY
     swaption = FinIborSwaption(settlementDate,
                                 exerciseDate,
                                 maturityDate,
@@ -607,7 +607,7 @@ def testFinIborSwaptionMatlabExamples():
     testCases.print("DIFF:", v_finpy - v_matlab)
 
     fixedCoupon = 0.0725
-    swaptionType = FinSwapTypes.RECEIVE
+    swaptionType = TuringSwapTypes.RECEIVE
     swaption = FinIborSwaption(settlementDate,
                                 exerciseDate,
                                 maturityDate,
@@ -633,32 +633,32 @@ def testFinIborSwaptionMatlabExamples():
 
     # https://fr.mathworks.com/help/fininst/swaptionbybdt.html
 
-    valuationDate = FinDate(1, 1, 2007)
+    valuationDate = TuringDate(1, 1, 2007)
 
-    dates = [FinDate(1, 1, 2007), FinDate(1, 7, 2007), FinDate(1, 1, 2008),
-             FinDate(1, 7, 2008), FinDate(1, 1, 2009), FinDate(1, 7, 2009),
-             FinDate(1, 1, 2010), FinDate(1, 7, 2010),
-             FinDate(1, 1, 2011), FinDate(1, 7, 2011), FinDate(1, 1, 2012)]
+    dates = [TuringDate(1, 1, 2007), TuringDate(1, 7, 2007), TuringDate(1, 1, 2008),
+             TuringDate(1, 7, 2008), TuringDate(1, 1, 2009), TuringDate(1, 7, 2009),
+             TuringDate(1, 1, 2010), TuringDate(1, 7, 2010),
+             TuringDate(1, 1, 2011), TuringDate(1, 7, 2011), TuringDate(1, 1, 2012)]
 
     zeroRates = np.array([0.06] * 11)
 
     interpType = FinInterpTypes.FLAT_FWD_RATES
-    dayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
-    contFreq = FinFrequencyTypes.ANNUAL
+    dayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
+    contFreq = TuringFrequencyTypes.ANNUAL
 
-    liborCurve = FinDiscountCurveZeros(valuationDate, dates, zeroRates,
-                                       contFreq, dayCountType, interpType)
+    liborCurve = TuringDiscountCurveZeros(valuationDate, dates, zeroRates,
+                                          contFreq, dayCountType, interpType)
 
     settlementDate = valuationDate
-    exerciseDate = FinDate(1, 1, 2012)
-    maturityDate = FinDate(1, 1, 2015)
+    exerciseDate = TuringDate(1, 1, 2012)
+    maturityDate = TuringDate(1, 1, 2015)
 
-    fixedFrequencyType = FinFrequencyTypes.ANNUAL
-    fixedDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
+    fixedFrequencyType = TuringFrequencyTypes.ANNUAL
+    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
     notional = 100.0
 
     fixedCoupon = 0.062
-    swaptionType = FinSwapTypes.PAY
+    swaptionType = TuringSwapTypes.PAY
     swaption = FinIborSwaption(settlementDate,
                                 exerciseDate,
                                 maturityDate,
@@ -668,7 +668,7 @@ def testFinIborSwaptionMatlabExamples():
                                 fixedDayCountType,
                                 notional)
 
-    model = FinModelRatesBDT(0.20, 200)
+    model = TuringModelRatesBDT(0.20, 200)
     v_finpy = swaption.value(valuationDate, liborCurve, model)
     v_matlab = 2.0592
 

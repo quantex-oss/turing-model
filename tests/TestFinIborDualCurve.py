@@ -9,26 +9,26 @@ import time as time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
 from financepy.products.rates.turing_ibor_fra import FinIborFRA
 from financepy.products.rates.turing_ibor_future import FinIborFuture
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
 from financepy.market.curves.turing_interpolator import FinInterpTypes
 from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.finutils.turing_global_types import TuringSwapTypes
 from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
-from financepy.products.rates.turing_ibor_dual_curve import FinIborDualCurve
-from financepy.products.rates.turing_ois_curve import FinOISCurve
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from financepy.products.rates.turing_ibor_dual_curve import TuringIborDualCurve
+from financepy.products.rates.turing_ois_curve import TuringOISCurve
 from financepy.products.rates.turing_ois import FinOIS
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 PLOT_GRAPHS = False
 
@@ -37,20 +37,20 @@ PLOT_GRAPHS = False
 def buildOIS(valuationDate):
     ''' Build the OIS funding curve from futures (FRAs) and OIS '''
 
-    dccType = FinDayCountTypes.THIRTY_E_360_ISDA
+    dccType = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
 
     spotDays = 0
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
-    fixedLegType = FinSwapTypes.PAY
+    fixedLegType = TuringSwapTypes.PAY
 
     fras = []
     # 1 x 4 FRA
     
     swaps = []
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedDCCType = FinDayCountTypes.ACT_365F
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedDCCType = TuringDayCountTypes.ACT_365F
 
     swapRate = 0.000022
     maturityDate = settlementDate.addMonths(24)
@@ -59,7 +59,7 @@ def buildOIS(valuationDate):
     swaps.append(swap)
 
     swapRate += 0.000
-    fixedLegType = FinSwapTypes.PAY
+    fixedLegType = TuringSwapTypes.PAY
     maturityDate = settlementDate.addMonths(36)
     swap = FinOIS(settlementDate, maturityDate, fixedLegType, swapRate, 
                         fixedFreqType, fixedDCCType)
@@ -145,10 +145,10 @@ def buildOIS(valuationDate):
                         fixedDCCType)
     swaps.append(swap)
 
-    oisCurve = FinOISCurve(valuationDate,
-                           [],
-                           fras,
-                           swaps)
+    oisCurve = TuringOISCurve(valuationDate,
+                              [],
+                              fras,
+                              swaps)
 
     return oisCurve
 
@@ -161,17 +161,17 @@ def test_bloombergPricingExample():
     https://github.com/vilen22/curve-building/blob/master/Bloomberg%20Curve%20Building%20Replication.xlsx
 
     '''
-    valuationDate = FinDate(6, 6, 2018)
+    valuationDate = TuringDate(6, 6, 2018)
 
     # We do the O/N rate which settles on trade date
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
-    depoDCCType = FinDayCountTypes.ACT_360
+    depoDCCType = TuringDayCountTypes.ACT_360
     depos = []
     depositRate = 0.0231381
     maturityDate = settlementDate.addMonths(3)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate,
-                           depoDCCType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate,
+                             depoDCCType)
     depos.append(depo)
 
     futs = []
@@ -190,13 +190,13 @@ def test_bloombergPricingExample():
     fras[4] = futs[4].toFRA(97.1450, -0.00411)
     fras[5] = futs[5].toFRA(97.0750, -0.00589)
 
-    accrual = FinDayCountTypes.THIRTY_E_360
-    freq = FinFrequencyTypes.SEMI_ANNUAL
+    accrual = TuringDayCountTypes.THIRTY_E_360
+    freq = TuringFrequencyTypes.SEMI_ANNUAL
 
     spotDays = 2
     settlementDate = valuationDate.addWeekDays(spotDays)
     notional = ONE_MILLION
-    fixedLegType = FinSwapTypes.PAY
+    fixedLegType = TuringSwapTypes.PAY
     interpType = FinInterpTypes.FLAT_FWD_RATES
 
     swaps = []
@@ -218,7 +218,7 @@ def test_bloombergPricingExample():
     swap = FinIborSwap(settlementDate, "40Y", fixedLegType, (2.96946+2.97354)/200, freq, accrual); swaps.append(swap)
     swap = FinIborSwap(settlementDate, "50Y", fixedLegType, (2.91552+2.93748)/200, freq, accrual); swaps.append(swap)
 
-    liborCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps, interpType, True)
+    liborCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps, interpType, True)
 
     principal = 0.0
     testCases.banner("======================================================")
@@ -242,8 +242,8 @@ def test_bloombergPricingExample():
     oisCurve = buildOIS(valuationDate)
 #    print(oisCurve)
 
-    liborDualCurve = FinIborDualCurve(valuationDate, oisCurve, depos, fras, swaps,
-                                      FinInterpTypes.FLAT_FWD_RATES, True)
+    liborDualCurve = TuringIborDualCurve(valuationDate, oisCurve, depos, fras, swaps,
+                                         FinInterpTypes.FLAT_FWD_RATES, True)
 #    print(liborDualCurve) 
     
     # The valuation of 53714.55 is very close to the spreadsheet value 53713.96
@@ -290,20 +290,20 @@ def test_swapValuationExample():
     
     vBloomberg = 388147
 
-    valuationDate = FinDate(30, 11, 2018)
+    valuationDate = TuringDate(30, 11, 2018)
 
-    startDate = FinDate(27, 12, 2017)
-    maturityDate = FinDate(27, 12, 2067)
+    startDate = TuringDate(27, 12, 2017)
+    maturityDate = TuringDate(27, 12, 2067)
     notional = 10 * ONE_MILLION
-    fixedLegType = FinSwapTypes.RECEIVE
+    fixedLegType = TuringSwapTypes.RECEIVE
     
     fixedRate = 0.0150
-    fixedDCCType = FinDayCountTypes.THIRTY_360_BOND
-    fixedFreqType = FinFrequencyTypes.ANNUAL
+    fixedDCCType = TuringDayCountTypes.THIRTY_360_BOND
+    fixedFreqType = TuringFrequencyTypes.ANNUAL
     
     floatSpread = 0.0
-    floatDCCType = FinDayCountTypes.ACT_360
-    floatFreqType = FinFrequencyTypes.SEMI_ANNUAL
+    floatDCCType = TuringDayCountTypes.ACT_360
+    floatFreqType = TuringFrequencyTypes.SEMI_ANNUAL
 
     offMarketSwap = FinIborSwap(startDate, maturityDate, fixedLegType, 
                                 fixedRate, fixedFreqType, fixedDCCType,
@@ -312,7 +312,7 @@ def test_swapValuationExample():
     
     interpType = FinInterpTypes.LINEAR_ZERO_RATES
     
-    depoDCCType = FinDayCountTypes.ACT_360
+    depoDCCType = TuringDayCountTypes.ACT_360
     depos = []
     
     ###########################################################################
@@ -321,10 +321,10 @@ def test_swapValuationExample():
     
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
-    depo = FinIborDeposit(settlementDate, "6M", -0.2510/100.0, depoDCCType); depos.append(depo)
+    depo = TuringIborDeposit(settlementDate, "6M", -0.2510 / 100.0, depoDCCType); depos.append(depo)
     
     fras = []
-    fraDCCType = FinDayCountTypes.ACT_360
+    fraDCCType = TuringDayCountTypes.ACT_360
     
     fra = FinIborFRA(settlementDate.addTenor("1M"), "6M", -0.2450/100.0, fraDCCType); fras.append(fra)
     fra = FinIborFRA(settlementDate.addTenor("2M"), "6M", -0.2435/100.0, fraDCCType); fras.append(fra)
@@ -340,9 +340,9 @@ def test_swapValuationExample():
     fra = FinIborFRA(settlementDate.addTenor("12M"), "6M", -0.1360/100.0, fraDCCType); fras.append(fra)
     
     swaps = []
-    fixedLegType = FinSwapTypes.PAY
-    fixedDCCType = FinDayCountTypes.THIRTY_360_BOND
-    fixedFreqType = FinFrequencyTypes.ANNUAL
+    fixedLegType = TuringSwapTypes.PAY
+    fixedDCCType = TuringDayCountTypes.THIRTY_360_BOND
+    fixedFreqType = TuringFrequencyTypes.ANNUAL
     
     swap = FinIborSwap(settlementDate, "2Y", fixedLegType, -0.1525/100.0, fixedFreqType, fixedDCCType); swaps.append(swap)
     swap = FinIborSwap(settlementDate, "3Y", fixedLegType, -0.0185/100.0, fixedFreqType, fixedDCCType); swaps.append(swap)
@@ -368,7 +368,7 @@ def test_swapValuationExample():
     iborFras = fras.copy()
     iborSwaps = swaps.copy()
     
-    iborCurve = FinIborSingleCurve(valuationDate, iborDepos, iborFras, iborSwaps, interpType)    
+    iborCurve = TuringIborSingleCurve(valuationDate, iborDepos, iborFras, iborSwaps, interpType)
     v1 = offMarketSwap.value(valuationDate, iborCurve, iborCurve, -0.268/100.0)    
 
     testCases.banner("DERISCOPE EXAMPLE REPLICATION")    
@@ -378,19 +378,19 @@ def test_swapValuationExample():
     
     ###############################################################################
     
-    depoDCCType = FinDayCountTypes.ACT_360
+    depoDCCType = TuringDayCountTypes.ACT_360
     depos = []
     
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
-    depo = FinIborDeposit(settlementDate, "1D", -0.3490/100.0, depoDCCType); depos.append(depo)
+    depo = TuringIborDeposit(settlementDate, "1D", -0.3490 / 100.0, depoDCCType); depos.append(depo)
     
     fras = []
     
     swaps = []
-    fixedLegType = FinSwapTypes.PAY
-    fixedDCCType = FinDayCountTypes.ACT_365F
-    fixedFreqType = FinFrequencyTypes.ANNUAL
+    fixedLegType = TuringSwapTypes.PAY
+    fixedDCCType = TuringDayCountTypes.ACT_365F
+    fixedFreqType = TuringFrequencyTypes.ANNUAL
     
     # Standard OIS with standard annual terms
     swap = FinOIS(settlementDate, "2W", fixedLegType, -0.3600/100.0, fixedFreqType, fixedDCCType); swaps.append(swap)
@@ -432,9 +432,9 @@ def test_swapValuationExample():
     oisFras = fras.copy()
     oisSwaps = swaps.copy()
     
-#    oisCurveFF = FinOISCurve(valuationDate, oisDepos, oisFras, oisSwaps, interpType)
+#    oisCurveFF = TuringOISCurve(valuationDate, oisDepos, oisFras, oisSwaps, interpType)
     
-    iborDualCurve = FinIborDualCurve(valuationDate, oisCurveFF, iborDepos, iborFras, iborSwaps, interpType)
+    iborDualCurve = TuringIborDualCurve(valuationDate, oisCurveFF, iborDepos, iborFras, iborSwaps, interpType)
     
 #    v2 = offMarketSwap.value(valuationDate, oisCurveFF, iborDualCurve, -0.268/100.0)
     

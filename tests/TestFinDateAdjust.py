@@ -5,70 +5,70 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_schedule import FinSchedule
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
-from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
-from financepy.finutils.turing_calendar import FinDateGenRuleTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 
 def test_FinDateAdjust():
 
-    startDate = FinDate(28, 2, 2008)
-    endDate = FinDate(28, 2, 2011)
+    startDate = TuringDate(28, 2, 2008)
+    endDate = TuringDate(28, 2, 2011)
 
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    calendarType = FinCalendarTypes.NONE
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    calendarType = TuringCalendarTypes.NONE
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
 
     testCases.header("NO ADJUSTMENTS", "DATE")
-    schedule = FinSchedule(startDate,
-                           endDate,
-                           freqType,
-                           calendarType,
-                           busDayAdjustType,
-                           dateGenRuleType)
+    schedule = TuringSchedule(startDate,
+                              endDate,
+                              freqType,
+                              calendarType,
+                              busDayAdjustType,
+                              dateGenRuleType)
 
     for dt in schedule._adjustedDates:
         testCases.print("Date:", dt)
 
     testCases.banner("")
     testCases.header("NO WEEKENDS AND FOLLOWING", "DATE")
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    calendarType = FinCalendarTypes.WEEKEND
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    calendarType = TuringCalendarTypes.WEEKEND
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
 
-    schedule = FinSchedule(startDate,
-                           endDate,
-                           freqType,
-                           calendarType,
-                           busDayAdjustType,
-                           dateGenRuleType)
+    schedule = TuringSchedule(startDate,
+                              endDate,
+                              freqType,
+                              calendarType,
+                              busDayAdjustType,
+                              dateGenRuleType)
 
     for dt in schedule._adjustedDates:
         testCases.print("Date:", dt)
 
     testCases.banner("")
     testCases.header("NO WEEKENDS AND MODIFIED FOLLOWING", "DATE")
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    calendarType = FinCalendarTypes.WEEKEND
-    busDayAdjustType = FinBusDayAdjustTypes.MODIFIED_FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    calendarType = TuringCalendarTypes.WEEKEND
+    busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
 
-    schedule = FinSchedule(startDate,
-                           endDate,
-                           freqType,
-                           calendarType,
-                           busDayAdjustType,
-                           dateGenRuleType)
+    schedule = TuringSchedule(startDate,
+                              endDate,
+                              freqType,
+                              calendarType,
+                              busDayAdjustType,
+                              dateGenRuleType)
 
     for dt in schedule._adjustedDates:
         testCases.print("Date:", dt)
@@ -76,20 +76,20 @@ def test_FinDateAdjust():
     testCases.banner("")
     testCases.header("NO WEEKENDS AND US HOLIDAYS AND MODIFIED FOLLOWING",
                      "DATE")
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    calendarType = FinCalendarTypes.UNITED_STATES
-    busDayAdjustType = FinBusDayAdjustTypes.MODIFIED_FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    calendarType = TuringCalendarTypes.UNITED_STATES
+    busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
 
-    startDate = FinDate(4, 7, 2008)
-    endDate = FinDate(4, 7, 2011)
+    startDate = TuringDate(4, 7, 2008)
+    endDate = TuringDate(4, 7, 2011)
 
-    schedule = FinSchedule(startDate,
-                           endDate,
-                           freqType,
-                           calendarType,
-                           busDayAdjustType,
-                           dateGenRuleType)
+    schedule = TuringSchedule(startDate,
+                              endDate,
+                              freqType,
+                              calendarType,
+                              busDayAdjustType,
+                              dateGenRuleType)
 
     for dt in schedule._adjustedDates:
         testCases.print("Date:", dt)

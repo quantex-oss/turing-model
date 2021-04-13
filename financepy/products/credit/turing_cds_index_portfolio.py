@@ -5,15 +5,15 @@
 
 from math import pow
 
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes, FinDateGenRuleTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_error import FinError
-from ...products.credit.turing_cds import FinCDS
-from ...products.credit.turing_cds_curve import FinCDSCurve
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_error import TuringError
+from financepy.products.credit.turing_cds import FinCDS
+from financepy.products.credit.turing_cds_curve import FinCDSCurve
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_helper_functions import labelToString
 
 ###############################################################################
 # TODO: Move index spread details into class and then pass in issuer curves
@@ -21,17 +21,17 @@ from ...finutils.turing_helper_functions import labelToString
 ###############################################################################
 
 
-class FinCDSIndexPortfolio():
+class TuringCDSIndexPortfolio():
     ''' This class manages the calculations associated with an equally weighted
     portfolio of CDS contracts with the same maturity date. '''
 
     def __init__(self,
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_360,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
-        ''' Create FinCDSIndexPortfolio object. Note that all of the inputs
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
+        ''' Create TuringCDSIndexPortfolio object. Note that all of the inputs
         have a default value which reflects the CDS market standard. '''
 
         checkArgumentTypes(self.__init__, locals())
@@ -188,7 +188,7 @@ class FinCDSIndexPortfolio():
         numCredits = len(issuerCurves)
 
         if numCredits < 1:
-            raise FinError("Number of credits in index must be > 1 and not" + str(numCredits))
+            raise TuringError("Number of credits in index must be > 1 and not" + str(numCredits))
 
         cdsContract = FinCDS(stepInDate,
                              maturityDate,
@@ -216,7 +216,7 @@ class FinCDSIndexPortfolio():
         numCredits = len(issuerCurves)
 
         if numCredits < 1:
-            raise FinError("Number of credits in index must be > 1 and not " + str(numCredits))
+            raise TuringError("Number of credits in index must be > 1 and not " + str(numCredits))
 
         cdsContract = FinCDS(stepInDate,
                              maturityDate,
@@ -249,7 +249,7 @@ class FinCDSIndexPortfolio():
         numCredits = len(issuerCurves)
 
         if numCredits < 1:
-            raise FinError("Number of credits in index must be > 1 and not " + str(numCredits))
+            raise TuringError("Number of credits in index must be > 1 and not " + str(numCredits))
 
         liborCurve = issuerCurves[0]._liborCurve
         numIndexMaturityPoints = len(indexCoupons)
@@ -264,7 +264,7 @@ class FinCDSIndexPortfolio():
         for issuerCurve in issuerCurves:
             n = len(issuerCurve._cdsContracts)
             if n != len(cdsMaturityDates):
-                raise FinError(
+                raise TuringError(
                     "All issuer curves must be built from same cds maturities")
 
         cdsSpreadMultipliers = [1.0] * numCDSMaturityPoints
@@ -303,7 +303,7 @@ class FinCDSIndexPortfolio():
                 numIterations += 1
 
                 if numIterations > 20:
-                    raise FinError(
+                    raise TuringError(
                         "Num iterations > 20. Increase limit or reduce tolerance or check inputs.")
 
                 sumRPV01 = 0.0
@@ -401,7 +401,7 @@ class FinCDSIndexPortfolio():
         numCredits = len(issuerCurves)
 
         if numCredits < 1:
-            raise FinError("Number of credits must be greater than 1")
+            raise TuringError("Number of credits must be greater than 1")
 
         liborCurve = issuerCurves[0]._liborCurve
         numIndexMaturityPoints = len(indexCoupons)
@@ -431,7 +431,7 @@ class FinCDSIndexPortfolio():
                 numIterations += 1
 
                 if numIterations == maxIterations:
-                    raise FinError("Max Iterations exceeded")
+                    raise TuringError("Max Iterations exceeded")
 
                 sumRPV01 = 0.0
                 sumProt = 0.0

@@ -7,20 +7,20 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_global_types import FinOptionTypes
-from financepy.products.fx.turing_fx_float_lookback_option import FinFXFloatLookbackOption
-from financepy.products.fx.turing_fx_fixed_lookback_option import FinFXFixedLookbackOption
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.products.fx.turing_fx_float_lookback_option import TuringFXFloatLookbackOption
+from financepy.products.fx.turing_fx_fixed_lookback_option import TuringFXFixedLookbackOption
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 def test_FinEquityLookBackOption():
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 1, 2016)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 1, 2016)
     stockPrice = 100.0
     volatility = 0.3
     numPathsRange = [10000]
@@ -28,10 +28,10 @@ def test_FinEquityLookBackOption():
     numStepsPerYear = 252
 
     domesticRate = 0.05
-    domesticCurve = FinDiscountCurveFlat(valueDate, domesticRate)
+    domesticCurve = TuringDiscountCurveFlat(valueDate, domesticRate)
 
     foreignRate = 0.02
-    foreignCurve = FinDiscountCurveFlat(valueDate, foreignRate)
+    foreignCurve = TuringDiscountCurveFlat(valueDate, foreignRate)
 
 ###############################################################################
 
@@ -45,10 +45,10 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_CALL
+    optionType = TuringOptionTypes.EUROPEAN_CALL
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFloatLookbackOption(expiryDate, optionType)
+            option = TuringFXFloatLookbackOption(expiryDate, optionType)
             stockMin = stockPrice
             value = option.value(
                 valueDate,
@@ -90,10 +90,10 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_CALL
+    optionType = TuringOptionTypes.EUROPEAN_CALL
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFloatLookbackOption(expiryDate, optionType)
+            option = TuringFXFloatLookbackOption(expiryDate, optionType)
             stockMin = stockPrice - 10
             value = option.value(
                 valueDate,
@@ -135,10 +135,10 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_PUT
+    optionType = TuringOptionTypes.EUROPEAN_PUT
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFloatLookbackOption(expiryDate, optionType)
+            option = TuringFXFloatLookbackOption(expiryDate, optionType)
             stockMax = stockPrice
             value = option.value(
                 valueDate,
@@ -180,10 +180,10 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_PUT
+    optionType = TuringOptionTypes.EUROPEAN_PUT
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFloatLookbackOption(expiryDate, optionType)
+            option = TuringFXFloatLookbackOption(expiryDate, optionType)
             stockMax = stockPrice + 10
             value = option.value(
                 valueDate,
@@ -232,11 +232,11 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_CALL
+    optionType = TuringOptionTypes.EUROPEAN_CALL
     k = 95.0
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFixedLookbackOption(expiryDate, optionType, k)
+            option = TuringFXFixedLookbackOption(expiryDate, optionType, k)
             stockMax = stockPrice
             value = option.value(
                 valueDate,
@@ -280,11 +280,11 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_CALL
+    optionType = TuringOptionTypes.EUROPEAN_CALL
     k = 100.0
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFixedLookbackOption(expiryDate, optionType, k)
+            option = TuringFXFixedLookbackOption(expiryDate, optionType, k)
             stockMax = stockPrice
             value = option.value(
                 valueDate,
@@ -328,11 +328,11 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_CALL
+    optionType = TuringOptionTypes.EUROPEAN_CALL
     k = 105.0
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFixedLookbackOption(expiryDate, optionType, k)
+            option = TuringFXFixedLookbackOption(expiryDate, optionType, k)
             stockMax = stockPrice + 10.0
             value = option.value(
                 valueDate,
@@ -376,11 +376,11 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_PUT
+    optionType = TuringOptionTypes.EUROPEAN_PUT
     k = 95.0
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFixedLookbackOption(expiryDate, optionType, k)
+            option = TuringFXFixedLookbackOption(expiryDate, optionType, k)
             stockMin = stockPrice
             value = option.value(
                 valueDate,
@@ -424,11 +424,11 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_PUT
+    optionType = TuringOptionTypes.EUROPEAN_PUT
     k = 100.0
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFixedLookbackOption(expiryDate, optionType, k)
+            option = TuringFXFixedLookbackOption(expiryDate, optionType, k)
             stockMin = stockPrice
             value = option.value(
                 valueDate,
@@ -472,11 +472,11 @@ def test_FinEquityLookBackOption():
         "DIFF",
         "TIME")
 
-    optionType = FinOptionTypes.EUROPEAN_PUT
+    optionType = TuringOptionTypes.EUROPEAN_PUT
     k = 105.0
     for stockPrice in stockPriceRange:
         for numPaths in numPathsRange:
-            option = FinFXFixedLookbackOption(expiryDate, optionType, k)
+            option = TuringFXFixedLookbackOption(expiryDate, optionType, k)
             stockMin = stockPrice - 10.0
             value = option.value(
                 valueDate,

@@ -5,16 +5,16 @@
 import numpy as np
 from enum import Enum
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_variables import gDaysInYear
-from ...products.equity.turing_equity_option import FinEquityOption
-from ...models.turing_process_simulator import FinProcessSimulator
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.products.equity.turing_equity_option import TuringEquityOption
+from financepy.models.turing_process_simulator import FinProcessSimulator
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
 
 
-from ...finutils.turing_math import N
+from financepy.finutils.turing_math import N
 
 # TODO: SOME REDESIGN ON THE MONTE CARLO PROCESS IS PROBABLY NEEDED
 
@@ -34,19 +34,19 @@ class FinEquityBarrierTypes(Enum):
 ###############################################################################
 
 
-class FinEquityBarrierOption(FinEquityOption):
+class TuringEquityBarrierOption(TuringEquityOption):
     ''' Class to hold details of an Equity Barrier Option. It also
     calculates the option price using Black Scholes for 8 different
     variants on the Barrier structure in enum FinEquityBarrierTypes. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  strikePrice: float,
                  optionType: FinEquityBarrierTypes,
                  barrierLevel: float,
                  numObservationsPerYear: (int, float) = 252,
                  notional: float = 1.0):
-        ''' Create the FinEquityBarrierOption by specifying the expiry date,
+        ''' Create the TuringEquityBarrierOption by specifying the expiry date,
         strike price, option type, barrier level, the number of observations
         per year and the notional. '''
 
@@ -58,7 +58,7 @@ class FinEquityBarrierOption(FinEquityOption):
         self._numObservationsPerYear = int(numObservationsPerYear)
 
         if optionType not in FinEquityBarrierTypes:
-            raise FinError("Option Type " + str(optionType) + " unknown.")
+            raise TuringError("Option Type " + str(optionType) + " unknown.")
 
         self._optionType = optionType
         self._notional = notional
@@ -66,10 +66,10 @@ class FinEquityBarrierOption(FinEquityOption):
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: (float, np.ndarray),
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model):
         ''' This prices an Equity Barrier option using the formulae given in
         the paper by Clewlow, Llanos and Strickland December 1994 which can be
@@ -100,10 +100,10 @@ class FinEquityBarrierOption(FinEquityOption):
 ###############################################################################
 
     def _valueOne(self,
-                  valueDate: FinDate,
+                  valueDate: TuringDate,
                   stockPrice: (float, np.ndarray),
-                  discountCurve: FinDiscountCurve,
-                  dividendCurve: FinDiscountCurve,
+                  discountCurve: TuringDiscountCurve,
+                  dividendCurve: TuringDiscountCurve,
                   model):
         ''' This values a single option. Because of its structure it cannot
         easily be vectorised which is why it has been wrapped. '''
@@ -111,7 +111,7 @@ class FinEquityBarrierOption(FinEquityOption):
         texp = (self._expiryDate - valueDate) / gDaysInYear
 
         if texp < 0:
-            raise FinError("Option expires before value date.")
+            raise TuringError("Option expires before value date.")
 
         texp = max(texp, 1e-6)
 
@@ -179,8 +179,8 @@ class FinEquityBarrierOption(FinEquityOption):
         elif self._optionType == FinEquityBarrierTypes.DOWN_AND_IN_PUT:
             h_adj = h * np.exp(-0.5826 * volatility * np.sqrt(t))
         else:
-            raise FinError("Unknown barrier option type." +
-                           str(self._optionType))
+            raise TuringError("Unknown barrier option type." +
+                              str(self._optionType))
 
         h = h_adj
 
@@ -271,8 +271,8 @@ class FinEquityBarrierOption(FinEquityOption):
                     - k * df * pow(hOverS, 2.0 * l - 2.0) * (N(y - sigmaRootT) - N(y1 - sigmaRootT))
                 price = p_di
         else:
-            raise FinError("Unknown barrier option type." +
-                           str(self._optionType))
+            raise TuringError("Unknown barrier option type." +
+                              str(self._optionType))
 
         v = price * self._notional
         return v
@@ -280,10 +280,10 @@ class FinEquityBarrierOption(FinEquityOption):
 ###############################################################################
 
     def valueMC(self,
-                valueDate: FinDate,
+                valueDate: TuringDate,
                 stockPrice: float,
-                discountCurve: FinDiscountCurve,
-                dividendCurve: FinDiscountCurve,
+                discountCurve: TuringDiscountCurve,
+                dividendCurve: TuringDiscountCurve,
                 processType,
                 modelParams,
                 numAnnObs: int = 252,
@@ -398,8 +398,8 @@ class FinEquityBarrierOption(FinEquityOption):
         elif optionType == FinEquityBarrierTypes.DOWN_AND_IN_PUT:
             payoff = np.maximum(K - Sall[:, -1], 0.0) * barrierCrossedFromAbove
         else:
-            raise FinError("Unknown barrier option type." +
-                           str(self._optionType))
+            raise TuringError("Unknown barrier option type." +
+                              str(self._optionType))
 
         v = payoff.mean() * np.exp(- r * texp)
 

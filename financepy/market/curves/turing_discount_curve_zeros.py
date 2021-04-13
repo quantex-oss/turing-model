@@ -4,15 +4,15 @@
 
 import numpy as np
 
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_math import testMonotonicity
-from ...finutils.turing_helper_functions import labelToString
-from ...finutils.turing_helper_functions import timesFromDates
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_math import testMonotonicity
+from financepy.finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_helper_functions import timesFromDates
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
 from .turing_interpolator import FinInterpTypes, FinInterpolator
 
 
@@ -20,23 +20,23 @@ from .turing_interpolator import FinInterpTypes, FinInterpolator
 # TODO: Fix up __repr__ function
 ###############################################################################
 
-class FinDiscountCurveZeros(FinDiscountCurve):
+class TuringDiscountCurveZeros(TuringDiscountCurve):
     ''' This is a curve calculated from a set of dates and zero rates. As we
     have rates as inputs, we need to specify the corresponding compounding
     frequency. Also to go from rates and dates to discount factors we need to
     compute the year fraction correctly and for this we require a day count
     convention. Finally, we need to interpolate the zero rate for the times
     between the zero rates given and for this we must specify an interpolation
-    convention. The class inherits methods from FinDiscountCurve. '''
+    convention. The class inherits methods from TuringDiscountCurve. '''
 
 ###############################################################################
 
     def __init__(self,
-                 valuationDate: FinDate,
+                 valuationDate: TuringDate,
                  zeroDates: list,
                  zeroRates: (list, np.ndarray),
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.ANNUAL,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_ACT_ISDA,
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.ANNUAL,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA,
                  interpType: FinInterpTypes = FinInterpTypes.FLAT_FWD_RATES):
         ''' Create the discount curve from a vector of dates and zero rates
         factors. The first date is the curve anchor. Then a vector of zero
@@ -50,17 +50,17 @@ class FinDiscountCurveZeros(FinDiscountCurve):
 
         # Validate curve
         if len(zeroDates) == 0:
-            raise FinError("Dates has zero length")
+            raise TuringError("Dates has zero length")
 
         if len(zeroDates) != len(zeroRates):
-            raise FinError("Dates and Rates are not the same length")
+            raise TuringError("Dates and Rates are not the same length")
 
-        if freqType not in FinFrequencyTypes:
-            raise FinError("Unknown Frequency type " + str(freqType))
+        if freqType not in TuringFrequencyTypes:
+            raise TuringError("Unknown Frequency type " + str(freqType))
 
-        if dayCountType not in FinDayCountTypes:
-            raise FinError("Unknown Cap Floor DayCountRule type " +
-                           str(dayCountType))
+        if dayCountType not in TuringDayCountTypes:
+            raise TuringError("Unknown Cap Floor DayCountRule type " +
+                              str(dayCountType))
 
         self._valuationDate = valuationDate
         self._freqType = freqType
@@ -73,7 +73,7 @@ class FinDiscountCurveZeros(FinDiscountCurve):
         self._times = timesFromDates(zeroDates, valuationDate, dayCountType)
 
         if testMonotonicity(self._times) is False:
-            raise FinError("Times or dates are not sorted in increasing order")
+            raise TuringError("Times or dates are not sorted in increasing order")
 
         dfs = self._zeroToDf(self._valuationDate,
                              self._zeroRates,
@@ -98,7 +98,7 @@ class FinDiscountCurveZeros(FinDiscountCurve):
 #             t = times[i]
 #             discountFactors[i] = discountFactors[i] * np.exp(-bumpSize*t)
 
-#         discCurve = FinDiscountCurve(self._valuationDate, times,
+#         discCurve = TuringDiscountCurve(self._valuationDate, times,
 #                                      discountFactors,
 #                                      self._interpType)
 

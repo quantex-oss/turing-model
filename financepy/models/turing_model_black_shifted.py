@@ -8,7 +8,7 @@ import numpy as np
 from scipy.stats import norm
 
 from ..finutils.turing_helper_functions import labelToString
-from ..finutils.turing_global_types import FinOptionTypes
+from ..finutils.turing_global_types import TuringOptionTypes
 
 from ..finutils.turing_math import N
 
@@ -17,7 +17,7 @@ from ..finutils.turing_math import N
 ###############################################################################
 
 
-class FinModelBlackShifted():
+class TuringModelBlackShifted():
     ''' Black's Model which prices call and put options in the forward
     measure according to the Black-Scholes equation. This model also allows
     the distribution to be shifted to the negative in order to allow for
@@ -56,9 +56,9 @@ class FinModelBlackShifted():
         d1 = d1 / (vol * sqrtT)
         d2 = d1 - vol * sqrtT
 
-        if callOrPut == FinOptionTypes.EUROPEAN_CALL:
+        if callOrPut == TuringOptionTypes.EUROPEAN_CALL:
             return df * ((f+s) * N(d1) - (k+s) * N(d2))
-        elif callOrPut == FinOptionTypes.EUROPEAN_PUT:
+        elif callOrPut == TuringOptionTypes.EUROPEAN_PUT:
             return df * ((k+s) * N(-d2) - (f+s) * N(-d1))
         else:
             raise Exception("Option type must be a European Call(C) or Put(P)")

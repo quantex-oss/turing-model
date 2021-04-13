@@ -9,16 +9,16 @@ from numba import njit
 # TODO: Add perturbatory risk using the analytical methods !!
 # TODO: Add Sobol to Monte Carlo
 
-from ...finutils.turing_math import covar
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_error import FinError
+from financepy.finutils.turing_math import covar
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
 
-from ...finutils.turing_global_types import FinOptionTypes
-from ...finutils.turing_helper_functions import checkArgumentTypes, labelToString
-from ...finutils.turing_date import FinDate
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.finutils.turing_date import TuringDate
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from ...finutils.turing_math import N
+from financepy.finutils.turing_math import N
 
 
 ###############################################################################
@@ -87,7 +87,7 @@ def _valueMC_NUMBA(t0,
     if t0 < 0.0:  # we are in the averaging period
 
         if accruedAverage is None:
-            raise FinError(errorStr)
+            raise TuringError(errorStr)
 
         # we adjust the strike to account for the accrued coupon
         K = (K * tau + accruedAverage * t0) / t
@@ -133,10 +133,10 @@ def _valueMC_NUMBA(t0,
         s_1_arithmetic /= n
         s_2_arithmetic /= n
 
-        if optionType == FinOptionTypes.EUROPEAN_CALL:
+        if optionType == TuringOptionTypes.EUROPEAN_CALL:
             payoff_a += max(s_1_arithmetic - K, 0.0)
             payoff_a += max(s_2_arithmetic - K, 0.0)
-        elif optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif optionType == TuringOptionTypes.EUROPEAN_PUT:
             payoff_a += max(K - s_1_arithmetic, 0.0)
             payoff_a += max(K - s_2_arithmetic, 0.0)
         else:
@@ -155,7 +155,7 @@ def _valueMC_fast_NUMBA(t0: float,
                         tau: float,
                         K: float,
                         n: int,
-                        optionType: FinOptionTypes,
+                        optionType: TuringOptionTypes,
                         stockPrice: float,
                         interestRate: float,
                         dividendYield: float,
@@ -176,7 +176,7 @@ def _valueMC_fast_NUMBA(t0: float,
     if t0 < 0.0:  # we are in the averaging period
 
         if accruedAverage is None:
-            raise FinError(errorStr)
+            raise TuringError(errorStr)
 
         # we adjust the strike to account for the accrued coupon
         K = (K * tau + accruedAverage * t0) / t
@@ -221,14 +221,14 @@ def _valueMC_fast_NUMBA(t0: float,
             s_1_arithmetic[ip] += s_1[ip] / n
             s_2_arithmetic[ip] += s_2[ip] / n
 
-    if optionType == FinOptionTypes.EUROPEAN_CALL:
+    if optionType == TuringOptionTypes.EUROPEAN_CALL:
         payoff_a_1 = np.maximum(s_1_arithmetic - K, 0.0)
         payoff_a_2 = np.maximum(s_2_arithmetic - K, 0.0)
-    elif optionType == FinOptionTypes.EUROPEAN_PUT:
+    elif optionType == TuringOptionTypes.EUROPEAN_PUT:
         payoff_a_1 = np.maximum(K - s_1_arithmetic, 0.0)
         payoff_a_2 = np.maximum(K - s_2_arithmetic, 0.0)
     else:
-        raise FinError("Unknown option type.")
+        raise TuringError("Unknown option type.")
 
     payoff_a = np.mean(payoff_a_1) + np.mean(payoff_a_2)
     v_a = multiplier * payoff_a * np.exp(- r * t) / 2.0
@@ -253,7 +253,7 @@ def _valueMC_fast_CV_NUMBA(t0, t, tau, K, n, optionType, stockPrice,
     if t0 < 0:  # we are in the averaging period
 
         if accruedAverage is None:
-            raise FinError(errorStr)
+            raise TuringError(errorStr)
 
         # we adjust the strike to account for the accrued coupon
         K = (K * tau + accruedAverage * t0) / t
@@ -305,18 +305,18 @@ def _valueMC_fast_CV_NUMBA(t0, t, tau, K, n, optionType, stockPrice,
         s_2_arithmetic[ip] /= n
         s_2_geometric[ip] = np.exp(ln_s_2_geometric[ip] / n)
 
-    if optionType == FinOptionTypes.EUROPEAN_CALL:
+    if optionType == TuringOptionTypes.EUROPEAN_CALL:
         payoff_a_1 = np.maximum(s_1_arithmetic - K, 0.0)
         payoff_g_1 = np.maximum(s_1_geometric - K, 0.0)
         payoff_a_2 = np.maximum(s_2_arithmetic - K, 0.0)
         payoff_g_2 = np.maximum(s_2_geometric - K, 0.0)
-    elif optionType == FinOptionTypes.EUROPEAN_PUT:
+    elif optionType == TuringOptionTypes.EUROPEAN_PUT:
         payoff_a_1 = np.maximum(K - s_1_arithmetic, 0.0)
         payoff_g_1 = np.maximum(K - s_1_geometric, 0.0)
         payoff_a_2 = np.maximum(K - s_2_arithmetic, 0.0)
         payoff_g_2 = np.maximum(K - s_2_geometric, 0.0)
     else:
-        raise FinError("Unknown Option Type")
+        raise TuringError("Unknown Option Type")
 
     payoff_a = np.concatenate((payoff_a_1, payoff_a_2), axis=0)
     payoff_g = np.concatenate((payoff_g_1, payoff_g_2), axis=0)
@@ -348,10 +348,10 @@ class FinEquityAsianOption():
     Monte-Carlo simulation.'''
 
     def __init__(self,
-                 startAveragingDate: FinDate,
-                 expiryDate: FinDate,
+                 startAveragingDate: TuringDate,
+                 expiryDate: TuringDate,
                  strikePrice: float,
-                 optionType: FinOptionTypes,
+                 optionType: TuringOptionTypes,
                  numberOfObservations: int = 100):
         ''' Create an FinEquityAsian option object which takes a start date for
         the averaging, an expiry date, a strike price, an option type and a
@@ -360,7 +360,7 @@ class FinEquityAsianOption():
         checkArgumentTypes(self.__init__, locals())
 
         if startAveragingDate > expiryDate:
-            raise FinError("Averaging starts after expiry date")
+            raise TuringError("Averaging starts after expiry date")
 
         self._startAveragingDate = startAveragingDate
         self._expiryDate = expiryDate
@@ -371,10 +371,10 @@ class FinEquityAsianOption():
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model,
               method: FinAsianOptionValuationMethods,
               accruedAverage: float = None):
@@ -393,7 +393,7 @@ class FinEquityAsianOption():
         inside the averaging period for the option. '''
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after expiry date.")
+            raise TuringError("Value date after expiry date.")
 
         if method == FinAsianOptionValuationMethods.GEOMETRIC:
             v = self._valueGeometric(valueDate,
@@ -419,7 +419,7 @@ class FinEquityAsianOption():
                                   model,
                                   accruedAverage)
         else:
-            raise FinError("Unknown valuation model")
+            raise TuringError("Unknown valuation model")
 
         return v
 
@@ -434,7 +434,7 @@ class FinEquityAsianOption():
         variate for other approaches. '''
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after option expiry date.")
+            raise TuringError("Value date after option expiry date.")
 
         # the years to the start of the averaging period
         t0 = (self._startAveragingDate - valueDate) / gDaysInYear
@@ -457,7 +457,7 @@ class FinEquityAsianOption():
         if t0 < 0:  # we are in the averaging period
 
             if accruedAverage is None:
-                raise FinError(errorStr)
+                raise TuringError(errorStr)
 
             # we adjust the strike to account for the accrued coupon
             K = (K * tau + accruedAverage * t0) / texp
@@ -479,13 +479,13 @@ class FinEquityAsianOption():
         # the Geometric price is the lower bound
         call_g = np.exp(-r * texp) * (EG * N(d1) - K * N(d2))
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             v = call_g
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             put_g = call_g - (EG - K) * np.exp(-r * texp)
             v = put_g
         else:
-            raise FinError("Unknown option type " + str(self._optionType))
+            raise TuringError("Unknown option type " + str(self._optionType))
 
         v = v * multiplier
         return v
@@ -497,7 +497,7 @@ class FinEquityAsianOption():
         ''' Valuation of an Asian option using the result by Vorst. '''
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after option expiry date.")
+            raise TuringError("Value date after option expiry date.")
 
         # the years to the start of the averaging period
         t0 = (self._startAveragingDate - valueDate) / gDaysInYear
@@ -521,7 +521,7 @@ class FinEquityAsianOption():
         if t0 < 0:  # we are in the averaging period
 
             if accruedAverage is None:
-                raise FinError(errorStr)
+                raise TuringError(errorStr)
 
             # we adjust the strike to account for the accrued coupon
             K = (K * tau + accruedAverage * t0) / texp
@@ -545,9 +545,9 @@ class FinEquityAsianOption():
         d1 = (np.log(FA / K) + sigmaA * sigmaA * texp / 2.0) / (sigmaA*np.sqrt(texp))
         d2 = d1 - sigmaA * np.sqrt(texp)
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             v = np.exp(-r * texp) * (FA * N(d1) - K * N(d2))
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             v = np.exp(-r * texp) * (K * N(-d2) - FA * N(-d1))
         else:
             return None
@@ -564,7 +564,7 @@ class FinEquityAsianOption():
         arithmetic average. '''
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after option expiry date.")
+            raise TuringError("Value date after option expiry date.")
 
         t0 = (self._startAveragingDate - valueDate) / gDaysInYear
         texp = (self._expiryDate - valueDate) / gDaysInYear
@@ -582,7 +582,7 @@ class FinEquityAsianOption():
         if t0 < 0:  # we are in the averaging period
 
             if accruedAverage is None:
-                raise FinError(errorStr)
+                raise TuringError(errorStr)
 
             # we adjust the strike to account for the accrued coupon
             K = (K * tau + accruedAverage * t0) / texp
@@ -620,10 +620,10 @@ class FinEquityAsianOption():
         d1 = (np.log(F0 / K) + sigma2 * texp / 2) / sigma / np.sqrt(texp)
         d2 = d1 - sigma * np.sqrt(texp)
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             call = np.exp(-r * texp) * (F0 * N(d1) - K * N(d2))
             v = call
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             put = np.exp(-r * texp) * (K * N(-d2) - F0 * N(-d1))
             v = put
         else:
@@ -635,10 +635,10 @@ class FinEquityAsianOption():
 ###############################################################################
 
     def _valueMC(self,
-                 valueDate: FinDate,
+                 valueDate: TuringDate,
                  stockPrice: float,
-                 discountCurve: FinDiscountCurve,
-                 dividendCurve: FinDiscountCurve,
+                 discountCurve: TuringDiscountCurve,
+                 dividendCurve: TuringDiscountCurve,
                  model,
                  numPaths: int,
                  seed: int,
@@ -649,10 +649,10 @@ class FinEquityAsianOption():
 
         # Basic validation
         if valueDate > self._expiryDate:
-            raise FinError("Value date after option expiry date.")
+            raise TuringError("Value date after option expiry date.")
 
         if valueDate > self._startAveragingDate and accruedAverage is None:
-            raise FinError(errorStr)
+            raise TuringError(errorStr)
 
         # the years to the start of the averaging period
         t0 = (self._startAveragingDate - valueDate) / gDaysInYear
@@ -720,10 +720,10 @@ class FinEquityAsianOption():
 ###############################################################################
 
     def valueMC(self,
-                valueDate: FinDate,
+                valueDate: TuringDate,
                 stockPrice: float,
-                discountCurve: FinDiscountCurve,
-                dividendCurve: FinDiscountCurve,
+                discountCurve: TuringDiscountCurve,
+                dividendCurve: TuringDiscountCurve,
                 model,
                 numPaths: int,
                 seed: int,

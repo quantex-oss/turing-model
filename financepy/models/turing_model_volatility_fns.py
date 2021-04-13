@@ -6,7 +6,7 @@ import numpy as np
 from numba import njit, float64
 
 from ..finutils.turing_math import N
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 
 ###############################################################################
 # Parametric functions for option volatility to use in a Black-Scholes model
@@ -14,7 +14,7 @@ from ..finutils.turing_error import FinError
 
 from enum import Enum
 
-class FinVolFunctionTypes(Enum):
+class TuringVolFunctionTypes(Enum):
     CLARK = 0
     SABR = 1
     SABR_BETA_ONE = 2
@@ -37,11 +37,11 @@ def volFunctionClark(params, f, k, t):
 
     if f < 0.0:
         print("f:", f)
-        raise FinError("Forward is negative")
+        raise TuringError("Forward is negative")
 
     if k < 0.0:
         print("k:", k)
-        raise FinError("Strike is negative")
+        raise TuringError("Strike is negative")
 
     x = np.log(f/k)
     sigma0 = np.exp(params[0])

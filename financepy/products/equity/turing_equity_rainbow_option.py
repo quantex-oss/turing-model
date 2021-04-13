@@ -7,14 +7,14 @@ from math import exp, log, sqrt
 import numpy as np
 from typing import List
 
-from ...finutils.turing_math import N, M
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_error import FinError
-from ...models.turing_gbm_process import FinGBMProcess
-from ...products.equity.turing_equity_option import FinEquityOption
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
+from financepy.finutils.turing_math import N, M
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+from financepy.models.turing_gbm_process import FinGBMProcess
+from financepy.products.equity.turing_equity_option import TuringEquityOption
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
 
 from enum import Enum
 
@@ -57,7 +57,7 @@ def payoffValue(s, payoffTypeValue, payoffParams):
         assetn = ssorted[:, -n]
         payoff = np.maximum(k - assetn, 0.0)
     else:
-        raise FinError("Unknown payoff type")
+        raise TuringError("Unknown payoff type")
 
     return payoff
 
@@ -105,10 +105,10 @@ def valueMCFast(t,
 ###############################################################################
 
 
-class FinEquityRainbowOption(FinEquityOption):
+class TuringEquityRainbowOption(TuringEquityOption):
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  payoffType: FinEquityRainbowOptionTypes,
                  payoffParams: List[float],
                  numAssets: int):
@@ -131,23 +131,23 @@ class FinEquityRainbowOption(FinEquityOption):
                   betas):
 
         if len(stockPrices) != self._numAssets:
-            raise FinError(
+            raise TuringError(
                 "Stock prices must be a vector of length "
                 + str(self._numAssets))
 
         if len(dividendCurves) != self._numAssets:
-            raise FinError(
+            raise TuringError(
                 "Dividend curves must be a vector of length "
                 + str(self._numAssets))
 
         if len(volatilities) != self._numAssets:
-            raise FinError(
+            raise TuringError(
                 "Volatilities must be a vector of length "
                 + str(self._numAssets))
 
         if len(betas) != self._numAssets:
-            raise FinError("Betas must be a vector of length " +
-                           str(self._numAssets))
+            raise TuringError("Betas must be a vector of length " +
+                              str(self._numAssets))
 
 ###############################################################################
 
@@ -168,10 +168,10 @@ class FinEquityRainbowOption(FinEquityOption):
         elif payoffType == FinEquityRainbowOptionTypes.PUT_ON_NTH:
             numParams = 2
         else:
-            raise FinError("Unknown payoff type")
+            raise TuringError("Unknown payoff type")
 
         if len(payoffParams) != numParams:
-            raise FinError(
+            raise TuringError(
                 "Number of parameters required for " +
                 str(payoffType) +
                 " must be " +
@@ -181,32 +181,32 @@ class FinEquityRainbowOption(FinEquityOption):
            or payoffType == FinEquityRainbowOptionTypes.PUT_ON_NTH:
             n = payoffParams[0]
             if n < 1 or n > numAssets:
-                raise FinError("Nth parameter must be 1 to " + str(numAssets))
+                raise TuringError("Nth parameter must be 1 to " + str(numAssets))
 
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrices: np.ndarray,
-              discountCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
               dividendCurves: (list),
               volatilities: np.ndarray,
               corrMatrix: np.ndarray):
 
         if self._numAssets != 2:
-            raise FinError("Analytical results for two assets only.")
+            raise TuringError("Analytical results for two assets only.")
 
         if corrMatrix.ndim != 2:
-            raise FinError("Corr matrix must be of size 2x2")
+            raise TuringError("Corr matrix must be of size 2x2")
 
         if corrMatrix.shape[0] != 2:
-            raise FinError("Corr matrix must be of size 2x2")
+            raise TuringError("Corr matrix must be of size 2x2")
 
         if corrMatrix.shape[1] != 2:
-            raise FinError("Corr matrix must be of size 2x2")
+            raise TuringError("Corr matrix must be of size 2x2")
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after expiry date.")
+            raise TuringError("Value date after expiry date.")
 
 
         # Use result by Stulz (1982) given by Haug Page 211
@@ -262,7 +262,7 @@ class FinEquityRainbowOption(FinEquityOption):
                 t), -rho2) - k * df * M(y1 - v1 * sqrt(t), y2 - v2 * sqrt(t), rho)
             v = k * df - cmin1 + cmin2
         else:
-            raise FinError("Unsupported Rainbow option type")
+            raise TuringError("Unsupported Rainbow option type")
 
         return v
 
@@ -284,7 +284,7 @@ class FinEquityRainbowOption(FinEquityOption):
                        corrMatrix)
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after expiry date.")
+            raise TuringError("Value date after expiry date.")
 
         t = (self._expiryDate - valueDate) / gDaysInYear
 

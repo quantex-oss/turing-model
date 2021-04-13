@@ -6,11 +6,11 @@ import numpy as np
 from numba import njit, float64, int64
 from math import ceil
 
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 from ..finutils.turing_math import accruedInterpolator
 from ..market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
 from ..finutils.turing_helper_functions import labelToString
-from ..finutils.turing_global_types import FinExerciseTypes
+from ..finutils.turing_global_types import TuringExerciseTypes
 from ..finutils.turing_global_variables import gSmall
 
 interp = FinInterpTypes.FLAT_FWD_RATES.value
@@ -29,14 +29,14 @@ interp = FinInterpTypes.FLAT_FWD_RATES.value
 
 def optionExerciseTypesToInt(optionExerciseType):
 
-    if optionExerciseType == FinExerciseTypes.EUROPEAN:
+    if optionExerciseType == TuringExerciseTypes.EUROPEAN:
         return 1
-    if optionExerciseType == FinExerciseTypes.BERMUDAN:
+    if optionExerciseType == TuringExerciseTypes.BERMUDAN:
         return 2
-    if optionExerciseType == FinExerciseTypes.AMERICAN:
+    if optionExerciseType == TuringExerciseTypes.AMERICAN:
         return 3
     else:
-        raise FinError("Unknown option exercise type.")
+        raise TuringError("Unknown option exercise type.")
 
 ###############################################################################
 
@@ -93,7 +93,7 @@ def searchRoot(x0, nm, Q, P, dX, dt, N):
         df = f1 - f0
 
         if df == 0.0:
-            raise FinError("Search for alpha fails due to zero derivative")
+            raise TuringError("Search for alpha fails due to zero derivative")
 
         x = x1 - f1 * (x1 - x0) / df
         x0, f0 = x1, f1
@@ -103,7 +103,7 @@ def searchRoot(x0, nm, Q, P, dX, dt, N):
         if (abs(f1) <= max_error):
             return x1
 
-    raise FinError("Search root deriv FAILED to find alpha.")
+    raise TuringError("Search root deriv FAILED to find alpha.")
 
 ###############################################################################
 # This is Newton Raphson which is faster than the secant measure as it has the
@@ -129,12 +129,12 @@ def searchRootDeriv(x0, nm, Q, P, dX, dt, N):
 
         if abs(fderiv) == 0.0:
             print(x0, fval, fderiv)
-            raise FinError("Function derivative is zero.")
+            raise TuringError("Function derivative is zero.")
 
         step = fval/fderiv
         x0 = x0 - step
 
-    raise FinError("Search root deriv FAILED to find alpha.")
+    raise TuringError("Search root deriv FAILED to find alpha.")
 
 ###############################################################################
 
@@ -353,7 +353,7 @@ def bermudanSwaption_Tree_Fast(texp, tmat,
 
             elif exerciseTypeInt == 3 and m > expiryStep:
 
-                raise FinError("American optionality not allowed.")
+                raise TuringError("American optionality not allowed.")
 
                 ## Need to define floating value on all grid dates
 
@@ -399,7 +399,7 @@ def americanBondOption_Tree_Fast(texp, tmat,
         tcpn = couponTimes[i]
         
         if tcpn < 0.0:
-            raise FinError("Coupon times must be positive.")
+            raise TuringError("Coupon times must be positive.")
 
         n = int(tcpn/_dt + 0.50)
         ttree = _treeTimes[n]
@@ -769,7 +769,7 @@ def buildTreeFast(a, sigma, treeTimes, numTimeSteps, discountFactors):
     jmax = ceil(0.1835/(a * dt))
 
     if jmax > 1000:
-        raise FinError("Jmax > 1000. Increase a or dt.")
+        raise TuringError("Jmax > 1000. Increase a or dt.")
 
     pu = np.zeros(shape=(2*jmax+1))
     pm = np.zeros(shape=(2*jmax+1))
@@ -861,7 +861,7 @@ def buildTreeFast(a, sigma, treeTimes, numTimeSteps, discountFactors):
 ##########################################################################
 
 
-class FinModelRatesBK():
+class TuringModelRatesBK():
 
     def __init__(self, 
                  sigma: float, 
@@ -872,10 +872,10 @@ class FinModelRatesBK():
         is given by d(log(r)) = (theta(t) - a*log(r)) * dt  + sigma * dW '''
 
         if sigma < 0.0:
-            raise FinError("Negative volatility not allowed.")
+            raise TuringError("Negative volatility not allowed.")
 
         if a < 0.0:
-            raise FinError("Mean reversion speed parameter should be >= 0.")
+            raise TuringError("Mean reversion speed parameter should be >= 0.")
 
         if a < 1e-10:
             a = 1e-10
@@ -884,7 +884,7 @@ class FinModelRatesBK():
         self._sigma = sigma
 
         if numTimeSteps < 3:
-            raise FinError("Drift fitting requires at least 3 time steps")
+            raise TuringError("Drift fitting requires at least 3 time steps")
 
         self._numTimeSteps = numTimeSteps
 
@@ -901,10 +901,10 @@ class FinModelRatesBK():
     def buildTree(self, tmat, dfTimes, dfValues):
 
         if isinstance(dfTimes, np.ndarray) is False:
-            raise FinError("DF TIMES must be a numpy vector")
+            raise TuringError("DF TIMES must be a numpy vector")
 
         if isinstance(dfValues, np.ndarray) is False:
-            raise FinError("DF VALUES must be a numpy vector")
+            raise TuringError("DF VALUES must be a numpy vector")
 
         interp = FinInterpTypes.FLAT_FWD_RATES.value
 
@@ -940,10 +940,10 @@ class FinModelRatesBK():
         tmat = couponTimes[-1]
 
         if texp > tmat:
-            raise FinError("Option expiry after bond matures.")
+            raise TuringError("Option expiry after bond matures.")
 
         if texp < 0.0:
-            raise FinError("Option expiry time negative.")
+            raise TuringError("Option expiry time negative.")
 
         #######################################################################
 
@@ -973,10 +973,10 @@ class FinModelRatesBK():
         tmat = couponTimes[-1]
 
         if texp > tmat:
-            raise FinError("Option expiry after bond matures.")
+            raise TuringError("Option expiry after bond matures.")
 
         if texp < 0.0:
-            raise FinError("Option expiry time negative.")
+            raise TuringError("Option expiry time negative.")
 
         #######################################################################
 

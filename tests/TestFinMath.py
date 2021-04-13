@@ -15,8 +15,8 @@ from financepy.finutils.turing_math import normcdf_slow
 
 from financepy.finutils.turing_math import norminvcdf
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 

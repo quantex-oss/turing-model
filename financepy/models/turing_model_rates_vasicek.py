@@ -17,7 +17,7 @@ from ..finutils.turing_helper_functions import labelToString
 ###############################################################################
 
 
-class FinModelRatesVasicek():
+class TuringModelRatesVasicek():
 
     def __init__(self, a, b, sigma):
         self._a = a

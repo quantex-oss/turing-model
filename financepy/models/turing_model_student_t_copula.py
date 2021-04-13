@@ -11,7 +11,7 @@ from ..finutils.turing_helper_functions import uniformToDefaultTime
 ###############################################################################
 
 
-class FinModelStudentTCopula():
+class TuringModelStudentTCopula():
 
     def defaultTimes(self,
                      issuerCurves,

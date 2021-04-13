@@ -8,22 +8,22 @@ sys.path.append("..")
 import numpy as np
 import matplotlib.pyplot as plt
 
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate
 
-from financepy.models.turing_model_volatility_fns import FinVolFunctionTypes
+from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
 from financepy.models.turing_model_volatility_fns import volFunctionClark
 
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 from financepy.models.turing_model_option_implied_dbn import optionImpliedDbn
 
 from financepy.market.volatility.turing_fx_vol_surface import FinFXVolSurface
-from financepy.market.volatility.turing_fx_vol_surface import FinFXATMMethod
-from financepy.market.volatility.turing_fx_vol_surface import FinFXDeltaMethod
+from financepy.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
+from financepy.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
 
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -35,15 +35,15 @@ def test_FinOptionImpliedDbn():
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = FinDate(10, 4, 2020)
+        valueDate = TuringDate(10, 4, 2020)
 
         forName = "EUR"
         domName = "USD"
         forCCRate = 0.03460  # EUR
         domCCRate = 0.02940  # USD
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 1.3465
@@ -55,8 +55,8 @@ def test_FinOptionImpliedDbn():
 
         notionalCurrency = forName
 
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL
-        deltaMethod = FinFXDeltaMethod.SPOT_DELTA
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
+        deltaMethod = TuringFXDeltaMethod.SPOT_DELTA
 
         fxMarket = FinFXVolSurface(valueDate,
                                    spotFXRate,

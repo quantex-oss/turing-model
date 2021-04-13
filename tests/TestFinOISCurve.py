@@ -9,21 +9,21 @@ import time as time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
 from financepy.products.rates.turing_ibor_fra import FinIborFRA
 from financepy.products.rates.turing_ibor_future import FinIborFuture
 from financepy.products.rates.turing_ois import FinOIS
-from financepy.products.rates.turing_ois_curve import FinOISCurve
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
-from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
+from financepy.products.rates.turing_ois_curve import TuringOISCurve
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
 from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.finutils.turing_global_types import TuringSwapTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 PLOT_GRAPHS = False
 
@@ -33,17 +33,17 @@ PLOT_GRAPHS = False
 def test_FinOISFRAsOnly():
 
     # TO DO FIX THIS
-    valuationDate = FinDate(23, 2, 2018)
+    valuationDate = TuringDate(23, 2, 2018)
 
     spotDays = 0
     settleDt = valuationDate.addWeekDays(spotDays)
 
-    depoDCCType = FinDayCountTypes.ACT_360
+    depoDCCType = TuringDayCountTypes.ACT_360
     notional = 100.0
 
     payFixed = True
 
-    calendarType = FinCalendarTypes.TARGET
+    calendarType = TuringCalendarTypes.TARGET
     fras = []
 
     # 1 x 4 FRA
@@ -64,9 +64,9 @@ def test_FinOISFRAsOnly():
 
     swaps = []
 
-    liborCurve = FinOISCurve(settleDt,
-                               fras,
-                               swaps)
+    liborCurve = TuringOISCurve(settleDt,
+                                fras,
+                                swaps)
 
     testCases.header("DATE", "MATDATE", "VALUE")
 
@@ -80,24 +80,24 @@ def test_FinOISFRAsOnly():
 
 def test_FinOISDepositsFRAsSwaps():
 
-    valuationDate = FinDate(18, 9, 2019)
+    valuationDate = TuringDate(18, 9, 2019)
 
-    dccType = FinDayCountTypes.THIRTY_E_360_ISDA
+    dccType = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
 
     spotDays = 0
     settleDt = valuationDate.addWeekDays(spotDays)
 
-    depoDCCType = FinDayCountTypes.ACT_360
+    depoDCCType = TuringDayCountTypes.ACT_360
     notional = 100.0
-    calendarType = FinCalendarTypes.TARGET
+    calendarType = TuringCalendarTypes.TARGET
     depos = []
 
     # 1 month
     depositRate = 0.04
     maturityDate = settleDt.addMonths(1)
-    depo = FinIborDeposit(settleDt, maturityDate, depositRate,
-                          depoDCCType, notional, calendarType)
+    depo = TuringIborDeposit(settleDt, maturityDate, depositRate,
+                             depoDCCType, notional, calendarType)
     depos.append(depo)
     
     fras = []
@@ -123,8 +123,8 @@ def test_FinOISDepositsFRAsSwaps():
     fras.append(fra)
 
     swaps = []
-    fixedDCCType = FinDayCountTypes.ACT_365F
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
+    fixedDCCType = TuringDayCountTypes.ACT_365F
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
 
     swapRate = 0.05
 #    maturityDate = settleDt.addMonths(24)
@@ -217,10 +217,10 @@ def test_FinOISDepositsFRAsSwaps():
                         fixedDCCType)
     swaps.append(swap)
 
-    liborCurve = FinOISCurve(valuationDate,
-                             depos,
-                                   fras,
-                                   swaps)
+    liborCurve = TuringOISCurve(valuationDate,
+                                depos,
+                                fras,
+                                swaps)
 
     df = liborCurve.df(settleDt)
 
@@ -260,12 +260,12 @@ def futureToFRARate(price, convexity):
 def test_FinOISDepositsFuturesSwaps():
 
     
-    spotDate = FinDate(6, 6, 2018)
+    spotDate = TuringDate(6, 6, 2018)
     spotDays = 0
     settleDt = spotDate.addWeekDays(spotDays)
-    depoDCCType = FinDayCountTypes.THIRTY_E_360_ISDA
+    depoDCCType = TuringDayCountTypes.THIRTY_E_360_ISDA
 
-    depo = FinIborDeposit(settleDt, "1D", 1.712/100.0, depoDCCType)
+    depo = TuringIborDeposit(settleDt, "1D", 1.712 / 100.0, depoDCCType)
     depos = [depo]
 
     fras = []
@@ -312,15 +312,15 @@ def test_FinOISDepositsFuturesSwaps():
     startDate = spotDate.addWeekDays(spotDays)
 
     swaps = []
-    fixedLegType = FinSwapTypes.PAY
-    fixedDCCType = FinDayCountTypes.THIRTY_E_360
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
-    floatFreqType = FinFrequencyTypes.QUARTERLY
+    fixedLegType = TuringSwapTypes.PAY
+    fixedDCCType = TuringDayCountTypes.THIRTY_E_360
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
+    floatFreqType = TuringFrequencyTypes.QUARTERLY
     notional = 1000000
     floatSpread = 0.0
-    floatDCCType = FinDayCountTypes.ACT_360
-    calendarType = FinCalendarTypes.US
-    busDayAdjustRule = FinBusDayAdjustTypes.PRECEDING
+    floatDCCType = TuringDayCountTypes.ACT_360
+    calendarType = TuringCalendarTypes.US
+    busDayAdjustRule = TuringBusDayAdjustTypes.PRECEDING
 
     swapRate = 0.02776305
     paymentLag = 1
@@ -332,7 +332,7 @@ def test_FinOISDepositsFuturesSwaps():
 
     swaps.append(swap)
 
-    liborCurve = FinOISCurve(spotDate, depos, fras, swaps)
+    liborCurve = TuringOISCurve(spotDate, depos, fras, swaps)
 
     times = np.linspace(0.0, 2.0, 25)
     dates = spotDate.addYears(times)
@@ -360,7 +360,7 @@ def test_FinOISDepositsFuturesSwaps():
         df = liborCurve.df(endDate)
         print(endDate, df)
 
-        endDate = FinDate(20, 6, 2018)
+        endDate = TuringDate(20, 6, 2018)
         df = liborCurve.df(endDate)
         print(endDate, df)
 
@@ -384,7 +384,7 @@ def test_FinOISDepositsFuturesSwaps():
 
 def test_derivativePricingExample():
 
-    valuationDate = FinDate(10, 11, 2011)
+    valuationDate = TuringDate(10, 11, 2011)
 
     # We do the O/N rate which settles on trade date
     spotDays = 0
@@ -393,9 +393,9 @@ def test_derivativePricingExample():
     fras = []
 
     swaps = []
-    dayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
-#    dayCountType = FinDayCountTypes.ACT_360
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
+    dayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
+#    dayCountType = TuringDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
     fixedLegType = FinfixedLegTypes.PAY
     
     swapRate = 0.0058
@@ -434,8 +434,8 @@ def test_derivativePricingExample():
     start = time.time()
 
     for _ in range(0, numRepeats):
-        _ = FinOISCurve(valuationDate, fras, swaps,
-                              FinInterpTypes.FLAT_FWD_RATES)
+        _ = TuringOISCurve(valuationDate, fras, swaps,
+                           FinInterpTypes.FLAT_FWD_RATES)
 
     end = time.time()
     elapsed1 = end - start
@@ -443,8 +443,8 @@ def test_derivativePricingExample():
     start = time.time()
 
     for _ in range(0, numRepeats):
-        _ = FinOISCurve(valuationDate, fras, swaps,
-                              FinInterpTypes.LINEAR_SWAP_RATES)
+        _ = TuringOISCurve(valuationDate, fras, swaps,
+                           FinInterpTypes.LINEAR_SWAP_RATES)
 
     end = time.time()
     elapsed2 = end - start
@@ -462,14 +462,14 @@ def test_bloombergPricingExample():
     https://github.com/vilen22/curve-building/blob/master/Bloomberg%20Curve%20Building%20Replication.xlsx
     '''
 
-    valuationDate = FinDate(6, 6, 2018)
+    valuationDate = TuringDate(6, 6, 2018)
 
     # We do the O/N rate which settles on trade date
     spotDays = 0
     settleDt = valuationDate.addWeekDays(spotDays)
-    accrual = FinDayCountTypes.THIRTY_E_360
+    accrual = TuringDayCountTypes.THIRTY_E_360
 
-    depo = FinIborDeposit(settleDt, "1D", 1.712/100.0, accrual)
+    depo = TuringIborDeposit(settleDt, "1D", 1.712 / 100.0, accrual)
     depos = [depo]
     
     futs = []
@@ -488,11 +488,11 @@ def test_bloombergPricingExample():
     fras[4] = futs[4].toFRA(97.1450, -0.00411)
     fras[5] = futs[5].toFRA(97.0750, -0.00589)
 
-    accrual = FinDayCountTypes.THIRTY_E_360
-    freq = FinFrequencyTypes.SEMI_ANNUAL
+    accrual = TuringDayCountTypes.THIRTY_E_360
+    freq = TuringFrequencyTypes.SEMI_ANNUAL
     spotDays = 2
     settleDt = valuationDate.addWeekDays(spotDays)
-    payRec = FinSwapTypes.PAY
+    payRec = TuringSwapTypes.PAY
     lag = 1 # Not used
 
     swaps = []
@@ -514,7 +514,7 @@ def test_bloombergPricingExample():
     swap = FinOIS(settleDt, "40Y", payRec, (2.96946+2.97354)/200, freq, accrual); swaps.append(swap)
     swap = FinOIS(settleDt, "50Y", payRec, (2.91552+2.93748)/200, freq, accrual); swaps.append(swap)
 
-    oisCurve = FinOISCurve(valuationDate, depos, fras, swaps)
+    oisCurve = TuringOISCurve(valuationDate, depos, fras, swaps)
 
 #    swaps[0]._fixedLeg.printValuation()
 #    swaps[0]._floatLeg.printValuation()

@@ -7,13 +7,13 @@ sys.path.append("..")
 
 import numpy as np
 
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.market.volatility.turing_equity_vol_surface import FinEquityVolSurface
-from financepy.finutils.turing_date import FinDate
-from financepy.models.turing_model_volatility_fns import FinVolFunctionTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.market.volatility.turing_equity_vol_surface import TuringEquityVolSurface
+from financepy.finutils.turing_date import TuringDate
+from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 import matplotlib.pyplot as plt
 
@@ -27,14 +27,14 @@ PLOT_GRAPHS = False
 
 def test_FinEquityVolSurface(verboseCalibration):
 
-    valueDate = FinDate(11, 1, 2021)
+    valueDate = TuringDate(11, 1, 2021)
 
     stockPrice = 3800.0 # Check
 
-    expiryDates = [FinDate(11, 2, 2021), FinDate(11, 3, 2021),
-                   FinDate(11, 4, 2021), FinDate(11, 7, 2021), 
-                   FinDate(11,10, 2021), FinDate(11, 1, 2022), 
-                   FinDate(11, 1, 2023)]
+    expiryDates = [TuringDate(11, 2, 2021), TuringDate(11, 3, 2021),
+                   TuringDate(11, 4, 2021), TuringDate(11, 7, 2021),
+                   TuringDate(11, 10, 2021), TuringDate(11, 1, 2022),
+                   TuringDate(11, 1, 2023)]
 
     strikes = np.array([3037, 3418, 3608, 3703, 3798, 
                         3893, 3988, 4178, 4557])
@@ -51,21 +51,21 @@ def test_FinEquityVolSurface(verboseCalibration):
     volSurface = volSurface / 100.0
 
     r = 0.020  # USD
-    discountCurve = FinDiscountCurveFlat(valueDate, r)
+    discountCurve = TuringDiscountCurveFlat(valueDate, r)
 
     q = 0.010  # USD
-    dividendCurve = FinDiscountCurveFlat(valueDate, q)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, q)
 
-    volFunctionType = FinVolFunctionTypes.SVI
+    volFunctionType = TuringVolFunctionTypes.SVI
 
-    equitySurface = FinEquityVolSurface(valueDate,
-                                        stockPrice,
-                                        discountCurve,
-                                        dividendCurve,
-                                        expiryDates,
-                                        strikes,
-                                        volSurface,
-                                        volFunctionType)
+    equitySurface = TuringEquityVolSurface(valueDate,
+                                           stockPrice,
+                                           discountCurve,
+                                           dividendCurve,
+                                           expiryDates,
+                                           strikes,
+                                           volSurface,
+                                           volFunctionType)
 
 #    tol = 1e-4
 #    equitySurface.checkCalibration(False, tol)

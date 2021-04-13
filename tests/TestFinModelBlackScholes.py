@@ -5,21 +5,21 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
 
-from financepy.finutils.turing_global_types import FinOptionTypes
+from financepy.finutils.turing_global_types import TuringOptionTypes
 
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 from financepy.models.turing_model_black_scholes import FinModelBlackScholesTypes
 
 from financepy.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
-from financepy.products.equity.turing_equity_american_option import FinEquityAmericanOption
+from financepy.products.equity.turing_equity_american_option import TuringEquityAmericanOption
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##############################################################################
 
@@ -27,8 +27,8 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 
 def testFinModelBlackScholes():
 
-    valueDate = FinDate(8, 5, 2015)
-    expiryDate = FinDate(15, 1, 2016)
+    valueDate = TuringDate(8, 5, 2015)
+    expiryDate = TuringDate(15, 1, 2016)
 
     strikePrice = 130.0
     stockPrice = 127.62
@@ -36,25 +36,25 @@ def testFinModelBlackScholes():
     interestRate = 0.001
     dividendYield = 0.0163
 
-    optionType = FinOptionTypes.AMERICAN_CALL
-    euOptionType = FinOptionTypes.EUROPEAN_CALL
+    optionType = TuringOptionTypes.AMERICAN_CALL
+    euOptionType = TuringOptionTypes.EUROPEAN_CALL
     
-    amOption = FinEquityAmericanOption(expiryDate, strikePrice,
-                                       optionType)
+    amOption = TuringEquityAmericanOption(expiryDate, strikePrice,
+                                          optionType)
     
-    ameuOption = FinEquityAmericanOption(expiryDate, strikePrice, 
-                                         euOptionType)
+    ameuOption = TuringEquityAmericanOption(expiryDate, strikePrice,
+                                            euOptionType)
     
     euOption = FinEquityVanillaOption(expiryDate, strikePrice,
                                       euOptionType)
     
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate,
-                                         FinFrequencyTypes.CONTINUOUS, 
-                                         FinDayCountTypes.ACT_365F)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate,
+                                            TuringFrequencyTypes.CONTINUOUS,
+                                            TuringDayCountTypes.ACT_365F)
 
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield,
-                                         FinFrequencyTypes.CONTINUOUS, 
-                                         FinDayCountTypes.ACT_365F)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield,
+                                            TuringFrequencyTypes.CONTINUOUS,
+                                            TuringDayCountTypes.ACT_365F)
     
     numStepsPerYear = 400
     

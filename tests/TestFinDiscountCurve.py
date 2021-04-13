@@ -8,14 +8,14 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
 from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 from financepy.finutils.turing_math import scale
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 # TODO: Add other discount curves
@@ -27,13 +27,13 @@ PLOT_GRAPHS = False
 def test_FinDiscountCurve():
 
     # Create a curve from times and discount factors
-    startDate = FinDate(1, 1, 2018)
+    startDate = TuringDate(1, 1, 2018)
     years = np.linspace(0, 10, 6)
     rate = 0.05 + 0.005*years - 0.0003*years*years
     dfs = np.exp(-rate * years)
     dates = startDate.addYears(years)
 
-    curve = FinDiscountCurve(startDate, dates, dfs, FinInterpTypes.FLAT_FWD_RATES)
+    curve = TuringDiscountCurve(startDate, dates, dfs, FinInterpTypes.FLAT_FWD_RATES)
 
     testCases.header("T", "DF", "ZERORATE", "CC_FWD", "MM_FWD", "SURVPROB")
 
@@ -41,11 +41,11 @@ def test_FinDiscountCurve():
     plotDates = startDate.addYears(plotYears)
 
     # Examine dependency of curve on compounding rate
-    zeroRates_A = curve.zeroRate(plotDates, FinFrequencyTypes.ANNUAL)
-    zeroRates_S = curve.zeroRate(plotDates, FinFrequencyTypes.SEMI_ANNUAL)
-    zeroRates_Q = curve.zeroRate(plotDates, FinFrequencyTypes.QUARTERLY)
-    zeroRates_M = curve.zeroRate(plotDates, FinFrequencyTypes.MONTHLY)
-    zeroRates_C = curve.zeroRate(plotDates, FinFrequencyTypes.CONTINUOUS)
+    zeroRates_A = curve.zeroRate(plotDates, TuringFrequencyTypes.ANNUAL)
+    zeroRates_S = curve.zeroRate(plotDates, TuringFrequencyTypes.SEMI_ANNUAL)
+    zeroRates_Q = curve.zeroRate(plotDates, TuringFrequencyTypes.QUARTERLY)
+    zeroRates_M = curve.zeroRate(plotDates, TuringFrequencyTypes.MONTHLY)
+    zeroRates_C = curve.zeroRate(plotDates, TuringFrequencyTypes.CONTINUOUS)
 
     if PLOT_GRAPHS:
         plt.figure(figsize=(6, 4))
@@ -65,10 +65,10 @@ def test_FinDiscountCurve():
 
     for interp in FinInterpTypes:
 
-        curve = FinDiscountCurve(startDate, dates, dfs, interp)
+        curve = TuringDiscountCurve(startDate, dates, dfs, interp)
         fwdRates = curve.fwd(plotDates)
-        zeroRates = curve.zeroRate(plotDates, FinFrequencyTypes.ANNUAL)
-        parRates = curve.swapRate(startDate, plotDates, FinFrequencyTypes.ANNUAL)
+        zeroRates = curve.zeroRate(plotDates, TuringFrequencyTypes.ANNUAL)
+        parRates = curve.swapRate(startDate, plotDates, TuringFrequencyTypes.ANNUAL)
 
         if PLOT_GRAPHS:
             plt.figure(figsize=(6, 4))

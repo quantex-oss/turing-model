@@ -9,12 +9,12 @@ sys.path.append("..")
 import glob
 from os.path import dirname, basename, join
 
-from financepy.finutils.turing_error import FinError
-from financepy.finutils.turing_date import setDateFormatType, FinDateFormatTypes
-setDateFormatType(FinDateFormatTypes.UK_LONG)
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import setDateFormatType, TuringDateFormatTypes
+setDateFormatType(TuringDateFormatTypes.UK_LONG)
 
 # I put this here to get the library loaded and header printed before loop
-from FinTestCases import FinTestCases
+from TuringTestCases import TuringTestCases
 
 print("Looking in folder:", dirname(__file__))
 modules = sorted(glob.glob(join(dirname(__file__), "Test*.py")))
@@ -47,8 +47,8 @@ for moduleFileName in modules[n:m+1]:
         n = n + 1
 
     # Want testing to continue even if a module has an exception
-    except FinError as err:
-        print("FinError:", err._message, "************") 
+    except TuringError as err:
+        print("TuringError:", err._message, "************")
         n = n + 1
         pass
     except ValueError as err:

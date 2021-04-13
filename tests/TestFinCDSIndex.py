@@ -8,15 +8,15 @@ sys.path.append("..")
 from financepy.products.credit.turing_cds import FinCDS
 from financepy.finutils.turing_math import ONE_MILLION
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from financepy.products.credit.turing_cds_curve import FinCDSCurve
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_types import TuringSwapTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 # TO DO
@@ -28,22 +28,22 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 def buildIborCurve(tradeDate):
 
     valuationDate = tradeDate.addDays(1)
-    dcType = FinDayCountTypes.ACT_360
+    dcType = TuringDayCountTypes.ACT_360
     depos = []
 
     depos = []
     fras = []
     swaps = []
 
-    dcType = FinDayCountTypes.THIRTY_E_360_ISDA
-    fixedFreq = FinFrequencyTypes.SEMI_ANNUAL
+    dcType = TuringDayCountTypes.THIRTY_E_360_ISDA
+    fixedFreq = TuringFrequencyTypes.SEMI_ANNUAL
     settlementDate = valuationDate
 
     maturityDate = settlementDate.addMonths(12)
     swap1 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0502,
         fixedFreq,
         dcType)
@@ -53,7 +53,7 @@ def buildIborCurve(tradeDate):
     swap2 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0502,
         fixedFreq,
         dcType)
@@ -63,7 +63,7 @@ def buildIborCurve(tradeDate):
     swap3 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0501,
         fixedFreq,
         dcType)
@@ -73,7 +73,7 @@ def buildIborCurve(tradeDate):
     swap4 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0502,
         fixedFreq,
         dcType)
@@ -83,13 +83,13 @@ def buildIborCurve(tradeDate):
     swap5 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0501,
         fixedFreq,
         dcType)
     swaps.append(swap5)
 
-    liborCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     return liborCurve
 
@@ -103,7 +103,7 @@ def buildIssuerCurve(tradeDate, liborCurve):
     cdsMarketContracts = []
 
     cdsCoupon = 0.0048375
-    maturityDate = FinDate(20, 6, 2010)
+    maturityDate = TuringDate(20, 6, 2010)
     cds = FinCDS(valuationDate, maturityDate, cdsCoupon)
     cdsMarketContracts.append(cds)
 
@@ -121,12 +121,12 @@ def buildIssuerCurve(tradeDate, liborCurve):
 def test_valueCDSIndex():
 
     # We treat an index as a CDS contract with a flat CDS curve
-    tradeDate = FinDate(7, 2, 2006)
+    tradeDate = TuringDate(7, 2, 2006)
     liborCurve = buildIborCurve(tradeDate)
     issuerCurve = buildIssuerCurve(tradeDate, liborCurve)
     stepInDate = tradeDate.addDays(1)
     valuationDate = stepInDate
-    maturityDate = FinDate(20, 6, 2010)
+    maturityDate = TuringDate(20, 6, 2010)
 
     cdsRecovery = 0.40
     notional = 10.0 * ONE_MILLION

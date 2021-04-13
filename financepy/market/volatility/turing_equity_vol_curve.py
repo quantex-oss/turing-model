@@ -4,15 +4,15 @@
 
 import numpy as np
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_math import testMonotonicity
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_math import testMonotonicity
+from financepy.finutils.turing_helper_functions import labelToString
 
 ###############################################################################
-# TODO: This should be deleted and replaced with FinEquityVolSurface
+# TODO: This should be deleted and replaced with TuringEquityVolSurface
 
 
-class FinEquityVolCurve():
+class TuringEquityVolCurve():
     ''' Class to manage a smile or skew in volatility at a single maturity
     horizon. It fits the volatility using a polynomial. Includes analytics to
     extract the implied pdf of the underyling at maturity. THIS NEEDS TO BE
@@ -28,23 +28,23 @@ class FinEquityVolCurve():
                  polynomial=3):
 
         if expiryDate <= curveDate:
-            raise FinError("Expiry date before curve date.")
+            raise TuringError("Expiry date before curve date.")
 
         if len(strikes) < 1:
-            raise FinError("Volatility grid has zero length.")
+            raise TuringError("Volatility grid has zero length.")
 
         if testMonotonicity(strikes) is False:
-            raise FinError("Strikes must be strictly monotonic.")
+            raise TuringError("Strikes must be strictly monotonic.")
 
         numStrikes = len(strikes)
         numVols = len(volatilities)
 
         if numStrikes != numVols:
-            raise FinError("Strike and volatility vectors not same length.")
+            raise TuringError("Strike and volatility vectors not same length.")
 
         for i in range(1, numStrikes):
             if strikes[i] <= strikes[i - 1]:
-                raise FinError("Grid Strikes are not in increasing order")
+                raise TuringError("Grid Strikes are not in increasing order")
 
         self._curveDate = curveDate
         self._strikes = np.array(strikes)
@@ -62,7 +62,7 @@ class FinEquityVolCurve():
         vol = self._f(strike)
 
         if vol.any() < 0.0:
-            raise FinError("Negative volatility. Not permitted.")
+            raise TuringError("Negative volatility. Not permitted.")
 
         return vol
 

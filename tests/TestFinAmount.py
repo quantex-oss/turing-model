@@ -5,22 +5,22 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_amount import FinAmount
-from financepy.finutils.turing_currency import FinCurrencyTypes
+from financepy.finutils.turing_amount import TuringAmount
+from financepy.finutils.turing_currency import TuringCurrencyTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 
 def test_FinAmount():
 
     testCases.header("LABEL", "AMOUNT")
-    x = FinAmount(101000.232)
+    x = TuringAmount(101000.232)
 
     testCases.print("Amount", x)
 
-    x = FinAmount(101000.232, FinCurrencyTypes.CAD)
+    x = TuringAmount(101000.232, TuringCurrencyTypes.CAD)
 
     testCases.print("Amount", x)
 

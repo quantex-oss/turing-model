@@ -8,9 +8,9 @@ from math import exp, log, pi
 import numpy as np  # I USE NUMPY FOR EXP, LOG AND SQRT AS THEY HANDLE IMAGINARY PARTS
 
 from ..finutils.turing_global_variables import gDaysInYear
-from ..finutils.turing_global_types import FinOptionTypes
+from ..finutils.turing_global_types import TuringOptionTypes
 from ..finutils.turing_math import norminvcdf
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 
 ##########################################################################
 # Heston Process
@@ -29,7 +29,7 @@ from ..finutils.turing_error import FinError
 from enum import Enum
 
 
-class FinHestonNumericalScheme(Enum):
+class TuringHestonNumericalScheme(Enum):
     EULER = 1
     EULERLOG = 2
     QUADEXP = 3
@@ -51,7 +51,7 @@ def getPaths(s0, r, q, v0, kappa, theta, sigma, rho, t, dt, numPaths,
     rhohat = np.sqrt(1.0 - rho * rho)
     sigma2 = sigma * sigma
 
-    if scheme == FinHestonNumericalScheme.EULER.value:
+    if scheme == TuringHestonNumericalScheme.EULER.value:
         # Basic scheme to first order with truncation on variance
         for iPath in range(0, numPaths):
             s = s0
@@ -69,7 +69,7 @@ def getPaths(s0, r, q, v0, kappa, theta, sigma, rho, t, dt, numPaths,
                     zS + 0.5 * s * vplus * (zV * zV - dt)
                 sPaths[iPath, iStep] = s
 
-    elif scheme == FinHestonNumericalScheme.EULERLOG.value:
+    elif scheme == TuringHestonNumericalScheme.EULERLOG.value:
         # Basic scheme to first order with truncation on variance
         for iPath in range(0, numPaths):
             x = log(s0)
@@ -84,7 +84,7 @@ def getPaths(s0, r, q, v0, kappa, theta, sigma, rho, t, dt, numPaths,
                     rtvplus * zV + sigma2 * (zV * zV - dt) / 4.0
                 sPaths[iPath, iStep] = exp(x)
 
-    elif scheme == FinHestonNumericalScheme.QUADEXP.value:
+    elif scheme == TuringHestonNumericalScheme.QUADEXP.value:
         # Due to Leif Andersen(2006)
         Q = exp(-kappa * dt)
         psic = 1.50
@@ -139,14 +139,14 @@ def getPaths(s0, r, q, v0, kappa, theta, sigma, rho, t, dt, numPaths,
                 sPaths[iPath, iStep] = exp(x)
                 vn = vnp
     else:
-        raise FinError("Unknown FinHestonNumericalSchme")
+        raise TuringError("Unknown FinHestonNumericalSchme")
 
     return sPaths
 
 ###############################################################################
 
 
-class FinModelHeston():
+class TuringModelHeston():
 
     def __init__(self, v0, kappa, theta, sigma, rho):
 
@@ -172,7 +172,7 @@ class FinModelHeston():
                  numPaths,
                  numStepsPerYear,
                  seed,
-                 scheme=FinHestonNumericalScheme.EULERLOG):
+                 scheme=TuringHestonNumericalScheme.EULERLOG):
 
         tau = (option._expiryDate - valueDate) / gDaysInYear
 
@@ -194,12 +194,12 @@ class FinModelHeston():
                           seed,
                           schemeValue)
 
-        if option._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if option._optionType == TuringOptionTypes.EUROPEAN_CALL:
             path_payoff = np.maximum(sPaths[:, -1] - K, 0.0)
-        elif option._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif option._optionType == TuringOptionTypes.EUROPEAN_PUT:
             path_payoff = np.maximum(K - sPaths[:, -1], 0.0)
         else:
-            raise FinError("Unknown option type.")
+            raise TuringError("Unknown option type.")
 
         payoff = np.mean(path_payoff)
         v = payoff * exp(-interestRate * tau)

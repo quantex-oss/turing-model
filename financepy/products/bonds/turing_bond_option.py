@@ -2,13 +2,13 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_global_types import FinOptionTypes, FinExerciseTypes
-from ...products.bonds.turing_bond import FinBond
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_global_types import TuringOptionTypes, TuringExerciseTypes
+from financepy.products.bonds.turing_bond import TuringBond
 
 from enum import Enum
 import numpy as np
@@ -19,7 +19,7 @@ import numpy as np
 ###############################################################################
 
 
-class FinBondModelTypes(Enum):
+class TuringBondModelTypes(Enum):
     BLACK = 1
     HO_LEE = 2
     HULL_WHITE = 3
@@ -28,7 +28,7 @@ class FinBondModelTypes(Enum):
 ###############################################################################
 
 
-class FinBondOption():
+class TuringBondOption():
     ''' Class for options on fixed coupon bonds. These are options to either
     buy or sell a bond on or before a specific future expiry date at a strike
     price that is set on trade date. A European option only allows the bond to
@@ -37,11 +37,11 @@ class FinBondOption():
     be received. '''
 
     def __init__(self,
-                 bond: FinBond,
-                 expiryDate: FinDate,
+                 bond: TuringBond,
+                 expiryDate: TuringDate,
                  strikePrice: float,
                  faceAmount: float,
-                 optionType: FinOptionTypes):
+                 optionType: TuringOptionTypes):
 
         checkArgumentTypes(self.__init__, locals())
 
@@ -54,8 +54,8 @@ class FinBondOption():
 ###############################################################################
 
     def value(self,
-              valuationDate: FinDate,
-              discountCurve: FinDiscountCurve,
+              valuationDate: TuringDate,
+              discountCurve: TuringDiscountCurve,
               model):
         ''' Value a bond option (option on a bond) using a specified model
         which include the Hull-White, Black-Karasinski and Black-Derman-Toy
@@ -105,11 +105,11 @@ class FinBondOption():
         couponTimes = np.array(couponTimes)
         couponFlows = np.array(couponFlows)
 
-        exerciseType = FinExerciseTypes.AMERICAN
+        exerciseType = TuringExerciseTypes.AMERICAN
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL \
-            or self._optionType == FinOptionTypes.EUROPEAN_PUT:
-                exerciseType = FinExerciseTypes.EUROPEAN                
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL \
+            or self._optionType == TuringOptionTypes.EUROPEAN_PUT:
+                exerciseType = TuringExerciseTypes.EUROPEAN
 
         # This is wasteful if the model is Jamshidian but how to do neat design ?
         model.buildTree(tmat, dfTimes, dfValues)
@@ -117,15 +117,15 @@ class FinBondOption():
         v = model.bondOption(texp, self._strikePrice, self._faceAmount,
                              couponTimes, couponFlows, exerciseType)
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL \
-            or self._optionType == FinOptionTypes.AMERICAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL \
+            or self._optionType == TuringOptionTypes.AMERICAN_CALL:
                 return v['call']    
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT \
-            or self._optionType == FinOptionTypes.AMERICAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT \
+            or self._optionType == TuringOptionTypes.AMERICAN_PUT:
                 return v['put']
         else:
             print(self._optionType)
-            raise FinError("Unknown option type.")
+            raise TuringError("Unknown option type.")
 
 ###############################################################################
 

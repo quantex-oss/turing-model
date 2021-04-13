@@ -7,11 +7,11 @@ from scipy import optimize
 from numba import njit
 from math import ceil
 
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 from ..finutils.turing_math import N, accruedInterpolator
 from ..market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
 from ..finutils.turing_helper_functions import labelToString
-from ..finutils.turing_global_types import FinExerciseTypes
+from ..finutils.turing_global_types import TuringExerciseTypes
 from ..finutils.turing_global_variables import gSmall
 
 interp = FinInterpTypes.FLAT_FWD_RATES.value
@@ -42,14 +42,14 @@ class FinHWEuropeanCalcType(Enum):
   
 def optionExerciseTypesToInt(optionExerciseType):
 
-    if optionExerciseType == FinExerciseTypes.EUROPEAN:
+    if optionExerciseType == TuringExerciseTypes.EUROPEAN:
         return 1
-    if optionExerciseType == FinExerciseTypes.BERMUDAN:
+    if optionExerciseType == TuringExerciseTypes.BERMUDAN:
         return 2
-    if optionExerciseType == FinExerciseTypes.AMERICAN:
+    if optionExerciseType == TuringExerciseTypes.AMERICAN:
         return 3
     else:
-        raise FinError("Unknown option exercise type.")
+        raise TuringError("Unknown option exercise type.")
 
 ###############################################################################
 
@@ -592,7 +592,7 @@ def bermudanSwaption_Tree_Fast(texp, tmat, strikePrice, faceAmount,
 
                 ## Need to define floating value on all grid dates
 
-                raise FinError("American optionality not tested.")
+                raise TuringError("American optionality not tested.")
 
     return payValues[0, jmax], recValues[0, jmax]
 
@@ -619,7 +619,7 @@ def callablePuttableBond_Tree_Fast(couponTimes, couponFlows,
 #    print("DF Values:", _dfValues)
 
     if np.any(couponTimes < 0.0):
-        raise FinError("No coupon times can be before the value date.")
+        raise TuringError("No coupon times can be before the value date.")
 
     numTimeSteps, numNodes = _Q.shape
     dt = _dt
@@ -854,10 +854,10 @@ class FinModelRatesHW():
         set to false in which case it uses the trinomial Tree. '''
 
         if sigma < 0.0:
-            raise FinError("Negative volatility not allowed.")
+            raise TuringError("Negative volatility not allowed.")
 
         if a < 0.0:
-            raise FinError("Mean reversion speed parameter should be >= 0.")
+            raise TuringError("Mean reversion speed parameter should be >= 0.")
 
         self._sigma = sigma
         self._a = a
@@ -884,10 +884,10 @@ class FinModelRatesHW():
         date and maturity date. '''
 
         if texp > tmat:
-            raise FinError("Option expiry after bond matures.")
+            raise TuringError("Option expiry after bond matures.")
 
         if texp < 0.0:
-            raise FinError("Option expiry time negative.")
+            raise TuringError("Option expiry time negative.")
 
         ptexp = _uinterpolate(texp, dfTimes, dfValues, interp)
         ptmat = _uinterpolate(tmat, dfTimes, dfValues, interp)
@@ -1055,16 +1055,16 @@ class FinModelRatesHW():
         tree. The discount curve was already supplied to the tree build. '''
 
         if texp > tmat:
-            raise FinError("Option expiry after bond matures.")
+            raise TuringError("Option expiry after bond matures.")
 
         if texp < 0.0:
-            raise FinError("Option expiry time negative.")
+            raise TuringError("Option expiry time negative.")
 
         if self._treeTimes is None:
-            raise FinError("Tree has not been constructed.")
+            raise TuringError("Tree has not been constructed.")
 
         if self._treeTimes[-1] < texp:
-            raise FinError("Tree expiry must be >= option expiry date.")
+            raise TuringError("Tree expiry must be >= option expiry date.")
 
         dt = self._dt
         tdelta = texp + dt
@@ -1108,10 +1108,10 @@ class FinModelRatesHW():
         tmat = couponTimes[-1]
 
         if texp > tmat:
-            raise FinError("Option expiry after bond matures.")
+            raise TuringError("Option expiry after bond matures.")
 
         if texp < 0.0:
-            raise FinError("Option expiry time negative.")
+            raise TuringError("Option expiry time negative.")
 
         #######################################################################
 
@@ -1179,7 +1179,7 @@ class FinModelRatesHW():
                                            self._dfTimes, self._dfs)
 
             else:
-                raise FinError("Unknown HW model implementation choice.")
+                raise TuringError("Unknown HW model implementation choice.")
 
 
         else:
@@ -1249,7 +1249,7 @@ class FinModelRatesHW():
         fn1 = tmat/self._dt
         fn2 = float(int(tmat/self._dt))
         if abs(fn1 - fn2) > 1e-6:
-            raise FinError("Time not on tree time grid")
+            raise TuringError("Time not on tree time grid")
 
         timeStep = int(tmat / self._dt) + 1
 
@@ -1266,10 +1266,10 @@ class FinModelRatesHW():
         ''' Build the trinomial tree. '''
 
         if isinstance(dfTimes, np.ndarray) is False:
-            raise FinError("DF TIMES must be a numpy vector")
+            raise TuringError("DF TIMES must be a numpy vector")
 
         if isinstance(dfValues, np.ndarray) is False:
-            raise FinError("DF VALUES must be a numpy vector")
+            raise TuringError("DF VALUES must be a numpy vector")
 
         # I wish to add on an additional time to the tree so that the second
         # last time corresponds to a maturity treeMat. For this reason I scale

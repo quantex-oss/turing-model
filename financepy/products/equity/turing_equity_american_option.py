@@ -5,15 +5,15 @@
 
 import numpy as np
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_types import FinOptionTypes
-from ...finutils.turing_helper_functions import checkArgumentTypes, labelToString
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...products.equity.turing_equity_option import FinEquityOption
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.products.equity.turing_equity_option import TuringEquityOption
 
-from ...models.turing_model import FinModel
+from financepy.models.turing_model import FinModel
 
 ###############################################################################
 # TODO: Implement some analytical approximations
@@ -22,14 +22,14 @@ from ...models.turing_model import FinModel
 ###############################################################################
 
 
-class FinEquityAmericanOption(FinEquityOption):
+class TuringEquityAmericanOption(TuringEquityOption):
     ''' Class for American (and European) style options on simple vanilla
     calls and puts - a tree valuation model is used that can handle both. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  strikePrice: float,
-                 optionType: FinOptionTypes,
+                 optionType: TuringOptionTypes,
                  numOptions: float = 1.0):
         ''' Class for American style options on simple vanilla calls and puts.
         Specify the expiry date, strike price, whether the option is a call or
@@ -37,11 +37,11 @@ class FinEquityAmericanOption(FinEquityOption):
 
         checkArgumentTypes(self.__init__, locals())
 
-        if optionType != FinOptionTypes.EUROPEAN_CALL and \
-            optionType != FinOptionTypes.EUROPEAN_PUT and \
-            optionType != FinOptionTypes.AMERICAN_CALL and \
-                optionType != FinOptionTypes.AMERICAN_PUT:
-            raise FinError("Unknown Option Type" + str(optionType))
+        if optionType != TuringOptionTypes.EUROPEAN_CALL and \
+            optionType != TuringOptionTypes.EUROPEAN_PUT and \
+            optionType != TuringOptionTypes.AMERICAN_CALL and \
+                optionType != TuringOptionTypes.AMERICAN_PUT:
+            raise TuringError("Unknown Option Type" + str(optionType))
 
         self._expiryDate = expiryDate
         self._strikePrice = strikePrice
@@ -51,27 +51,27 @@ class FinEquityAmericanOption(FinEquityOption):
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: (np.ndarray, float),
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model: FinModel):
         ''' Valuation of an American option using a CRR tree to take into
         account the value of early exercise. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             texp = (self._expiryDate - valueDate) / gDaysInYear
         else:
             texp = valueDate
 
         if np.any(stockPrice <= 0.0):
-            raise FinError("Stock price must be greater than zero.")
+            raise TuringError("Stock price must be greater than zero.")
 
         if isinstance(model, FinModel) is False:
-            raise FinError("Model is not inherited off type FinModel.")
+            raise TuringError("Model is not inherited off type FinModel.")
 
         if np.any(texp < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         texp = np.maximum(texp, 1e-10)
 

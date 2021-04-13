@@ -11,8 +11,8 @@ sys.path.append("..")
 from financepy.models.turing_model_rates_cir import zeroPrice_MC, zeroPrice
 from financepy.models.turing_model_rates_cir import FinCIRNumericalScheme
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 

@@ -8,34 +8,34 @@ sys.path.append("..")
 from financepy.models.turing_process_simulator import FinProcessTypes
 from financepy.models.turing_process_simulator import FinGBMNumericalScheme
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.products.fx.turing_fx_barrier_option import FinFXBarrierTypes
-from financepy.products.fx.turing_fx_barrier_option import FinFXBarrierOption
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_date import FinDate
+from financepy.products.fx.turing_fx_barrier_option import TuringFXBarrierTypes
+from financepy.products.fx.turing_fx_barrier_option import TuringFXBarrierOption
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 def test_FinFXBarrierOption():
 
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 1, 2016)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 1, 2016)
     spotFXRate = 100.0
     currencyPair = "USDJPY"
     volatility = 0.20
     domInterestRate = 0.05
     forInterestRate = 0.02
-    optionType = FinFXBarrierTypes.DOWN_AND_OUT_CALL
+    optionType = TuringFXBarrierTypes.DOWN_AND_OUT_CALL
     notional = 100.0
     notionalCurrency = "USD"
 
     drift = domInterestRate - forInterestRate
     scheme = FinGBMNumericalScheme.ANTITHETIC
     processType = FinProcessTypes.GBM
-    domDiscountCurve = FinDiscountCurveFlat(valueDate, domInterestRate)
-    forDiscountCurve = FinDiscountCurveFlat(valueDate, forInterestRate)
+    domDiscountCurve = TuringDiscountCurveFlat(valueDate, domInterestRate)
+    forDiscountCurve = TuringDiscountCurveFlat(valueDate, forInterestRate)
     model = FinModelBlackScholes(volatility)
 
     ###########################################################################
@@ -44,7 +44,7 @@ def test_FinFXBarrierOption():
     start = time.time()
     numObservationsPerYear = 100
 
-    for optionType in FinFXBarrierTypes:
+    for optionType in TuringFXBarrierTypes:
 
         testCases.header("Type", "K", "B", "S", "Value",
                          "ValueMC", "TIME", "Diff")
@@ -53,10 +53,10 @@ def test_FinFXBarrierOption():
             B = 110.0
             K = 100.0
 
-            option = FinFXBarrierOption(expiryDate, K, currencyPair,
-                                        optionType, B,
-                                        numObservationsPerYear,
-                                        notional, notionalCurrency)
+            option = TuringFXBarrierOption(expiryDate, K, currencyPair,
+                                           optionType, B,
+                                           numObservationsPerYear,
+                                           notional, notionalCurrency)
 
             value = option.value(valueDate, spotFXRate,
                                  domDiscountCurve, forDiscountCurve, model)
@@ -78,10 +78,10 @@ def test_FinFXBarrierOption():
             B = 100.0
             K = 110.0
 
-            option = FinFXBarrierOption(expiryDate, K, currencyPair,
-                                        optionType, B,
-                                        numObservationsPerYear,
-                                        notional, notionalCurrency)
+            option = TuringFXBarrierOption(expiryDate, K, currencyPair,
+                                           optionType, B,
+                                           numObservationsPerYear,
+                                           notional, notionalCurrency)
 
             value = option.value(valueDate, spotFXRate,
                                  domDiscountCurve, forDiscountCurve, model)
@@ -110,16 +110,16 @@ def test_FinFXBarrierOption():
 
     testCases.header("Type", "K", "B", "S:", "Value", "Delta", "Vega", "Theta")
 
-    for optionType in FinFXBarrierTypes:
+    for optionType in TuringFXBarrierTypes:
         for spotFXRate in spotFXRates:
-            barrierOption = FinFXBarrierOption(expiryDate,
-                                               100.0,
-                                               currencyPair,
-                                               optionType,
-                                               B,
-                                               numObservationsPerYear,
-                                               notional,
-                                               notionalCurrency)
+            barrierOption = TuringFXBarrierOption(expiryDate,
+                                                  100.0,
+                                                  currencyPair,
+                                                  optionType,
+                                                  B,
+                                                  numObservationsPerYear,
+                                                  notional,
+                                                  notionalCurrency)
 
             value = barrierOption.value(valueDate,
                                         spotFXRate,

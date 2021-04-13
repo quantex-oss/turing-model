@@ -5,15 +5,15 @@
 import sys
 sys.path.append("..")
 
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.market.volatility.turing_fx_vol_surface import FinFXVolSurface
-from financepy.market.volatility.turing_fx_vol_surface import FinFXATMMethod
-from financepy.market.volatility.turing_fx_vol_surface import FinFXDeltaMethod
-from financepy.finutils.turing_date import FinDate
-from financepy.models.turing_model_volatility_fns import FinVolFunctionTypes
+from financepy.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
+from financepy.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
+from financepy.finutils.turing_date import TuringDate
+from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 import matplotlib.pyplot as plt
 
@@ -33,15 +33,15 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         # Example from Book extract by Iain Clarke using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = FinDate(10, 4, 2020)
+        valueDate = TuringDate(10, 4, 2020)
 
         forName = "EUR"
         domName = "USD"
         forCCRate = 0.03460  # EUR
         domCCRate = 0.02940  # USD
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 1.3465
@@ -53,9 +53,9 @@ def test_FinFXMktVolSurface1(verboseCalibration):
 
         notionalCurrency = forName
 
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL
-        deltaMethod = FinFXDeltaMethod.SPOT_DELTA
-        volFunctionType = FinVolFunctionTypes.CLARK
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
+        deltaMethod = TuringFXDeltaMethod.SPOT_DELTA
+        volFunctionType = TuringVolFunctionTypes.CLARK
 
         fxMarket = FinFXVolSurface(valueDate,
                                    spotFXRate,
@@ -74,9 +74,9 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         fxMarket.checkCalibration(verboseCalibration)
 
         # EXPLORE AND TEST DIFFERENT CATEGORICAL PARAMETERS
-        # for atmMethod in FinFXATMMethod:
-        #     for deltaMethod in FinFXDeltaMethod:
-        #         for volFunctionType in FinVolFunctionTypes:
+        # for atmMethod in TuringFXATMMethod:
+        #     for deltaMethod in TuringFXDeltaMethod:
+        #         for volFunctionType in TuringVolFunctionTypes:
     
         #             fxMarket = FinFXVolSurface(valueDate,
         #                                        spotFXRate,
@@ -114,15 +114,15 @@ def test_FinFXMktVolSurface2(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURJPY EXAMPLE CLARK")
 
-        valueDate = FinDate(10, 4, 2020)
+        valueDate = TuringDate(10, 4, 2020)
 
         forName = "EUR"
         domName = "JPY"
         forCCRate = 0.0294  # EUR
         domCCRate = 0.0171  # USD
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 90.72
@@ -134,8 +134,8 @@ def test_FinFXMktVolSurface2(verboseCalibration):
 
         notionalCurrency = forName
 
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL_PREM_ADJ
-        deltaMethod = FinFXDeltaMethod.SPOT_DELTA_PREM_ADJ
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL_PREM_ADJ
+        deltaMethod = TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ
 
         fxMarket = FinFXVolSurface(valueDate,
                                    spotFXRate,
@@ -164,15 +164,15 @@ def test_FinFXMktVolSurface3(verboseCalibration):
         # EURUSD Example from Paper by Uwe Wystup using Tables 4
 #        print("EURUSD EXAMPLE WYSTUP")
 
-        valueDate = FinDate(20, 1, 2009)
+        valueDate = TuringDate(20, 1, 2009)
 
         forName = "EUR"
         domName = "USD"
         forCCRate = 0.020113  # EUR
         domCCRate = 0.003525  # USD
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 1.3088
@@ -184,8 +184,8 @@ def test_FinFXMktVolSurface3(verboseCalibration):
 
         notionalCurrency = forName
 
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL
-        deltaMethod = FinFXDeltaMethod.SPOT_DELTA
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
+        deltaMethod = TuringFXDeltaMethod.SPOT_DELTA
 
         fxMarket = FinFXVolSurface(valueDate,
                                    spotFXRate,
@@ -212,15 +212,15 @@ def test_FinFXMktVolSurface4(verboseCalibration):
         # USDJPY Example from Paper by Uwe Wystup using Tables 4
 #        print("USDJPY EXAMPLE WYSTUP")
 
-        valueDate = FinDate(20, 1, 2009)
+        valueDate = TuringDate(20, 1, 2009)
 
         forName = "USD"
         domName = "JPY"
         forCCRate = 0.003525  # USD
         domCCRate = 0.0042875  # JPY
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 90.68
@@ -232,8 +232,8 @@ def test_FinFXMktVolSurface4(verboseCalibration):
 
         notionalCurrency = forName
 
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL
-        deltaMethod = FinFXDeltaMethod.SPOT_DELTA_PREM_ADJ
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
+        deltaMethod = TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ
 
         fxMarket = FinFXVolSurface(valueDate,
                                    spotFXRate,

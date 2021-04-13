@@ -9,22 +9,22 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_global_types import FinOptionTypes
+from financepy.finutils.turing_global_types import TuringOptionTypes
 from financepy.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 
 def test_FinNumbaNumpySpeed(useSobol):
 
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 7, 2015)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 7, 2015)
     stockPrice = 100
     volatility = 0.30
     interestRate = 0.05
@@ -32,14 +32,14 @@ def test_FinNumbaNumpySpeed(useSobol):
     seed = 1999
 
     model = FinModelBlackScholes(volatility)
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
 
     useSobolInt = int(useSobol)
     
     testCases.header("NUMPATHS", "VALUE_BS", "VALUE_MC", "TIME")
 
-    callOption = FinEquityVanillaOption(expiryDate, 100.0, 
-                                        FinOptionTypes.EUROPEAN_CALL)
+    callOption = FinEquityVanillaOption(expiryDate, 100.0,
+                                        TuringOptionTypes.EUROPEAN_CALL)
 
     value = callOption.value(valueDate, stockPrice, discountCurve,
                              dividendYield,model)
@@ -253,8 +253,8 @@ def test_FinNumbaNumpySpeed(useSobol):
 
 def test_FinNumbaNumbaParallel(useSobol):
 
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 7, 2015)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 7, 2015)
     stockPrice = 100
     volatility = 0.30
     interestRate = 0.05
@@ -262,14 +262,14 @@ def test_FinNumbaNumbaParallel(useSobol):
     seed = 2021
 
     model = FinModelBlackScholes(volatility)
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
 
     useSobolInt = int(useSobol)
     
     testCases.header("NUMPATHS", "VALUE_BS", "VALUE_MC", "TIME")
 
-    callOption = FinEquityVanillaOption(expiryDate, 100.0, 
-                                        FinOptionTypes.EUROPEAN_CALL)
+    callOption = FinEquityVanillaOption(expiryDate, 100.0,
+                                        TuringOptionTypes.EUROPEAN_CALL)
 
     value = callOption.value(valueDate, stockPrice, discountCurve,
                              dividendYield,model)

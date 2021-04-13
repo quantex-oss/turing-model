@@ -8,26 +8,26 @@ import numpy as np
 from math import sqrt
 
 
-from ...models.turing_model_gaussian_copula_1f import trSurvProbGaussian
-from ...models.turing_model_gaussian_copula_1f import trSurvProbAdjBinomial
-from ...models.turing_model_gaussian_copula_1f import trSurvProbRecursion
-from ...models.turing_model_gaussian_copula_lhp import trSurvProbLHP
+from financepy.models.turing_model_gaussian_copula_1f import trSurvProbGaussian
+from financepy.models.turing_model_gaussian_copula_1f import trSurvProbAdjBinomial
+from financepy.models.turing_model_gaussian_copula_1f import trSurvProbRecursion
+from financepy.models.turing_model_gaussian_copula_lhp import trSurvProbLHP
 
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes, FinDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
 
-from ...products.credit.turing_cds import FinCDS
-from ...products.credit.turing_cds_curve import FinCDSCurve
+from financepy.products.credit.turing_cds import FinCDS
+from financepy.products.credit.turing_cds_curve import FinCDSCurve
 
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import ONE_MILLION
-from ...market.curves.turing_interpolator import FinInterpTypes, interpolate
-from ...finutils.turing_error import FinError
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.market.curves.turing_interpolator import FinInterpTypes, interpolate
+from financepy.finutils.turing_error import TuringError
 
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...finutils.turing_date import FinDate
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
 
 ###############################################################################
 
@@ -46,23 +46,23 @@ class FinLossDistributionBuilder(Enum):
 class FinCDSTranche(object):
 
     def __init__(self,
-                 stepInDate: FinDate,
-                 maturityDate: FinDate,
+                 stepInDate: TuringDate,
+                 maturityDate: TuringDate,
                  k1: float,
                  k2: float,
                  notional: float = ONE_MILLION,
                  runningCoupon: float = 0.0,
                  longProtection: bool = True,
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_360,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
 
         checkArgumentTypes(self.__init__, locals())
 
         if k1 >= k2:
-            raise FinError("K1 must be less than K2")
+            raise TuringError("K1 must be less than K2")
 
         self._k1 = k1
         self._k2 = k2
@@ -109,7 +109,7 @@ class FinCDSTranche(object):
         tmat = (self._maturityDate - valuationDate) / gDaysInYear
 
         if tmat < 0.0:
-            raise FinError("Value date is after maturity date")
+            raise TuringError("Value date is after maturity date")
 
         if abs(k1 - k2) < 0.00000001:
             output = np.zeros(4)
@@ -120,7 +120,7 @@ class FinCDSTranche(object):
             return output
 
         if k1 > k2:
-            raise FinError("K1 > K2")
+            raise TuringError("K1 > K2")
 
         kappa = k2 / (k2 - k1)
 
@@ -200,15 +200,15 @@ class FinCDSTranche(object):
                 qt2[i] = trSurvProbLHP(
                     0.0, k2, numCredits, qVector, recoveryRates, beta2)
             else:
-                raise FinError(
+                raise TuringError(
                     "Unknown model type only full and AdjBinomial allowed")
 
             if qt1[i] > qt1[i - 1]:
-                raise FinError(
+                raise TuringError(
                     "Tranche K1 survival probabilities not decreasing.")
 
             if qt2[i] > qt2[i - 1]:
-                raise FinError(
+                raise TuringError(
                     "Tranche K2 survival probabilities not decreasing.")
 
             trancheSurvivalCurve[i] = kappa * qt2[i] + (1.0 - kappa) * qt1[i]

@@ -6,26 +6,26 @@ from math import exp, log, sqrt
 import numpy as np
 
 
-from ...finutils.turing_math import N
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_error import FinError
-# from ...products.equity.turing_equity_option import FinOption
-from ...finutils.turing_date import FinDate
-#from ...products.fx.FinFXModelTypes import FinFXModel
-from ...models.turing_model_black_scholes import FinModelBlackScholes
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_global_types import FinOptionTypes
+from financepy.finutils.turing_math import N
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+# from financepy.products.equity.turing_equity_option import FinOption
+from financepy.finutils.turing_date import TuringDate
+#from financepy.products.fx.FinFXModelTypes import FinFXModel
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_global_types import TuringOptionTypes
 
 ###############################################################################
 
 
-class FinFXDigitalOption():
+class TuringFXDigitalOption():
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  strikePrice: float,  # 1 unit of foreign in domestic
                  currencyPair: str,  # FORDOM
-                 optionType: FinOptionTypes,
+                 optionType: TuringOptionTypes,
                  notional: float,
                  premCurrency: str):
         ''' Create the FX Digital Option object. Inputs include expiry date,
@@ -48,7 +48,7 @@ class FinFXDigitalOption():
         self._domName = self._currencyPair[3:6]
 
         if premCurrency != self._domName and premCurrency != self._forName:
-            raise FinError("Notional currency not in currency pair.")
+            raise TuringError("Notional currency not in currency pair.")
 
 ###############################################################################
 
@@ -64,7 +64,7 @@ class FinFXDigitalOption():
         cash payout (puts) PLUS the fact that the cash payment can be in
         domestic or foreign currency. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             spotDate = valueDate.addWeekDays(self._spotDays)
             tdel = (self._deliveryDate - spotDate) / gDaysInYear
             texp = (self._expiryDate - valueDate) / gDaysInYear
@@ -73,10 +73,10 @@ class FinFXDigitalOption():
             texp = tdel
 
         if np.any(spotFXRate <= 0.0):
-            raise FinError("spotFXRate must be greater than zero.")
+            raise TuringError("spotFXRate must be greater than zero.")
 
         if np.any(tdel < 0.0):
-            raise FinError("Option time to maturity is less than zero.")
+            raise TuringError("Option time to maturity is less than zero.")
 
         tdel = np.maximum(tdel, 1e-10)
 
@@ -98,20 +98,20 @@ class FinFXDigitalOption():
             mu = rd - rf
             d2 = (lnS0k + (mu - v2 / 2.0) * tdel) / den
 
-            if self._optionType == FinOptionTypes.DIGITAL_CALL and \
+            if self._optionType == TuringOptionTypes.DIGITAL_CALL and \
                 self._forName == self._premCurrency:
                     v = S0 * exp(-rf * tdel) * N(d2)
-            elif self._optionType == FinOptionTypes.DIGITAL_PUT and \
+            elif self._optionType == TuringOptionTypes.DIGITAL_PUT and \
                 self._forName == self._premCurrency:
                     v = S0 * exp(-rf * tdel) * N(-d2)
-            if self._optionType == FinOptionTypes.DIGITAL_CALL and \
+            if self._optionType == TuringOptionTypes.DIGITAL_CALL and \
                 self._domName == self._premCurrency:
                     v = exp(-rd * tdel) * N(d2)
-            elif self._optionType == FinOptionTypes.DIGITAL_PUT and \
+            elif self._optionType == TuringOptionTypes.DIGITAL_PUT and \
                 self._domName == self._premCurrency:
                     v = exp(-rd * tdel) * N(-d2)
             else:
-                raise FinError("Unknown option type")
+                raise TuringError("Unknown option type")
 
             v = v * self.premNotional
 

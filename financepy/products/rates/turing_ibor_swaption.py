@@ -12,30 +12,30 @@
 
 import numpy as np
 
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_calendar import FinDateGenRuleTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_error import FinError
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
 
-from ...products.rates.turing_ibor_swap import FinIborSwap
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
 
-from ...models.turing_model_black import FinModelBlack
-from ...models.turing_model_black_shifted import FinModelBlackShifted
-from ...models.turing_model_sabr import FinModelSABR
-from ...models.turing_model_sabr_shifted import FinModelSABRShifted
-from ...models.turing_model_rates_hw import FinModelRatesHW
-from ...models.turing_model_rates_bk import FinModelRatesBK
-from ...models.turing_model_rates_bdt import FinModelRatesBDT
+from financepy.models.turing_model_black import FinModelBlack
+from financepy.models.turing_model_black_shifted import TuringModelBlackShifted
+from financepy.models.turing_model_sabr import FinModelSABR
+from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
+from financepy.models.turing_model_rates_hw import FinModelRatesHW
+from financepy.models.turing_model_rates_bk import TuringModelRatesBK
+from financepy.models.turing_model_rates_bdt import TuringModelRatesBDT
 
-from ...finutils.turing_global_types import FinOptionTypes
-from ...finutils.turing_global_types import FinSwapTypes
-from ...finutils.turing_global_types import FinExerciseTypes
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.finutils.turing_global_types import TuringExerciseTypes
 
 ###############################################################################
 
@@ -46,19 +46,19 @@ class FinIborSwaption():
     future and with a fixed maturity, at a swap rate fixed today. '''
 
     def __init__(self,
-                 settlementDate: FinDate,
-                 exerciseDate: FinDate,
-                 maturityDate: FinDate,
-                 fixedLegType: FinSwapTypes,
+                 settlementDate: TuringDate,
+                 exerciseDate: TuringDate,
+                 maturityDate: TuringDate,
+                 fixedLegType: TuringSwapTypes,
                  fixedCoupon: float,
-                 fixedFrequencyType: FinFrequencyTypes,
-                 fixedDayCountType: FinDayCountTypes,
+                 fixedFrequencyType: TuringFrequencyTypes,
+                 fixedDayCountType: TuringDayCountTypes,
                  notional: float = ONE_MILLION,
-                 floatFrequencyType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 floatDayCountType: FinDayCountTypes = FinDayCountTypes.THIRTY_E_360,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 floatFrequencyType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 floatDayCountType: TuringDayCountTypes = TuringDayCountTypes.THIRTY_E_360,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
         ''' Create a European-style swaption by defining the exercise date of
         the swaption, and all of the details of the underlying interest rate
         swap including the fixed coupon and the details of the fixed and the
@@ -68,10 +68,10 @@ class FinIborSwaption():
         checkArgumentTypes(self.__init__, locals())
 
         if settlementDate > exerciseDate:
-            raise FinError("Settlement date must be before expiry date")
+            raise TuringError("Settlement date must be before expiry date")
 
         if exerciseDate > maturityDate:
-            raise FinError("Exercise date must be before swap maturity date")
+            raise TuringError("Exercise date must be before swap maturity date")
 
         self._settlementDate = settlementDate
         self._exerciseDate = exerciseDate
@@ -103,7 +103,7 @@ class FinIborSwaption():
               model):
         ''' Valuation of a Ibor European-style swaption using a choice of
         models on a specified valuation date. Models include FinModelBlack,
-        FinModelBlackShifted, FinModelSABR, FinModelSABRShifted, FinModelHW,
+        TuringModelBlackShifted, FinModelSABR, TuringModelSABRShifted, FinModelHW,
         FinModelBK and FinModelBDT. The last two involved a tree-based
         valuation. '''
 
@@ -168,7 +168,7 @@ class FinIborSwaption():
         dfValues = discountCurve._dfs
 
         if np.any(cpnTimes < 0.0):
-            raise FinError("No coupon times can be before the value date.")
+            raise TuringError("No coupon times can be before the value date.")
 
         strikePrice = 1.0
         faceAmount = 1.0
@@ -177,39 +177,39 @@ class FinIborSwaption():
 
         if isinstance(model, FinModelBlack):
 
-            if self._fixedLegType == FinSwapTypes.PAY:
+            if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_CALL)
-            elif self._fixedLegType == FinSwapTypes.RECEIVE:
+                                            TuringOptionTypes.EUROPEAN_CALL)
+            elif self._fixedLegType == TuringSwapTypes.RECEIVE:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_PUT)
+                                            TuringOptionTypes.EUROPEAN_PUT)
 
-        elif isinstance(model, FinModelBlackShifted):
+        elif isinstance(model, TuringModelBlackShifted):
 
-            if self._fixedLegType == FinSwapTypes.PAY:
+            if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_CALL)
-            elif self._fixedLegType == FinSwapTypes.RECEIVE:
+                                            TuringOptionTypes.EUROPEAN_CALL)
+            elif self._fixedLegType == TuringSwapTypes.RECEIVE:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_PUT)
+                                            TuringOptionTypes.EUROPEAN_PUT)
 
         elif isinstance(model, FinModelSABR):
 
-            if self._fixedLegType == FinSwapTypes.PAY:
+            if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_CALL)
-            elif self._fixedLegType == FinSwapTypes.RECEIVE:
+                                            TuringOptionTypes.EUROPEAN_CALL)
+            elif self._fixedLegType == TuringSwapTypes.RECEIVE:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_PUT)
+                                            TuringOptionTypes.EUROPEAN_PUT)
 
-        elif isinstance(model, FinModelSABRShifted):
+        elif isinstance(model, TuringModelSABRShifted):
 
-            if self._fixedLegType == FinSwapTypes.PAY:
+            if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_CALL)
-            elif self._fixedLegType == FinSwapTypes.RECEIVE:
+                                            TuringOptionTypes.EUROPEAN_CALL)
+            elif self._fixedLegType == TuringSwapTypes.RECEIVE:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_PUT)
+                                            TuringOptionTypes.EUROPEAN_PUT)
 
         elif isinstance(model, FinModelRatesHW):
 
@@ -221,18 +221,18 @@ class FinIborSwaption():
                                                   dfTimes,
                                                   dfValues)
 
-            if self._fixedLegType == FinSwapTypes.PAY:
+            if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = swaptionPx['put']
-            elif self._fixedLegType == FinSwapTypes.RECEIVE:
+            elif self._fixedLegType == TuringSwapTypes.RECEIVE:
                 swaptionPrice = swaptionPx['call']
             else:
-                raise FinError("Unknown swaption option type" +
-                               str(self._swapType))
+                raise TuringError("Unknown swaption option type" +
+                                  str(self._swapType))
 
             # Cancel the multiplication at the end below
             swaptionPrice /= pv01
 
-        elif isinstance(model, FinModelRatesBK):
+        elif isinstance(model, TuringModelRatesBK):
 
             model.buildTree(tmat, dfTimes, dfValues)
             swaptionPx = model.bermudanSwaption(texp,
@@ -241,16 +241,16 @@ class FinIborSwaption():
                                                 faceAmount,
                                                 cpnTimes,
                                                 cpnFlows,
-                                                FinExerciseTypes.EUROPEAN)
+                                                TuringExerciseTypes.EUROPEAN)
 
-            if self._fixedLegType == FinSwapTypes.PAY:
+            if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = swaptionPx['pay']
-            elif self._fixedLegType == FinSwapTypes.RECEIVE:
+            elif self._fixedLegType == TuringSwapTypes.RECEIVE:
                 swaptionPrice = swaptionPx['rec']
 
             swaptionPrice /= pv01
 
-        elif isinstance(model, FinModelRatesBDT):
+        elif isinstance(model, TuringModelRatesBDT):
 
             model.buildTree(tmat, dfTimes, dfValues)
             swaptionPx = model.bermudanSwaption(texp,
@@ -259,16 +259,16 @@ class FinIborSwaption():
                                                 faceAmount,
                                                 cpnTimes,
                                                 cpnFlows,
-                                                FinExerciseTypes.EUROPEAN)
+                                                TuringExerciseTypes.EUROPEAN)
 
-            if self._fixedLegType == FinSwapTypes.PAY:
+            if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = swaptionPx['pay']
-            elif self._fixedLegType == FinSwapTypes.RECEIVE:
+            elif self._fixedLegType == TuringSwapTypes.RECEIVE:
                 swaptionPrice = swaptionPx['rec']
 
             swaptionPrice /= pv01
         else:
-            raise FinError("Unknown swaption model " + str(model))
+            raise TuringError("Unknown swaption model " + str(model))
 
         self._pv01 = pv01
         self._fwdSwapRate = s
@@ -285,7 +285,7 @@ class FinIborSwaption():
 ###############################################################################
 
     def cashSettledValue(self,
-                         valuationDate: FinDate,
+                         valuationDate: TuringDate,
                          discountCurve,
                          swapRate: float,
                          model):
@@ -325,15 +325,15 @@ class FinIborSwaption():
 
         if isinstance(model, FinModelBlack):
 
-            if self._fixedLegType == FinSwapTypes.PAY:
+            if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_CALL)
-            elif self._fixedLegType == FinSwapTypes.RECEIVE:
+                                            TuringOptionTypes.EUROPEAN_CALL)
+            elif self._fixedLegType == TuringSwapTypes.RECEIVE:
                 swaptionPrice = model.value(s, k, texp, df,
-                                            FinOptionTypes.EUROPEAN_PUT)
+                                            TuringOptionTypes.EUROPEAN_PUT)
         else:
-            raise FinError("Cash settled swaptions must be priced using"
-                           + " Black's model.")
+            raise TuringError("Cash settled swaptions must be priced using"
+                              + " Black's model.")
 
         self._fwdSwapRate = swapRate
         self._forwardDf = discountCurve.df(self._exerciseDate)
@@ -353,7 +353,7 @@ class FinIborSwaption():
     def printSwapFixedLeg(self):
 
         if self._underlyingSwap is None:
-            raise FinError("Underlying swap has not been set. Do a valuation.")
+            raise TuringError("Underlying swap has not been set. Do a valuation.")
 
         self._underlyingSwap.printFixedLegPV()
 
@@ -362,7 +362,7 @@ class FinIborSwaption():
     def printSwapFloatLeg(self):
 
         if self._underlyingSwap is None:
-            raise FinError("Underlying swap has not been set. Do a valuation.")
+            raise TuringError("Underlying swap has not been set. Do a valuation.")
 
         self._underlyingSwap.printFloatLegPV()
 

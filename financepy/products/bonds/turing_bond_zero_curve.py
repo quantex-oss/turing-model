@@ -7,17 +7,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import optimize
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_math import scale, testMonotonicity
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_helper_functions import inputTime
-from ...finutils.turing_helper_functions import tableToString
-from ...market.curves.turing_interpolator import FinInterpTypes, interpolate
-from ...finutils.turing_error import FinError
-from ...finutils.turing_frequency import FinFrequency, FinFrequencyTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_math import scale, testMonotonicity
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_helper_functions import inputTime
+from financepy.finutils.turing_helper_functions import tableToString
+from financepy.market.curves.turing_interpolator import FinInterpTypes, interpolate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_helper_functions import labelToString
 
 ###############################################################################
 
@@ -36,11 +36,11 @@ def _f(df, *args):
 ###############################################################################
 
 
-class FinBondZeroCurve(FinDiscountCurve):
+class TuringBondZeroCurve(TuringDiscountCurve):
     ''' Class to do bootstrap exact fitting of the bond zero rate curve. '''
 
     def __init__(self,
-                 valuationDate: FinDate,
+                 valuationDate: TuringDate,
                  bonds: list,
                  cleanPrices: list,
                  interpType: FinInterpTypes = FinInterpTypes.FLAT_FWD_RATES):
@@ -48,7 +48,7 @@ class FinBondZeroCurve(FinDiscountCurve):
         curve specified. '''
 
         if len(bonds) != len(cleanPrices):
-            raise FinError("Num bonds does not equal number of prices.")
+            raise TuringError("Num bonds does not equal number of prices.")
 
         self._settlementDate = valuationDate
         self._valuationDate = valuationDate
@@ -64,7 +64,7 @@ class FinBondZeroCurve(FinDiscountCurve):
 
         times = np.array(times)
         if testMonotonicity(times) is False:
-            raise FinError("Times are not sorted in increasing order")
+            raise TuringError("Times are not sorted in increasing order")
 
         self._yearsToMaturity = np.array(times)
 
@@ -93,11 +93,11 @@ class FinBondZeroCurve(FinDiscountCurve):
 ###############################################################################
 
     def zeroRate(self,
-                 dt: FinDate,
-                 frequencyType: FinFrequencyTypes = FinFrequencyTypes.CONTINUOUS):
+                 dt: TuringDate,
+                 frequencyType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS):
         ''' Calculate the zero rate to maturity date. '''
         t = inputTime(dt, self)
-        f = FinFrequency(frequencyType)
+        f = TuringFrequency(frequencyType)
         df = self.df(t)
 
         if f == 0:  # Simple interest
@@ -111,7 +111,7 @@ class FinBondZeroCurve(FinDiscountCurve):
 ###############################################################################
 
     def df(self,
-           dt: FinDate):
+           dt: TuringDate):
         t = inputTime(dt, self)
         z = interpolate(t, self._times, self._values, self._interpType.value)
         return z
@@ -119,7 +119,7 @@ class FinBondZeroCurve(FinDiscountCurve):
 ###############################################################################
 
     def survProb(self,
-                 dt: FinDate):
+                 dt: TuringDate):
         t = inputTime(dt, self)
         q = interpolate(t, self._times, self._values, self._interpType.value)
         return q
@@ -127,7 +127,7 @@ class FinBondZeroCurve(FinDiscountCurve):
 ###############################################################################
 
     def fwd(self,
-            dt: FinDate):
+            dt: TuringDate):
         ''' Calculate the continuous forward rate at the forward date. '''
         t = inputTime(dt, self)
         dt = 0.000001
@@ -139,19 +139,19 @@ class FinBondZeroCurve(FinDiscountCurve):
 ###############################################################################
 
     def fwdRate(self,
-                date1: FinDate,
-                date2: FinDate,
-                dayCountType: FinDayCountTypes):
+                date1: TuringDate,
+                date2: TuringDate,
+                dayCountType: TuringDayCountTypes):
         ''' Calculate the forward rate according to the specified
         day count convention. '''
 
         if date1 < self._valuationDate:
-            raise FinError("Date1 before curve value date.")
+            raise TuringError("Date1 before curve value date.")
 
         if date2 < date1:
-            raise FinError("Date2 must not be before Date1")
+            raise TuringError("Date2 must not be before Date1")
 
-        dayCount = FinDayCount(dayCountType)
+        dayCount = TuringDayCount(dayCountType)
         yearFrac = dayCount.yearFrac(date1, date2)[0]
         df1 = self.df(date1)
         df2 = self.df(date2)

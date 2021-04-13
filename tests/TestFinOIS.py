@@ -7,14 +7,14 @@ sys.path.append("..")
 
 from financepy.finutils.turing_math import ONE_MILLION
 from financepy.products.rates.turing_ois import FinOIS
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_types import TuringSwapTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -23,16 +23,16 @@ def test_FinFixedOIS():
     # Here I follow the example in
     # https://blog.deriscope.com/index.php/en/excel-quantlib-overnight-index-swap
 
-    effectiveDate = FinDate(30, 11, 2018)
-    endDate = FinDate(30, 11, 2023)
+    effectiveDate = TuringDate(30, 11, 2018)
+    endDate = TuringDate(30, 11, 2023)
 
     endDate = effectiveDate.addMonths(60)
     oisRate = 0.04
-    fixedLegType = FinSwapTypes.PAY
-    fixedFreqType = FinFrequencyTypes.ANNUAL
-    fixedDayCount = FinDayCountTypes.ACT_360
-    floatFreqType = FinFrequencyTypes.ANNUAL
-    floatDayCount = FinDayCountTypes.ACT_360
+    fixedLegType = TuringSwapTypes.PAY
+    fixedFreqType = TuringFrequencyTypes.ANNUAL
+    fixedDayCount = TuringDayCountTypes.ACT_360
+    floatFreqType = TuringFrequencyTypes.ANNUAL
+    floatDayCount = TuringDayCountTypes.ACT_360
     floatSpread = 0.0
     notional = ONE_MILLION
     paymentLag = 1
@@ -53,8 +53,8 @@ def test_FinFixedOIS():
 
     valueDate = effectiveDate
     marketRate = 0.05
-    oisCurve = FinDiscountCurveFlat(valueDate, marketRate,
-                                    FinFrequencyTypes.ANNUAL)
+    oisCurve = TuringDiscountCurveFlat(valueDate, marketRate,
+                                       TuringFrequencyTypes.ANNUAL)
 
     v = ois.value(effectiveDate, oisCurve)
     

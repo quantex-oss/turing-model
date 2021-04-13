@@ -9,8 +9,8 @@ from ..finutils.turing_math import N
 from scipy import optimize
 
 from ..finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ..finutils.turing_error import FinError
-from .turing_model_merton_credit import FinModelMertonCredit
+from ..finutils.turing_error import TuringError
+from .turing_model_merton_credit import TuringModelMertonCredit
 
 ###############################################################################
 
@@ -40,7 +40,7 @@ def _fobj(x, *args):
 ###############################################################################
 
 
-class FinModelMertonCreditMkt(FinModelMertonCredit):
+class TuringModelMertonCreditMkt(TuringModelMertonCredit):
     ''' Market Extension of the Merton Credit Model according to the original
     formulation by Merton with the inputs being the equity value of the firm, 
     the liabilities (bond face), the time to maturity in years, the risk-free 
@@ -93,22 +93,22 @@ class FinModelMertonCreditMkt(FinModelMertonCredit):
                    len(self._vE))
 
         if len(self._E) != nmax and len(self._E) > 1:
-            raise FinError("Len E must be 1 or maximum length of arrays")
+            raise TuringError("Len E must be 1 or maximum length of arrays")
 
         if len(self._L) != nmax and len(self._L) > 1:
-            raise FinError("Len L must be 1 or maximum length of arrays")
+            raise TuringError("Len L must be 1 or maximum length of arrays")
 
         if len(self._t) != nmax and len(self._t) > 1:
-            raise FinError("Len T must be 1 or maximum length of arrays")
+            raise TuringError("Len T must be 1 or maximum length of arrays")
 
         if len(self._r) != nmax and len(self._r) > 1:
-            raise FinError("Len r must be 1 or maximum length of arrays")
+            raise TuringError("Len r must be 1 or maximum length of arrays")
 
         if len(self._mu) != nmax and len(self._mu) > 1:
-            raise FinError("Len mu must be 1 or maximum length of arrays")
+            raise TuringError("Len mu must be 1 or maximum length of arrays")
 
         if len(self._vE) != nmax and len(self._vE) > 1:
-            raise FinError("Len mu must be 1 or maximum length of arrays")
+            raise TuringError("Len mu must be 1 or maximum length of arrays")
 
         self._nmax = nmax
         self._solveForAssetValueAndVol()

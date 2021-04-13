@@ -6,8 +6,8 @@
 
 import numpy as np
 
-from ..finutils.turing_global_types import FinOptionTypes
-from ..finutils.turing_error import FinError
+from ..finutils.turing_global_types import TuringOptionTypes
+from ..finutils.turing_error import TuringError
 
 from ..finutils.turing_helper_functions import checkArgumentTypes
 
@@ -39,16 +39,16 @@ class FinModelBlackScholes(FinModel):
         self._implementationType = implementationType
         self._numStepsPerYear = numStepsPerYear
 
-    def value(self, 
-              spotPrice: float, 
-              timeToExpiry: float, 
-              strikePrice: float, 
-              riskFreeRate: float, 
-              dividendRate: float, 
-              optionType: FinOptionTypes):
+    def value(self,
+              spotPrice: float,
+              timeToExpiry: float,
+              strikePrice: float,
+              riskFreeRate: float,
+              dividendRate: float,
+              optionType: TuringOptionTypes):
 
-        if optionType == FinOptionTypes.EUROPEAN_CALL \
-            or optionType == FinOptionTypes.EUROPEAN_PUT:
+        if optionType == TuringOptionTypes.EUROPEAN_CALL \
+            or optionType == TuringOptionTypes.EUROPEAN_PUT:
 
             if self._implementationType is FinModelBlackScholesTypes.DEFAULT:
                 self._implementationType = FinModelBlackScholesTypes.ANALYTICAL
@@ -72,19 +72,19 @@ class FinModelBlackScholes(FinModel):
 
             else:
                 
-                raise FinError("Implementation not available for this product")
+                raise TuringError("Implementation not available for this product")
 
-        elif optionType == FinOptionTypes.AMERICAN_CALL \
-            or optionType == FinOptionTypes.AMERICAN_PUT:
+        elif optionType == TuringOptionTypes.AMERICAN_CALL \
+            or optionType == TuringOptionTypes.AMERICAN_PUT:
 
             if self._implementationType is FinModelBlackScholesTypes.DEFAULT:
                 self._implementationType = FinModelBlackScholesTypes.CRR_TREE
 
             if self._implementationType == FinModelBlackScholesTypes.BARONE_ADESI:
 
-                if optionType == FinOptionTypes.AMERICAN_CALL:
+                if optionType == TuringOptionTypes.AMERICAN_CALL:
                     phi = +1
-                elif optionType == FinOptionTypes.AMERICAN_PUT:
+                elif optionType == TuringOptionTypes.AMERICAN_PUT:
                     phi = -1
 
                 v =  bawValue(spotPrice, timeToExpiry, strikePrice,
@@ -104,11 +104,11 @@ class FinModelBlackScholes(FinModel):
 
             else:
                 
-                raise FinError("Implementation not available for this product")
+                raise TuringError("Implementation not available for this product")
 
         else:
             
-            raise FinError("Should not be here")
+            raise TuringError("Should not be here")
 
 ###############################################################################
 

@@ -8,7 +8,7 @@ import numpy as np
 ##########################################################################
 
 from ..finutils.turing_math import norminvcdf, N, INVROOT2PI
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 from .turing_model_loss_dbn_builder import indepLossDbnRecursionGCD
 from .turing_model_loss_dbn_builder import indepLossDbnHeterogeneousAdjBinomial
 from .turing_model_loss_dbn_builder import portfolioGCD
@@ -33,13 +33,13 @@ def lossDbnRecursionGCD(numCredits,
     where losses have been calculate as number of units based on the GCD. '''
 
     if len(defaultProbs) != numCredits:
-        raise FinError("Default probability length must equal num credits.")
+        raise TuringError("Default probability length must equal num credits.")
 
     if len(lossUnits) != numCredits:
-        raise FinError("Loss units length must equal num credits.")
+        raise TuringError("Loss units length must equal num credits.")
 
     if len(betaVector) != numCredits:
-        raise FinError("Beta vector length must equal num credits.")
+        raise TuringError("Beta vector length must equal num credits.")
 
     numLossUnits = 1
     for i in range(0, len(lossUnits)):
@@ -94,11 +94,11 @@ def homogeneousBasketLossDbn(survivalProbabilities,
     numCredits = len(survivalProbabilities)
 
     if numCredits == 0:
-        raise FinError("Number of credits equals zero")
+        raise TuringError("Number of credits equals zero")
 
     for iCredit in range(1, numCredits):
         if recoveryRates[iCredit] != recoveryRates[0]:
-            raise FinError("Losses are not homogeneous")
+            raise TuringError("Losses are not homogeneous")
 
     m = 0.0
     for i in range(0, len(betaVector)):
@@ -146,7 +146,7 @@ def trSurvProbRecursion(k1,
         return 0.0
 
     if k1 >= k2:
-        raise FinError("K1 >= K2")
+        raise TuringError("K1 >= K2")
 
     commonRecoveryFlag = 1
 
@@ -242,7 +242,7 @@ def trSurvProbGaussian(k1,
         return 0.0
 
     if k1 >= k2:
-        raise FinError("K1 >= K2")
+        raise TuringError("K1 >= K2")
 
     defaultProbs = [0.0] * numCredits
     for iCredit in range(0, numCredits):
@@ -354,7 +354,7 @@ def trSurvProbAdjBinomial(k1,
         return 0.0
 
     if k1 >= k2:
-        raise FinError("K1 >= K2")
+        raise TuringError("K1 >= K2")
 
     defaultProbs = np.zeros(numCredits)
     for iCredit in range(0, numCredits):

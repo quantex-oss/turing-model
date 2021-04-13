@@ -5,62 +5,62 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
-from financepy.products.bonds.turing_bond_frn import FinBondFRN
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from financepy.products.bonds.turing_bond_frn import TuringBondFRN
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
 from financepy.finutils.turing_date import *
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
-from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
+from financepy.finutils.turing_global_types import TuringSwapTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 
 
 def buildIborCurve(valuationDate):
 
-    depoDCCType = FinDayCountTypes.THIRTY_E_360_ISDA
+    depoDCCType = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
 
-    payFixed = FinSwapTypes.PAY
+    payFixed = TuringSwapTypes.PAY
 
     spotDays = 2
     settlementDate = valuationDate.addWeekDays(spotDays)
 
     depositRate = 0.050
     maturityDate = settlementDate.addMonths(1)
-    depo1 = FinIborDeposit(
+    depo1 = TuringIborDeposit(
         settlementDate,
         maturityDate,
         depositRate,
         depoDCCType)
 
     maturityDate = settlementDate.addMonths(3)
-    depo2 = FinIborDeposit(
+    depo2 = TuringIborDeposit(
         settlementDate,
         maturityDate,
         depositRate,
         depoDCCType)
 
     maturityDate = settlementDate.addMonths(6)
-    depo3 = FinIborDeposit(
+    depo3 = TuringIborDeposit(
         settlementDate,
         maturityDate,
         depositRate,
         depoDCCType)
 
     maturityDate = settlementDate.addMonths(9)
-    depo4 = FinIborDeposit(
+    depo4 = TuringIborDeposit(
         settlementDate,
         maturityDate,
         depositRate,
         depoDCCType)
 
     maturityDate = settlementDate.addMonths(12)
-    depo5 = FinIborDeposit(
+    depo5 = TuringIborDeposit(
         settlementDate,
         maturityDate,
         depositRate,
@@ -73,8 +73,8 @@ def buildIborCurve(valuationDate):
     depos.append(depo5)
 
     fras = []
-    fixedDCCType = FinDayCountTypes.ACT_365F
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
+    fixedDCCType = TuringDayCountTypes.ACT_365F
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
 
     swaps = []
 
@@ -169,10 +169,10 @@ def buildIborCurve(valuationDate):
         fixedDCCType)
     swaps.append(swap9)
 
-    liborCurve = FinIborSingleCurve(valuationDate,
-                                    depos,
-                                    fras,
-                                    swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate,
+                                       depos,
+                                       fras,
+                                       swaps)
     
     if 1 == 0:
         import numpy as np
@@ -203,19 +203,19 @@ def test_FinBondFRN():
     ##########################################################################
 
     testCases.banner("BLOOMBERG CITIGROUP FRN EXAMPLE")
-    issueDate = FinDate(10, 11, 2010)
-    maturityDate = FinDate(10, 11, 2021)
+    issueDate = TuringDate(10, 11, 2010)
+    maturityDate = TuringDate(10, 11, 2021)
     quotedMargin = 0.0025
-    freqType = FinFrequencyTypes.QUARTERLY
-    accrualType = FinDayCountTypes.THIRTY_E_360
+    freqType = TuringFrequencyTypes.QUARTERLY
+    accrualType = TuringDayCountTypes.THIRTY_E_360
     face = 1000000
 
-    bond = FinBondFRN(issueDate,
-                      maturityDate,
-                      quotedMargin,
-                      freqType,
-                      accrualType,
-                      face)
+    bond = TuringBondFRN(issueDate,
+                         maturityDate,
+                         quotedMargin,
+                         freqType,
+                         accrualType,
+                         face)
 
     testCases.header("FIELD", "VALUE")
     cleanPrice = 96.793
@@ -223,7 +223,7 @@ def test_FinBondFRN():
     currentIbor = 0.0120534
     futureIbors = 0.0130522
 
-    settlementDate = FinDate(21, 7, 2017)
+    settlementDate = TuringDate(21, 7, 2017)
 
     dm = bond.discountMargin(settlementDate,
                              resetIbor,
@@ -312,20 +312,20 @@ def test_FinBondFRN():
 ##########################################################################
 
     testCases.banner("BLOOMBERG CITIGROUP FRN EXAMPLE II")
-    issueDate = FinDate(28, 3, 2000)
-    settlementDate = FinDate(28, 3, 2014)
-    maturityDate = FinDate(3, 2, 2021)
+    issueDate = TuringDate(28, 3, 2000)
+    settlementDate = TuringDate(28, 3, 2014)
+    maturityDate = TuringDate(3, 2, 2021)
     quotedMargin = 0.0020
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.THIRTY_E_360_ISDA
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.THIRTY_E_360_ISDA
     face = 1000000.0
 
-    bond = FinBondFRN(issueDate,
-                      maturityDate,
-                      quotedMargin,
-                      freqType,
-                      accrualType,
-                      face)
+    bond = TuringBondFRN(issueDate,
+                         maturityDate,
+                         quotedMargin,
+                         freqType,
+                         accrualType,
+                         face)
 
     testCases.header("FIELD", "VALUE")
     cleanPrice = 93.08

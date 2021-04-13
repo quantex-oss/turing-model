@@ -3,9 +3,9 @@
 ##############################################################################
 
 
-from ...models.turing_model_black_scholes import FinModelBlackScholes
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_helper_functions import labelToString
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_helper_functions import labelToString
 
 ##########################################################################
 
@@ -14,7 +14,7 @@ bump = 1e-4
 ##########################################################################
 
 
-class FinFXOption(object):
+class TuringFXOption(object):
     ''' Class that is used to perform perturbation risk for FX options. '''
 
 ###############################################################################

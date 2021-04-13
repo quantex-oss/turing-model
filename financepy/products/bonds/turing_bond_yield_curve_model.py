@@ -5,21 +5,21 @@
 
 import numpy as np
 from scipy.interpolate import splev
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_helper_functions import labelToString
 
 ###############################################################################
 
 
-class FinCurveFitMethod():
+class TuringCurveFitMethod():
     pass
 
 ###############################################################################
 
 
-class FinCurveFitPolynomial():
+class TuringCurveFitPolynomial():
 
     def __init__(self, power=3):
-        self._parentType = FinCurveFitMethod
+        self._parentType = TuringCurveFitMethod
         self._power = power
         self._coeffs = []
 
@@ -43,10 +43,10 @@ class FinCurveFitPolynomial():
 ###############################################################################
 
 
-class FinCurveFitNelsonSiegel():
+class TuringCurveFitNelsonSiegel():
 
     def __init__(self, tau=None, bounds=[(-1, -1, -1, 0.5), (1, 1, 1, 100)]):
-        self._parentType = FinCurveFitMethod
+        self._parentType = TuringCurveFitMethod
         self._beta1 = None
         self._beta2 = None
         self._beta3 = None
@@ -93,14 +93,14 @@ class FinCurveFitNelsonSiegel():
 ###############################################################################
 
 
-class FinCurveFitNelsonSiegelSvensson():
+class TuringCurveFitNelsonSiegelSvensson():
 
     def __init__(self, tau1=None, tau2=None,
                  bounds=[(0, -1, -1, -1, 0, 1), (1, 1, 1, 1, 10, 100)]):
         ''' Create object to store calibration and functional form of NSS
         parametric fit. '''
 
-        self._parentType = FinCurveFitMethod
+        self._parentType = TuringCurveFitMethod
         self._beta1 = None
         self._beta2 = None
         self._beta3 = None
@@ -163,10 +163,10 @@ class FinCurveFitNelsonSiegelSvensson():
 ###############################################################################
 
 
-class FinCurveFitBSpline():
+class TuringCurveFitBSpline():
 
     def __init__(self, power=3, knots=[1, 3, 5, 10]):
-        self._parentType = FinCurveFitMethod
+        self._parentType = TuringCurveFitMethod
         self._power = power
         self._knots = knots
         self._spline = None

@@ -6,17 +6,17 @@
 import numpy as np
 from scipy import optimize
 
-from ...finutils.turing_math import M
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_global_variables import gSmall
-from ...finutils.turing_error import FinError
+from financepy.finutils.turing_math import M
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_global_variables import gSmall
+from financepy.finutils.turing_error import TuringError
 
-from ...products.equity.turing_equity_option import FinEquityOption
-from ...finutils.turing_global_types import FinOptionTypes
-from ...market.curves.turing_discount_curve_flat import FinDiscountCurve
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
-from ...models.turing_model_black_scholes import bsValue
+from financepy.products.equity.turing_equity_option import TuringEquityOption
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurve
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.models.turing_model_black_scholes import bsValue
 
 from scipy.stats import norm
 N = norm.cdf
@@ -43,8 +43,8 @@ def _f(ss, *args):
     v = args[7]
     q = args[8]
 
-    v_call = bsValue(ss, tc-t, kc, rtc, q, v, FinOptionTypes.EUROPEAN_CALL.value)
-    v_put = bsValue(ss, tp-t, kp, rtp, q, v, FinOptionTypes.EUROPEAN_PUT.value)
+    v_call = bsValue(ss, tc - t, kc, rtc, q, v, TuringOptionTypes.EUROPEAN_CALL.value)
+    v_put = bsValue(ss, tp - t, kp, rtp, q, v, TuringOptionTypes.EUROPEAN_PUT.value)
 
     v = v_call - v_put
     return v
@@ -52,30 +52,30 @@ def _f(ss, *args):
 ###############################################################################
 
 
-class FinEquityChooserOption(FinEquityOption):
-    ''' A FinEquityChooserOption is an option which allows the holder to
+class TuringEquityChooserOption(TuringEquityOption):
+    ''' A TuringEquityChooserOption is an option which allows the holder to
     either enter into a call or a put option on a later expiry date, with both
     strikes potentially different and both expiry dates potentially different.
     This is known as a complex chooser. All the option details are set at trade
     initiation. '''
 
     def __init__(self,
-                 chooseDate: FinDate,
-                 callExpiryDate: FinDate,
-                 putExpiryDate: FinDate,
+                 chooseDate: TuringDate,
+                 callExpiryDate: TuringDate,
+                 putExpiryDate: TuringDate,
                  callStrikePrice: float,
                  putStrikePrice: float):
-        ''' Create the FinEquityChooserOption by passing in the chooser date
+        ''' Create the TuringEquityChooserOption by passing in the chooser date
         and then the put and call expiry dates as well as the corresponding put
         and call strike prices. '''
 
         checkArgumentTypes(self.__init__, locals())
 
         if chooseDate > callExpiryDate:
-            raise FinError("Expiry date must precede call option expiry date")
+            raise TuringError("Expiry date must precede call option expiry date")
 
         if chooseDate > putExpiryDate:
-            raise FinError("Expiry date must precede put option expiry date")
+            raise TuringError("Expiry date must precede put option expiry date")
 
         self._chooseDate = chooseDate
         self._callExpiryDate = callExpiryDate
@@ -86,16 +86,16 @@ class FinEquityChooserOption(FinEquityOption):
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model):
         ''' Value the complex chooser option using an approach by Rubinstein
         (1991). See also Haug page 129 for complex chooser options. '''
 
         if valueDate > self._chooseDate:
-            raise FinError("Value date after choose date.")
+            raise TuringError("Value date after choose date.")
 
         DEBUG_MODE = False
 
@@ -163,10 +163,10 @@ class FinEquityChooserOption(FinEquityOption):
 ###############################################################################
 
     def valueMC(self,
-                valueDate: FinDate,
+                valueDate: TuringDate,
                 stockPrice: float,
-                discountCurve: FinDiscountCurve,
-                dividendCurve: FinDiscountCurve,
+                discountCurve: TuringDiscountCurve,
+                dividendCurve: TuringDiscountCurve,
                 model,
                 numPaths: int = 10000,
                 seed: int = 4242):
@@ -210,11 +210,11 @@ class FinEquityChooserOption(FinEquityOption):
         s_1 = s * m
         s_2 = s / m
 
-        v_call_1 = bsValue(s_1, tc-t, kc, rtc, q, v, FinOptionTypes.EUROPEAN_CALL.value)
-        v_put_1 = bsValue(s_1, tp-t, kp, rtp, q, v, FinOptionTypes.EUROPEAN_PUT.value)
+        v_call_1 = bsValue(s_1, tc - t, kc, rtc, q, v, TuringOptionTypes.EUROPEAN_CALL.value)
+        v_put_1 = bsValue(s_1, tp - t, kp, rtp, q, v, TuringOptionTypes.EUROPEAN_PUT.value)
 
-        v_call_2 = bsValue(s_2, tc-t, kc, rtc, q, v, FinOptionTypes.EUROPEAN_CALL.value)
-        v_put_2 = bsValue(s_2, tp-t, kp, rtp, q, v, FinOptionTypes.EUROPEAN_PUT.value)
+        v_call_2 = bsValue(s_2, tc - t, kc, rtc, q, v, TuringOptionTypes.EUROPEAN_CALL.value)
+        v_put_2 = bsValue(s_2, tp - t, kp, rtp, q, v, TuringOptionTypes.EUROPEAN_PUT.value)
 
         payoff_1 = np.maximum(v_call_1, v_put_1)
         payoff_2 = np.maximum(v_call_2, v_put_2)

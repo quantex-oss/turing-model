@@ -5,23 +5,23 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_compound_option import FinEquityCompoundOption
-from financepy.finutils.turing_global_types import FinOptionTypes
+from financepy.products.equity.turing_equity_compound_option import TuringEquityCompoundOption
+from financepy.finutils.turing_global_types import TuringOptionTypes
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 
 
 def test_FinEquityCompoundOption():
 
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate1 = FinDate(1, 1, 2017)
-    expiryDate2 = FinDate(1, 1, 2018)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate1 = TuringDate(1, 1, 2017)
+    expiryDate2 = TuringDate(1, 1, 2018)
     k1 = 5.0
     k2 = 95.0
     stockPrice = 85.0
@@ -30,8 +30,8 @@ def test_FinEquityCompoundOption():
     dividendYield = 0.01
 
     model = FinModelBlackScholes(volatility)
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
     numStepsList = [100, 200, 500, 1000, 2000, 5000]
 
@@ -42,14 +42,14 @@ def test_FinEquityCompoundOption():
     testCases.header("TYPE1", "TYPE2", "K1", "K2", "S", "TreeSteps", "Exact", "TreeValue")
 
     for optionType1 in [
-            FinOptionTypes.EUROPEAN_CALL,
-            FinOptionTypes.EUROPEAN_PUT]:
+            TuringOptionTypes.EUROPEAN_CALL,
+            TuringOptionTypes.EUROPEAN_PUT]:
         for optionType2 in [
-                FinOptionTypes.EUROPEAN_CALL,
-                FinOptionTypes.EUROPEAN_PUT]:
+                TuringOptionTypes.EUROPEAN_CALL,
+                TuringOptionTypes.EUROPEAN_PUT]:
 
-            cmpdOption = FinEquityCompoundOption(expiryDate1, optionType1, k1,
-                                                 expiryDate2, optionType2, k2)
+            cmpdOption = TuringEquityCompoundOption(expiryDate1, optionType1, k1,
+                                                    expiryDate2, optionType2, k2)
 
             for numSteps in numStepsList:
         
@@ -69,14 +69,14 @@ def test_FinEquityCompoundOption():
     testCases.header("TYPE1", "TYPE2", "K1", "K2", "S", "TreeSteps", "Exact", "TreeValue")
 
     for optionType1 in [
-            FinOptionTypes.AMERICAN_CALL,
-            FinOptionTypes.AMERICAN_PUT]:
+            TuringOptionTypes.AMERICAN_CALL,
+            TuringOptionTypes.AMERICAN_PUT]:
         for optionType2 in [
-                FinOptionTypes.AMERICAN_CALL,
-                FinOptionTypes.AMERICAN_PUT]:
+                TuringOptionTypes.AMERICAN_CALL,
+                TuringOptionTypes.AMERICAN_PUT]:
 
-            cmpdOption = FinEquityCompoundOption(expiryDate1, optionType1, k1,
-                                                 expiryDate2, optionType2, k2)
+            cmpdOption = TuringEquityCompoundOption(expiryDate1, optionType1, k1,
+                                                    expiryDate2, optionType2, k2)
 
             for numSteps in numStepsList:
         
@@ -95,13 +95,13 @@ def test_FinEquityCompoundOption():
                      "TreeValue", "Diff", "DELTA", "GAMMA", "THETA")
 
     for optionType1 in [
-            FinOptionTypes.EUROPEAN_CALL,
-            FinOptionTypes.EUROPEAN_PUT]:
+            TuringOptionTypes.EUROPEAN_CALL,
+            TuringOptionTypes.EUROPEAN_PUT]:
         for optionType2 in [
-                FinOptionTypes.EUROPEAN_CALL,
-                FinOptionTypes.EUROPEAN_PUT]:
+                TuringOptionTypes.EUROPEAN_CALL,
+                TuringOptionTypes.EUROPEAN_PUT]:
 
-            cmpdOption = FinEquityCompoundOption(
+            cmpdOption = TuringEquityCompoundOption(
                 expiryDate1, optionType1, k1,
                 expiryDate2, optionType2, k2)
             stockPrices = range(70, 100, 10)

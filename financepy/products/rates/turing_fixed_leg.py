@@ -2,17 +2,17 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_calendar import FinCalendarTypes,  FinDateGenRuleTypes
-from ...finutils.turing_calendar import FinCalendar, FinBusDayAdjustTypes
-from ...finutils.turing_schedule import FinSchedule
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_global_types import FinSwapTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
+from financepy.finutils.turing_calendar import TuringCalendar, TuringBusDayAdjustTypes
+from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 ##########################################################################
 
@@ -22,36 +22,36 @@ class FinFixedLeg(object):
     coupon that is fixed over the life of the swap. '''
     
     def __init__(self,
-                 effectiveDate: FinDate,  # Date interest starts to accrue
-                 endDate: (FinDate, str),  # Date contract ends
-                 legType: FinSwapTypes,
+                 effectiveDate: TuringDate,  # Date interest starts to accrue
+                 endDate: (TuringDate, str),  # Date contract ends
+                 legType: TuringSwapTypes,
                  coupon: (float),
-                 freqType: FinFrequencyTypes,
-                 dayCountType: FinDayCountTypes,
+                 freqType: TuringFrequencyTypes,
+                 dayCountType: TuringDayCountTypes,
                  notional: float = ONE_MILLION,
                  principal: float = 0.0,
                  paymentLag: int = 0,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
         ''' Create the fixed leg of a swap contract giving the contract start
         date, its maturity, fixed coupon, fixed leg frequency, fixed leg day
         count convention and notional.  '''
 
         checkArgumentTypes(self.__init__, locals())
 
-        if type(endDate) == FinDate:
+        if type(endDate) == TuringDate:
             self._terminationDate = endDate
         else:
             self._terminationDate = effectiveDate.addTenor(endDate)
 
-        calendar = FinCalendar(calendarType)
+        calendar = TuringCalendar(calendarType)
 
         self._maturityDate = calendar.adjust(self._terminationDate,
                                              busDayAdjustType)
 
         if effectiveDate > self._maturityDate:
-            raise FinError("Effective date after maturity date")
+            raise TuringError("Effective date after maturity date")
 
         self._effectiveDate = effectiveDate
         self._endDate = endDate
@@ -87,17 +87,17 @@ class FinFixedLeg(object):
         # Nothing is paid on the swap effective date and so the first payment
         # date is the first actual payment date
 
-        schedule = FinSchedule(self._effectiveDate,
-                               self._terminationDate,
-                               self._freqType,
-                               self._calendarType,
-                               self._busDayAdjustType,
-                               self._dateGenRuleType)
+        schedule = TuringSchedule(self._effectiveDate,
+                                  self._terminationDate,
+                                  self._freqType,
+                                  self._calendarType,
+                                  self._busDayAdjustType,
+                                  self._dateGenRuleType)
 
         scheduleDates = schedule._adjustedDates
 
         if len(scheduleDates) < 2:
-            raise FinError("Schedule has none or only one date")
+            raise TuringError("Schedule has none or only one date")
 
         self._startAccruedDates = []
         self._endAccruedDates = []
@@ -108,8 +108,8 @@ class FinFixedLeg(object):
 
         prevDt = scheduleDates[0] 
         
-        dayCounter = FinDayCount(self._dayCountType)
-        calendar = FinCalendar(self._calendarType)
+        dayCounter = TuringDayCount(self._dayCountType)
+        calendar = TuringCalendar(self._calendarType)
 
         for nextDt in scheduleDates[1:]:
 
@@ -139,9 +139,9 @@ class FinFixedLeg(object):
 
 ###############################################################################
 
-    def value(self, 
-              valuationDate: FinDate,
-              discountCurve: FinDiscountCurve):
+    def value(self,
+              valuationDate: TuringDate,
+              discountCurve: TuringDiscountCurve):
 
         self._paymentDfs = []
         self._paymentPVs = []
@@ -181,7 +181,7 @@ class FinFixedLeg(object):
             legPV += paymentPV
             self._cumulativePVs[-1] = legPV
 
-        if self._legType == FinSwapTypes.PAY:
+        if self._legType == TuringSwapTypes.PAY:
             legPV = legPV * (-1.0)
 
         return legPV

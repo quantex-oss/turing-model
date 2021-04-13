@@ -5,7 +5,7 @@
 import numpy as np
 from numba import jit, njit, float64, int64 # , prange DOES NOT WORK ON GITHUB
 
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 from ..finutils.turing_math import N
 from ..finutils.turing_math import norminvcdf
 from ..models.turing_sobol import getUniformSobol
@@ -30,7 +30,7 @@ useParallel = False
 from enum import Enum
 
 
-class FinRateModelLMMModelTypes(Enum):
+class TuringRateModelLMMModelTypes(Enum):
     LMM_ONE_FACTOR = 1
     LMM_HW_M_FACTOR = 2
     LMM_FULL_N_FACTOR = 3
@@ -76,22 +76,22 @@ def LMMSwaptionVolApprox(a, b, fwd0, taus, zetas, rho):
     numPeriods = len(fwd0)
 
 #    if len(taus) != numPeriods:
-#        raise FinError("Tau vector must have length" + str(numPeriods))
+#        raise TuringError("Tau vector must have length" + str(numPeriods))
 
 #    if len(zetas) != numPeriods:
-#        raise FinError("Tau vector must have length" + str(numPeriods))
+#        raise TuringError("Tau vector must have length" + str(numPeriods))
 
 #    if len(rho) != numPeriods:
-#        raise FinError("Rho matrix must have length" + str(numPeriods))
+#        raise TuringError("Rho matrix must have length" + str(numPeriods))
 
 #    if len(rho[0]) != numPeriods:
-#        raise FinError("Rho matrix must have height" + str(numPeriods))
+#        raise TuringError("Rho matrix must have height" + str(numPeriods))
 
     if b > numPeriods:
-        raise FinError("Swap maturity beyond numPeriods.")
+        raise TuringError("Swap maturity beyond numPeriods.")
 
     if a == b:
-        raise FinError("Swap maturity on swap expiry date")
+        raise TuringError("Swap maturity on swap expiry date")
 
     p = np.zeros(numPeriods)
     p[0] = 1.0 / (1.0 + fwd0[0] * taus[0])
@@ -148,10 +148,10 @@ def LMMSimSwaptionVol(a, b, fwd0, fwds, taus):
     numForwards = len(fwds[0])
 
     if a > numForwards:
-        raise FinError("NumPeriods > numForwards")
+        raise TuringError("NumPeriods > numForwards")
 
     if a >= b:
-        raise FinError("Swap maturity is before expiry date")
+        raise TuringError("Swap maturity is before expiry date")
 
     fwdSwapRateMean = 0.0
     fwdSwapRateVar = 0.0
@@ -248,7 +248,7 @@ def LMMPriceCapsBlack(fwd0, volCaplet, p, K, taus):
     discFwd = np.zeros(p+1)
 
     if K <= 0.0:
-        raise FinError("Negative strike not allowed.")
+        raise TuringError("Negative strike not allowed.")
 
     # Set up initial term structure
     discFwd[0] = 1.0 / (1.0 + fwd0[0] * taus[0])
@@ -429,13 +429,13 @@ def LMMSimulateFwds1F(numForwards, numPaths, numeraireIndex, fwd0, gammas,
     final cap or ratchet has its reset in 10 years. '''
 
     if len(gammas) != numForwards:
-        raise FinError("Gamma vector does not have right number of forwards")
+        raise TuringError("Gamma vector does not have right number of forwards")
 
     if len(fwd0) != numForwards:
-        raise FinError("The length of fwd0 is not equal to numForwards")
+        raise TuringError("The length of fwd0 is not equal to numForwards")
 
     if len(taus) != numForwards:
-        raise FinError("The length of Taus is not equal to numForwards")
+        raise TuringError("The length of Taus is not equal to numForwards")
 
     np.random.seed(seed)
     # Even number of paths for antithetics
@@ -464,7 +464,7 @@ def LMMSimulateFwds1F(numForwards, numPaths, numeraireIndex, fwd0, gammas,
                 gMatrix[iPath, j] = g
                 gMatrix[iPath + halfNumPaths, j] = -g
     else:
-        raise FinError("Use Sobol must be 0 or 1")
+        raise TuringError("Use Sobol must be 0 or 1")
 
     for iPath in range(0, numPaths): # changed from prange
         # Initial value of forward curve at time 0
@@ -520,10 +520,10 @@ def LMMSimulateFwdsMF(numForwards, numFactors, numPaths, numeraireIndex, fwd0,
     np.random.seed(seed)
 
     if len(lambdas) != numFactors:
-        raise FinError("Lambda does not have the right number of factors")
+        raise TuringError("Lambda does not have the right number of factors")
 
     if len(lambdas[0]) != numForwards:
-        raise FinError("Lambda does not have the right number of forwards")
+        raise TuringError("Lambda does not have the right number of forwards")
 
     # Even number of paths for antithetics
     numPaths = 2 * int(numPaths/2)
@@ -554,7 +554,7 @@ def LMMSimulateFwdsMF(numForwards, numFactors, numPaths, numeraireIndex, fwd0,
                     gMatrix[iPath, j, q] = g
                     gMatrix[iPath + halfNumPaths, j, q] = -g
     else:
-        raise FinError("Use Sobol must be 0 or 1.")
+        raise TuringError("Use Sobol must be 0 or 1.")
 
     for iPath in range(0, numPaths):
         # Initial value of forward curve at time 0
@@ -623,10 +623,10 @@ def LMMCapFlrPricer(numForwards, numPaths, K, fwd0, fwds, taus, isCap):
     maxForwards = len(fwds[0])
 
     if numForwards > maxForwards:
-        raise FinError("NumForwards > maxForwards")
+        raise TuringError("NumForwards > maxForwards")
 
     if numPaths > maxPaths:
-        raise FinError("NumPaths > MaxPaths")
+        raise TuringError("NumPaths > MaxPaths")
 
     discFactor = np.zeros(numForwards)
     capFlrLets = np.zeros(numForwards-1)
@@ -657,7 +657,7 @@ def LMMCapFlrPricer(numForwards, numPaths, K, fwd0, fwds, taus, isCap):
                 elif isCap == 0:
                     capFlrLets[j] = max(K - libor, 0.0) * taus[j]
                 else:
-                    raise FinError("isCap should be 0 or 1")
+                    raise TuringError("isCap should be 0 or 1")
 
             periodRoll = (1.0 + libor * taus[j])
             numeraire[j] = numeraire[j - 1] * periodRoll
@@ -683,10 +683,10 @@ def LMMSwapPricer(cpn, numPeriods, numPaths, fwd0, fwds, taus):
     maxForwards = len(fwds[0])
 
     if numPeriods > maxForwards:
-        raise FinError("NumPeriods > numForwards")
+        raise TuringError("NumPeriods > numForwards")
 
     if numPaths > maxPaths:
-        raise FinError("NumPaths > MaxPaths")
+        raise TuringError("NumPaths > MaxPaths")
 
     discFactor = np.zeros(maxForwards)
     numeraire = np.zeros(maxForwards)
@@ -751,13 +751,13 @@ def LMMSwaptionPricer(strike, a, b, numPaths, fwd0, fwds, taus, isPayer):
     maxForwards = len(fwds[0])
 
     if a > maxForwards:
-        raise FinError("NumPeriods > numForwards")
+        raise TuringError("NumPeriods > numForwards")
 
     if a >= b:
-        raise FinError("Swap maturity is before expiry date")
+        raise TuringError("Swap maturity is before expiry date")
 
     if numPaths > maxPaths:
-        raise FinError("NumPaths > MaxPaths")
+        raise TuringError("NumPaths > MaxPaths")
 
     discFactor = np.zeros(maxForwards)
 #    pv01 = np.zeros(maxForwards)
@@ -792,7 +792,7 @@ def LMMSwaptionPricer(strike, a, b, numPaths, fwd0, fwds, taus, isPayer):
         elif isPayer == 0:
             payRecSwaption = max(strike - fwdSwapRate, 0.0) * pv01
         else:
-            raise FinError("Unknown payRecSwaption value - must be 0 or 1")
+            raise TuringError("Unknown payRecSwaption value - must be 0 or 1")
 
         sumPayRecSwaption += payRecSwaption / (abs(numeraire) + 1e-10)
 
@@ -811,10 +811,10 @@ def LMMRatchetCapletPricer(spread, numPeriods, numPaths, fwd0, fwds, taus):
     maxForwards = len(fwds[0][0])
 
     if numPeriods > maxForwards:
-        raise FinError("NumPeriods > numForwards")
+        raise TuringError("NumPeriods > numForwards")
 
     if numPaths > maxPaths:
-        raise FinError("NumPaths > MaxPaths")
+        raise TuringError("NumPaths > MaxPaths")
 
     discFactor = np.zeros(maxForwards)
     numeraire = np.zeros(maxForwards)
@@ -867,10 +867,10 @@ def LMMFlexiCapPricer(maxCaplets, K, numPeriods, numPaths, fwd0, fwds, taus):
     maxForwards = len(fwds[0][0])
 
     if numPeriods > maxForwards:
-        raise FinError("NumPeriods > numForwards")
+        raise TuringError("NumPeriods > numForwards")
 
     if numPaths > maxPaths:
-        raise FinError("NumPaths > MaxPaths")
+        raise TuringError("NumPaths > MaxPaths")
 
     discFactor = np.zeros(maxForwards)
     numeraire = np.zeros(maxForwards)
@@ -930,10 +930,10 @@ def LMMStickyCapletPricer(spread, numPeriods, numPaths, fwd0, fwds, taus):
     maxForwards = len(fwds[0][0])
 
     if numPeriods > maxForwards:
-        raise FinError("NumPeriods > numForwards")
+        raise TuringError("NumPeriods > numForwards")
 
     if numPaths > maxPaths:
-        raise FinError("NumPaths > MaxPaths")
+        raise TuringError("NumPaths > MaxPaths")
 
     discFactor = np.zeros(maxForwards)
     numeraire = np.zeros(maxForwards)

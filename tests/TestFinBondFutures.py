@@ -5,30 +5,30 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.bonds.turing_bond_future import FinBondFuture
-from financepy.products.bonds.turing_bond import FinBond
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate
+from financepy.products.bonds.turing_bond_future import TuringBondFuture
+from financepy.products.bonds.turing_bond import TuringBond
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 
 def test_FinBondFuture():
 
     # Example taken from Martellini and Priaulet page 360
-    freq = FinFrequencyTypes.SEMI_ANNUAL
-    basis = FinDayCountTypes.ACT_ACT_ICMA
-    issueDate = FinDate(15, 2, 2004)
+    freq = TuringFrequencyTypes.SEMI_ANNUAL
+    basis = TuringDayCountTypes.ACT_ACT_ICMA
+    issueDate = TuringDate(15, 2, 2004)
 
-    bond1 = FinBond(issueDate, FinDate(15, 8, 2011), 0.0500, freq, basis)
-    bond2 = FinBond(issueDate, FinDate(15, 2, 2011), 0.0500, freq, basis)
-    bond3 = FinBond(issueDate, FinDate(15, 8, 2010), 0.0575, freq, basis)
-    bond4 = FinBond(issueDate, FinDate(15, 2, 2010), 0.0650, freq, basis)
-    bond5 = FinBond(issueDate, FinDate(15, 8, 2009), 0.0600, freq, basis)
-    bond6 = FinBond(issueDate, FinDate(15, 5, 2009), 0.0550, freq, basis)
-    bond7 = FinBond(issueDate, FinDate(15, 11, 2008), 0.0475, freq, basis)
+    bond1 = TuringBond(issueDate, TuringDate(15, 8, 2011), 0.0500, freq, basis)
+    bond2 = TuringBond(issueDate, TuringDate(15, 2, 2011), 0.0500, freq, basis)
+    bond3 = TuringBond(issueDate, TuringDate(15, 8, 2010), 0.0575, freq, basis)
+    bond4 = TuringBond(issueDate, TuringDate(15, 2, 2010), 0.0650, freq, basis)
+    bond5 = TuringBond(issueDate, TuringDate(15, 8, 2009), 0.0600, freq, basis)
+    bond6 = TuringBond(issueDate, TuringDate(15, 5, 2009), 0.0550, freq, basis)
+    bond7 = TuringBond(issueDate, TuringDate(15, 11, 2008), 0.0475, freq, basis)
 
     bonds = []
     bonds.append(bond1)
@@ -39,18 +39,18 @@ def test_FinBondFuture():
     bonds.append(bond6)
     bonds.append(bond7)
 
-    firstDeliveryDate = FinDate(1, 3, 2002)
-    lastDeliveryDate = FinDate(28, 3, 2002)
+    firstDeliveryDate = TuringDate(1, 3, 2002)
+    lastDeliveryDate = TuringDate(28, 3, 2002)
     contractSize = 100000
     contractCoupon = 0.06
 
-    bondFutureContract = FinBondFuture("TYH2",
-                                       firstDeliveryDate,
-                                       lastDeliveryDate,
-                                       contractSize,
-                                       contractCoupon)
+    bondFutureContract = TuringBondFuture("TYH2",
+                                          firstDeliveryDate,
+                                          lastDeliveryDate,
+                                          contractSize,
+                                          contractCoupon)
 
-    settlementDate = FinDate(10, 12, 2001)
+    settlementDate = TuringDate(10, 12, 2001)
 
     # Get the Conversion Factors
     testCases.header("Bond Maturity", "Coupon", "Conversion Factor")
@@ -63,50 +63,50 @@ def test_FinBondFuture():
 
     testCases.banner("EXAMPLE FROM CME")
     testCases.banner("================")
-    settlementDate = FinDate(10, 10, 2017)
+    settlementDate = TuringDate(10, 10, 2017)
 
     bonds = []
     prices = []
-    bond = FinBond(issueDate, FinDate(15, 8, 2027), 0.0225, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 8, 2027), 0.0225, freq, basis)
     bonds.append(bond)
     prices.append(99 + 1 / 32)
-    bond = FinBond(issueDate, FinDate(15, 5, 2027), 0.02375, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 5, 2027), 0.02375, freq, basis)
     bonds.append(bond)
     prices.append(100 + 5 / 32 + 1 / 64)
-    bond = FinBond(issueDate, FinDate(15, 2, 2027), 0.0225, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 2, 2027), 0.0225, freq, basis)
     bonds.append(bond)
     prices.append(99 + 5 / 32 + 1 / 64)
-    bond = FinBond(issueDate, FinDate(15, 11, 2026), 0.02, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 11, 2026), 0.02, freq, basis)
     bonds.append(bond)
     prices.append(97 + 7 / 32 + 1 / 64)
-    bond = FinBond(issueDate, FinDate(15, 8, 2026), 0.015, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 8, 2026), 0.015, freq, basis)
     bonds.append(bond)
     prices.append(93 + 14 / 32)
-    bond = FinBond(issueDate, FinDate(15, 5, 2026), 0.01625, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 5, 2026), 0.01625, freq, basis)
     bonds.append(bond)
     prices.append(94 + 21 / 32 + 1 / 64)
-    bond = FinBond(issueDate, FinDate(15, 2, 2026), 0.01625, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 2, 2026), 0.01625, freq, basis)
     bonds.append(bond)
     prices.append(94 + 29 / 32)
-    bond = FinBond(issueDate, FinDate(15, 11, 2025), 0.0225, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 11, 2025), 0.0225, freq, basis)
     bonds.append(bond)
     prices.append(99 + 25 / 32)
-    bond = FinBond(issueDate, FinDate(15, 8, 2025), 0.02, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 8, 2025), 0.02, freq, basis)
     bonds.append(bond)
     prices.append(98 + 3 / 32)
-    bond = FinBond(issueDate, FinDate(15, 5, 2025), 0.02125, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 5, 2025), 0.02125, freq, basis)
     bonds.append(bond)
     prices.append(99 + 5 / 32 + 1 / 64)
-    bond = FinBond(issueDate, FinDate(15, 2, 2025), 0.02, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 2, 2025), 0.02, freq, basis)
     bonds.append(bond)
     prices.append(98 + 14 / 32 + 1 / 64)
-    bond = FinBond(issueDate, FinDate(15, 11, 2024), 0.0225, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 11, 2024), 0.0225, freq, basis)
     bonds.append(bond)
     prices.append(100 + 9 / 32 + 1 / 64)
-    bond = FinBond(issueDate, FinDate(15, 8, 2024), 0.02375, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 8, 2024), 0.02375, freq, basis)
     bonds.append(bond)
     prices.append(101 + 7 / 32 + 1 / 64)
-    bond = FinBond(issueDate, FinDate(15, 8, 2024), 0.01875, freq, basis)
+    bond = TuringBond(issueDate, TuringDate(15, 8, 2024), 0.01875, freq, basis)
     bonds.append(bond)
     # There may be an error in the document says 98-01+
     prices.append(98 + 1 / 32)
@@ -116,17 +116,17 @@ def test_FinBondFuture():
         yld = bond.yieldToMaturity(settlementDate, cleanPrice)
         testCases.print(str(bond._maturityDate), yld)
 
-    firstDeliveryDate = FinDate(1, 12, 2017)
-    lastDeliveryDate = FinDate(28, 12, 2017)
+    firstDeliveryDate = TuringDate(1, 12, 2017)
+    lastDeliveryDate = TuringDate(28, 12, 2017)
 
     contractSize = 100000
     contractCoupon = 0.06
 
-    bondFutureContract = FinBondFuture("TYZ7",
-                                       firstDeliveryDate,
-                                       lastDeliveryDate,
-                                       contractSize,
-                                       contractCoupon)
+    bondFutureContract = TuringBondFuture("TYZ7",
+                                          firstDeliveryDate,
+                                          lastDeliveryDate,
+                                          contractSize,
+                                          contractCoupon)
 
     testCases.header("BOND MATURITY", "CF")
     for bond in bonds:

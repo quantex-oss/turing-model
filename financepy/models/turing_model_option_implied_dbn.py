@@ -7,8 +7,8 @@
 import numpy as np
 from numba import njit, float64
 
-from ..finutils.turing_global_types import FinOptionTypes
-from ..finutils.turing_error import FinError
+from ..finutils.turing_global_types import TuringOptionTypes
+from ..finutils.turing_error import TuringError
 
 from .turing_model_black_scholes_analytical import bsValue
 
@@ -23,7 +23,7 @@ def optionImpliedDbn(s, t, r, q, strikes, sigmas):
     density function times the interval width. '''
 
     if len(strikes) != len(sigmas):
-        raise FinError("Strike and Sigma vector do not have same length.")
+        raise TuringError("Strike and Sigma vector do not have same length.")
 
     numSteps = len(strikes)
 
@@ -40,8 +40,8 @@ def optionImpliedDbn(s, t, r, q, strikes, sigmas):
     for ik in range(0, numSteps):
         strike = strikes[ik]        
         sigma = sigmas[ik]
-        v = bsValue(s, t, strike, r, q, sigma, 
-                    FinOptionTypes.EUROPEAN_CALL.value)
+        v = bsValue(s, t, strike, r, q, sigma,
+                    TuringOptionTypes.EUROPEAN_CALL.value)
         values[ik] = v
         
     # Calculate the density rho(K) dK

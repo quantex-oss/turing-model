@@ -8,46 +8,46 @@
 ###############################################################################
 
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_error import FinError
-from ...finutils.turing_frequency import FinFrequency, FinFrequencyTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ..bonds.turing_bond import FinBond, FinYTMCalcType
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from ..bonds.turing_bond import TuringBond, TuringYTMCalcType
 
 ###############################################################################
 
 
-class FinInflationBond(FinBond):
+class TuringInflationBond(TuringBond):
     ''' Class for inflation-linked bonds like TIPS and related analytics. These
     are bonds with coupon and principal adjusted by an index such as the CPI.
-    We inherit from the FinBond class. '''
+    We inherit from the TuringBond class. '''
 
     def __init__(self,
-                 issueDate: FinDate,
-                 maturityDate: FinDate,
+                 issueDate: TuringDate,
+                 maturityDate: TuringDate,
                  coupon: float,  # Annualised bond coupon before inflation
-                 freqType: FinFrequencyTypes,
-                 accrualType: FinDayCountTypes,
+                 freqType: TuringFrequencyTypes,
+                 accrualType: TuringDayCountTypes,
                  faceAmount: float,
-                 baseCPIValue: float, 
+                 baseCPIValue: float,
                  numExDividendDays: int = 0): # Value of CPI index at bond issue date
-        ''' Create FinInflationBond object by providing Maturity, Frequency,
+        ''' Create TuringInflationBond object by providing Maturity, Frequency,
         coupon, frequency and the accrual convention type. You must also supply
         the base CPI used for all coupon and principal related calculations. 
-        The class inherits from FinBond so has many similar functions. The YTM'''
+        The class inherits from TuringBond so has many similar functions. The YTM'''
         
         checkArgumentTypes(self.__init__, locals())
 
         if issueDate >= maturityDate:
-            raise FinError("Issue Date must preceded maturity date.")
+            raise TuringError("Issue Date must preceded maturity date.")
 
         self._issueDate = issueDate
         self._maturityDate = maturityDate
         self._coupon = coupon
         self._freqType = freqType
         self._accrualType = accrualType
-        self._frequency = FinFrequency(freqType)
+        self._frequency = TuringFrequency(freqType)
         self._faceAmount = faceAmount  # This is the bond holding size
         self._baseCPIValue = baseCPIValue # CPI value at issue date of bond
         self._par = 100.0  # This is how price is quoted
@@ -57,7 +57,7 @@ class FinInflationBond(FinBond):
         self._flowDates = []
         self._flowAmounts = []
 
-        self._settlementDate = FinDate(1, 1, 1900)
+        self._settlementDate = TuringDate(1, 1, 1900)
         self._accruedInterest = None
         self._accruedDays = 0.0
         self._alpha = 0.0
@@ -68,10 +68,10 @@ class FinInflationBond(FinBond):
 ###############################################################################
 
     def inflationPrincipal(self,
-                  settlementDate: FinDate,
-                  ytm: float,
-                  referenceCPI: float,
-                  convention: FinYTMCalcType):
+                           settlementDate: TuringDate,
+                           ytm: float,
+                           referenceCPI: float,
+                           convention: TuringYTMCalcType):
         ''' Calculate the principal value of the bond based on the face
         amount and the CPI growth. '''
 
@@ -85,10 +85,10 @@ class FinInflationBond(FinBond):
 ###############################################################################
 
     def flatPriceFromYieldToMaturity(self,
-                                     settlementDate: FinDate,
+                                     settlementDate: TuringDate,
                                      ytm: float,
                                      lastCpnCPI: float,
-                                     convention: FinYTMCalcType):
+                                     convention: TuringYTMCalcType):
         ''' Calculate the flat clean price value of the bond based on the clean
         price amount and the CPI growth to the last coupon date. '''
 
@@ -100,7 +100,7 @@ class FinInflationBond(FinBond):
 
 ###############################################################################
 
-    def calcInflationAccruedInterest(self, settlementDate: FinDate,
+    def calcInflationAccruedInterest(self, settlementDate: TuringDate,
                                      referenceCPI):
         ''' Calculate the amount of coupon that has accrued between the
         previous coupon date and the settlement date. This is adjusted by the

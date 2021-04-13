@@ -7,15 +7,15 @@ import numpy as np
 from enum import Enum
 
 
-from ...finutils.turing_global_variables import gDaysInYear, gSmall
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_types import FinOptionTypes
-from ...products.equity.turing_equity_option import FinEquityOption
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_global_variables import gDaysInYear, gSmall
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.products.equity.turing_equity_option import TuringEquityOption
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from ...finutils.turing_math import NVect
+from financepy.finutils.turing_math import NVect
 
 
 ###############################################################################
@@ -28,18 +28,18 @@ class FinDigitalOptionTypes(Enum):
 ###############################################################################
 
 
-class FinEquityDigitalOption(FinEquityOption):
-    ''' A FinEquityDigitalOption is an option in which the buyer receives some
+class TuringEquityDigitalOption(TuringEquityOption):
+    ''' A TuringEquityDigitalOption is an option in which the buyer receives some
     payment if the stock price has crossed a barrier ONLY at expiry and zero
     otherwise. There are two types: cash-or-nothing and the asset-or-nothing
     option. We do not care whether the stock price has crossed the barrier
     today, we only care about the barrier at option expiry. For a continuously-
-    monitored barrier, use the FinEquityOneTouchOption class. '''
+    monitored barrier, use the TuringEquityOneTouchOption class. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  barrierPrice: float,
-                 optionType: FinOptionTypes,
+                 optionType: TuringOptionTypes,
                  underlyingType: FinDigitalOptionTypes):
         ''' Create the digital option by specifying the expiry date, the
         barrier price and the type of option which is either a EUROPEAN_CALL
@@ -48,8 +48,8 @@ class FinEquityDigitalOption(FinEquityOption):
 
         checkArgumentTypes(self.__init__, locals())
 
-        if optionType != FinOptionTypes.EUROPEAN_CALL and optionType != FinOptionTypes.EUROPEAN_PUT:
-            raise FinError("Option type must be EUROPEAN CALL or EUROPEAN PUT")
+        if optionType != TuringOptionTypes.EUROPEAN_CALL and optionType != TuringOptionTypes.EUROPEAN_PUT:
+            raise TuringError("Option type must be EUROPEAN CALL or EUROPEAN PUT")
 
         self._expiryDate = expiryDate
         self._barrierPrice = float(barrierPrice)
@@ -59,17 +59,17 @@ class FinEquityDigitalOption(FinEquityOption):
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: (float, np.ndarray),
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model):
         ''' Digital Option valuation using the Black-Scholes model assuming a
         barrier at expiry. Handles both cash-or-nothing and asset-or-nothing
         options.'''
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after expiry date.")
+            raise TuringError("Value date after expiry date.")
 
         t = (self._expiryDate - valueDate) / gDaysInYear
         t = max(t, 1e-6)
@@ -96,27 +96,27 @@ class FinEquityDigitalOption(FinEquityOption):
         d2 = d1 - volatility * sqrtT
 
         if self._underlyingType == FinDigitalOptionTypes.CASH_OR_NOTHING:
-            if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+            if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
                 v = np.exp(-r * t) * NVect(d2)
-            elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+            elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
                 v = np.exp(-r * t) * NVect(-d2)
         elif self._underlyingType == FinDigitalOptionTypes.ASSET_OR_NOTHING:
-            if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+            if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
                 v = S0 * np.exp(-q * t) * NVect(d1)
-            elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+            elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
                 v = S0 * np.exp(-q * t) * NVect(-d1)
         else:
-            raise FinError("Unknown underlying type.")
+            raise TuringError("Unknown underlying type.")
 
         return v
 
 ###############################################################################
 
     def valueMC(self,
-                valueDate: FinDate,
+                valueDate: TuringDate,
                 stockPrice: float,
-                discountCurve: FinDiscountCurve,
-                dividendCurve: FinDiscountCurve,
+                discountCurve: TuringDiscountCurve,
+                dividendCurve: TuringDiscountCurve,
                 model,
                 numPaths: int = 10000,
                 seed: int = 4242):
@@ -145,17 +145,17 @@ class FinEquityDigitalOption(FinEquityOption):
         s_2 = s / m
 
         if self._underlyingType == FinDigitalOptionTypes.CASH_OR_NOTHING:
-            if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+            if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
                 payoff_a_1 = np.heaviside(s_1 - K, 0.0)
                 payoff_a_2 = np.heaviside(s_2 - K, 0.0)
-            elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+            elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
                 payoff_a_1 = np.heaviside(K - s_1, 0.0)
                 payoff_a_2 = np.heaviside(K - s_2, 0.0)
         elif self._underlyingType == FinDigitalOptionTypes.ASSET_OR_NOTHING:
-            if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+            if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
                 payoff_a_1 = s_1 * np.heaviside(s_1 - K, 0.0)
                 payoff_a_2 = s_2 * np.heaviside(s_2 - K, 0.0)
-            elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+            elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
                 payoff_a_1 = s_1 * np.heaviside(K - s_1, 0.0)
                 payoff_a_2 = s_2 * np.heaviside(K - s_2, 0.0)
 

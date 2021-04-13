@@ -12,8 +12,8 @@ from financepy.models.turing_process_simulator import FinGBMNumericalScheme
 from financepy.models.turing_process_simulator import FinProcessTypes
 from financepy.models.turing_process_simulator import FinProcessSimulator
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 

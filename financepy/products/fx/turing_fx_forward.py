@@ -5,10 +5,10 @@
 import numpy as np
 
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_error import FinError
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 # ALL CCY RATES MUST BE IN NUM UNITS OF DOMESTIC PER UNIT OF FOREIGN CURRENCY
@@ -17,17 +17,17 @@ from ...finutils.turing_helper_functions import labelToString, checkArgumentType
 ###############################################################################
 
 
-class FinFXForward():
+class TuringFXForward():
     ''' Contract to buy or sell currency at a forward rate decided today. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  strikeFXRate: float,  # PRICE OF 1 UNIT OF FOREIGN IN DOM CCY
                  currencyPair: str,  # FORDOM
                  notional: float,
                  notionalCurrency: str,  # must be FOR or DOM
                  spotDays: int = 0):
-        ''' Creates a FinFXForward which allows the owner to buy the FOR
+        ''' Creates a TuringFXForward which allows the owner to buy the FOR
         against the DOM currency at the strikeFXRate and to pay it in the
         notional currency. '''
 
@@ -40,10 +40,10 @@ class FinFXForward():
         price in USD (CCY2) of 1 unit of EUR (CCY1) '''
 
         if deliveryDate < expiryDate:
-            raise FinError("Delivery date must be on or after expiry date.")
+            raise TuringError("Delivery date must be on or after expiry date.")
 
         if len(currencyPair) != 6:
-            raise FinError("Currency pair must be 6 characters.")
+            raise TuringError("Currency pair must be 6 characters.")
 
         self._expiryDate = expiryDate
         self._deliveryDate = deliveryDate
@@ -54,7 +54,7 @@ class FinFXForward():
         self._domName = self._currencyPair[3:6]
 
         if notionalCurrency != self._domName and notionalCurrency != self._forName:
-            raise FinError("Notional currency not in currency pair.")
+            raise TuringError("Notional currency not in currency pair.")
 
         self._notional = notional
         self._notionalCurrency = notionalCurrency
@@ -70,16 +70,16 @@ class FinFXForward():
         ''' Calculate the value of an FX forward contract where the current
         FX rate is the spotFXRate. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             t = (self._expiryDate - valueDate) / gDaysInYear
         else:
             t = valueDate
 
         if np.any(spotFXRate <= 0.0):
-            raise FinError("spotFXRate must be greater than zero.")
+            raise TuringError("spotFXRate must be greater than zero.")
 
         if np.any(t < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         t = np.maximum(t, 1e-10)
 
@@ -97,7 +97,7 @@ class FinFXForward():
             self._notional_dom = self._notional * self._strikeFXRate
             self._notional_for = self._notional
         else:
-            raise FinError("Invalid notional currency.")
+            raise TuringError("Invalid notional currency.")
 
         if self._notionalCurrency == self._forName:
             v = (newFwdFXRate - self._strikeFXRate)
@@ -127,16 +127,16 @@ class FinFXForward():
         ''' Calculate the FX Forward rate that makes the value of the FX
         contract equal to zero. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             t = (self._deliveryDate - valueDate) / gDaysInYear
         else:
             t = valueDate
 
         if np.any(spotFXRate <= 0.0):
-            raise FinError("spotFXRate must be greater than zero.")
+            raise TuringError("spotFXRate must be greater than zero.")
 
         if np.any(t < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         t = np.maximum(t, 1e-10)
 

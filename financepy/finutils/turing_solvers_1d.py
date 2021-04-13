@@ -6,7 +6,7 @@ from numba import njit
 import numpy as np
 import operator
 
-from .turing_error import FinError
+from .turing_error import TuringError
 
 ###############################################################################
 ## from https://quanteconpy.readthedocs.io/en/latest/_modules/quantecon/optimize/root_finding.html #####################
@@ -75,10 +75,10 @@ def newton_secant(func, x0, args=(), tol=1.48e-8, maxiter=50,
     """
 
     if tol <= 0.0:
-        raise FinError("Tolerance should be positive.")
+        raise TuringError("Tolerance should be positive.")
 
     if maxiter < 1:
-        raise FinError("maxiter must be greater than 0")
+        raise TuringError("maxiter must be greater than 0")
 
     # Convert to float (don't use float(x0); this works also for complex x0)
     eps = 1e-4
@@ -105,7 +105,7 @@ def newton_secant(func, x0, args=(), tol=1.48e-8, maxiter=50,
         
         if q1 == q0:
             if p1 != p0:
-                raise FinError("Tolerance reached")
+                raise TuringError("Tolerance reached")
 
             p = (p1 + p0) / 2.0
             status = _ECONVERGED
@@ -127,7 +127,7 @@ def newton_secant(func, x0, args=(), tol=1.48e-8, maxiter=50,
 
     if disp and status == _ECONVERR:
         msg = "Failed to converge"
-        raise FinError(msg)
+        raise TuringError(msg)
 
     return p
 
@@ -285,11 +285,11 @@ def newton(func, x0, fprime=None, args=None, tol=1.48e-8, maxiter=50,
     """
     
     if tol <= 0.0:
-        raise FinError("tol too small")
+        raise TuringError("tol too small")
 
     maxiter = operator.index(maxiter)
     if maxiter < 1:
-        raise FinError("maxiter must be greater than 0")
+        raise TuringError("maxiter must be greater than 0")
 
     # Convert to float (don't use float(x0); this works also for complex x0)
     p0 = 1.0 * x0
@@ -530,10 +530,10 @@ def bisection(func, x1, x2, args, xtol=1e-6, maxIter=100):
     ''' Bisection algorithm. You need to supply root brackets x1 and x2. '''
 
     if np.abs(x1-x2) < 1e-10:
-        raise FinError("Brackets should not be equal")
+        raise TuringError("Brackets should not be equal")
 
     if x1 > x2:
-        raise FinError("Bracket x2 should be greater than x1")
+        raise TuringError("Bracket x2 should be greater than x1")
 
     f1 = func(x1, args)
     fmid = func(x2, args)

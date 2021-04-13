@@ -7,12 +7,12 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_date import TuringDate
 from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 PLOT_GRAPHS = False
 
@@ -28,14 +28,14 @@ def test_FinInterpolatedForwards():
     dfValues = np.exp(-tValues*rValues)
     tInterpValues = np.linspace(0.0, 12.0, 49)
 
-    curveDate = FinDate(1, 1, 2019)
+    curveDate = TuringDate(1, 1, 2019)
 
     tDates = curveDate.addYears(tValues)
     tInterpDates = curveDate.addYears(tInterpValues)
 
     for interpType in FinInterpTypes:
 
-        discountCurve = FinDiscountCurve(curveDate, tDates, dfValues, interpType)
+        discountCurve = TuringDiscountCurve(curveDate, tDates, dfValues, interpType)
         dfInterpValues = discountCurve.df(tInterpDates)
         fwdInterpValues = discountCurve.fwd(tInterpDates)
         zeroInterpValues = discountCurve.zeroRate(tInterpDates)

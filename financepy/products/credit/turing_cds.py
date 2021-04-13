@@ -8,18 +8,18 @@ from numba import njit, float64, int64
 from math import exp, log
 from copy import deepcopy
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_error import FinError
-from ...finutils.turing_calendar import FinCalendar, FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes, FinDateGenRuleTypes
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequency, FinFrequencyTypes
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_helper_functions import labelToString, tableToString
-from ...market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_calendar import TuringCalendar, TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_helper_functions import labelToString, tableToString
+from financepy.market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
 
-from ...finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
 
 useFlatHazardRateIntegral = True
 standardRecovery = 0.40
@@ -188,21 +188,21 @@ class FinCDS(object):
     generation and the valuation and risk management of CDS. '''
 
     def __init__(self,
-                 stepInDate: FinDate,  # Date protection starts
-                 maturityDateOrTenor: (FinDate, str),  # FinDate or tenor
+                 stepInDate: TuringDate,  # Date protection starts
+                 maturityDateOrTenor: (TuringDate, str),  # TuringDate or tenor
                  runningCoupon: float,  # Annualised coupon on premium fee leg
                  notional: float = ONE_MILLION,
                  longProtection: bool = True,
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_360,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
         ''' Create a CDS from the step-in date, maturity date and coupon '''
 
         checkArgumentTypes(self.__init__, locals())
 
-        if type(maturityDateOrTenor) == FinDate:
+        if type(maturityDateOrTenor) == TuringDate:
             maturityDate = maturityDateOrTenor
         else:
             # To get the next CDS date we move on by the tenor and then roll to
@@ -212,7 +212,7 @@ class FinCDS(object):
             maturityDate = maturityDate.nextCDSDate()
 
         if stepInDate > maturityDate:
-            raise FinError("Step in date after maturity date")
+            raise TuringError("Step in date after maturity date")
 
         self._stepInDate = stepInDate
         self._maturityDate = maturityDate
@@ -232,8 +232,8 @@ class FinCDS(object):
 
     def _generateAdjustedCDSPaymentDates(self):
         ''' Generate CDS payment dates which have been holiday adjusted.'''
-        frequency = FinFrequency(self._freqType)
-        calendar = FinCalendar(self._calendarType)
+        frequency = TuringFrequency(self._freqType)
+        calendar = TuringCalendar(self._calendarType)
         startDate = self._stepInDate
         endDate = self._maturityDate
 
@@ -242,7 +242,7 @@ class FinCDS(object):
 
         unadjustedScheduleDates = []
 
-        if self._dateGenRuleType == FinDateGenRuleTypes.BACKWARD:
+        if self._dateGenRuleType == TuringDateGenRuleTypes.BACKWARD:
 
             nextDate = endDate
             flowNum = 0
@@ -274,7 +274,7 @@ class FinCDS(object):
             # Final date is moved forward by one day
             self._adjustedDates[flowNum - 1] = finalDate.addDays(1)
 
-        elif self._dateGenRuleType == FinDateGenRuleTypes.FORWARD:
+        elif self._dateGenRuleType == TuringDateGenRuleTypes.FORWARD:
 
             nextDate = startDate
             flowNum = 0
@@ -298,15 +298,15 @@ class FinCDS(object):
             self._adjustedDates.append(finalDate)
 
         else:
-            raise FinError("Unknown FinDateGenRuleType:" +
-                           str(self._dateGenRuleType))
+            raise TuringError("Unknown FinDateGenRuleType:" +
+                              str(self._dateGenRuleType))
 
 ###############################################################################
 
     def _calcFlows(self):
         ''' Calculate cash flow amounts on premium leg. '''
         paymentDates = self._adjustedDates
-        dayCount = FinDayCount(self._dayCountType)
+        dayCount = TuringDayCount(self._dayCountType)
 
         self._accrualFactors = []
         self._flows = []
@@ -407,7 +407,7 @@ class FinCDS(object):
 ###############################################################################
 
     def interestDV01(self,
-                     valuationDate: FinDate,
+                     valuationDate: TuringDate,
                      issuerCurve,
                      contractRecovery=standardRecovery,
                      pv01Method: int = 0,
@@ -511,7 +511,7 @@ class FinCDS(object):
         ''' RiskyPV01 of the contract using the OLD method. '''
 
         paymentDates = self._adjustedDates
-        dayCount = FinDayCount(self._dayCountType)
+        dayCount = TuringDayCount(self._dayCountType)
 
         couponAccruedIndicator = 1
 
@@ -610,7 +610,7 @@ class FinCDS(object):
         ''' Calculate the amount of accrued interest that has accrued from the
         previous coupon date (PCD) to the stepInDate of the CDS contract. '''
 
-        dayCount = FinDayCount(self._dayCountType)
+        dayCount = TuringDayCount(self._dayCountType)
         paymentDates = self._adjustedDates
         pcd = paymentDates[0]
         accrualFactor = dayCount.yearFrac(pcd, self._stepInDate)[0]
@@ -669,7 +669,7 @@ class FinCDS(object):
         # to now
         pcd = self._adjustedDates[0]
         eff = self._stepInDate
-        dayCount = FinDayCount(self._dayCountType)
+        dayCount = TuringDayCount(self._dayCountType)
 
         accrualFactorPCDToNow = dayCount.yearFrac(pcd, eff)[0]
 
@@ -744,9 +744,9 @@ class FinCDS(object):
         ''' Implementation of fast valuation of the CDS contract using an
         accurate approximation that avoids curve building. '''
 
-        if type(valuationDate) is not FinDate:
-            raise FinError("Valuation date must be a FinDate and not " +
-                           str(valuationDate))
+        if type(valuationDate) is not TuringDate:
+            raise TuringError("Valuation date must be a TuringDate and not " +
+                              str(valuationDate))
 
         t_mat = (self._maturityDate - valuationDate) / gDaysInYear
         t_eff = (self._stepInDate - valuationDate) / gDaysInYear

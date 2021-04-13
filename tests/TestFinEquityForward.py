@@ -5,20 +5,20 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_forward import FinEquityForward
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_global_types import FinLongShort
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.products.equity.turing_equity_forward import TuringEquityForward
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_types import TuringLongShort
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 
 
 def test_FinEquityForward():
 
-    valueDate = FinDate(13, 2, 2018)
+    valueDate = TuringDate(13, 2, 2018)
     expiryDate = valueDate.addMonths(12)
 
     stockPrice = 130.0
@@ -31,13 +31,13 @@ def test_FinEquityForward():
     expiryDate = valueDate.addMonths(12)
     notional = 100.0
 
-    discountCurve = FinDiscountCurveFlat(valueDate, discountRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendRate)
+    discountCurve = TuringDiscountCurveFlat(valueDate, discountRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendRate)
 
-    equityForward = FinEquityForward(expiryDate,
-                                     forwardPrice,
-                                     notional,
-                                     FinLongShort.LONG)
+    equityForward = TuringEquityForward(expiryDate,
+                                        forwardPrice,
+                                        notional,
+                                        TuringLongShort.LONG)
 
     testCases.header("SPOT FX", "FX FWD", "VALUE_BS")
 

@@ -8,25 +8,25 @@
 
 from typing import Optional
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_calendar import FinCalendar
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinDateGenRuleTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_error import FinError
-from ...finutils.turing_schedule import FinSchedule
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...models.turing_model_black import FinModelBlack
-from ...models.turing_model_black_shifted import FinModelBlackShifted
-from ...models.turing_model_bachelier import FinModelBachelier
-from ...models.turing_model_sabr import FinModelSABR
-from ...models.turing_model_sabr_shifted import FinModelSABRShifted
-from ...models.turing_model_rates_hw import FinModelRatesHW
-from ...finutils.turing_global_types import FinCapFloorTypes, FinOptionTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_calendar import TuringCalendar
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.models.turing_model_black import FinModelBlack
+from financepy.models.turing_model_black_shifted import TuringModelBlackShifted
+from financepy.models.turing_model_bachelier import FinModelBachelier
+from financepy.models.turing_model_sabr import FinModelSABR
+from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
+from financepy.models.turing_model_rates_hw import FinModelRatesHW
+from financepy.finutils.turing_global_types import TuringCapFloorTypes, TuringOptionTypes
 
 ##########################################################################
 
@@ -49,17 +49,17 @@ class FinIborCapFloor():
     selected from.'''
 
     def __init__(self,
-                 startDate: FinDate,
-                 maturityDateOrTenor: (FinDate, str),
-                 optionType: FinCapFloorTypes,
+                 startDate: TuringDate,
+                 maturityDateOrTenor: (TuringDate, str),
+                 optionType: TuringCapFloorTypes,
                  strikeRate: float,
                  lastFixing: Optional[float] = None,
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.THIRTY_E_360_ISDA,
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.THIRTY_E_360_ISDA,
                  notional: float = ONE_MILLION,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
         ''' Initialise FinIborCapFloor object. '''
 
         checkArgumentTypes(self.__init__, locals())
@@ -67,16 +67,16 @@ class FinIborCapFloor():
         self._calendarType = calendarType
         self._busDayAdjustType = busDayAdjustType
 
-        if type(maturityDateOrTenor) == FinDate:
+        if type(maturityDateOrTenor) == TuringDate:
             maturityDate = maturityDateOrTenor
         else:
             maturityDate = startDate.addTenor(maturityDateOrTenor)
-            calendar = FinCalendar(self._calendarType)
+            calendar = TuringCalendar(self._calendarType)
             maturityDate = calendar.adjust(maturityDate,
                                            self._busDayAdjustType)
 
         if startDate > maturityDate:
-            raise FinError("Start date must be before maturity date")
+            raise TuringError("Start date must be before maturity date")
 
         self._startDate = startDate
         self._maturityDate = maturityDate
@@ -102,12 +102,12 @@ class FinIborCapFloor():
 
     def _generateDates(self):
 
-        schedule = FinSchedule(self._startDate,
-                               self._maturityDate,
-                               self._freqType,
-                               self._calendarType,
-                               self._busDayAdjustType,
-                               self._dateGenRuleType)
+        schedule = TuringSchedule(self._startDate,
+                                  self._maturityDate,
+                                  self._freqType,
+                                  self._calendarType,
+                                  self._busDayAdjustType,
+                                  self._dateGenRuleType)
 
         self._capFloorLetDates = schedule._adjustedDates
 
@@ -120,15 +120,15 @@ class FinIborCapFloor():
         self._valuationDate = valuationDate
         self._generateDates()
 
-        self._dayCounter = FinDayCount(self._dayCountType)
+        self._dayCounter = TuringDayCount(self._dayCountType)
         numOptions = len(self._capFloorLetDates)
         strikeRate = self._strikeRate
 
         if strikeRate < 0.0:
-            raise FinError("Strike < 0.0")
+            raise TuringError("Strike < 0.0")
 
         if numOptions <= 1:
-            raise FinError("Number of options in capfloor equals 1")
+            raise TuringError("Number of options in capfloor equals 1")
 
         self._capFloorLetValues = [0]
         self._capFloorLetAlphas = [0]
@@ -153,9 +153,9 @@ class FinIborCapFloor():
         alpha = self._dayCounter.yearFrac(startDate, endDate)[0]
         df = liborCurve.df(endDate)
 
-        if self._optionType == FinCapFloorTypes.CAP:
+        if self._optionType == TuringCapFloorTypes.CAP:
             capFloorLetValue = df * alpha * max(fwdRate - strikeRate, 0.0)
-        elif self._optionType == FinCapFloorTypes.FLOOR:
+        elif self._optionType == TuringCapFloorTypes.FLOOR:
             capFloorLetValue = df * alpha * max(strikeRate - fwdRate, 0.0)
 
         capFloorLetValue *= self._notional
@@ -178,9 +178,9 @@ class FinIborCapFloor():
             fwdRate = liborCurve.fwdRate(startDate, endDate,
                                          self._dayCountType)
 
-            if self._optionType == FinCapFloorTypes.CAP:
+            if self._optionType == TuringCapFloorTypes.CAP:
                 intrinsicValue = df * alpha * max(fwdRate - strikeRate, 0.0)
-            elif self._optionType == FinCapFloorTypes.FLOOR:
+            elif self._optionType == TuringCapFloorTypes.FLOOR:
                 intrinsicValue = df * alpha * max(strikeRate - fwdRate, 0.0)
 
             intrinsicValue *= self._notional
@@ -227,48 +227,48 @@ class FinIborCapFloor():
 
         if isinstance(model, FinModelBlack):
 
-            if self._optionType == FinCapFloorTypes.CAP:
+            if self._optionType == TuringCapFloorTypes.CAP:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_CALL)
-            elif self._optionType == FinCapFloorTypes.FLOOR:
+                                               TuringOptionTypes.EUROPEAN_CALL)
+            elif self._optionType == TuringCapFloorTypes.FLOOR:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_PUT)
+                                               TuringOptionTypes.EUROPEAN_PUT)
 
-        elif isinstance(model, FinModelBlackShifted):
+        elif isinstance(model, TuringModelBlackShifted):
 
-            if self._optionType == FinCapFloorTypes.CAP:
+            if self._optionType == TuringCapFloorTypes.CAP:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_CALL)
-            elif self._optionType == FinCapFloorTypes.FLOOR:
+                                               TuringOptionTypes.EUROPEAN_CALL)
+            elif self._optionType == TuringCapFloorTypes.FLOOR:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_PUT)
+                                               TuringOptionTypes.EUROPEAN_PUT)
 
         elif isinstance(model, FinModelBachelier):
 
-            if self._optionType == FinCapFloorTypes.CAP:
+            if self._optionType == TuringCapFloorTypes.CAP:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_CALL)
-            elif self._optionType == FinCapFloorTypes.FLOOR:
+                                               TuringOptionTypes.EUROPEAN_CALL)
+            elif self._optionType == TuringCapFloorTypes.FLOOR:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_PUT)
+                                               TuringOptionTypes.EUROPEAN_PUT)
 
         elif isinstance(model, FinModelSABR):
 
-            if self._optionType == FinCapFloorTypes.CAP:
+            if self._optionType == TuringCapFloorTypes.CAP:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_CALL)
-            elif self._optionType == FinCapFloorTypes.FLOOR:
+                                               TuringOptionTypes.EUROPEAN_CALL)
+            elif self._optionType == TuringCapFloorTypes.FLOOR:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_PUT)
+                                               TuringOptionTypes.EUROPEAN_PUT)
 
-        elif isinstance(model, FinModelSABRShifted):
+        elif isinstance(model, TuringModelSABRShifted):
 
-            if self._optionType == FinCapFloorTypes.CAP:
+            if self._optionType == TuringCapFloorTypes.CAP:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_CALL)
-            elif self._optionType == FinCapFloorTypes.FLOOR:
+                                               TuringOptionTypes.EUROPEAN_CALL)
+            elif self._optionType == TuringCapFloorTypes.FLOOR:
                 capFloorLetValue = model.value(f, k, texp, df,
-                                               FinOptionTypes.EUROPEAN_PUT)
+                                               TuringOptionTypes.EUROPEAN_PUT)
 
         elif isinstance(model, FinModelRatesHW):
 
@@ -285,13 +285,13 @@ class FinIborCapFloor():
                                   dfTimes, dfValues)
 
             # we divide by alpha to offset the multiplication above
-            if self._optionType == FinCapFloorTypes.CAP:
+            if self._optionType == TuringCapFloorTypes.CAP:
                 capFloorLetValue = v['put'] * notionalAdj / alpha
-            elif self._optionType == FinCapFloorTypes.FLOOR:
+            elif self._optionType == TuringCapFloorTypes.FLOOR:
                 capFloorLetValue = v['call'] * notionalAdj / alpha
 
         else:
-            raise FinError("Unknown model type " + str(model))
+            raise TuringError("Unknown model type " + str(model))
 
         capFloorLetValue *= (self._notional * alpha)
 
@@ -314,10 +314,10 @@ class FinIborCapFloor():
             print("Caplets not calculated.")
             return
 
-        if self._optionType == FinCapFloorTypes.CAP:
+        if self._optionType == TuringCapFloorTypes.CAP:
             header = "PAYMENT_DATE     YEAR_FRAC   FWD_RATE    INTRINSIC      "
             header += "     DF    CAPLET_PV       CUM_PV"
-        elif self._optionType == FinCapFloorTypes.FLOOR:
+        elif self._optionType == TuringCapFloorTypes.FLOOR:
             header = "PAYMENT_DATE     YEAR_FRAC   FWD_RATE    INTRINSIC      "
             header += "     DF    FLRLET_PV       CUM_PV"
 

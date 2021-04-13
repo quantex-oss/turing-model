@@ -5,10 +5,10 @@
 
 from enum import Enum
 
-from ...finutils.turing_global_variables import gDaysInYear
-from ...models.turing_model_black_scholes import FinModelBlackScholes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_date import FinDate
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_date import TuringDate
 
 ###############################################################################
 
@@ -23,16 +23,16 @@ class FinEquityOptionModelTypes(Enum):
 ###############################################################################
 
 
-class FinEquityOption(object):
+class TuringEquityOption(object):
     ''' This class is a parent class for all option classes that require any
     perturbatory risk. '''
 
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
               dividendYield: float,
               model):
 
@@ -42,10 +42,10 @@ class FinEquityOption(object):
 ###############################################################################
 
     def delta(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model):
         ''' Calculation of option delta by perturbation of stock price and
         revaluation. '''
@@ -61,10 +61,10 @@ class FinEquityOption(object):
 ###############################################################################
 
     def gamma(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model):
         ''' Calculation of option gamma by perturbation of stock price and
         revaluation. '''
@@ -84,10 +84,10 @@ class FinEquityOption(object):
 ###############################################################################
 
     def vega(self,
-             valueDate: FinDate,
+             valueDate: TuringDate,
              stockPrice: float,
-             discountCurve: FinDiscountCurve,
-             dividendCurve: FinDiscountCurve,
+             discountCurve: TuringDiscountCurve,
+             dividendCurve: TuringDiscountCurve,
              model):
         ''' Calculation of option vega by perturbing vol and revaluation. '''
 
@@ -105,10 +105,10 @@ class FinEquityOption(object):
 ###############################################################################
 
     def theta(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model):
         ''' Calculation of option theta by perturbing value date by one 
         calendar date (not a business date) and then doing revaluation and 
@@ -136,10 +136,10 @@ class FinEquityOption(object):
 ###############################################################################
 
     def rho(self,
-            valueDate: FinDate,
+            valueDate: TuringDate,
             stockPrice: float,
-            discountCurve: FinDiscountCurve,
-            dividendCurve: FinDiscountCurve,
+            discountCurve: TuringDiscountCurve,
+            dividendCurve: TuringDiscountCurve,
             model):
         ''' Calculation of option rho by perturbing interest rate and
         revaluation. '''

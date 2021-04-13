@@ -2,23 +2,23 @@
 # # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 # ##############################################################################
 
-# from ...finutils.turing_global_variables import gDaysInYear
-# from ...models.turing_model_rates_hw import FinModelRatesHW
-# from ...models.turing_model_rates_bk import FinModelRatesBK
-# from ...finutils.turing_error import FinError
-# from ...finutils.turing_frequency import FinFrequencyTypes
-# from ...finutils.turing_day_count import FinDayCount
-# from ...finutils.turing_day_count import FinDayCountTypes
-# from ...products.bonds.turing_bond import FinBond
+# from financepy.finutils.turing_global_variables import gDaysInYear
+# from financepy.models.turing_model_rates_hw import FinModelRatesHW
+# from financepy.models.turing_model_rates_bk import TuringModelRatesBK
+# from financepy.finutils.turing_error import TuringError
+# from financepy.finutils.turing_frequency import TuringFrequencyTypes
+# from financepy.finutils.turing_day_count import TuringDayCount
+# from financepy.finutils.turing_day_count import TuringDayCountTypes
+# from financepy.products.bonds.turing_bond import TuringBond
 
 
-# from ...finutils.turing_date import FinDate
-# from ...finutils.turing_calendar import FinCalendar, FinCalendarTypes
-# from ...finutils.turing_calendar import FinBusDayAdjustTypes, FinDateGenRuleTypes
-# from ...finutils.turing_schedule import FinSchedule
-# from ...finutils.turing_math import ONE_MILLION
+# from financepy.finutils.turing_date import TuringDate
+# from financepy.finutils.turing_calendar import TuringCalendar, TuringCalendarTypes
+# from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+# from financepy.finutils.turing_schedule import TuringSchedule
+# from financepy.finutils.turing_math import ONE_MILLION
 
-# from ...finutils.turing_helper_functions import labelToString
+# from financepy.finutils.turing_helper_functions import labelToString
 
 # from enum import Enum
 # import numpy as np
@@ -33,7 +33,7 @@
 # ###############################################################################
 
 
-# class FinBondOptionTypes(Enum):
+# class TuringBondOptionTypes(Enum):
 #     EUROPEAN_CALL = 1
 #     EUROPEAN_PUT = 2
 #     AMERICAN_CALL = 3
@@ -63,51 +63,51 @@
 #                  fixedFrequencyType,
 #                  fixedDayCountType,
 #                  notional=ONE_MILLION,
-#                  floatFrequencyType=FinFrequencyTypes.QUARTERLY,
-#                  floatDayCountType=FinDayCountTypes.THIRTY_E_360,
-#                  calendarType=FinCalendarTypes.WEEKEND,
-#                  busDayAdjustType=FinBusDayAdjustTypes.FOLLOWING,
-#                  dateGenRuleType=FinDateGenRuleTypes.BACKWARD):
+#                  floatFrequencyType=TuringFrequencyTypes.QUARTERLY,
+#                  floatDayCountType=TuringDayCountTypes.THIRTY_E_360,
+#                  calendarType=TuringCalendarTypes.WEEKEND,
+#                  busDayAdjustType=TuringBusDayAdjustTypes.FOLLOWING,
+#                  dateGenRuleType=TuringDateGenRuleTypes.BACKWARD):
 #         ''' Create a Bermudan swaption contract. This is an option to enter
 #         into a swap at a fixed coupon on all of the fixed leg coupon dates
 #         until the exercise date. '''
 
 #         if exerciseDate > maturityDate:
-#             raise FinError("Exercise date must be before swap maturity date")
+#             raise TuringError("Exercise date must be before swap maturity date")
 
 #         if exerciseType not in FinSwaptionExerciseTypes:
-#             raise FinError("Exercise type must be a FinSwaptionExerciseTypes")
+#             raise TuringError("Exercise type must be a FinSwaptionExerciseTypes")
 
-#         if fixedDayCountType not in FinDayCountTypes:
-#             raise FinError(
+#         if fixedDayCountType not in TuringDayCountTypes:
+#             raise TuringError(
 #                 "Unknown Fixed Day Count Rule type " +
 #                 str(fixedDayCountType))
 
-#         if fixedFrequencyType not in FinFrequencyTypes:
-#             raise FinError(
+#         if fixedFrequencyType not in TuringFrequencyTypes:
+#             raise TuringError(
 #                 "Unknown Fixed Frequency type " +
 #                 str(fixedFrequencyType))
 
-#         if floatDayCountType not in FinDayCountTypes:
-#             raise FinError(
+#         if floatDayCountType not in TuringDayCountTypes:
+#             raise TuringError(
 #                 "Unknown Float Day Count Rule type " +
 #                 str(floatDayCountType))
 
-#         if floatFrequencyType not in FinFrequencyTypes:
-#             raise FinError(
+#         if floatFrequencyType not in TuringFrequencyTypes:
+#             raise TuringError(
 #                 "Unknown Float Frequency type " +
 #                 str(fixedFrequencyType))
 
-#         if calendarType not in FinCalendarTypes:
-#             raise FinError("Unknown Calendar type " + str(calendarType))
+#         if calendarType not in TuringCalendarTypes:
+#             raise TuringError("Unknown Calendar type " + str(calendarType))
 
-#         if busDayAdjustType not in FinBusDayAdjustTypes:
-#             raise FinError(
+#         if busDayAdjustType not in TuringBusDayAdjustTypes:
+#             raise TuringError(
 #                 "Unknown Business Day Adjust type " +
 #                 str(busDayAdjustType))
 
-#         if dateGenRuleType not in FinDateGenRuleTypes:
-#             raise FinError(
+#         if dateGenRuleType not in TuringDateGenRuleTypes:
+#             raise TuringError(
 #                 "Unknown Date Gen Rule type " +
 #                 str(dateGenRuleType))
 
@@ -224,7 +224,7 @@
 
 #             return {'bondwithoption': v_bondwithoption, 'bondpure': v_bondpure}
 
-#         elif type(model) == FinModelRatesBK:
+#         elif type(model) == TuringModelRatesBK:
 
 #             ''' Because we not have a closed form bond price we need to build
 #             the tree out to the bond maturity which is after option expiry. '''
@@ -247,7 +247,7 @@
 
 #             return {'bondwithoption': v_bondwithoption, 'bondpure': v_bondpure}
 #         else:
-#             raise FinError("Unknown model type")
+#             raise TuringError("Unknown model type")
 
 # ###############################################################################
 

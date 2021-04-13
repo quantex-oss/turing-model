@@ -12,13 +12,13 @@ from financepy.products.equity.turing_equity_binomial_tree import FinEquityBinom
 from financepy.products.equity.turing_equity_binomial_tree import FinEquityTreeExerciseTypes
 from financepy.products.equity.turing_equity_binomial_tree import FinEquityTreePayoffTypes
 from financepy.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
-from financepy.finutils.turing_global_types import FinOptionTypes
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.finutils.turing_date import TuringDate
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -29,12 +29,12 @@ def test_FinBinomialTree():
     dividendYield = 0.04
     volatility = 0.40
 
-    valueDate = FinDate(1, 1, 2016)
-    expiryDate = FinDate(1, 1, 2017)
+    valueDate = TuringDate(1, 1, 2016)
+    expiryDate = TuringDate(1, 1, 2017)
 
     model = FinModelBlackScholes(volatility)
-    discountCurve = FinDiscountCurveFlat(valueDate, riskFreeRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, riskFreeRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
     numStepsList = [100, 500, 1000, 2000, 5000]
 
@@ -45,7 +45,7 @@ def test_FinBinomialTree():
     putOption = FinEquityVanillaOption(
         expiryDate,
         strikePrice,
-        FinOptionTypes.EUROPEAN_PUT)
+        TuringOptionTypes.EUROPEAN_PUT)
     value = putOption.value(valueDate, stockPrice, discountCurve, dividendCurve, model)
     delta = putOption.delta(valueDate, stockPrice, discountCurve, dividendCurve, model)
     gamma = putOption.gamma(valueDate, stockPrice, discountCurve, dividendCurve, model)
@@ -111,7 +111,7 @@ def test_FinBinomialTree():
     callOption = FinEquityVanillaOption(
         expiryDate,
         strikePrice,
-        FinOptionTypes.EUROPEAN_CALL)
+        TuringOptionTypes.EUROPEAN_CALL)
     value = callOption.value(valueDate, stockPrice, discountCurve, dividendCurve, model)
     delta = callOption.delta(valueDate, stockPrice, discountCurve, dividendCurve, model)
     gamma = callOption.gamma(valueDate, stockPrice, discountCurve, dividendCurve, model)

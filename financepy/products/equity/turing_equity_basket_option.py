@@ -9,32 +9,32 @@
 
 import numpy as np
 
-from ...finutils.turing_global_variables import gDaysInYear
-from ...models.turing_gbm_process import FinGBMProcess
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.models.turing_gbm_process import FinGBMProcess
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_types import FinOptionTypes
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_helper_functions import _funcName
-from ...finutils.turing_date import FinDate
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_helper_functions import _funcName
+from financepy.finutils.turing_date import TuringDate
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from ...finutils.turing_math import N
+from financepy.finutils.turing_math import N
 
 
 ###############################################################################
 
 
-class FinEquityBasketOption():
-    ''' A FinEquityBasketOption is a contract to buy a put or a call option on
+class TuringEquityBasketOption():
+    ''' A TuringEquityBasketOption is a contract to buy a put or a call option on
     an equally weighted portfolio of different stocks, each with its own price,
     volatility and dividend yield. An analytical and monte-carlo pricing model
     have been implemented for a European style option. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  strikePrice: float,
-                 optionType: FinOptionTypes,
+                 optionType: TuringOptionTypes,
                  numAssets: int):
         ''' Define the FinEquityBasket option by specifying its expiry date,
         its strike price, whether it is a put or call, and the number of
@@ -56,49 +56,49 @@ class FinEquityBasketOption():
                   correlations):
 
         if len(stockPrices) != self._numAssets:
-            raise FinError(
+            raise TuringError(
                 "Stock prices must have a length " + str(self._numAssets))
 
         if len(dividendYields) != self._numAssets:
-            raise FinError(
+            raise TuringError(
                 "Dividend yields must have a length " + str(self._numAssets))
 
         if len(volatilities) != self._numAssets:
-            raise FinError(
+            raise TuringError(
                 "Volatilities must have a length " + str(self._numAssets))
 
         if correlations.ndim != 2:
-            raise FinError(
+            raise TuringError(
                 "Correlation must be a 2D matrix ")
 
         if correlations.shape[0] != self._numAssets:
-            raise FinError(
+            raise TuringError(
                 "Correlation cols must have a length " + str(self._numAssets))
 
         if correlations.shape[1] != self._numAssets:
-            raise FinError(
+            raise TuringError(
                 "correlation rows must have a length " + str(self._numAssets))
 
         for i in range(0, self._numAssets):
             if correlations[i, i] != 1.0:
-                raise FinError("Corr matrix must have 1.0 on the diagonal")
+                raise TuringError("Corr matrix must have 1.0 on the diagonal")
 
             for j in range(0, i):
                 if abs(correlations[i, j]) > 1.0:
-                    raise FinError("Correlations must be [-1, +1]")
+                    raise TuringError("Correlations must be [-1, +1]")
 
                 if abs(correlations[j, i]) > 1.0:
-                    raise FinError("Correlations must be [-1, +1]")
+                    raise TuringError("Correlations must be [-1, +1]")
 
                 if correlations[i, j] != correlations[j, i]:
-                    raise FinError("Correlation matrix must be symmetric")
+                    raise TuringError("Correlation matrix must be symmetric")
 
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrices: np.ndarray,
-              discountCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
               dividendCurves: (list),
               volatilities: np.ndarray,
               correlations: np.ndarray):
@@ -112,7 +112,7 @@ class FinEquityBasketOption():
         texp = (self._expiryDate - valueDate) / gDaysInYear
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after expiry date.")
+            raise TuringError("Value date after expiry date.")
 
         qs = []
         for curve in dividendCurves:
@@ -168,23 +168,23 @@ class FinEquityBasketOption():
         d1 = (lnS0k + (mu + vhat2 / 2.0) * texp) / den
         d2 = (lnS0k + (mu - vhat2 / 2.0) * texp) / den
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             v = smean * np.exp(-qhat * texp) * N(d1)
             v = v - self._strikePrice * np.exp(-r * texp) * N(d2)
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             v = self._strikePrice * np.exp(-r * texp) * N(-d2)
             v = v - smean * np.exp(-qhat * texp) * N(-d1)
         else:
-            raise FinError("Unknown option type")
+            raise TuringError("Unknown option type")
 
         return v
 
 ###############################################################################
 
     def valueMC(self,
-                valueDate: FinDate,
+                valueDate: TuringDate,
                 stockPrices: np.ndarray,
-                discountCurve: FinDiscountCurve,
+                discountCurve: TuringDiscountCurve,
                 dividendCurves: (list),
                 volatilities: np.ndarray,
                 corrMatrix: np.ndarray,
@@ -199,7 +199,7 @@ class FinEquityBasketOption():
         checkArgumentTypes(getattr(self, _funcName(), None), locals())
 
         if valueDate > self._expiryDate:
-            raise FinError("Value date after expiry date.")
+            raise TuringError("Value date after expiry date.")
 
         texp = (self._expiryDate - valueDate) / gDaysInYear
 
@@ -237,12 +237,12 @@ class FinEquityBasketOption():
                                     corrMatrix,
                                     seed)
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             payoff = np.maximum(np.mean(Sall, axis=1) - k, 0.0)
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             payoff = np.maximum(k - np.mean(Sall, axis=1), 0.0)
         else:
-            raise FinError("Unknown option type.")
+            raise TuringError("Unknown option type.")
 
         payoff = np.mean(payoff)
         v = payoff * np.exp(-r * texp)

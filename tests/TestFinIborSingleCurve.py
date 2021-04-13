@@ -9,22 +9,22 @@ import time as time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from financepy.products.rates.turing_ibor_fra import FinIborFRA
 from financepy.products.rates.turing_ibor_future import FinIborFuture
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
 from financepy.market.curves.turing_interpolator import FinInterpTypes
 from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.finutils.turing_global_types import TuringSwapTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 PLOT_GRAPHS = False
 
@@ -36,51 +36,51 @@ def test_FinIborDepositsOnly():
     # I have used the following useful blog post by Ioannis Rigopoulos for this
     # https://blog.deriscope.com/index.php/en/yield-curve-excel-quantlib-deposit
 
-    valuationDate = FinDate(23, 2, 2018)
+    valuationDate = TuringDate(23, 2, 2018)
 
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
 
-    depoDCCType = FinDayCountTypes.ACT_360
+    depoDCCType = TuringDayCountTypes.ACT_360
     notional = 100.0
-    calendarType = FinCalendarTypes.TARGET
+    calendarType = TuringCalendarTypes.TARGET
     depos = []
 
     # 1 month
     depositRate = 0.04
     maturityDate = settlementDate.addMonths(1)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate,
-                           depoDCCType, notional, calendarType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate,
+                             depoDCCType, notional, calendarType)
     depos.append(depo)
 
     # 2 months
     depositRate = 0.04
     maturityDate = settlementDate.addMonths(2)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate,
-                           depoDCCType, notional, calendarType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate,
+                             depoDCCType, notional, calendarType)
     depos.append(depo)
 
     # 6 months
     depositRate = 0.04
     maturityDate = settlementDate.addMonths(6)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate,
-                           depoDCCType, notional, calendarType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate,
+                             depoDCCType, notional, calendarType)
     depos.append(depo)
 
     # 1 year
     depositRate = 0.04
     maturityDate = settlementDate.addMonths(12)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate,
-                           depoDCCType, notional, calendarType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate,
+                             depoDCCType, notional, calendarType)
     depos.append(depo)
 
     fras = []
     swaps = []
 
-    liborCurve = FinIborSingleCurve(valuationDate,
-                                    depos,
-                                    fras,
-                                    swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate,
+                                       depos,
+                                       fras,
+                                       swaps)
 
     testCases.header("LABEL", "DATE", "VALUE")
 
@@ -95,17 +95,17 @@ def test_FinIborDepositsOnly():
 def test_FinIborFRAsOnly():
 
     # TO DO FIX THIS
-    valuationDate = FinDate(23, 2, 2018)
+    valuationDate = TuringDate(23, 2, 2018)
 
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
 
-    depoDCCType = FinDayCountTypes.ACT_360
+    depoDCCType = TuringDayCountTypes.ACT_360
     notional = 100.0
 
     payFixed = True
 
-    calendarType = FinCalendarTypes.TARGET
+    calendarType = TuringCalendarTypes.TARGET
     fras = []
 
     # 1 x 4 FRA
@@ -127,10 +127,10 @@ def test_FinIborFRAsOnly():
     depos = []
     swaps = []
 
-    liborCurve = FinIborSingleCurve(valuationDate,
-                                    depos,
-                                    fras,
-                                    swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate,
+                                       depos,
+                                       fras,
+                                       swaps)
 
     testCases.header("DATE", "MATDATE", "VALUE")
 
@@ -144,9 +144,9 @@ def test_FinIborFRAsOnly():
 
 def test_FinIborDepositsFRAsSwaps():
 
-    valuationDate = FinDate(18, 9, 2019)
+    valuationDate = TuringDate(18, 9, 2019)
 
-    dccType = FinDayCountTypes.THIRTY_E_360_ISDA
+    dccType = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
 
     spotDays = 0
@@ -154,27 +154,27 @@ def test_FinIborDepositsFRAsSwaps():
 
     depositRate = 0.050
     maturityDate = settlementDate.addMonths(1)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate, dccType)
     depos.append(depo)
 
     maturityDate = settlementDate.addMonths(2)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate, dccType)
     depos.append(depo)
 
     maturityDate = settlementDate.addMonths(3)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate, dccType)
     depos.append(depo)
 
     maturityDate = settlementDate.addMonths(6)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate, dccType)
     depos.append(depo)
 
     maturityDate = settlementDate.addMonths(9)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate, dccType)
     depos.append(depo)
 
     maturityDate = settlementDate.addMonths(12)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate, dccType)
     depos.append(depo)
 
     fras = []
@@ -200,8 +200,8 @@ def test_FinIborDepositsFRAsSwaps():
     fras.append(fra)
 
     swaps = []
-    fixedDCCType = FinDayCountTypes.ACT_365F
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
+    fixedDCCType = TuringDayCountTypes.ACT_365F
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
 
     swapRate = 0.05
 #    maturityDate = settlementDate.addMonths(24)
@@ -209,7 +209,7 @@ def test_FinIborDepositsFRAsSwaps():
 #                        fixedDCCType)
 #    swaps.append(swap)
 
-    fixedLegType = FinSwapTypes.PAY
+    fixedLegType = TuringSwapTypes.PAY
     maturityDate = settlementDate.addMonths(36)
     swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate, 
                         fixedFreqType,
@@ -294,10 +294,10 @@ def test_FinIborDepositsFRAsSwaps():
                         fixedDCCType)
     swaps.append(swap)
 
-    liborCurve = FinIborSingleCurve(valuationDate,
-                               depos,
-                               fras,
-                               swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate,
+                                       depos,
+                                       fras,
+                                       swaps)
 
     df = liborCurve.df(settlementDate)
 
@@ -336,25 +336,25 @@ def futureToFRARate(price, convexity):
 
 def test_FinIborDepositsFuturesSwaps():
 
-    spotDate = FinDate(6, 6, 2018)
+    spotDate = TuringDate(6, 6, 2018)
     spotDays = 0
     settlementDate = spotDate.addWeekDays(spotDays)
-    depoDCCType = FinDayCountTypes.ACT_360
+    depoDCCType = TuringDayCountTypes.ACT_360
     depos = []
     depositRate = 0.0231381
-    depo = FinIborDeposit(settlementDate, "3M", depositRate, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "3M", depositRate, depoDCCType)
     depos.append(depo)
 
     depositRate = 0.027
-    depo = FinIborDeposit(settlementDate, "3M", depositRate, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "3M", depositRate, depoDCCType)
     depos.append(depo)
 
     depos = []
-    depo = FinIborDeposit(settlementDate, "1M", 0.0230, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "1M", 0.0230, depoDCCType)
     depos.append(depo)
-    depo = FinIborDeposit(settlementDate, "2M", 0.0235, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "2M", 0.0235, depoDCCType)
     depos.append(depo)
-    depo = FinIborDeposit(settlementDate, "3M", 0.0240, depoDCCType)
+    depo = TuringIborDeposit(settlementDate, "3M", 0.0240, depoDCCType)
     depos.append(depo)
 
     fras = []
@@ -401,16 +401,16 @@ def test_FinIborDepositsFuturesSwaps():
     startDate = spotDate.addWeekDays(spotDays)
 
     swaps = []
-    fixedLegType = FinSwapTypes.PAY
-    fixedDCCType = FinDayCountTypes.THIRTY_E_360
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
-    floatFreqType = FinFrequencyTypes.QUARTERLY
+    fixedLegType = TuringSwapTypes.PAY
+    fixedDCCType = TuringDayCountTypes.THIRTY_E_360
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
+    floatFreqType = TuringFrequencyTypes.QUARTERLY
     notional = 1000000
     principal = 0.0
     floatSpread = 0.0
-    floatDCCType = FinDayCountTypes.ACT_360
-    calendarType = FinCalendarTypes.UNITED_STATES
-    busDayAdjustRule = FinBusDayAdjustTypes.PRECEDING
+    floatDCCType = TuringDayCountTypes.ACT_360
+    calendarType = TuringCalendarTypes.UNITED_STATES
+    busDayAdjustRule = TuringBusDayAdjustTypes.PRECEDING
 
     swapRate = 0.02776305
 
@@ -421,7 +421,7 @@ def test_FinIborDepositsFuturesSwaps():
 
     swaps.append(swap)
 
-    liborCurve = FinIborSingleCurve(spotDate, depos, fras, swaps)
+    liborCurve = TuringIborSingleCurve(spotDate, depos, fras, swaps)
 
     times = np.linspace(0.0, 2.0, 25)
     dates = spotDate.addYears(times)
@@ -449,7 +449,7 @@ def test_FinIborDepositsFuturesSwaps():
         df = liborCurve.df(endDate)
         print(endDate, df)
 
-        endDate = FinDate(20, 6, 2018)
+        endDate = TuringDate(20, 6, 2018)
         df = liborCurve.df(endDate)
         print(endDate, df)
 
@@ -478,9 +478,9 @@ def test_FinIborDepositsFuturesSwaps():
 
 def test_derivativePricingExample():
 
-    valuationDate = FinDate(10, 11, 2011)
+    valuationDate = TuringDate(10, 11, 2011)
 
-    dccType = FinDayCountTypes.ACT_360
+    dccType = TuringDayCountTypes.ACT_360
     depos = []
 
     # We do the O/N rate which settles on trade date
@@ -488,78 +488,78 @@ def test_derivativePricingExample():
     settlementDate = valuationDate.addWeekDays(spotDays)
 
     depositRate = 0.001410
-    depo = FinIborDeposit(settlementDate, "ON", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "ON", depositRate, dccType)
     depos.append(depo)
 
     spotDays = 1
     settlementDate = valuationDate.addWeekDays(spotDays)
 
     depositRate = 0.001410
-    depo = FinIborDeposit(settlementDate, "TN", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "TN", depositRate, dccType)
     depos.append(depo)
 
     spotDays = 2
     settlementDate = valuationDate.addWeekDays(spotDays)
 
     depositRate = 0.001910
-    depo = FinIborDeposit(settlementDate, "1W", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "1W", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.002090
-    depo = FinIborDeposit(settlementDate, "2W", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "2W", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.002490
-    depo = FinIborDeposit(settlementDate, "1M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "1M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.003450
-    depo = FinIborDeposit(settlementDate, "2M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "2M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.004570
-    depo = FinIborDeposit(settlementDate, "3M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "3M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.005230
-    depo = FinIborDeposit(settlementDate, "4M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "4M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.005860
-    depo = FinIborDeposit(settlementDate, "5M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "5M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.006540
-    depo = FinIborDeposit(settlementDate, "6M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "6M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.007080
-    depo = FinIborDeposit(settlementDate, "7M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "7M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.007540
-    depo = FinIborDeposit(settlementDate, "8M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "8M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.008080
-    depo = FinIborDeposit(settlementDate, "9M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "9M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.008570
-    depo = FinIborDeposit(settlementDate, "10M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "10M", depositRate, dccType)
     depos.append(depo)
 
     depositRate = 0.009130
-    depo = FinIborDeposit(settlementDate, "11M", depositRate, dccType)
+    depo = TuringIborDeposit(settlementDate, "11M", depositRate, dccType)
     depos.append(depo)
 
     fras = []
 
     swaps = []
-    dayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
-#    dayCountType = FinDayCountTypes.ACT_360
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedLegType = FinSwapTypes.PAY
+    dayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
+#    dayCountType = TuringDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedLegType = TuringSwapTypes.PAY
     
     swapRate = 0.0058
     swap = FinIborSwap(settlementDate, "1Y", fixedLegType, swapRate, freqType, dayCountType)
@@ -597,8 +597,8 @@ def test_derivativePricingExample():
     start = time.time()
 
     for _ in range(0, numRepeats):
-        _ = FinIborSingleCurve(valuationDate, depos, fras, swaps,
-                                   FinInterpTypes.FLAT_FWD_RATES)
+        _ = TuringIborSingleCurve(valuationDate, depos, fras, swaps,
+                                  FinInterpTypes.FLAT_FWD_RATES)
 
     end = time.time()
     elapsed1 = end - start
@@ -606,8 +606,8 @@ def test_derivativePricingExample():
     start = time.time()
 
     for _ in range(0, numRepeats):
-        _ = FinIborSingleCurve(valuationDate, depos, fras, swaps,
-                                   FinInterpTypes.FLAT_FWD_RATES)
+        _ = TuringIborSingleCurve(valuationDate, depos, fras, swaps,
+                                  FinInterpTypes.FLAT_FWD_RATES)
 
     end = time.time()
     elapsed2 = end - start
@@ -625,17 +625,17 @@ def test_bloombergPricingExample(interpType):
     https://github.com/vilen22/curve-building/blob/master/Bloomberg%20Curve%20Building%20Replication.xlsx
 
     '''
-    valuationDate = FinDate(6, 6, 2018)
+    valuationDate = TuringDate(6, 6, 2018)
 
     # We do the O/N rate which settles on trade date
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
-    depoDCCType = FinDayCountTypes.ACT_360
+    depoDCCType = TuringDayCountTypes.ACT_360
     depos = []
     depositRate = 0.0231381
     maturityDate = settlementDate.addMonths(3)
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate,
-                           depoDCCType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate,
+                             depoDCCType)
     depos.append(depo)
 
     futs = []
@@ -654,13 +654,13 @@ def test_bloombergPricingExample(interpType):
     fras[4] = futs[4].toFRA(97.1450, -0.00411)
     fras[5] = futs[5].toFRA(97.0750, -0.00589)
 
-    accrual = FinDayCountTypes.THIRTY_E_360
-    freq = FinFrequencyTypes.SEMI_ANNUAL
+    accrual = TuringDayCountTypes.THIRTY_E_360
+    freq = TuringFrequencyTypes.SEMI_ANNUAL
 
     spotDays = 2
     settlementDate = valuationDate.addWeekDays(spotDays)
     notional = ONE_MILLION
-    fixedLegType = FinSwapTypes.PAY
+    fixedLegType = TuringSwapTypes.PAY
 
     swaps = []
     swap = FinIborSwap(settlementDate, "2Y", fixedLegType, (2.77417+2.77844)/200, freq, accrual); swaps.append(swap)
@@ -681,7 +681,7 @@ def test_bloombergPricingExample(interpType):
     swap = FinIborSwap(settlementDate, "40Y", fixedLegType, (2.96946+2.97354)/200, freq, accrual); swaps.append(swap)
     swap = FinIborSwap(settlementDate, "50Y", fixedLegType, (2.91552+2.93748)/200, freq, accrual); swaps.append(swap)
 
-    liborCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps, interpType)
+    liborCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps, interpType)
 
     # The valuation of 53714.55 is very close to the spreadsheet value 53713.96
     principal = 0.0

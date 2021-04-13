@@ -7,33 +7,33 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_american_option import FinEquityAmericanOption
-from financepy.finutils.turing_global_types import FinOptionTypes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.products.equity.turing_equity_american_option import TuringEquityAmericanOption
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes, FinModelBlackScholesTypes
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 def testFinEquityAmericanOption():
 
-    valueDate = FinDate(1, 1, 2016)
-    expiryDate = FinDate(1, 1, 2017)
+    valueDate = TuringDate(1, 1, 2016)
+    expiryDate = TuringDate(1, 1, 2017)
     stockPrice = 50.0
     interestRate = 0.06
     dividendYield = 0.04
     volatility = 0.40
     strikePrice = 50.0
 
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
     testCases.banner("================== EUROPEAN PUT =======================")
 
-    putOption = FinEquityAmericanOption(expiryDate, strikePrice, FinOptionTypes.EUROPEAN_PUT)
+    putOption = TuringEquityAmericanOption(expiryDate, strikePrice, TuringOptionTypes.EUROPEAN_PUT)
 
     model = FinModelBlackScholes(volatility, 
                                  FinModelBlackScholesTypes.CRR_TREE,
@@ -47,7 +47,7 @@ def testFinEquityAmericanOption():
     testCases.header("OPTION_TYPE", "VALUE", "DELTA", "GAMMA", "THETA")
     testCases.print("EUROPEAN_PUT_BS", value, delta, gamma, theta)
 
-    option = FinEquityAmericanOption(expiryDate, strikePrice, FinOptionTypes.EUROPEAN_PUT)
+    option = TuringEquityAmericanOption(expiryDate, strikePrice, TuringOptionTypes.EUROPEAN_PUT)
 
     testCases.header("OPTION_TYPE", "NUMSTEPS", "VALUE DELTA GAMMA THETA", "TIME")
 
@@ -67,10 +67,10 @@ def testFinEquityAmericanOption():
 
     testCases.banner("================== AMERICAN PUT =======================")
 
-    option = FinEquityAmericanOption(
+    option = TuringEquityAmericanOption(
         expiryDate,
         strikePrice,
-        FinOptionTypes.AMERICAN_PUT)
+        TuringOptionTypes.AMERICAN_PUT)
 
     testCases.header(
         "OPTION_TYPE",
@@ -93,10 +93,10 @@ def testFinEquityAmericanOption():
     testCases.banner(
         "================== EUROPEAN CALL =======================")
 
-    callOption = FinEquityAmericanOption(
+    callOption = TuringEquityAmericanOption(
         expiryDate,
         strikePrice,
-        FinOptionTypes.EUROPEAN_CALL)
+        TuringOptionTypes.EUROPEAN_CALL)
     value = callOption.value(valueDate, stockPrice, discountCurve, dividendCurve, model)
     delta = callOption.delta(valueDate, stockPrice, discountCurve, dividendCurve, model)
     gamma = callOption.gamma(valueDate, stockPrice, discountCurve, dividendCurve, model)
@@ -105,10 +105,10 @@ def testFinEquityAmericanOption():
     testCases.header("OPTION_TYPE", "VALUE", "DELTA", "GAMMA", "THETA")
     testCases.print("EUROPEAN_CALL_BS", value, delta, gamma, theta)
 
-    option = FinEquityAmericanOption(
+    option = TuringEquityAmericanOption(
         expiryDate,
         strikePrice,
-        FinOptionTypes.EUROPEAN_CALL)
+        TuringOptionTypes.EUROPEAN_CALL)
 
     testCases.header(
         "OPTION_TYPE",
@@ -136,8 +136,8 @@ def testFinEquityAmericanOption():
         "VALUE DELTA GAMMA THETA",
         "TIME")
 
-    option = FinEquityAmericanOption(expiryDate, strikePrice,
-                                     FinOptionTypes.AMERICAN_CALL)
+    option = TuringEquityAmericanOption(expiryDate, strikePrice,
+                                        TuringOptionTypes.AMERICAN_CALL)
 
     for numSteps in numStepsList:
 

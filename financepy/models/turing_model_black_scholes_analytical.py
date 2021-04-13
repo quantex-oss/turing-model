@@ -6,10 +6,10 @@ import numpy as np
 from numba import float64, int64, vectorize, njit
 from scipy import optimize
 
-from ..finutils.turing_global_types import FinOptionTypes
+from ..finutils.turing_global_types import TuringOptionTypes
 from ..finutils.turing_global_variables import gSmall
 from ..finutils.turing_math import NVect, NPrimeVect
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 from ..finutils.turing_solvers_1d import bisection, newton, newton_secant
 
 ###############################################################################
@@ -21,12 +21,12 @@ from ..finutils.turing_solvers_1d import bisection, newton, newton_secant
 def bsValue(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. ''' 
 
-    if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = 1.0
-    elif optionTypeValue == FinOptionTypes.EUROPEAN_PUT.value:
+    elif optionTypeValue == TuringOptionTypes.EUROPEAN_PUT.value:
         phi = -1.0
     else:
-        raise FinError("Unknown option type value")
+        raise TuringError("Unknown option type value")
 
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
@@ -48,12 +48,12 @@ def bsValue(s, t, k, r, q, v, optionTypeValue):
 def bsDelta(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. ''' 
 
-    if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = +1.0
-    elif optionTypeValue == FinOptionTypes.EUROPEAN_PUT.value:
+    elif optionTypeValue == TuringOptionTypes.EUROPEAN_PUT.value:
         phi = -1.0
     else:
-        raise FinError("Unknown option type value")
+        raise TuringError("Unknown option type value")
 
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
@@ -110,12 +110,12 @@ def bsVega(s, t, k, r, q, v, optionTypeValue):
 def bsTheta(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. ''' 
 
-    if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = 1.0
-    elif optionTypeValue == FinOptionTypes.EUROPEAN_PUT.value:
+    elif optionTypeValue == TuringOptionTypes.EUROPEAN_PUT.value:
         phi = -1.0
     else:
-        raise FinError("Unknown option type value")
+        raise TuringError("Unknown option type value")
 
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
@@ -139,12 +139,12 @@ def bsTheta(s, t, k, r, q, v, optionTypeValue):
 def bsRho(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. ''' 
 
-    if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = 1.0
-    elif optionTypeValue == FinOptionTypes.EUROPEAN_PUT.value:
+    elif optionTypeValue == TuringOptionTypes.EUROPEAN_PUT.value:
         phi = -1.0
     else:
-        raise FinError("Unknown option type value")
+        raise TuringError("Unknown option type value")
 
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
@@ -198,7 +198,7 @@ def bsIntrinsic(s, t, k, r, q, optionTypeValue):
 
     fwd = s * np.exp((r-q)*t)
 
-    if optionTypeValue==FinOptionTypes.EUROPEAN_CALL.value:
+    if optionTypeValue==TuringOptionTypes.EUROPEAN_CALL.value:
         intrinsicVal = np.exp(-r*t) * max(fwd - k, 0.0)
     else:
         intrinsicVal = np.exp(-r*t) * max(k - fwd, 0.0)
@@ -216,7 +216,7 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
 
     fwd = s * np.exp((r-q)*t)
                                 
-    if optionTypeValue==FinOptionTypes.EUROPEAN_CALL.value:
+    if optionTypeValue==TuringOptionTypes.EUROPEAN_CALL.value:
         intrinsicVal = np.exp(-r*t) * max(fwd - k, 0.0)
     else:
         intrinsicVal = np.exp(-r*t) * max(k - fwd, 0.0)
@@ -227,15 +227,15 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
     # Flip ITM call option to be OTM put and vice-versa using put call parity
     if intrinsicVal > 0.0:
 
-        if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+        if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
             price = price - (divAdjStockPrice - k * df)
-            optionTypeValue = FinOptionTypes.EUROPEAN_PUT.value
+            optionTypeValue = TuringOptionTypes.EUROPEAN_PUT.value
         else:
             price = price + (divAdjStockPrice - k * df)
-            optionTypeValue = FinOptionTypes.EUROPEAN_CALL.value
+            optionTypeValue = TuringOptionTypes.EUROPEAN_CALL.value
 
         # Update intrinsic based on new option type
-        if optionTypeValue==FinOptionTypes.EUROPEAN_CALL.value:
+        if optionTypeValue==TuringOptionTypes.EUROPEAN_CALL.value:
             intrinsicVal = np.exp(-r*t) * max(fwd - k, 0.0)
         else:
             intrinsicVal = np.exp(-r*t) * max(k - fwd, 0.0)
@@ -245,13 +245,13 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
     # Add a tolerance in case it is just numerical imprecision 
     if timeValue < 0.0:
         print("Time value", timeValue)
-        raise FinError("Option Price is below the intrinsic value")
+        raise TuringError("Option Price is below the intrinsic value")
 
     ###########################################################################
     # Some approximations which might be used later    
     ###########################################################################
 
-    if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         C = price
     else:
         C = price + (divAdjStockPrice - k * df)
@@ -441,7 +441,7 @@ def bawValue(s, t, k, r, q, v, phi):
 
     else:
         
-        raise FinError("Phi must equal 1 or -1.")
+        raise TuringError("Phi must equal 1 or -1.")
 
 ###############################################################################
 

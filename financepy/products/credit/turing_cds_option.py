@@ -6,16 +6,16 @@ from math import sqrt, log
 from scipy import optimize
 
 
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes, FinDateGenRuleTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import ONE_MILLION, N
-from ...products.credit.turing_cds import FinCDS
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_error import FinError
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import ONE_MILLION, N
+from financepy.products.credit.turing_cds import FinCDS
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_error import TuringError
 
 ##########################################################################
 
@@ -37,7 +37,7 @@ def fvol(volatility, *args):
 ##########################################################################
 
 
-class FinCDSOption():
+class TuringCDSOption():
     ''' Class to manage the pricing and risk-management of an option on a
     single-name CDS. This is a contract in which the option buyer pays for an
     option to either buy or sell protection on the underlying CDS at a fixed
@@ -46,18 +46,18 @@ class FinCDSOption():
     option expiry. This needs to be specified. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
-                 maturityDate: FinDate,
+                 expiryDate: TuringDate,
+                 maturityDate: TuringDate,
                  strikeCoupon: float,
                  notional: float = ONE_MILLION,
                  longProtection: bool = True,
                  knockoutFlag: bool = True,
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_360,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
-        ''' Create a FinCDSOption object with the option expiry date, the
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
+        ''' Create a TuringCDSOption object with the option expiry date, the
         maturity date of the underlying CDS, the option strike coupon,
         notional, whether the option knocks out or not in the event of a credit
         event before expiry and the payment details of the underlying CDS. '''
@@ -65,10 +65,10 @@ class FinCDSOption():
         checkArgumentTypes(self.__init__, locals())
 
         if maturityDate < expiryDate:
-            raise FinError("Maturity date must be after option expiry date")
+            raise TuringError("Maturity date must be after option expiry date")
 
         if strikeCoupon < 0.0:
-            raise FinError("Strike must be greater than zero")
+            raise TuringError("Strike must be greater than zero")
 
         self._expiryDate = expiryDate
         self._maturityDate = maturityDate
@@ -94,10 +94,10 @@ class FinCDSOption():
         TODO - Should the CDS be created in the init method ? '''
 
         if valuationDate > self._expiryDate:
-            raise FinError("Expiry date is now or in the past")
+            raise TuringError("Expiry date is now or in the past")
 
         if volatility < 0.0:
-            raise FinError("Volatility must be greater than zero")
+            raise TuringError("Volatility must be greater than zero")
 
         # The underlying is a forward starting option that steps in on
         # the expiry date and matures on the expiry date with a coupon

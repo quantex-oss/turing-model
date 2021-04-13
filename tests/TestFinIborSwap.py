@@ -7,22 +7,22 @@ import numpy as np
 sys.path.append("..")
 
 from financepy.finutils.turing_math import ONE_MILLION
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
 from financepy.products.rates.turing_ibor_fra import FinIborFRA
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
-from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
-from financepy.finutils.turing_calendar import FinDateGenRuleTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_global_types import FinSwapTypes
-from financepy.market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 from financepy.market.curves.turing_interpolator import FinInterpTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -30,14 +30,14 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 def buildIborSingleCurve(valuationDate):
 
     settlementDate = valuationDate.addDays(2)
-    dcType = FinDayCountTypes.ACT_360
+    dcType = TuringDayCountTypes.ACT_360
 
     depos = []
     fras = []
     swaps = []
 
     maturityDate = settlementDate.addMonths(1)
-    depo1 = FinIborDeposit(valuationDate, maturityDate, -0.00251, dcType)
+    depo1 = TuringIborDeposit(valuationDate, maturityDate, -0.00251, dcType)
     depos.append(depo1)
 
     # Series of 1M futures
@@ -106,9 +106,9 @@ def buildIborSingleCurve(valuationDate):
     ###########################################################################
     ###########################################################################
     
-    fixedFreq = FinFrequencyTypes.ANNUAL
-    dcType = FinDayCountTypes.THIRTY_E_360
-    fixedLegType = FinSwapTypes.PAY
+    fixedFreq = TuringFrequencyTypes.ANNUAL
+    dcType = TuringDayCountTypes.THIRTY_E_360
+    fixedLegType = TuringSwapTypes.PAY
 
     #######################################
     maturityDate = settlementDate.addMonths(24) 
@@ -245,7 +245,7 @@ def buildIborSingleCurve(valuationDate):
     
     ########################################
     
-    liborCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     testCases.header("LABEL", "DATE", "VALUE")
 
@@ -271,22 +271,22 @@ def test_LiborSwap():
 
     # I have tried to reproduce the example from the blog by Ioannis Rigopoulos
     # https://blog.deriscope.com/index.php/en/excel-interest-rate-swap-price-dual-bootstrapping-curve
-    startDate = FinDate(27, 12, 2017)
-    endDate = FinDate(27, 12, 2067)
+    startDate = TuringDate(27, 12, 2017)
+    endDate = TuringDate(27, 12, 2067)
 
     fixedCoupon = 0.015
-    fixedFreqType = FinFrequencyTypes.ANNUAL
-    fixedDayCountType = FinDayCountTypes.THIRTY_E_360
+    fixedFreqType = TuringFrequencyTypes.ANNUAL
+    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360
 
     floatSpread = 0.0
-    floatFreqType = FinFrequencyTypes.SEMI_ANNUAL
-    floatDayCountType = FinDayCountTypes.ACT_360
+    floatFreqType = TuringFrequencyTypes.SEMI_ANNUAL
+    floatDayCountType = TuringDayCountTypes.ACT_360
     firstFixing = -0.00268
 
-    swapCalendarType = FinCalendarTypes.WEEKEND
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
-    fixedLegType = FinSwapTypes.RECEIVE
+    swapCalendarType = TuringCalendarTypes.WEEKEND
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
+    fixedLegType = TuringSwapTypes.RECEIVE
     
     notional = 10.0 * ONE_MILLION
 
@@ -308,7 +308,7 @@ def test_LiborSwap():
     same curve being used for discounting and working out the implied
     future Libor rates. '''
 
-    valuationDate = FinDate(30, 11, 2018)
+    valuationDate = TuringDate(30, 11, 2018)
     settlementDate = valuationDate.addDays(2)
     liborCurve = buildIborSingleCurve(valuationDate)
     v = swap.value(settlementDate, liborCurve, liborCurve, firstFixing)
@@ -326,44 +326,44 @@ def test_dp_example():
 
     #  http://www.derivativepricing.com/blogpage.asp?id=8
 
-    startDate = FinDate(14, 11, 2011)
-    endDate = FinDate(14, 11, 2016)
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
-    swapCalendarType = FinCalendarTypes.TARGET
-    busDayAdjustType = FinBusDayAdjustTypes.MODIFIED_FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
-    fixedDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
-    fixedLegType = FinSwapTypes.PAY
+    startDate = TuringDate(14, 11, 2011)
+    endDate = TuringDate(14, 11, 2016)
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
+    swapCalendarType = TuringCalendarTypes.TARGET
+    busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
+    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
+    fixedLegType = TuringSwapTypes.PAY
     fixedCoupon = 0.0124
     notional = ONE_MILLION
 
     swap = FinIborSwap(startDate,
-                        endDate,
-                        fixedLegType,
-                        fixedCoupon=fixedCoupon,
-                        fixedFreqType=fixedFreqType,
-                        fixedDayCountType=fixedDayCountType,
-                        floatFreqType=FinFrequencyTypes.SEMI_ANNUAL,
-                        floatDayCountType=FinDayCountTypes.ACT_360,
-                        notional=notional,
-                        calendarType=swapCalendarType,
-                        busDayAdjustType=busDayAdjustType,
-                        dateGenRuleType=dateGenRuleType)
+                       endDate,
+                       fixedLegType,
+                       fixedCoupon=fixedCoupon,
+                       fixedFreqType=fixedFreqType,
+                       fixedDayCountType=fixedDayCountType,
+                       floatFreqType=TuringFrequencyTypes.SEMI_ANNUAL,
+                       floatDayCountType=TuringDayCountTypes.ACT_360,
+                       notional=notional,
+                       calendarType=swapCalendarType,
+                       busDayAdjustType=busDayAdjustType,
+                       dateGenRuleType=dateGenRuleType)
 
 #    swap.printFixedLegFlows()
 
-    dts = [FinDate(14, 11, 2011), FinDate(14, 5, 2012), FinDate(14, 11, 2012),
-           FinDate(14, 5, 2013), FinDate(14, 11, 2013), FinDate(14, 5, 2014),
-           FinDate(14, 11, 2014), FinDate(14, 5, 2015), FinDate(16, 11, 2015),
-           FinDate(16, 5, 2016), FinDate(14, 11, 2016)]
+    dts = [TuringDate(14, 11, 2011), TuringDate(14, 5, 2012), TuringDate(14, 11, 2012),
+           TuringDate(14, 5, 2013), TuringDate(14, 11, 2013), TuringDate(14, 5, 2014),
+           TuringDate(14, 11, 2014), TuringDate(14, 5, 2015), TuringDate(16, 11, 2015),
+           TuringDate(16, 5, 2016), TuringDate(14, 11, 2016)]
 
     dfs = [0.9999843, 0.9966889, 0.9942107, 0.9911884, 0.9880738, 0.9836490,
            0.9786276, 0.9710461, 0.9621778, 0.9514315, 0.9394919]
 
     valuationDate = startDate
 
-    curve = FinDiscountCurve(valuationDate, dts, np.array(dfs),
-                             FinInterpTypes.FLAT_FWD_RATES)
+    curve = TuringDiscountCurve(valuationDate, dts, np.array(dfs),
+                                FinInterpTypes.FLAT_FWD_RATES)
 
     v = swap.value(valuationDate, curve, curve)
 

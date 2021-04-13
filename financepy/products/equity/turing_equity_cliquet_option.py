@@ -5,54 +5,54 @@
 
 import numpy as np
 
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_types import FinOptionTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_types import TuringOptionTypes
 
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_calendar import FinCalendarTypes,  FinDateGenRuleTypes
-from ...finutils.turing_schedule import FinSchedule
-from ...products.equity.turing_equity_option import FinEquityOption
-from ...market.curves.turing_discount_curve_flat import FinDiscountCurve
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
+from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.products.equity.turing_equity_option import TuringEquityOption
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurve
 
-from ...models.turing_model_black_scholes import bsValue, FinModelBlackScholes
-from ...models.turing_model import FinModel
+from financepy.models.turing_model_black_scholes import bsValue, FinModelBlackScholes
+from financepy.models.turing_model import FinModel
 
 ###############################################################################
 # TODO: Do we need to day count adjust option payoffs ?
 # TODO: Monte Carlo pricer
 ###############################################################################
 
-class FinEquityCliquetOption(FinEquityOption):
-    ''' A FinEquityCliquetOption is a series of options which start and stop at
+class TuringEquityCliquetOption(TuringEquityOption):
+    ''' A TuringEquityCliquetOption is a series of options which start and stop at
     successive times with each subsequent option resetting its strike to be ATM
     at the start of its life. This is also known as a reset option.'''
 
     def __init__(self,
-                 startDate: FinDate,
-                 finalExpiryDate: FinDate,
-                 optionType: FinOptionTypes,
-                 freqType: FinFrequencyTypes,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.THIRTY_E_360,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
-        ''' Create the FinEquityCliquetOption by passing in the start date
+                 startDate: TuringDate,
+                 finalExpiryDate: TuringDate,
+                 optionType: TuringOptionTypes,
+                 freqType: TuringFrequencyTypes,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.THIRTY_E_360,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
+        ''' Create the TuringEquityCliquetOption by passing in the start date
         and the end date and whether it is a call or a put. Some additional
         data is needed in order to calculate the individual payments. '''
 
         checkArgumentTypes(self.__init__, locals())
 
-        if optionType != FinOptionTypes.EUROPEAN_CALL and \
-           optionType != FinOptionTypes.EUROPEAN_PUT:
-            raise FinError("Unknown Option Type" + str(optionType))
+        if optionType != TuringOptionTypes.EUROPEAN_CALL and \
+           optionType != TuringOptionTypes.EUROPEAN_PUT:
+            raise TuringError("Unknown Option Type" + str(optionType))
 
         if finalExpiryDate < startDate:
-            raise FinError("Expiry date precedes start date")
+            raise TuringError("Expiry date precedes start date")
 
         self._startDate = startDate
         self._finalExpiryDate = finalExpiryDate
@@ -63,26 +63,26 @@ class FinEquityCliquetOption(FinEquityOption):
         self._busDayAdjustType = busDayAdjustType
         self._dateGenRuleType = dateGenRuleType
 
-        self._expiryDates = FinSchedule(self._startDate,
-                                        self._finalExpiryDate,
-                                        self._freqType,
-                                        self._calendarType,
-                                        self._busDayAdjustType,
-                                        self._dateGenRuleType)._generate()
+        self._expiryDates = TuringSchedule(self._startDate,
+                                           self._finalExpiryDate,
+                                           self._freqType,
+                                           self._calendarType,
+                                           self._busDayAdjustType,
+                                           self._dateGenRuleType)._generate()
 
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model:FinModel):
         ''' Value the cliquet option as a sequence of options using the Black-
         Scholes model. '''
 
         if valueDate > self._finalExpiryDate:
-            raise FinError("Value date after final expiry date.")
+            raise TuringError("Value date after final expiry date.")
 
         s = stockPrice
         v_cliquet = 0.0
@@ -91,8 +91,8 @@ class FinEquityCliquetOption(FinEquityOption):
         self._dfs = []
         self._actualDates = []
 
-        CALL = FinOptionTypes.EUROPEAN_CALL
-        PUT = FinOptionTypes.EUROPEAN_PUT
+        CALL = TuringOptionTypes.EUROPEAN_CALL
+        PUT = TuringOptionTypes.EUROPEAN_PUT
 
         if isinstance(model, FinModelBlackScholes):
 
@@ -126,7 +126,7 @@ class FinEquityCliquetOption(FinEquityOption):
                         v_fwd_opt = s * dq * bsValue(1.0, tau, 1.0, r, q, v, PUT.value)
                         v_cliquet += v_fwd_opt
                     else:
-                        raise FinError("Unknown option type")
+                        raise TuringError("Unknown option type")
 
 #                    print(dt, r, df, q, v_fwd_opt, v_cliquet)
 
@@ -135,7 +135,7 @@ class FinEquityCliquetOption(FinEquityOption):
                     self._actualDates.append(dt)
                     tprev = texp
         else:
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         return v_cliquet
 

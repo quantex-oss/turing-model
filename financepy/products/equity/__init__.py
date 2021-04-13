@@ -17,4 +17,4 @@ from .turing_equity_variance_swap import *
 from .turing_equity_one_touch_option import *
 
 
-# dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+# dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)

@@ -7,18 +7,18 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_global_types import FinOptionTypes
-from financepy.products.fx.turing_fx_vanilla_option import FinFXVanillaOption
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
-from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 
@@ -30,8 +30,8 @@ def test_FinFXVanillaOptionWystupExample1():
 
     # Not exactly T=1.0 but close so don't exact exact agreement
     # (in fact I do not get exact agreement even if I do set T=1.0)
-    valueDate = FinDate(13, 2, 2018)
-    expiryDate = FinDate(13, 2, 2019)
+    valueDate = TuringDate(13, 2, 2018)
+    expiryDate = TuringDate(13, 2, 2019)
 
     # In BS the FX rate is the price in domestic of one unit of foreign
     # In case of EURUSD = 1.3 the domestic currency is USD and foreign is EUR
@@ -48,19 +48,19 @@ def test_FinFXVanillaOptionWystupExample1():
 
     notional = 1000000.0
 
-    domDiscountCurve = FinDiscountCurveFlat(valueDate, ccy2CCRate)
-    forDiscountCurve = FinDiscountCurveFlat(valueDate, ccy1CCRate)
+    domDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy2CCRate)
+    forDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy1CCRate)
 
     model = FinModelBlackScholes(volatility)
 
     # Two examples to show that changing the notional currency and notional
     # keeps the value unchanged
     notional = 1000000.0
-    callOption = FinFXVanillaOption(expiryDate,
-                                    strikeFXRate,
-                                    currencyPair,
-                                    FinOptionTypes.EUROPEAN_CALL,
-                                    notional,
+    callOption = TuringFXVanillaOption(expiryDate,
+                                       strikeFXRate,
+                                       currencyPair,
+                                       TuringOptionTypes.EUROPEAN_CALL,
+                                       notional,
                                     "EUR", 2)
 
     value = callOption.value(
@@ -71,11 +71,11 @@ def test_FinFXVanillaOptionWystupExample1():
         model)
 
     notional = 1250000.0
-    callOption = FinFXVanillaOption(expiryDate,
-                                    strikeFXRate,
-                                    currencyPair,
-                                    FinOptionTypes.EUROPEAN_CALL,
-                                    notional,
+    callOption = TuringFXVanillaOption(expiryDate,
+                                       strikeFXRate,
+                                       currencyPair,
+                                       TuringOptionTypes.EUROPEAN_CALL,
+                                       notional,
                                     "USD", 2)
 
     value = callOption.value(
@@ -102,8 +102,8 @@ def test_FinFXVanillaOptionWystupExample2():
     # Example Bloomberg Pricing at
     # https://stackoverflow.com/questions/48778712/fx-vanilla-call-price-in-quantlib-doesnt-match-bloomberg
 
-    valueDate = FinDate(13, 2, 2018)
-    expiryDate = FinDate(13, 2, 2019)
+    valueDate = TuringDate(13, 2, 2018)
+    expiryDate = TuringDate(13, 2, 2019)
 
     # In BS the FX rate is the price in domestic of one unit of foreign
     # In case of EURUSD = 1.3 the domestic currency is USD and foreign is EUR
@@ -120,19 +120,19 @@ def test_FinFXVanillaOptionWystupExample2():
 
     notional = 1000000.0
 
-    domDiscountCurve = FinDiscountCurveFlat(valueDate, ccy2CCRate)
-    forDiscountCurve = FinDiscountCurveFlat(valueDate, ccy1CCRate)
+    domDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy2CCRate)
+    forDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy1CCRate)
 
     model = FinModelBlackScholes(volatility)
 
     # Two examples to show that changing the notional currency and notional
     # keeps the value unchanged
     notional = 1000000.0
-    callOption = FinFXVanillaOption(expiryDate,
-                                    strikeFXRate,
-                                    currencyPair,
-                                    FinOptionTypes.EUROPEAN_PUT,
-                                    notional,
+    callOption = TuringFXVanillaOption(expiryDate,
+                                       strikeFXRate,
+                                       currencyPair,
+                                       TuringOptionTypes.EUROPEAN_PUT,
+                                       notional,
                                     "EUR", 2)
 
     value = callOption.value(
@@ -159,8 +159,8 @@ def test_FinFXVanillaOptionBloombergExample():
     # Example Bloomberg Pricing at
     # https://stackoverflow.com/questions/48778712/fx-vanilla-call-price-in-quantlib-doesnt-match-bloomberg
 
-    valuationDate = FinDate(13, 2, 2018)
-    expiryDate = FinDate(15, 2, 2019)
+    valuationDate = TuringDate(13, 2, 2018)
+    expiryDate = TuringDate(15, 2, 2019)
 
     # In BS the FX rate is the price in domestic of one unit of foreign
     # In case of EURUSD = 1.3 the domestic currency is USD and foreign is EUR
@@ -180,32 +180,32 @@ def test_FinFXVanillaOptionBloombergExample():
     maturityDate = settlementDate.addMonths(12)
     notional = 1000000.0
     notionalCurrency = "EUR"
-    calendarType = FinCalendarTypes.TARGET
+    calendarType = TuringCalendarTypes.TARGET
 
     depos = []
     fras = []
     swaps = []
-    depo = FinIborDeposit(settlementDate, maturityDate, domDepoRate,
-                           FinDayCountTypes.ACT_360, notional, calendarType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, domDepoRate,
+                             TuringDayCountTypes.ACT_360, notional, calendarType)
     depos.append(depo)
-    domDiscountCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps)
+    domDiscountCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     depos = []
     fras = []
     swaps = []
-    depo = FinIborDeposit(settlementDate, maturityDate, forDepoRate,
-                           FinDayCountTypes.ACT_360, notional, calendarType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, forDepoRate,
+                             TuringDayCountTypes.ACT_360, notional, calendarType)
     depos.append(depo)
-    forDiscountCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps)
+    forDiscountCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     model = FinModelBlackScholes(volatility)
 
-    callOption = FinFXVanillaOption(expiryDate,
-                                    strikeFXRate,
-                                    currencyPair,
-                                    FinOptionTypes.EUROPEAN_CALL,
-                                    notional,
-                                    notionalCurrency, 2)
+    callOption = TuringFXVanillaOption(expiryDate,
+                                       strikeFXRate,
+                                       currencyPair,
+                                       TuringOptionTypes.EUROPEAN_CALL,
+                                       notional,
+                                       notionalCurrency, 2)
 
     value = callOption.value(
         valuationDate,
@@ -230,15 +230,15 @@ def test_FinFXVanillaOptionBloombergExample():
 def test_FinFXVanillaOptionHullExample():
 
     #   Example from Hull 4th edition page 284
-    valuationDate = FinDate(1, 1, 2015)
+    valuationDate = TuringDate(1, 1, 2015)
     expiryDate = valuationDate.addMonths(4)
     spotFXRate = 1.60
     volatility = 0.1411
     domInterestRate = 0.08
     forInterestRate = 0.11
     model = FinModelBlackScholes(volatility)
-    domDiscountCurve = FinDiscountCurveFlat(valuationDate, domInterestRate)
-    forDiscountCurve = FinDiscountCurveFlat(valuationDate, forInterestRate)
+    domDiscountCurve = TuringDiscountCurveFlat(valuationDate, domInterestRate)
+    forDiscountCurve = TuringDiscountCurveFlat(valuationDate, forInterestRate)
 
     numPathsList = [10000, 20000, 40000, 80000, 160000, 320000]
 
@@ -247,11 +247,11 @@ def test_FinFXVanillaOptionHullExample():
 
     for numPaths in numPathsList:
 
-        callOption = FinFXVanillaOption(expiryDate,
-                                        strikeFXRate,
+        callOption = TuringFXVanillaOption(expiryDate,
+                                           strikeFXRate,
                                         "EURUSD",
-                                        FinOptionTypes.EUROPEAN_CALL,
-                                        1000000,
+                                           TuringOptionTypes.EUROPEAN_CALL,
+                                           1000000,
                                         "USD")
 
         value = callOption.value(
@@ -285,11 +285,11 @@ def test_FinFXVanillaOptionHullExample():
 
     for spotFXRate in spotFXRates:
 
-        callOption = FinFXVanillaOption(expiryDate,
-                                        strikeFXRate,
+        callOption = TuringFXVanillaOption(expiryDate,
+                                           strikeFXRate,
                                         "EURUSD",
-                                        FinOptionTypes.EUROPEAN_CALL,
-                                        1000000,
+                                           TuringOptionTypes.EUROPEAN_CALL,
+                                           1000000,
                                         "USD")
 
         value = callOption.value(
@@ -319,11 +319,11 @@ def test_FinFXVanillaOptionHullExample():
 
     for spotFXRate in spotFXRates:
 
-        putOption = FinFXVanillaOption(expiryDate,
-                                       strikeFXRate,
+        putOption = TuringFXVanillaOption(expiryDate,
+                                          strikeFXRate,
                                        "EURUSD",
-                                       FinOptionTypes.EUROPEAN_PUT,
-                                       1000000,
+                                          TuringOptionTypes.EUROPEAN_PUT,
+                                          1000000,
                                        "USD")
 
         value = putOption.value(
@@ -357,11 +357,11 @@ def test_FinFXVanillaOptionHullExample():
         "RHO_BS")
 
     for spotFXRate in spotFXRates:
-        callOption = FinFXVanillaOption(expiryDate,
-                                        strikeFXRate,
+        callOption = TuringFXVanillaOption(expiryDate,
+                                           strikeFXRate,
                                         "EURUSD",
-                                        FinOptionTypes.EUROPEAN_CALL,
-                                        1000000,
+                                           TuringOptionTypes.EUROPEAN_CALL,
+                                           1000000,
                                         "USD")
         value = callOption.value(
             valuationDate,
@@ -401,11 +401,11 @@ def test_FinFXVanillaOptionHullExample():
         "RHO_BS")
 
     for spotFXRate in spotFXRates:
-        putOption = FinFXVanillaOption(expiryDate,
-                                       strikeFXRate,
+        putOption = TuringFXVanillaOption(expiryDate,
+                                          strikeFXRate,
                                        "EURUSD",
-                                       FinOptionTypes.EUROPEAN_PUT,
-                                       1000000,
+                                          TuringOptionTypes.EUROPEAN_PUT,
+                                          1000000,
                                        "USD")
 
         value = putOption.value(
@@ -444,11 +444,11 @@ def test_FinFXVanillaOptionHullExample():
     spotFXRates = np.arange(100, 200, 10)/100.0
 
     for spotFXRate in spotFXRates:
-        callOption = FinFXVanillaOption(expiryDate,
-                                        strikeFXRate,
+        callOption = TuringFXVanillaOption(expiryDate,
+                                           strikeFXRate,
                                         "EURUSD",
-                                        FinOptionTypes.EUROPEAN_CALL,
-                                        1000000,
+                                           TuringOptionTypes.EUROPEAN_CALL,
+                                           1000000,
                                         "USD")
 
         value = callOption.value(valuationDate,

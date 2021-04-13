@@ -7,14 +7,14 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_global_types import FinOptionTypes
-from financepy.products.fx.turing_fx_vanilla_option import FinFXVanillaOption
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 
@@ -25,8 +25,8 @@ def test_FinFXOptionSABR():
     # There is no FXAmericanOption class. It is embedded in the FXVanillaOption
     # class. This test just compares it to the European
 
-    valueDate = FinDate(13, 2, 2018)
-    expiryDate = FinDate(13, 2, 2019)
+    valueDate = TuringDate(13, 2, 2018)
+    expiryDate = TuringDate(13, 2, 2019)
 
     # In BS the FX rate is the price in domestic of one unit of foreign
     # In case of EURUSD = 1.3 the domestic currency is USD and foreign is EUR
@@ -40,8 +40,8 @@ def test_FinFXOptionSABR():
 
     notional = 1000000.0
 
-    domDiscountCurve = FinDiscountCurveFlat(valueDate, ccy2CCRate)
-    forDiscountCurve = FinDiscountCurveFlat(valueDate, ccy1CCRate)
+    domDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy2CCRate)
+    forDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy1CCRate)
 
     model = FinModelBlackScholes(volatility)
 
@@ -55,11 +55,11 @@ def test_FinFXOptionSABR():
 
     for spotFXRate in spotFXRates:
 
-        callOption = FinFXVanillaOption(expiryDate,
-                                        strikeFXRate,
+        callOption = TuringFXVanillaOption(expiryDate,
+                                           strikeFXRate,
                                         "EURUSD",
-                                        FinOptionTypes.EUROPEAN_CALL,
-                                        notional,
+                                           TuringOptionTypes.EUROPEAN_CALL,
+                                           notional,
                                         "USD")
 
         valueEuropean = callOption.value(valueDate,
@@ -68,11 +68,11 @@ def test_FinFXOptionSABR():
                                          forDiscountCurve,
                                          model)['v']
 
-        callOption = FinFXVanillaOption(expiryDate,
-                                        strikeFXRate,
+        callOption = TuringFXVanillaOption(expiryDate,
+                                           strikeFXRate,
                                         "EURUSD",
-                                        FinOptionTypes.AMERICAN_CALL,
-                                        1000000,
+                                           TuringOptionTypes.AMERICAN_CALL,
+                                           1000000,
                                         "USD")
 
         valueAmerican = callOption.value(valueDate,
@@ -93,11 +93,11 @@ def test_FinFXOptionSABR():
 
     for spotFXRate in spotFXRates:
 
-        callOption = FinFXVanillaOption(expiryDate,
-                                        strikeFXRate,
+        callOption = TuringFXVanillaOption(expiryDate,
+                                           strikeFXRate,
                                         "EURUSD",
-                                        FinOptionTypes.EUROPEAN_PUT,
-                                        1000000,
+                                           TuringOptionTypes.EUROPEAN_PUT,
+                                           1000000,
                                         "USD")
 
         valueEuropean = callOption.value(valueDate,
@@ -106,11 +106,11 @@ def test_FinFXOptionSABR():
                                          forDiscountCurve,
                                          model)['v']
 
-        callOption = FinFXVanillaOption(expiryDate,
-                                        strikeFXRate,
+        callOption = TuringFXVanillaOption(expiryDate,
+                                           strikeFXRate,
                                         "EURUSD",
-                                        FinOptionTypes.AMERICAN_PUT,
-                                        1000000,
+                                           TuringOptionTypes.AMERICAN_PUT,
+                                           1000000,
                                         "USD")
 
         valueAmerican = callOption.value(valueDate,

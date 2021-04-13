@@ -3,7 +3,7 @@
 ##############################################################################
 
 import datetime
-from .turing_error import FinError
+from .turing_error import TuringError
 from numba import njit, boolean, int64
 import numpy as np
 
@@ -11,7 +11,7 @@ import numpy as np
 
 from enum import Enum
 
-class FinDateFormatTypes(Enum):
+class TuringDateFormatTypes(Enum):
     BLOOMBERG = 1
     US_SHORT = 2
     US_MEDIUM = 3
@@ -25,7 +25,7 @@ class FinDateFormatTypes(Enum):
     
 
 # Set the default
-gDateFormatType = FinDateFormatTypes.UK_LONG
+gDateFormatType = TuringDateFormatTypes.UK_LONG
 
 def setDateFormatType(formatType):
     ''' Function that sets the global date format type. '''
@@ -183,7 +183,7 @@ def weekDay(dayCount):
 ###############################################################################
 
 
-class FinDate():
+class TuringDate():
     ''' A date class to manage dates that is simple to use and includes a
     number of useful date functions used frequently in Finance. '''
 
@@ -205,7 +205,7 @@ class FinDate():
         user can also supply an hour, minute and second for intraday work.
 
         Example Input:
-        start_date = FinDate(1, 1, 2018)
+        start_date = TuringDate(1, 1, 2018)
         '''
 
         global gStartYear
@@ -213,13 +213,13 @@ class FinDate():
 
         # If the date has been entered as y, m, d we flip it to d, m, y
         if d >= gStartYear and d < gEndYear and y > 0 and y <= 31:
-            raise FinError("Dates must be in the format FinDate(dd, mm, yyyy")
+            raise TuringError("Dates must be in the format TuringDate(dd, mm, yyyy")
 
         if gDateCounterList is None:
             calculateList()
 
         if y < 1900:
-            raise FinError("Year cannot be before 1900")
+            raise TuringError("Year cannot be before 1900")
 
         # Resize date list dynamically if required
         if y < gStartYear:
@@ -231,32 +231,32 @@ class FinDate():
             calculateList()
 
         if y < gStartYear or y > gEndYear:
-            raise FinError(
+            raise TuringError(
                 "Date: year " + str(y) + " should be " + str(gStartYear) +
                 " to " + str(gEndYear))
 
         if d < 1:
-            raise FinError("Date: Leap year. Day not valid.")
+            raise TuringError("Date: Leap year. Day not valid.")
 
         leapYear = isLeapYear(y)
 
         if leapYear:
             if d > monthDaysLeapYear[m - 1]:
                 print(d, m, y)
-                raise FinError("Date: Leap year. Day not valid.")
+                raise TuringError("Date: Leap year. Day not valid.")
         else:
             if d > monthDaysNotLeapYear[m - 1]:
                 print(d, m, y)
-                raise FinError("Date: Not Leap year. Day not valid.")
+                raise TuringError("Date: Not Leap year. Day not valid.")
 
         if hh < 0 or hh > 23:
-            raise FinError("Hours must be in range 0-23")
+            raise TuringError("Hours must be in range 0-23")
 
         if mm < 0 or mm > 59:
-            raise FinError("Minutes must be in range 0-59")
+            raise TuringError("Minutes must be in range 0-59")
 
         if ss < 0 or ss > 59:
-            raise FinError("Seconds must be in range 0-59")
+            raise TuringError("Seconds must be in range 0-59")
 
         self._y = y
         self._m = m
@@ -281,9 +281,9 @@ class FinDate():
 
     @classmethod
     def fromString(cls, dateString, formatString):
-        '''  Create a FinDate from a date and format string.
+        '''  Create a TuringDate from a date and format string.
         Example Input:
-        start_date = FinDate('1-1-2018', '%d-%m-%Y') '''
+        start_date = TuringDate('1-1-2018', '%d-%m-%Y') '''
  
         d, m, y = parse_date(dateString, formatString)
         return cls(d, m, y)
@@ -335,7 +335,7 @@ class FinDate():
     def isWeekend(self):
         ''' returns True if the date falls on a weekend. '''
 
-        if self._weekday == FinDate.SAT or self._weekday == FinDate.SUN:
+        if self._weekday == TuringDate.SAT or self._weekday == TuringDate.SUN:
             return True
 
         return False
@@ -372,20 +372,20 @@ class FinDate():
 
         if leapYear:
             lastDay = monthDaysLeapYear[m - 1]
-            return FinDate(lastDay, m, y)
+            return TuringDate(lastDay, m, y)
         else:
             lastDay = monthDaysNotLeapYear[m - 1]
-            return FinDate(lastDay, m, y)
+            return TuringDate(lastDay, m, y)
 
         return False
 
     ###########################################################################
 
     def addHours(self, hours):
-        ''' Returns a new date that is h hours after the FinDate. '''
+        ''' Returns a new date that is h hours after the TuringDate. '''
 
         if hours < 0:
-            raise FinError("Number of hours must be positive")
+            raise TuringError("Number of hours must be positive")
         
         startHour = self._hh        
         finalHour = startHour + hours
@@ -396,14 +396,14 @@ class FinDate():
         dt1 = self.addDays(days)
 
         # On that date we then move to the correct hour
-        dt2 = FinDate(dt1._d, dt1._m, dt1._y, hour, dt1._mm, dt1._ss)                
+        dt2 = TuringDate(dt1._d, dt1._m, dt1._y, hour, dt1._mm, dt1._ss)
         return dt2
 
     ###########################################################################
 
     def addDays(self,
                 numDays: int = 1):
-        ''' Returns a new date that is numDays after the FinDate. I also make
+        ''' Returns a new date that is numDays after the TuringDate. I also make
         it possible to go backwards a number of days. '''
 
         idx = dateIndex(self._d, self._m, self._y)
@@ -418,22 +418,22 @@ class FinDate():
                 numDays -= step
 
         (d, m, y) = dateFromIndex(idx)
-        newDt = FinDate(d, m, y)
+        newDt = TuringDate(d, m, y)
         return newDt
 
     ###########################################################################
 
     def addWeekDays(self,
                     numDays: int):
-        ''' Returns a new date that is numDays working days after FinDate. Note
+        ''' Returns a new date that is numDays working days after TuringDate. Note
         that only weekends are taken into account. Other Holidays are not. If
         you want to include regional holidays then use addBusinessDays from
-        the FinCalendar class. '''
+        the TuringCalendar class. '''
 
         # TODO: REMOVE DATETIME DEPENDENCE HERE
 
         if isinstance(numDays, int) is False:
-            raise FinError("Num days must be an integer")
+            raise TuringError("Num days must be an integer")
 
         positiveNumDays = (numDays > 0)
         numDays = abs(numDays)
@@ -459,7 +459,7 @@ class FinDate():
 
     def addMonths(self,
                   mm: (list, int)):
-        ''' Returns a new date that is mm months after the FinDate. If mm is an
+        ''' Returns a new date that is mm months after the TuringDate. If mm is an
         integer or float you get back a single date. If mm is a vector you get
         back a vector of dates.'''
 
@@ -482,7 +482,7 @@ class FinDate():
 
             # If I get a float I check it has no decimal places
             if int(mmi) != mmi:
-                raise FinError("Must only pass integers or float integers.")
+                raise TuringError("Must only pass integers or float integers.")
 
             mmi = int(mmi)
 
@@ -507,7 +507,7 @@ class FinDate():
                 if d > monthDaysNotLeapYear[m - 1]:
                     d = monthDaysNotLeapYear[m-1]
 
-            newDt = FinDate(d, m, y)
+            newDt = TuringDate(d, m, y)
             dateList.append(newDt)
 
         if scalarFlag is True:
@@ -519,7 +519,7 @@ class FinDate():
 
     def addYears(self,
                  yy: (np.ndarray, float)):
-        ''' Returns a new date that is yy years after the FinDate. If yy is an
+        ''' Returns a new date that is yy years after the TuringDate. If yy is an
         integer or float you get back a single date. If yy is a list you get
         back a vector of dates.'''
 
@@ -560,7 +560,7 @@ class FinDate():
 
     def nextCDSDate(self,
                     mm: int = 0):
-        ''' Returns a CDS date that is mm months after the FinDate. If no
+        ''' Returns a CDS date that is mm months after the TuringDate. If no
         argument is supplied then the next CDS date after today is returned.'''
 
         nextDate = self.addMonths(mm)
@@ -591,7 +591,7 @@ class FinDate():
         elif m == 1 or m == 2 or m == 3:
             m_cds = 3
 
-        cdsDate = FinDate(d_cds, m_cds, y_cds)
+        cdsDate = TuringDate(d_cds, m_cds, y_cds)
         return cdsDate
 
     ##########################################################################
@@ -610,12 +610,12 @@ class FinDate():
         d_end = 21
 
         for d in range(d_start, d_end+1):
-            immDate = FinDate(d, m, y)
+            immDate = TuringDate(d, m, y)
             if immDate._weekday == self.WED:
                 return d
 
         # Should never reach this line but just to be defensive
-        raise FinError("Third Wednesday not found")
+        raise TuringError("Third Wednesday not found")
 
     ##########################################################################
 
@@ -651,14 +651,14 @@ class FinDate():
 
         d_imm = self.thirdWednesdayOfMonth(m_imm, y_imm)
 
-        immDate = FinDate(d_imm, m_imm, y_imm)
+        immDate = TuringDate(d_imm, m_imm, y_imm)
         return immDate
 
     ###########################################################################
 
     def addTenor(self,
                  tenor: (list,str)):
-        ''' Return the date following the FinDate by a period given by the
+        ''' Return the date following the TuringDate by a period given by the
         tenor which is a string consisting of a number and a letter, the
         letter being d, w, m , y for day, week, month or year. This is case
         independent. For example 10Y means 10 years while 120m also means 10
@@ -671,12 +671,12 @@ class FinDate():
             listFlag = True
             for ten in tenor:
                 if isinstance(ten, str) is False:
-                    raise FinError("Tenor must be a string e.g. '5Y'")
+                    raise TuringError("Tenor must be a string e.g. '5Y'")
         else:
             if isinstance(tenor, str) is True:
                 tenor = [tenor]
             else:
-                raise FinError("Tenor must be a string e.g. '5Y'")
+                raise TuringError("Tenor must be a string e.g. '5Y'")
 
         newDates = []
 
@@ -709,9 +709,9 @@ class FinDate():
                 periodType = YEARS
                 numPeriods = int(tenStr[0:-1])
             else:
-                raise FinError("Unknown tenor type in " + tenor)
+                raise TuringError("Unknown tenor type in " + tenor)
     
-            newDate = FinDate(self._d, self._m, self._y)
+            newDate = TuringDate(self._d, self._m, self._y)
     
             if periodType == DAYS:
                 for _ in range(0, numPeriods):
@@ -780,61 +780,61 @@ class FinDate():
         shortYearStr = str(self._y)[2:]
         longYearStr = str(self._y)
 
-        if gDateFormatType == FinDateFormatTypes.UK_LONGEST:
+        if gDateFormatType == TuringDateFormatTypes.UK_LONGEST:
 
             sep = " "
             dateStr = dayNameStr + " " + dayStr + sep + longMonthStr + sep + longYearStr
             return dateStr
 
-        elif gDateFormatType == FinDateFormatTypes.UK_LONG:
+        elif gDateFormatType == TuringDateFormatTypes.UK_LONG:
 
             sep = "-"
             dateStr = dayStr + sep + longMonthStr + sep + longYearStr
             return dateStr
 
-        elif gDateFormatType == FinDateFormatTypes.UK_MEDIUM:
+        elif gDateFormatType == TuringDateFormatTypes.UK_MEDIUM:
 
             sep = "/"
             dateStr = dayStr + sep + shortMonthStr + sep + longYearStr
             return dateStr
     
-        elif gDateFormatType == FinDateFormatTypes.UK_SHORT:
+        elif gDateFormatType == TuringDateFormatTypes.UK_SHORT:
 
             sep = "/"
             dateStr = dayStr + sep + shortMonthStr + sep + shortYearStr
             return dateStr
 
-        elif gDateFormatType == FinDateFormatTypes.US_LONGEST:
+        elif gDateFormatType == TuringDateFormatTypes.US_LONGEST:
 
             sep = " "
             dateStr = dayNameStr + " " + longMonthStr + sep + dayStr + sep + longYearStr
             return dateStr
 
-        elif gDateFormatType == FinDateFormatTypes.US_LONG:
+        elif gDateFormatType == TuringDateFormatTypes.US_LONG:
 
             sep = "-"
             dateStr = longMonthStr + sep + dayStr + sep + longYearStr
             return dateStr
 
-        elif gDateFormatType == FinDateFormatTypes.US_MEDIUM:
+        elif gDateFormatType == TuringDateFormatTypes.US_MEDIUM:
             
             sep = "-"
             dateStr = shortMonthStr + sep + dayStr + sep + longYearStr
             return dateStr
 
-        elif gDateFormatType == FinDateFormatTypes.US_SHORT:
+        elif gDateFormatType == TuringDateFormatTypes.US_SHORT:
 
             sep = "-"
             dateStr = shortMonthStr + sep + dayStr + sep + shortYearStr
             return dateStr
 
-        elif gDateFormatType == FinDateFormatTypes.BLOOMBERG:
+        elif gDateFormatType == TuringDateFormatTypes.BLOOMBERG:
 
             sep = "/"
             dateStr = shortMonthStr + sep + dayStr + sep + shortYearStr
             return dateStr
 
-        elif gDateFormatType == FinDateFormatTypes.DATETIME:
+        elif gDateFormatType == TuringDateFormatTypes.DATETIME:
 
             sep = "/"
 
@@ -860,7 +860,7 @@ class FinDate():
 
         else:
             
-            raise FinError("Unknown date format")
+            raise TuringError("Unknown date format")
 
     ###########################################################################
     # REMOVE THIS
@@ -876,8 +876,8 @@ class FinDate():
 
 
 def dailyWorkingDaySchedule(self,
-                            startDate: FinDate,
-                            endDate: FinDate):
+                            startDate: TuringDate,
+                            endDate: TuringDate):
     ''' Returns a list of working dates between startDate and endDate.
     This function should be replaced by dateRange once addTenor allows
     for working days. '''
@@ -894,8 +894,8 @@ def dailyWorkingDaySchedule(self,
 ###############################################################################
 
 
-def datediff(d1: FinDate,
-             d2: FinDate):
+def datediff(d1: TuringDate,
+             d2: TuringDate):
     ''' Calculate the number of days between two Findates. '''
     dd = (d2._excelDate - d1._excelDate)
     return int(dd)
@@ -903,11 +903,11 @@ def datediff(d1: FinDate,
 ###############################################################################
 
 
-def fromDatetime(dt: FinDate):
-    ''' Construct a FinDate from a datetime as this is often needed if we
+def fromDatetime(dt: TuringDate):
+    ''' Construct a TuringDate from a datetime as this is often needed if we
     receive inputs from other Python objects such as Pandas dataframes. '''
 
-    finDate = FinDate(dt.day, dt.month, dt.year)
+    finDate = TuringDate(dt.day, dt.month, dt.year)
     return finDate
 
 ###############################################################################
@@ -916,7 +916,7 @@ def daysInMonth(m, y):
     ''' Get the number of days in the month (1-12) of a given year y. '''
 
     if m < 1 or m > 12:
-        raise FinError("Month must be 1-12")
+        raise TuringError("Month must be 1-12")
     
     if isLeapYear(y) is False:
         return monthDaysNotLeapYear[m-1]
@@ -925,8 +925,8 @@ def daysInMonth(m, y):
 
 ###############################################################################
 
-def dateRange(startDate: FinDate,
-              endDate: FinDate,
+def dateRange(startDate: TuringDate,
+              endDate: TuringDate,
               tenor: str = "1D"):
     ''' Returns a list of dates between startDate (inclusive)
     and endDate (inclusive). The tenor represents the distance between two

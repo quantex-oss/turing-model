@@ -9,21 +9,21 @@ from numba import njit
 import numpy as np
 from typing import List
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_error import FinError
-from ...finutils.turing_frequency import FinFrequency, FinFrequencyTypes
-from ...finutils.turing_math import testMonotonicity
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.finutils.turing_math import testMonotonicity
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
 
-from ...finutils.turing_schedule import FinSchedule
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_calendar import FinDateGenRuleTypes
+from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
 
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
 
 ###############################################################################
 
@@ -55,48 +55,48 @@ def _valueConvertible(tmat,
 
     if len(couponTimes) > 0:
         if couponTimes[-1] > tmat:
-            raise FinError("Coupon after maturity")
+            raise TuringError("Coupon after maturity")
 
     if len(callTimes) > 0:
         if callTimes[-1] > tmat:
-            raise FinError("Call times after maturity")
+            raise TuringError("Call times after maturity")
 
     if len(putTimes) > 0:
         if putTimes[-1] > tmat:
-            raise FinError("Put times after maturity")
+            raise TuringError("Put times after maturity")
 
     if len(dfTimes) > 0:
         if dfTimes[-1] > tmat:
-            raise FinError("Discount times after maturity")
+            raise TuringError("Discount times after maturity")
 
     if len(dividendTimes) > 0:
         if dividendTimes[-1] > tmat:
-            raise FinError("Dividend times after maturity")
+            raise TuringError("Dividend times after maturity")
 
     if creditSpread < 0.0:
-        raise FinError("Credit spread negative.")
+        raise TuringError("Credit spread negative.")
 
     if recRate < 0.0 or recRate > 1.0:
-        raise FinError("Recovery rate should be between 0 and 1.")
+        raise TuringError("Recovery rate should be between 0 and 1.")
 
     if stockVolatility < 0.0:
-        raise FinError("Stock volatility cannot be negative.")
+        raise TuringError("Stock volatility cannot be negative.")
 
     if numStepsPerYear < 1:
-        raise FinError("Num Steps per year must more than 1.")
+        raise TuringError("Num Steps per year must more than 1.")
 
     if len(dividendTimes) > 0.0:
         if dividendTimes[-1] > tmat:
-            raise FinError("Last dividend is after bond maturity.")
+            raise TuringError("Last dividend is after bond maturity.")
 
     if recRate > 0.999 or recRate < 0.0:
-        raise FinError("Recovery rate must be between 0 and 0.999.")
+        raise TuringError("Recovery rate must be between 0 and 0.999.")
 
     numTimes = int(numStepsPerYear * tmat) + 1  # add one for today time 0
     numTimes = numStepsPerYear  # XXXXXXXX!!!!!!!!!!!!!!!!!!!!!
 
     if numTimes < 5:
-        raise FinError("Numsteps must be greater than 5.")
+        raise TuringError("Numsteps must be greater than 5.")
 
     numLevels = numTimes
 
@@ -154,7 +154,7 @@ def _valueConvertible(tmat,
     treeStockValue = np.zeros(shape=(numTimes, numLevels))
     e = stockVolatility**2 - h
     if e < 0.0:
-        raise FinError("Volatility squared minus the hazard rate is negative.")
+        raise TuringError("Volatility squared minus the hazard rate is negative.")
 
     u = exp(sqrt(e*dt))
     d = 1.0 / u
@@ -199,7 +199,7 @@ def _valueConvertible(tmat,
 #        n_min = r*r / stockVolatility / stockVolatility
 
     if np.any(treeProbsUp > 1.0):
-        raise FinError("pUp > 1.0. Increase time steps.")
+        raise TuringError("pUp > 1.0. Increase time steps.")
 
     ###########################################################################
     # work backwards by first setting values at bond maturity date
@@ -250,7 +250,7 @@ def _valueConvertible(tmat,
 ###############################################################################
 
 
-class FinBondConvertible(object):
+class TuringBondConvertible(object):
     ''' Class for convertible bonds. These bonds embed rights to call and put
     the bond in return for equity. Until then they are bullet bonds which
     means they have regular coupon payments of a known size that are paid on
@@ -259,18 +259,18 @@ class FinBondConvertible(object):
     the credit quality of the issuer and the level of interest rates.'''
 
     def __init__(self,
-                 maturityDate: FinDate,  # bond maturity date
+                 maturityDate: TuringDate,  # bond maturity date
                  coupon: float,  # annual coupon
-                 freqType: FinFrequencyTypes,  # coupon frequency type
-                 startConvertDate: FinDate,  # conversion starts on this date
+                 freqType: TuringFrequencyTypes,  # coupon frequency type
+                 startConvertDate: TuringDate,  # conversion starts on this date
                  conversionRatio: float,  # num shares per face of notional
-                 callDates: List[FinDate],  # list of call dates
+                 callDates: List[TuringDate],  # list of call dates
                  callPrices: List[float],  # list of call prices
-                 putDates: List[FinDate],  # list of put dates
+                 putDates: List[TuringDate],  # list of put dates
                  putPrices: List[float],  # list of put prices
-                 accrualType: FinDayCountTypes,  # day count type for accrued
+                 accrualType: TuringDayCountTypes,  # day count type for accrued
                  faceAmount: float = 100.0):  # face amount
-        ''' Create FinBondConvertible object by providing the bond Maturity
+        ''' Create TuringBondConvertible object by providing the bond Maturity
         date, coupon, frequency type, accrual convention type and then all of
         the details regarding the conversion option including the list of the
         call and put dates and the corresponding list of call and put prices. 
@@ -279,43 +279,43 @@ class FinBondConvertible(object):
         checkArgumentTypes(self.__init__, locals())
 
         if startConvertDate > maturityDate:
-            raise FinError("Start convert date is after bond maturity.")
+            raise TuringError("Start convert date is after bond maturity.")
 
         self._maturityDate = maturityDate
         self._coupon = coupon
         self._accrualType = accrualType
-        self._frequency = FinFrequency(freqType)
+        self._frequency = TuringFrequency(freqType)
         self._freqType = freqType
 
         self._callDates = callDates
         self._callPrices = callPrices
 
         if len(self._callDates) != len(self._callPrices):
-            raise FinError("Call dates and prices not same length.")
+            raise TuringError("Call dates and prices not same length.")
 
         self._putDates = putDates
         self._putPrices = putPrices
 
         if len(self._putDates) != len(self._putPrices):
-            raise FinError("Put dates and prices not same length.")
+            raise TuringError("Put dates and prices not same length.")
 
         if len(putDates) > 0:
             if putDates[-1] > maturityDate:
-                raise FinError("Last put is after bond maturity.")
+                raise TuringError("Last put is after bond maturity.")
 
         if len(callDates) > 0:
             if callDates[-1] > maturityDate:
-                raise FinError("Last call is after bond maturity.")
+                raise TuringError("Last call is after bond maturity.")
 
         self._startConvertDate = startConvertDate
 
         if conversionRatio < 0.0:
-            raise FinError("Conversion ratio is negative.")
+            raise TuringError("Conversion ratio is negative.")
 
         self._conversionRatio = conversionRatio
         self._faceAmount = faceAmount
 
-        self._settlementDate = FinDate(1, 1, 1900)
+        self._settlementDate = TuringDate(1, 1, 1900)
         ''' I do not determine cashflow dates as I do not want to require
         users to supply the issue date and without that I do not know how
         far to go back in the cashflow date schedule. '''
@@ -327,7 +327,7 @@ class FinBondConvertible(object):
 ###############################################################################
 
     def _calculateFlowDates(self,
-                            settlementDate: FinDate):
+                            settlementDate: TuringDate):
         ''' Determine the convertible bond cashflow payment dates. '''
 
         # No need to generate flows if settlement date has not changed
@@ -335,16 +335,16 @@ class FinBondConvertible(object):
             return
 
         self._settlementDate = settlementDate
-        calendarType = FinCalendarTypes.NONE
-        busDayRuleType = FinBusDayAdjustTypes.NONE
-        dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+        calendarType = TuringCalendarTypes.NONE
+        busDayRuleType = TuringBusDayAdjustTypes.NONE
+        dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
 
-        self._flowDates = FinSchedule(settlementDate,
-                                      self._maturityDate,
-                                      self._freqType,
-                                      calendarType,
-                                      busDayRuleType,
-                                      dateGenRuleType)._generate()
+        self._flowDates = TuringSchedule(settlementDate,
+                                         self._maturityDate,
+                                         self._freqType,
+                                         calendarType,
+                                         busDayRuleType,
+                                         dateGenRuleType)._generate()
 
         self._pcd = self._flowDates[0]
         self._ncd = self._flowDates[1]
@@ -353,12 +353,12 @@ class FinBondConvertible(object):
 ###############################################################################
 
     def value(self,
-              settlementDate: FinDate,
+              settlementDate: TuringDate,
               stockPrice: float,
               stockVolatility: float,
-              dividendDates: List[FinDate],
+              dividendDates: List[TuringDate],
               dividendYields: List[float],
-              discountCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
               creditSpread: float,
               recoveryRate: float = 0.40,
               numStepsPerYear: int = 100):
@@ -392,7 +392,7 @@ class FinBondConvertible(object):
         self._calculateFlowDates(settlementDate)
         tmat = (self._maturityDate - settlementDate) / gDaysInYear
         if tmat <= 0.0:
-            raise FinError("Maturity must not be on or before the value date.")
+            raise TuringError("Maturity must not be on or before the value date.")
 
         # We include time zero in the coupon times and flows
         couponTimes = [0.0]
@@ -407,10 +407,10 @@ class FinBondConvertible(object):
         couponFlows = np.array(couponFlows)
 
         if np.any(couponTimes < 0.0):
-            raise FinError("No coupon times can be before the value date.")
+            raise TuringError("No coupon times can be before the value date.")
 
         if np.any(couponTimes > tmat):
-            raise FinError("No coupon times can be after the maturity date.")
+            raise TuringError("No coupon times can be after the maturity date.")
 
         callTimes = []
         for dt in self._callDates:
@@ -420,10 +420,10 @@ class FinBondConvertible(object):
         callPrices = np.array(self._callPrices)
 
         if np.any(callTimes < 0.0):
-            raise FinError("No call times can be before the value date.")
+            raise TuringError("No call times can be before the value date.")
 
         if np.any(callTimes > tmat):
-            raise FinError("No call times can be after the maturity date.")
+            raise TuringError("No call times can be after the maturity date.")
 
         putTimes = []
         for dt in self._putDates:
@@ -433,13 +433,13 @@ class FinBondConvertible(object):
         putPrices = np.array(self._putPrices)
 
         if np.any(putTimes > tmat):
-            raise FinError("No put times can be after the maturity date.")
+            raise TuringError("No put times can be after the maturity date.")
 
         if np.any(putTimes <= 0.0):
-            raise FinError("No put times can be on or before value date.")
+            raise TuringError("No put times can be on or before value date.")
 
         if len(dividendYields) != len(dividendDates):
-            raise FinError("Number of dividend yields and dates not same.")
+            raise TuringError("Number of dividend yields and dates not same.")
 
         dividendTimes = []
         for dt in dividendDates:
@@ -461,19 +461,19 @@ class FinBondConvertible(object):
         discountFactors = np.array(discountFactors)
 
         if testMonotonicity(couponTimes) is False:
-            raise FinError("Coupon times not monotonic")
+            raise TuringError("Coupon times not monotonic")
 
         if testMonotonicity(callTimes) is False:
-            raise FinError("Coupon times not monotonic")
+            raise TuringError("Coupon times not monotonic")
 
         if testMonotonicity(putTimes) is False:
-            raise FinError("Coupon times not monotonic")
+            raise TuringError("Coupon times not monotonic")
 
         if testMonotonicity(discountTimes) is False:
-            raise FinError("Coupon times not monotonic")
+            raise TuringError("Coupon times not monotonic")
 
         if testMonotonicity(dividendTimes) is False:
-            raise FinError("Coupon times not monotonic")
+            raise TuringError("Coupon times not monotonic")
 
         v1 = _valueConvertible(tmat,
                                self._faceAmount,
@@ -532,20 +532,20 @@ class FinBondConvertible(object):
 
 ###############################################################################
 
-    def accruedDays(self, 
-                    settlementDate: FinDate):
+    def accruedDays(self,
+                    settlementDate: TuringDate):
         ''' Calculate number days from previous coupon date to settlement.'''
         self._calculateFlowDates(settlementDate)
 
         if len(self._flowDates) <= 2:
-            raise FinError("Accrued interest - not enough flow dates.")
+            raise TuringError("Accrued interest - not enough flow dates.")
 
         return settlementDate - self._pcd
 
 ###############################################################################
 
     def calcAccruedInterest(self,
-                            settlementDate: FinDate):
+                            settlementDate: TuringDate):
         ''' Calculate the amount of coupon that has accrued between the
         previous coupon date and the settlement date. '''
 
@@ -553,9 +553,9 @@ class FinBondConvertible(object):
             self._calculateFlowDates(settlementDate)
 
         if len(self._flowDates) == 0:
-            raise FinError("Accrued interest - not enough flow dates.")
+            raise TuringError("Accrued interest - not enough flow dates.")
 
-        dc = FinDayCount(self._accrualType)
+        dc = TuringDayCount(self._accrualType)
 
         (accFactor, num, _) = dc.yearFrac(self._pcd,
                                           settlementDate,

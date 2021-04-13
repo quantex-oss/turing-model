@@ -6,10 +6,10 @@ import sys
 import numpy as np
 from numba import njit, float64
 from typing import Union
-from .turing_date import FinDate
+from .turing_date import TuringDate
 from .turing_global_variables import gDaysInYear, gSmall
-from .turing_error import FinError
-from .turing_day_count import FinDayCountTypes, FinDayCount
+from .turing_error import TuringError
+from .turing_day_count import TuringDayCountTypes, TuringDayCount
 
 ###############################################################################
 
@@ -31,7 +31,7 @@ def gridIndex(t, gridTimes):
             print(t, gridTimes, i) 
             return i
 
-    raise FinError("Grid index not found")
+    raise TuringError("Grid index not found")
 
 ###############################################################################
 
@@ -72,23 +72,23 @@ def pv01Times(t: float,
 ###############################################################################
 
 
-def timesFromDates(dt: FinDate,
-                   valuationDate: FinDate,
-                   dayCountType: FinDayCountTypes = None):
+def timesFromDates(dt: TuringDate,
+                   valuationDate: TuringDate,
+                   dayCountType: TuringDayCountTypes = None):
     ''' If a single date is passed in then return the year from valuation date
     but if a whole vector of dates is passed in then convert to a vector of
     times from the valuation date. The output is always a numpy vector of times
     which has only one element if the input is only one date. '''
 
-    if isinstance(valuationDate, FinDate) is False:
-        raise FinError("Valuation date is not a FinDate")
+    if isinstance(valuationDate, TuringDate) is False:
+        raise TuringError("Valuation date is not a TuringDate")
 
     if dayCountType is None:
         dcCounter = None
     else:
-        dcCounter = FinDayCount(dayCountType)
+        dcCounter = TuringDayCount(dayCountType)
 
-    if isinstance(dt, FinDate):
+    if isinstance(dt, TuringDate):
         numDates = 1
         times = [None]
         if dcCounter is None:
@@ -98,7 +98,7 @@ def timesFromDates(dt: FinDate,
 
         return times[0]
 
-    elif isinstance(dt, list) and isinstance(dt[0], FinDate):
+    elif isinstance(dt, list) and isinstance(dt[0], TuringDate):
         numDates = len(dt)
         times = []
         for i in range(0, numDates):
@@ -111,9 +111,9 @@ def timesFromDates(dt: FinDate,
         return np.array(times)
 
     elif isinstance(dt, np.ndarray):
-        raise FinError("You passed an ndarray instead of dates.")
+        raise TuringError("You passed an ndarray instead of dates.")
     else:
-        raise FinError("Discount factor must take dates.")
+        raise TuringError("Discount factor must take dates.")
 
     return None
 
@@ -129,7 +129,7 @@ def checkVectorDifferences(x: np.ndarray,
     n1 = len(x)
     n2 = len(y)
     if n1 != n2:
-        raise FinError("Vectors x and y do not have same size.")
+        raise TuringError("Vectors x and y do not have same size.")
 
     for i in range(0, n1):
         diff = x[i] - y[i]
@@ -139,11 +139,11 @@ def checkVectorDifferences(x: np.ndarray,
 ###############################################################################
 
 
-def checkDate(d: FinDate):
-    ''' Check that input d is a FinDate. '''
+def checkDate(d: TuringDate):
+    ''' Check that input d is a TuringDate. '''
 
-    if isinstance(d, FinDate) is False:
-        raise FinError("Should be a date dummy!")
+    if isinstance(d, TuringDate) is False:
+        raise TuringError("Should be a date dummy!")
 
 ###############################################################################
 
@@ -199,10 +199,10 @@ def printTree(array: np.ndarray,
 ###############################################################################
 
 
-def inputTime(dt: FinDate,
+def inputTime(dt: TuringDate,
               curve):
     ''' Validates a time input in relation to a curve. If it is a float then
-    it returns a float as long as it is positive. If it is a FinDate then it
+    it returns a float as long as it is positive. If it is a TuringDate then it
     converts it to a float. If it is a Numpy array then it returns the array
     as long as it is all positive. '''
 
@@ -210,7 +210,7 @@ def inputTime(dt: FinDate,
 
     def check(t):
         if t < 0.0:
-            raise FinError("Date " + str(dt) +
+            raise TuringError("Date " + str(dt) +
                            " is before curve date " + str(curve._curveDate))
         elif t < small:
             t = small
@@ -219,17 +219,17 @@ def inputTime(dt: FinDate,
     if isinstance(dt, float):
         t = dt
         return check(t)
-    elif isinstance(dt, FinDate):
+    elif isinstance(dt, TuringDate):
         t = (dt - curve._valuationDate) / gDaysInYear
         return check(t)
     elif isinstance(dt, np.ndarray):
         t = dt
         if np.any(t) < 0:
-            raise FinError("Date is before curve value date.")
+            raise TuringError("Date is before curve value date.")
         t = np.maximum(small, t)
         return t
     else:
-        raise FinError("Unknown type.")
+        raise TuringError("Unknown type.")
 
 ###############################################################################
 
@@ -240,7 +240,7 @@ def listdiff(a: np.ndarray,
     ''' Calculate a vector of differences between two equal sized vectors. '''
 
     if len(a) != len(b):
-        raise FinError("Cannot diff lists with different sizes")
+        raise TuringError("Cannot diff lists with different sizes")
 
     diff = []
     for x, y in zip(a, b):
@@ -417,7 +417,7 @@ def accruedTree(gridTimes: np.ndarray,
     numGridTimes = len(gridTimes)
 
     if len(gridFlows) != numGridTimes:
-        raise FinError("Grid flows not same size as grid times.")
+        raise TuringError("Grid flows not same size as grid times.")
 
     accrued = np.zeros(numGridTimes)
 
@@ -471,6 +471,6 @@ def checkArgumentTypes(func, values):
 #            s += f"Mismatched Types: expected a "
 #            s += f"{valueName} of type '{usableType.__name__}', however"
 #            s += f" a value of type '{type(value).__name__}' was given."
-            raise FinError("Argument Type Error")
+            raise TuringError("Argument Type Error")
 
 ###############################################################################

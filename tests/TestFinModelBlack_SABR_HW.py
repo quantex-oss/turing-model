@@ -9,10 +9,10 @@ import sys
 sys.path.append("..")
 
 from financepy.models.turing_model_sabr import FinModelSABR
-from financepy.models.turing_model_sabr_shifted import FinModelSABRShifted
+from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 PLOT_GRAPHS = False
 
@@ -58,13 +58,13 @@ def test_FinShiftedSABRSimple():
     beta = 0.5
     rho = 0.2097
     nu = 0.75091
-    model1 = FinModelSABRShifted(alpha, beta, rho, nu, 0.0)
+    model1 = TuringModelSABRShifted(alpha, beta, rho, nu, 0.0)
 
     alpha = 0.058484
     beta = 0.5
     rho = 0.20568
     nu = 0.79647
-    model2 = FinModelSABRShifted(alpha, beta, rho, nu, 0.0)
+    model2 = TuringModelSABRShifted(alpha, beta, rho, nu, 0.0)
 
     f = 0.0350
     T = 1.0
@@ -91,7 +91,7 @@ def test_FinShiftedSABR():
     nu = 0.49861
     shift = 0.008
 
-    model = FinModelSABRShifted(alpha, beta, rho, nu, shift)
+    model = TuringModelSABRShifted(alpha, beta, rho, nu, shift)
 
     f = 0.0006384
     T = 1.0

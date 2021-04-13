@@ -5,14 +5,14 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_one_touch_option import FinEquityOneTouchOption
-from financepy.products.equity.turing_equity_one_touch_option import FinTouchOptionPayoffTypes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.products.equity.turing_equity_one_touch_option import TuringEquityOneTouchOption
+from financepy.products.equity.turing_equity_one_touch_option import TuringTouchOptionPayoffTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -21,8 +21,8 @@ def test_FinFXOneTouchOption():
     # Examples Haug Page 180 Table 4-22
     # Agreement not exact at t is not exactly 0.50
 
-    valueDate = FinDate(1, 1, 2016)
-    expiryDate = FinDate(2, 7, 2016)
+    valueDate = TuringDate(1, 1, 2016)
+    expiryDate = TuringDate(2, 7, 2016)
     volatility = 0.20
     barrierLevel = 1.0  # H
     model = FinModelBlackScholes(volatility)
@@ -33,26 +33,26 @@ def test_FinFXOneTouchOption():
     numPaths = 20000
     numStepsPerYear = 252
 
-    domCurve = FinDiscountCurveFlat(valueDate, domesticRate)
-    forCurve = FinDiscountCurveFlat(valueDate, foreignRate)
+    domCurve = TuringDiscountCurveFlat(valueDate, domesticRate)
+    forCurve = TuringDiscountCurveFlat(valueDate, foreignRate)
 
     spotFXRate = 1.050
     paymentSize = 1.5
 
     testCases.header("================================= CASH ONLY")
 
-    downTypes = [FinTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_HIT,
-                 FinTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_EXPIRY,
-                 FinTouchOptionPayoffTypes.DOWN_AND_OUT_CASH_OR_NOTHING]
+    downTypes = [TuringTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_HIT,
+                 TuringTouchOptionPayoffTypes.DOWN_AND_IN_CASH_AT_EXPIRY,
+                 TuringTouchOptionPayoffTypes.DOWN_AND_OUT_CASH_OR_NOTHING]
 
     testCases.header("TYPE", "VALUE", "VALUE_MC")
 
     for downType in downTypes:
 
-        option = FinEquityOneTouchOption(expiryDate,
-                                         downType,
-                                         barrierLevel,
-                                         paymentSize)
+        option = TuringEquityOneTouchOption(expiryDate,
+                                            downType,
+                                            barrierLevel,
+                                            paymentSize)
 
         v = option.value(valueDate,
                          spotFXRate,
@@ -75,18 +75,18 @@ def test_FinFXOneTouchOption():
     spotFXRate = 0.950
     paymentSize = 1.5
 
-    upTypes = [FinTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_HIT,
-               FinTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_EXPIRY,
-               FinTouchOptionPayoffTypes.UP_AND_OUT_CASH_OR_NOTHING]
+    upTypes = [TuringTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_HIT,
+               TuringTouchOptionPayoffTypes.UP_AND_IN_CASH_AT_EXPIRY,
+               TuringTouchOptionPayoffTypes.UP_AND_OUT_CASH_OR_NOTHING]
 
     testCases.header("TYPE", "VALUE", "VALUE_MC")
 
     for upType in upTypes:
 
-        option = FinEquityOneTouchOption(expiryDate,
-                                         upType,
-                                         barrierLevel,
-                                         paymentSize)
+        option = TuringEquityOneTouchOption(expiryDate,
+                                            upType,
+                                            barrierLevel,
+                                            paymentSize)
 
         v = option.value(valueDate,
                          spotFXRate,
@@ -112,16 +112,16 @@ def test_FinFXOneTouchOption():
 
     testCases.banner("================= ASSET ONLY")
 
-    downTypes = [FinTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_HIT,
-                 FinTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_EXPIRY,
-                 FinTouchOptionPayoffTypes.DOWN_AND_OUT_ASSET_OR_NOTHING]
+    downTypes = [TuringTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_HIT,
+                 TuringTouchOptionPayoffTypes.DOWN_AND_IN_ASSET_AT_EXPIRY,
+                 TuringTouchOptionPayoffTypes.DOWN_AND_OUT_ASSET_OR_NOTHING]
 
     testCases.header("TYPE", "VALUE", "VALUE_MC")
     for downType in downTypes:
 
-        option = FinEquityOneTouchOption(expiryDate,
-                                         downType,
-                                         barrierLevel)
+        option = TuringEquityOneTouchOption(expiryDate,
+                                            downType,
+                                            barrierLevel)
 
         v = option.value(valueDate,
                          spotFXRate,
@@ -143,15 +143,15 @@ def test_FinFXOneTouchOption():
 
     spotFXRate = 0.950
 
-    upTypes = [FinTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_HIT,
-               FinTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_EXPIRY,
-               FinTouchOptionPayoffTypes.UP_AND_OUT_ASSET_OR_NOTHING]
+    upTypes = [TuringTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_HIT,
+               TuringTouchOptionPayoffTypes.UP_AND_IN_ASSET_AT_EXPIRY,
+               TuringTouchOptionPayoffTypes.UP_AND_OUT_ASSET_OR_NOTHING]
 
     for upType in upTypes:
 
-        option = FinEquityOneTouchOption(expiryDate,
-                                         upType,
-                                         barrierLevel)
+        option = TuringEquityOneTouchOption(expiryDate,
+                                            upType,
+                                            barrierLevel)
 
         v = option.value(valueDate,
                          spotFXRate,

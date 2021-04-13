@@ -5,22 +5,22 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_date import setDateFormatType, FinDateFormatTypes
-from financepy.finutils.turing_calendar import FinCalendar, FinCalendarTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_date import setDateFormatType, TuringDateFormatTypes
+from financepy.finutils.turing_calendar import TuringCalendar, TuringCalendarTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 
 def test_FinCalendar():
 
-    setDateFormatType(FinDateFormatTypes.US_LONGEST)
-    endDate = FinDate(31, 12, 2030)
+    setDateFormatType(TuringDateFormatTypes.US_LONGEST)
+    endDate = TuringDate(31, 12, 2030)
 
-    for calendarType in FinCalendarTypes:
+    for calendarType in TuringCalendarTypes:
 
         testCases.banner("================================")
         testCases.banner("================================")
@@ -28,8 +28,8 @@ def test_FinCalendar():
         testCases.header("CALENDAR", "HOLIDAY")
         testCases.print("STARTING", calendarType)
 
-        cal = FinCalendar(calendarType)
-        nextDate = FinDate(31, 12, 2020)
+        cal = TuringCalendar(calendarType)
+        nextDate = TuringDate(31, 12, 2020)
 
         while nextDate < endDate:
             nextDate = nextDate.addDays(1)
@@ -43,7 +43,7 @@ def test_FinCalendar():
                 testCases.print(cal, nextDate)
 #                print(cal, nextDate)
 
-    setDateFormatType(FinDateFormatTypes.US_LONG)
+    setDateFormatType(TuringDateFormatTypes.US_LONG)
 
 ###############################################################################
 

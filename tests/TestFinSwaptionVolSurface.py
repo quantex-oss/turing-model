@@ -7,13 +7,13 @@ sys.path.append("..")
 
 import numpy as np
 
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.market.volatility.turing_swaption_vol_surface import FinSwaptionVolSurface
-from financepy.finutils.turing_date import FinDate
-from financepy.models.turing_model_volatility_fns import FinVolFunctionTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 import matplotlib.pyplot as plt
 
@@ -33,13 +33,13 @@ def test_FinSwaptionVolSurface1(verboseCalibration):
 
         # https://fr.mathworks.com/help/fininst/pricing-a-swaption-using-the-sabr-model.html
 
-        valueDate = FinDate(12, 6, 2013)
+        valueDate = TuringDate(12, 6, 2013)
 
         # These are 3M, 1Y, 2Y, 3Y, 4Y, 5Y, 7Y, 10Y
-        exerciseDates = [FinDate(12, 9, 2013), FinDate(12, 6, 2014),
-                       FinDate(12, 6, 2015), FinDate(12, 6, 2016), 
-                       FinDate(12, 6, 2017), FinDate(12, 6, 2018), 
-                       FinDate(12, 6, 2020), FinDate(12, 6, 2023)]
+        exerciseDates = [TuringDate(12, 9, 2013), TuringDate(12, 6, 2014),
+                         TuringDate(12, 6, 2015), TuringDate(12, 6, 2016),
+                         TuringDate(12, 6, 2017), TuringDate(12, 6, 2018),
+                         TuringDate(12, 6, 2020), TuringDate(12, 6, 2023)]
 
         # First dimension is the strike, then the expiry date
         marketVolatilities = [[57.6, 53.7, 49.4, 45.6, 44.1, 41.1, 35.2, 32.0],
@@ -67,12 +67,12 @@ def test_FinSwaptionVolSurface1(verboseCalibration):
         atmVols = marketVolatilities[3]
 
         rfrRate = 0.020  # USD
-        discountCurve = FinDiscountCurveFlat(valueDate, rfrRate)
+        discountCurve = TuringDiscountCurveFlat(valueDate, rfrRate)
 
         divRate = 0.010  # USD
-        dividendCurve = FinDiscountCurveFlat(valueDate, divRate)
+        dividendCurve = TuringDiscountCurveFlat(valueDate, divRate)
 
-        volFunctionType = FinVolFunctionTypes.SABR_BETA_HALF
+        volFunctionType = TuringVolFunctionTypes.SABR_BETA_HALF
 
         swaptionSurface = FinSwaptionVolSurface(valueDate,
                                                 exerciseDates,

@@ -1,1 +1,1 @@
-from FinTestCases import FinTestCases, FinTestCaseMode
+from TuringTestCases import TuringTestCases, TuringTestCaseMode

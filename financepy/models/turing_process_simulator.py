@@ -8,7 +8,7 @@ from enum import Enum
 from numba import njit, float64, int64
 import numpy as np
 
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 from ..finutils.turing_math import norminvcdf
 from ..finutils.turing_helper_functions import labelToString
 
@@ -83,7 +83,7 @@ class FinProcessSimulator():
             return paths
 
         else:
-            raise FinError("Unknown process" + str(processType))
+            raise TuringError("Unknown process" + str(processType))
 
 ###############################################################################
 
@@ -209,7 +209,7 @@ def getHestonPaths(numPaths,
                 sPaths[iPath, iStep] = exp(x)
                 vn = vnp
     else:
-        raise FinError("Unknown FinHestonNumericalSchme")
+        raise TuringError("Unknown FinHestonNumericalSchme")
 
     return sPaths
 
@@ -255,7 +255,7 @@ def getGBMPaths(numPaths, numAnnSteps, t, mu, stockPrice, sigma, scheme, seed):
 
     else:
 
-        raise FinError("Unknown FinGBMNumericalScheme")
+        raise TuringError("Unknown FinGBMNumericalScheme")
 
 #    m = np.mean(Sall[:, -1])
 #    v = np.var(Sall[:, -1]/Sall[:, 0])

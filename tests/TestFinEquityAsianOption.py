@@ -7,15 +7,15 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_global_types import FinOptionTypes
+from financepy.finutils.turing_global_types import TuringOptionTypes
 from financepy.products.equity.turing_equity_asian_option import FinEquityAsianOption
 from financepy.products.equity.turing_equity_asian_option import FinAsianOptionValuationMethods
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -28,9 +28,9 @@ testMCTimings = True
 
 def testConvergence():
 
-    valueDate = FinDate(1, 1, 2014)
-    startAveragingDate = FinDate(1, 6, 2014)
-    expiryDate = FinDate(1, 1, 2015)
+    valueDate = TuringDate(1, 1, 2014)
+    startAveragingDate = TuringDate(1, 6, 2014)
+    expiryDate = TuringDate(1, 1, 2015)
     stockPrice = 100.0
     volatility = 0.20
     interestRate = 0.30
@@ -41,13 +41,13 @@ def testConvergence():
     seed = 1976
 
     model = FinModelBlackScholes(volatility)
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
     asianOption = FinEquityAsianOption(startAveragingDate,
                                        expiryDate,
                                        K,
-                                       FinOptionTypes.EUROPEAN_CALL,
+                                       TuringOptionTypes.EUROPEAN_CALL,
                                        numObservations)
 
     testCases.header(
@@ -143,8 +143,8 @@ def testConvergence():
 
 def testTimeEvolution():
 
-    startAveragingDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 1, 2016)
+    startAveragingDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 1, 2016)
     stockPrice = 100.0
     volatility = 0.20
     interestRate = 0.30
@@ -159,7 +159,7 @@ def testTimeEvolution():
     asianOption = FinEquityAsianOption(startAveragingDate,
                                        expiryDate,
                                        K,
-                                       FinOptionTypes.EUROPEAN_CALL,
+                                       TuringOptionTypes.EUROPEAN_CALL,
                                        numObservations)
 
     testCases.header(
@@ -177,13 +177,13 @@ def testTimeEvolution():
     valuesMC_CV = []
 
     valueDates = []
-    valueDates.append(FinDate(1, 4, 2014))
-    valueDates.append(FinDate(1, 6, 2014))
-    valueDates.append(FinDate(1, 8, 2014))
-    valueDates.append(FinDate(1, 2, 2015))
-    valueDates.append(FinDate(1, 4, 2015))
-    valueDates.append(FinDate(1, 6, 2015))
-    valueDates.append(FinDate(1, 8, 2015))
+    valueDates.append(TuringDate(1, 4, 2014))
+    valueDates.append(TuringDate(1, 6, 2014))
+    valueDates.append(TuringDate(1, 8, 2014))
+    valueDates.append(TuringDate(1, 2, 2015))
+    valueDates.append(TuringDate(1, 4, 2015))
+    valueDates.append(TuringDate(1, 6, 2015))
+    valueDates.append(TuringDate(1, 8, 2015))
 
     numPaths = 10000
 
@@ -191,8 +191,8 @@ def testTimeEvolution():
 
         accruedAverage = stockPrice * 0.9
 
-        discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-        dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+        discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+        dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
         valueMC_fast = asianOption._valueMC_fast(valueDate,
                                                  stockPrice,
@@ -268,9 +268,9 @@ def testTimeEvolution():
 
 def testMCTimings():
 
-    valueDate = FinDate(1, 1, 2014)
-    startAveragingDate = FinDate(1, 6, 2014)
-    expiryDate = FinDate(1, 1, 2015)
+    valueDate = TuringDate(1, 1, 2014)
+    startAveragingDate = TuringDate(1, 6, 2014)
+    expiryDate = TuringDate(1, 1, 2015)
     stockPrice = 100.0
     volatility = 0.20
     interestRate = 0.30
@@ -281,13 +281,13 @@ def testMCTimings():
     seed = 1976
 
     model = FinModelBlackScholes(volatility)
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
     asianOption = FinEquityAsianOption(startAveragingDate,
                                        expiryDate,
                                        K,
-                                       FinOptionTypes.EUROPEAN_CALL,
+                                       TuringOptionTypes.EUROPEAN_CALL,
                                        numObservations)
 
     testCases.header(

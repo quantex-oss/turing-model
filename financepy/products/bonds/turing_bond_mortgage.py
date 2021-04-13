@@ -3,49 +3,49 @@
 ##############################################################################
 
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_frequency import FinFrequency, FinFrequencyTypes
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_schedule import FinSchedule
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_calendar import FinDateGenRuleTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 
 from enum import Enum
 
 
-class FinBondMortgageTypes(Enum):
+class TuringBondMortgageTypes(Enum):
     REPAYMENT = 1
     INTEREST_ONLY = 2
 
 ###############################################################################
 
 
-class FinBondMortgage(object):
+class TuringBondMortgage(object):
     ''' A mortgage is a vector of dates and flows generated in order to repay
     a fixed amount given a known interest rate. Payments are all the same
     amount but with a varying mixture of interest and repayment of principal.
     '''
 
     def __init__(self,
-                 startDate: FinDate,
-                 endDate: FinDate,
+                 startDate: TuringDate,
+                 endDate: TuringDate,
                  principal: float,
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.MONTHLY,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD,
-                 dayCountConventionType: FinDayCountTypes = FinDayCountTypes.ACT_360):
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.MONTHLY,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD,
+                 dayCountConventionType: TuringDayCountTypes = TuringDayCountTypes.ACT_360):
         ''' Create the mortgage using start and end dates and principal. '''
 
         checkArgumentTypes(self.__init__, locals())
 
         if startDate > endDate:
-            raise FinError("Start Date after End Date")
+            raise TuringError("Start Date after End Date")
 
         self._startDate = startDate
         self._endDate = endDate
@@ -56,12 +56,12 @@ class FinBondMortgage(object):
         self._dateGenRuleType = dateGenRuleType
         self._dayCountConventionType = dayCountConventionType
 
-        self._schedule = FinSchedule(startDate,
-                                     endDate,
-                                     self._freqType,
-                                     self._calendarType,
-                                     self._busDayAdjustType,
-                                     self._dateGenRuleType)
+        self._schedule = TuringSchedule(startDate,
+                                        endDate,
+                                        self._freqType,
+                                        self._calendarType,
+                                        self._busDayAdjustType,
+                                        self._dateGenRuleType)
 
 ###############################################################################
 
@@ -69,7 +69,7 @@ class FinBondMortgage(object):
                         zeroRate: float):
         ''' Determine monthly repayment amount based on current zero rate. '''
 
-        frequency = FinFrequency(self._freqType)
+        frequency = TuringFrequency(self._freqType)
 
         numFlows = len(self._schedule._adjustedDates)
         p = (1.0 + zeroRate/frequency) ** (numFlows-1)
@@ -81,7 +81,7 @@ class FinBondMortgage(object):
 
     def generateFlows(self,
                       zeroRate: float,
-                      mortgageType: FinBondMortgageTypes):
+                      mortgageType: TuringBondMortgageTypes):
         ''' Generate the bond flow amounts. '''
 
         self._mortgageType = mortgageType
@@ -92,14 +92,14 @@ class FinBondMortgage(object):
 
         numFlows = len(self._schedule._adjustedDates)
         principal = self._principal
-        frequency = FinFrequency(self._freqType)
+        frequency = TuringFrequency(self._freqType)
 
-        if mortgageType == FinBondMortgageTypes.REPAYMENT:
+        if mortgageType == TuringBondMortgageTypes.REPAYMENT:
             monthlyFlow = self.repaymentAmount(zeroRate)
-        elif mortgageType == FinBondMortgageTypes.INTEREST_ONLY:
+        elif mortgageType == TuringBondMortgageTypes.INTEREST_ONLY:
             monthlyFlow = zeroRate * self._principal / frequency
         else:
-            raise FinError("Unknown Mortgage type.")
+            raise TuringError("Unknown Mortgage type.")
 
         for i in range(1, numFlows):
             interestFlow = principal * zeroRate / frequency

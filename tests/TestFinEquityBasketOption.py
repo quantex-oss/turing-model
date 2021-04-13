@@ -7,14 +7,14 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_basket_option import FinEquityBasketOption
-from financepy.finutils.turing_global_types import FinOptionTypes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.products.equity.turing_equity_basket_option import TuringEquityBasketOption
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.finutils.turing_helper_functions import betaVectorToCorrMatrix
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -23,11 +23,11 @@ def test_FinEquityBasketOption():
 
     import time
 
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 1, 2016)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 1, 2016)
     volatility = 0.30
     interestRate = 0.05
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
 
     ##########################################################################
     # Homogeneous Basket
@@ -40,7 +40,7 @@ def test_FinEquityBasketOption():
 
     dividendCurves = []
     for q in dividendYields:
-        dividendCurve = FinDiscountCurveFlat(valueDate, q)
+        dividendCurve = TuringDiscountCurveFlat(valueDate, q)
         dividendCurves.append(dividendCurve)
 
     betaList = np.linspace(0.0, 0.999999, 11)
@@ -49,8 +49,8 @@ def test_FinEquityBasketOption():
 
     for beta in betaList:
         for numPaths in [10000]:
-            callOption = FinEquityBasketOption(
-                expiryDate, 100.0, FinOptionTypes.EUROPEAN_CALL, numAssets)
+            callOption = TuringEquityBasketOption(
+                expiryDate, 100.0, TuringOptionTypes.EUROPEAN_CALL, numAssets)
             betas = np.ones(numAssets) * beta
             corrMatrix = betaVectorToCorrMatrix(betas)
 
@@ -86,7 +86,7 @@ def test_FinEquityBasketOption():
 
     dividendCurves = []
     for q in dividendYields:
-        dividendCurve = FinDiscountCurveFlat(valueDate, q)
+        dividendCurve = TuringDiscountCurveFlat(valueDate, q)
         dividendCurves.append(dividendCurve)
 
     betaList = np.linspace(0.0, 0.999999, 11)
@@ -97,8 +97,8 @@ def test_FinEquityBasketOption():
 
         for numPaths in [10000]:
 
-            callOption = FinEquityBasketOption(
-                expiryDate, 100.0, FinOptionTypes.EUROPEAN_CALL, numAssets)
+            callOption = TuringEquityBasketOption(
+                expiryDate, 100.0, TuringOptionTypes.EUROPEAN_CALL, numAssets)
             betas = np.ones(numAssets) * beta
             corrMatrix = betaVectorToCorrMatrix(betas)
 
@@ -137,15 +137,15 @@ def test_FinEquityBasketOption():
 
     dividendCurves = []
     for q in dividendYields:
-        dividendCurve = FinDiscountCurveFlat(valueDate, q)
+        dividendCurve = TuringDiscountCurveFlat(valueDate, q)
         dividendCurves.append(dividendCurve)
 
     testCases.header("NumPaths", "Beta", "Value", "ValueMC", "TIME")
 
     for beta in betaList:
         for numPaths in [10000]:
-            callOption = FinEquityBasketOption(
-                expiryDate, 100.0, FinOptionTypes.EUROPEAN_PUT, numAssets)
+            callOption = TuringEquityBasketOption(
+                expiryDate, 100.0, TuringOptionTypes.EUROPEAN_PUT, numAssets)
             betas = np.ones(numAssets) * beta
             corrMatrix = betaVectorToCorrMatrix(betas)
 
@@ -181,7 +181,7 @@ def test_FinEquityBasketOption():
 
     dividendCurves = []
     for q in dividendYields:
-        dividendCurve = FinDiscountCurveFlat(valueDate, q)
+        dividendCurve = TuringDiscountCurveFlat(valueDate, q)
         dividendCurves.append(dividendCurve)
 
     testCases.header("NumPaths", "Beta", "Value", "ValueMC", "TIME")
@@ -190,8 +190,8 @@ def test_FinEquityBasketOption():
 
         for numPaths in [10000]:
 
-            callOption = FinEquityBasketOption(
-                expiryDate, 100.0, FinOptionTypes.EUROPEAN_PUT, numAssets)
+            callOption = TuringEquityBasketOption(
+                expiryDate, 100.0, TuringOptionTypes.EUROPEAN_PUT, numAssets)
             betas = np.ones(numAssets) * beta
             corrMatrix = betaVectorToCorrMatrix(betas)
 

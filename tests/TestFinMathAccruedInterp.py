@@ -10,8 +10,8 @@ sys.path.append("..")
 
 from financepy.finutils.turing_math import accruedInterpolator
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 pltGraph = False
 

@@ -4,24 +4,24 @@
 
 import numpy as np
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_calendar import FinDateGenRuleTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_global_types import FinExerciseTypes
-from ...finutils.turing_global_types import FinSwapTypes
-from ...finutils.turing_error import FinError
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_global_types import TuringExerciseTypes
+from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
 
-from ...products.rates.turing_ibor_swap import FinIborSwap
+from financepy.products.rates.turing_ibor_swap import FinIborSwap
 
-from ...models.turing_model_rates_bdt import FinModelRatesBDT
-from ...models.turing_model_rates_bk import FinModelRatesBK
-from ...models.turing_model_rates_hw import FinModelRatesHW
+from financepy.models.turing_model_rates_bdt import TuringModelRatesBDT
+from financepy.models.turing_model_rates_bk import TuringModelRatesBK
+from financepy.models.turing_model_rates_hw import FinModelRatesHW
 
 ###############################################################################
 
@@ -34,20 +34,20 @@ class FinIborBermudanSwaption(object):
     exercise date. '''
 
     def __init__(self,
-                 settlementDate: FinDate,
-                 exerciseDate: FinDate,
-                 maturityDate: FinDate,
-                 fixedLegType: FinSwapTypes,
-                 exerciseType: FinExerciseTypes,
+                 settlementDate: TuringDate,
+                 exerciseDate: TuringDate,
+                 maturityDate: TuringDate,
+                 fixedLegType: TuringSwapTypes,
+                 exerciseType: TuringExerciseTypes,
                  fixedCoupon: float,
-                 fixedFrequencyType: FinFrequencyTypes,
-                 fixedDayCountType: FinDayCountTypes,
+                 fixedFrequencyType: TuringFrequencyTypes,
+                 fixedDayCountType: TuringDayCountTypes,
                  notional=ONE_MILLION,
-                 floatFrequencyType=FinFrequencyTypes.QUARTERLY,
-                 floatDayCountType=FinDayCountTypes.THIRTY_E_360,
-                 calendarType=FinCalendarTypes.WEEKEND,
-                 busDayAdjustType=FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType=FinDateGenRuleTypes.BACKWARD):
+                 floatFrequencyType=TuringFrequencyTypes.QUARTERLY,
+                 floatDayCountType=TuringDayCountTypes.THIRTY_E_360,
+                 calendarType=TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType=TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType=TuringDateGenRuleTypes.BACKWARD):
         ''' Create a Bermudan swaption contract. This is an option to enter
         into a payer or receiver swap at a fixed coupon on all of the fixed
         # leg coupon dates until the exercise date inclusive. '''
@@ -55,13 +55,13 @@ class FinIborBermudanSwaption(object):
         checkArgumentTypes(self.__init__, locals())
 
         if settlementDate > exerciseDate:
-            raise FinError("Settlement date must be before expiry date")
+            raise TuringError("Settlement date must be before expiry date")
 
         if exerciseDate > maturityDate:
-            raise FinError("Exercise date must be before swap maturity date")
+            raise TuringError("Exercise date must be before swap maturity date")
 
-        if exerciseType == FinExerciseTypes.AMERICAN:
-            raise FinError("American optionality not supported.")
+        if exerciseType == TuringExerciseTypes.AMERICAN:
+            raise TuringError("American optionality not supported.")
 
         self._settlementDate = settlementDate
         self._exerciseDate = exerciseDate
@@ -162,7 +162,7 @@ class FinIborBermudanSwaption(object):
         # the multi-callable nature of the Bermudan Swaption
         #######################################################################
 
-        if isinstance(model, FinModelRatesBDT) or isinstance(model, FinModelRatesBK) or isinstance(model, FinModelRatesHW):
+        if isinstance(model, TuringModelRatesBDT) or isinstance(model, TuringModelRatesBK) or isinstance(model, FinModelRatesHW):
 
             model.buildTree(tmat, dfTimes, dfValues)
 
@@ -175,11 +175,11 @@ class FinIborBermudanSwaption(object):
                                        self._exerciseType)
         else:
 
-            raise FinError("Invalid model choice for Bermudan Swaption")
+            raise TuringError("Invalid model choice for Bermudan Swaption")
 
-        if self._fixedLegType == FinSwapTypes.RECEIVE:
+        if self._fixedLegType == TuringSwapTypes.RECEIVE:
             v = self._notional * v['rec']
-        elif self._fixedLegType == FinSwapTypes.PAY:
+        elif self._fixedLegType == TuringSwapTypes.PAY:
             v = self._notional * v['pay']
 
         return v

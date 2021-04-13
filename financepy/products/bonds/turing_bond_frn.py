@@ -5,15 +5,15 @@
 from scipy import optimize
 
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_error import FinError
-from ...finutils.turing_frequency import FinFrequency, FinFrequencyTypes
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_schedule import FinSchedule
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_calendar import FinDateGenRuleTypes
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 # TODO: Need to complete and verify the risk sensitivity calculations.
@@ -42,16 +42,16 @@ def _f(dm, *args):
 ###############################################################################
 
 
-class FinBondFRN(object):
+class TuringBondFRN(object):
     ''' Class for managing floating rate notes that pay a floating index plus a
     quoted margin.'''
 
     def __init__(self,
-                 issueDate: FinDate,
-                 maturityDate: FinDate,
-                 quotedMargin: float,    # Fixed spread paid on top of index
-                 freqType: FinFrequencyTypes,
-                 accrualType: FinDayCountTypes,
+                 issueDate: TuringDate,
+                 maturityDate: TuringDate,
+                 quotedMargin: float,  # Fixed spread paid on top of index
+                 freqType: TuringFrequencyTypes,
+                 accrualType: TuringDayCountTypes,
                  faceAmount: float = 100.0):
         ''' Create FinFloatingRateNote object given its maturity date, its
         quoted margin, coupon frequency, accrual type. Face is the size of
@@ -65,7 +65,7 @@ class FinBondFRN(object):
         self._freqType = freqType
         self._accrualType = accrualType
         self._flowDates = []
-        self._frequency = FinFrequency(freqType)
+        self._frequency = TuringFrequency(freqType)
         self._faceAmount = faceAmount   # This is the position size
         self._par = 100.0   # This is how price is quoted
         self._redemption = 1.0 # This is amount paid at maturity TODO NOT USED
@@ -73,7 +73,7 @@ class FinBondFRN(object):
         self._flowDates = []
         self._flowAmounts = []
 
-        self._settlementDate = FinDate(1, 1, 1900)
+        self._settlementDate = TuringDate(1, 1, 1900)
         self._accruedInterest = None
         self._accruedDays = 0.0
 
@@ -86,21 +86,21 @@ class FinBondFRN(object):
 
         # This should only be called once from init 
 
-        calendarType = FinCalendarTypes.NONE
-        busDayRuleType = FinBusDayAdjustTypes.NONE
-        dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+        calendarType = TuringCalendarTypes.NONE
+        busDayRuleType = TuringBusDayAdjustTypes.NONE
+        dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
 
-        self._flowDates = FinSchedule(self._issueDate,
-                                      self._maturityDate,
-                                      self._freqType,
-                                      calendarType,
-                                      busDayRuleType,
-                                      dateGenRuleType)._generate()
+        self._flowDates = TuringSchedule(self._issueDate,
+                                         self._maturityDate,
+                                         self._freqType,
+                                         calendarType,
+                                         busDayRuleType,
+                                         dateGenRuleType)._generate()
 
 ###############################################################################
 
     def fullPriceFromDM(self,
-                        settlementDate: FinDate,
+                        settlementDate: TuringDate,
                         nextCoupon: float,  # The total reset coupon on NCD
                         currentIbor: float,  # Ibor discount to NCD
                         futureIbor: float,  # Future constant Ibor rates
@@ -114,7 +114,7 @@ class FinBondFRN(object):
 
         self.calcAccruedInterest(settlementDate, nextCoupon)
 
-        dayCounter = FinDayCount(self._accrualType)
+        dayCounter = TuringDayCount(self._accrualType)
 
         q = self._quotedMargin
         numFlows = len(self._flowDates)
@@ -147,7 +147,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def principal(self,
-                  settlementDate: FinDate,
+                  settlementDate: TuringDate,
                   nextCoupon: float,
                   currentIbor: float,
                   futureIbor: float,
@@ -169,11 +169,11 @@ class FinBondFRN(object):
 ###############################################################################
 
     def dollarDuration(self,
-                           settlementDate: FinDate,
-                           nextCoupon: float,
-                           currentIbor: float,
-                           futureIbor: float,
-                           dm: float):
+                       settlementDate: TuringDate,
+                       nextCoupon: float,
+                       currentIbor: float,
+                       futureIbor: float,
+                       dm: float):
         ''' Calculate the risk or dP/dy of the bond by bumping. This is also
         known as the DV01 in Bloomberg. '''
 
@@ -197,7 +197,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def dollarCreditDuration(self,
-                             settlementDate: FinDate,
+                             settlementDate: TuringDate,
                              nextCoupon: float,
                              currentIbor: float,
                              futureIbor: float,
@@ -205,7 +205,7 @@ class FinBondFRN(object):
         ''' Calculate the risk or dP/dy of the bond by bumping. '''
 
         if dm > 10.0:
-            raise FinError("Discount margin exceeds 100000bp")
+            raise TuringError("Discount margin exceeds 100000bp")
 
         self.calcAccruedInterest(settlementDate, nextCoupon)
         dy = 0.0001
@@ -228,7 +228,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def macauleyRateDuration(self,
-                             settlementDate: FinDate,
+                             settlementDate: TuringDate,
                              nextCoupon: float,
                              currentIbor: float,
                              futureIbor: float,
@@ -254,7 +254,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def modifiedRateDuration(self,
-                             settlementDate: FinDate,
+                             settlementDate: TuringDate,
                              nextCoupon: float,
                              currentIbor: float,
                              futureIbor: float,
@@ -283,7 +283,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def modifiedCreditDuration(self,
-                               settlementDate: FinDate,
+                               settlementDate: TuringDate,
                                nextCoupon: float,
                                currentIbor: float,
                                futureIbor: float,
@@ -312,7 +312,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def convexityFromDM(self,
-                        settlementDate: FinDate,
+                        settlementDate: TuringDate,
                         nextCoupon: float,
                         currentIbor: float,
                         futureIbor: float,
@@ -350,7 +350,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def cleanPriceFromDM(self,
-                         settlementDate: FinDate,
+                         settlementDate: TuringDate,
                          nextCoupon: float,
                          currentIbor: float,
                          futureIbor: float,
@@ -363,7 +363,7 @@ class FinBondFRN(object):
         margin. '''
 
         if dm > 10.0:
-            raise FinError("Discount margin exceeds 100000bp")
+            raise TuringError("Discount margin exceeds 100000bp")
 
         fullPrice = self.fullPriceFromDM(settlementDate,
                                          nextCoupon,
@@ -380,7 +380,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def discountMargin(self,
-                       settlementDate: FinDate,
+                       settlementDate: TuringDate,
                        nextCoupon: float,
                        currentIbor: float,
                        futureIbor: float,
@@ -411,7 +411,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def calcAccruedInterest(self,
-                            settlementDate: FinDate,
+                            settlementDate: TuringDate,
                             nextCoupon: float):
         ''' Calculate the amount of coupon that has accrued between the
         previous coupon date and the settlement date. Ex-dividend dates are 
@@ -420,9 +420,9 @@ class FinBondFRN(object):
         numFlows = len(self._flowDates)
 
         if numFlows == 0:
-            raise FinError("Accrued interest - not enough flow dates.")
+            raise TuringError("Accrued interest - not enough flow dates.")
 
-        dc = FinDayCount(self._accrualType)
+        dc = TuringDayCount(self._accrualType)
 
         for i in range(1, numFlows):
             if self._flowDates[i] > settlementDate:
@@ -444,7 +444,7 @@ class FinBondFRN(object):
 ###############################################################################
 
     def printFlows(self,
-                   settlementDate: FinDate):
+                   settlementDate: TuringDate):
         ''' Print a list of the unadjusted coupon payment dates used in
         analytic calculations for the bond. '''
         self._calculateFlowDates()

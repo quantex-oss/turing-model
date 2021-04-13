@@ -4,19 +4,19 @@
 
 
 from .turing_helper_functions import checkArgumentTypes
-from .turing_currency import FinCurrencyTypes
+from .turing_currency import TuringCurrencyTypes
 from .turing_math import ONE_MILLION
 
 ###############################################################################
 
 
-class FinAmount(object):
-    ''' A FinAmount is a holder for an amount in a specific currency. '''
+class TuringAmount(object):
+    ''' A TuringAmount is a holder for an amount in a specific currency. '''
 
     def __init__(self,
                  notional: float = ONE_MILLION,
-                 currencyType: FinCurrencyTypes = FinCurrencyTypes.NONE):
-        ''' Create FinAmount object. '''
+                 currencyType: TuringCurrencyTypes = TuringCurrencyTypes.NONE):
+        ''' Create TuringAmount object. '''
 
         checkArgumentTypes(self.__init__, locals())
 
@@ -29,7 +29,7 @@ class FinAmount(object):
         can be used for providing transparency on schedule calculations. '''
 
         s = ""
-        if self._currencyType != FinCurrencyTypes.NONE:
+        if self._currencyType != TuringCurrencyTypes.NONE:
             s += self._currencyType.name
             s += " "
 

@@ -699,7 +699,7 @@ def parseEnum(lines, startLine, endLine):
 def extractParams(functionSignature):
     ''' Parse a function signature into a table containing each function
     argument's name, type, description and default value'''
-    # A good example to look at for testing is `FinBondConvertible`
+    # A good example to look at for testing is `TuringBondConvertible`
 
     functionSignature = functionSignature.replace("\\", "\\textbackslash ")
     functionSignature = functionSignature.replace("_", "\_")
@@ -730,7 +730,7 @@ def extractParams(functionSignature):
 
         line = line.strip()
         # Split by comma while leaving commas that are in square brackets '[]'.
-        # This allows us to parse 'Union[FinDate, str]' for maturityDateOrTenor.
+        # This allows us to parse 'Union[TuringDate, str]' for maturityDateOrTenor.
         if line.find("[") != -1 or line.find("(") != -1:
             # https://stackoverflow.com/questions/26808913/split-string-at-commas-except-when-in-bracket-environment
             params = []

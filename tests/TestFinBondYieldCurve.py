@@ -8,15 +8,15 @@ import os
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate, fromDatetime
-from financepy.products.bonds.turing_bond import FinBond
-from financepy.products.bonds.turing_bond_yield_curve import FinBondYieldCurve
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate, fromDatetime
+from financepy.products.bonds.turing_bond import TuringBond
+from financepy.products.bonds.turing_bond_yield_curve import TuringBondYieldCurve
 from financepy.products.bonds.turing_bond_yield_curve_model import *
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 ###############################################################################
@@ -31,9 +31,9 @@ def test_FinBondYieldCurve():
     bondDataFrame = pd.read_csv(path, sep='\t')
     bondDataFrame['mid'] = 0.5*(bondDataFrame['bid'] + bondDataFrame['ask'])
 
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
-    settlement = FinDate(19, 9, 2012)
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
+    settlement = TuringDate(19, 9, 2012)
 
     bonds = []
     ylds = []
@@ -43,34 +43,34 @@ def test_FinBondYieldCurve():
         dateString = bond['maturity']
         matDatetime = dt.datetime.strptime(dateString, '%d-%b-%y')
         maturityDt = fromDatetime(matDatetime)
-        issueDt = FinDate(maturityDt._d, maturityDt._m, 2000)
+        issueDt = TuringDate(maturityDt._d, maturityDt._m, 2000)
         coupon = bond['coupon']/100.0
         cleanPrice = bond['mid']
-        bond = FinBond(issueDt, maturityDt, coupon, freqType, accrualType)
+        bond = TuringBond(issueDt, maturityDt, coupon, freqType, accrualType)
         yld = bond.yieldToMaturity(settlement, cleanPrice)
         bonds.append(bond)
         ylds.append(yld)
 
 ###############################################################################
 
-    curveFitMethod = FinCurveFitPolynomial()
-    fittedCurve1 = FinBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
+    curveFitMethod = TuringCurveFitPolynomial()
+    fittedCurve1 = TuringBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
 #    fittedCurve1.display("GBP Yield Curve")
 
-    curveFitMethod = FinCurveFitPolynomial(5)
-    fittedCurve2 = FinBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
+    curveFitMethod = TuringCurveFitPolynomial(5)
+    fittedCurve2 = TuringBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
 #    fittedCurve2.display("GBP Yield Curve")
 
-    curveFitMethod = FinCurveFitNelsonSiegel()
-    fittedCurve3 = FinBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
+    curveFitMethod = TuringCurveFitNelsonSiegel()
+    fittedCurve3 = TuringBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
 #    fittedCurve3.display("GBP Yield Curve")
 
-    curveFitMethod = FinCurveFitNelsonSiegelSvensson()
-    fittedCurve4 = FinBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
+    curveFitMethod = TuringCurveFitNelsonSiegelSvensson()
+    fittedCurve4 = TuringBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
 #    fittedCurve4.display("GBP Yield Curve")
 
-    curveFitMethod = FinCurveFitBSpline()
-    fittedCurve5 = FinBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
+    curveFitMethod = TuringCurveFitBSpline()
+    fittedCurve5 = TuringBondYieldCurve(settlement, bonds, ylds, curveFitMethod)
 #    fittedCurve5.display("GBP Yield Curve")
 
 ###############################################################################
@@ -91,7 +91,7 @@ def test_FinBondYieldCurve():
 
 ###############################################################################
 
-    maturityDate = FinDate(19, 9, 2030)
+    maturityDate = TuringDate(19, 9, 2030)
     interpolatedYield = fittedCurve5.interpolatedYield(maturityDate)
     testCases.print(maturityDate, interpolatedYield)
 

@@ -5,13 +5,13 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_chooser_option import FinEquityChooserOption
+from financepy.products.equity.turing_equity_chooser_option import TuringEquityChooserOption
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##############################################################################
 
@@ -19,10 +19,10 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 def test_FinEquityChooserOptionHaug():
     ''' Following example in Haug Page 130 '''
 
-    valueDate = FinDate(1, 1, 2015)
-    chooseDate = FinDate(2, 4, 2015)
-    callExpiryDate = FinDate(1, 7, 2015)
-    putExpiryDate = FinDate(2, 8, 2015)
+    valueDate = TuringDate(1, 1, 2015)
+    chooseDate = TuringDate(2, 4, 2015)
+    callExpiryDate = TuringDate(1, 7, 2015)
+    putExpiryDate = TuringDate(2, 8, 2015)
     callStrike = 55.0
     putStrike = 48.0
     stockPrice = 50.0
@@ -31,14 +31,14 @@ def test_FinEquityChooserOptionHaug():
     dividendYield = 0.05
 
     model = FinModelBlackScholes(volatility)
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
-    chooserOption = FinEquityChooserOption(chooseDate,
-                                           callExpiryDate,
-                                           putExpiryDate,
-                                           callStrike,
-                                           putStrike)
+    chooserOption = TuringEquityChooserOption(chooseDate,
+                                              callExpiryDate,
+                                              putExpiryDate,
+                                              callStrike,
+                                              putStrike)
 
     v = chooserOption.value(valueDate,
                             stockPrice,
@@ -62,10 +62,10 @@ def test_FinEquityChooserOptionHaug():
 def test_FinEquityChooserOptionMatlab():
     '''https://fr.mathworks.com/help/fininst/chooserbybls.html '''
 
-    valueDate = FinDate(1, 6, 2007)
-    chooseDate = FinDate(31, 8, 2007)
-    callExpiryDate = FinDate(2, 12, 2007)
-    putExpiryDate = FinDate(2, 12, 2007)
+    valueDate = TuringDate(1, 6, 2007)
+    chooseDate = TuringDate(31, 8, 2007)
+    callExpiryDate = TuringDate(2, 12, 2007)
+    putExpiryDate = TuringDate(2, 12, 2007)
     callStrike = 60.0
     putStrike = 60.0
     stockPrice = 50.0
@@ -75,14 +75,14 @@ def test_FinEquityChooserOptionMatlab():
 
     model = FinModelBlackScholes(volatility)
 
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
-    chooserOption = FinEquityChooserOption(chooseDate,
-                                           callExpiryDate,
-                                           putExpiryDate,
-                                           callStrike,
-                                           putStrike)
+    chooserOption = TuringEquityChooserOption(chooseDate,
+                                              callExpiryDate,
+                                              putExpiryDate,
+                                              callStrike,
+                                              putStrike)
 
     v = chooserOption.value(valueDate,
                             stockPrice,
@@ -106,10 +106,10 @@ def test_FinEquityChooserOptionMatlab():
 def test_FinEquityChooserOptionDerivicom():
     '''http://derivicom.com/support/finoptionsxl/index.html?complex_chooser.htm '''
 
-    valueDate = FinDate(1, 1, 2007)
-    chooseDate = FinDate(1, 2, 2007)
-    callExpiryDate = FinDate(1, 4, 2007)
-    putExpiryDate = FinDate(1, 5, 2007)
+    valueDate = TuringDate(1, 1, 2007)
+    chooseDate = TuringDate(1, 2, 2007)
+    callExpiryDate = TuringDate(1, 4, 2007)
+    putExpiryDate = TuringDate(1, 5, 2007)
     callStrike = 40.0
     putStrike = 35.0
     stockPrice = 38.0
@@ -118,14 +118,14 @@ def test_FinEquityChooserOptionDerivicom():
     dividendYield = 0.0625
 
     model = FinModelBlackScholes(volatility)
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
-    chooserOption = FinEquityChooserOption(chooseDate,
-                                           callExpiryDate,
-                                           putExpiryDate,
-                                           callStrike,
-                                           putStrike)
+    chooserOption = TuringEquityChooserOption(chooseDate,
+                                              callExpiryDate,
+                                              putExpiryDate,
+                                              callStrike,
+                                              putStrike)
 
     v = chooserOption.value(valueDate,
                             stockPrice,

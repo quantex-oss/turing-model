@@ -9,14 +9,14 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.products.equity.turing_equity_rainbow_option import FinEquityRainbowOption
+from financepy.products.equity.turing_equity_rainbow_option import TuringEquityRainbowOption
 from financepy.products.equity.turing_equity_rainbow_option import FinEquityRainbowOptionTypes
 from financepy.finutils.turing_helper_functions import betaVectorToCorrMatrix
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -25,11 +25,11 @@ def test_FinEquityRainbowOption():
 
     #        import matplotlib.pyplot as plt
 
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 1, 2016)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 1, 2016)
     interestRate = 0.05
 
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
 
     numAssets = 2
     volatilities = np.ones(numAssets) * 0.3
@@ -38,7 +38,7 @@ def test_FinEquityRainbowOption():
 
     dividendCurves = []
     for q in dividendYields:
-        dividendCurve = FinDiscountCurveFlat(valueDate, q)
+        dividendCurve = TuringDiscountCurveFlat(valueDate, q)
         dividendCurves.append(dividendCurve)
 
     stockPrices = np.ones(numAssets) * 100
@@ -54,7 +54,7 @@ def test_FinEquityRainbowOption():
 
     payoffType = FinEquityRainbowOptionTypes.CALL_ON_MAXIMUM
     payoffParams = [strike]
-    rainbowOption = FinEquityRainbowOption(
+    rainbowOption = TuringEquityRainbowOption(
         expiryDate, payoffType, payoffParams, numAssets)
 
     rainboxOptionValues = []
@@ -109,7 +109,7 @@ def test_FinEquityRainbowOption():
         "===================================================================")
     payoffType = FinEquityRainbowOptionTypes.CALL_ON_MINIMUM
     payoffParams = [strike]
-    rainbowOption = FinEquityRainbowOption(
+    rainbowOption = TuringEquityRainbowOption(
         expiryDate, payoffType, payoffParams, numAssets)
 
     rainboxOptionValues = []
@@ -166,7 +166,7 @@ def test_FinEquityRainbowOption():
 
     payoffType = FinEquityRainbowOptionTypes.PUT_ON_MAXIMUM
     payoffParams = [strike]
-    rainbowOption = FinEquityRainbowOption(
+    rainbowOption = TuringEquityRainbowOption(
         expiryDate, payoffType, payoffParams, numAssets)
 
     rainboxOptionValues = []
@@ -222,7 +222,7 @@ def test_FinEquityRainbowOption():
         "===================================================================")
     payoffType = FinEquityRainbowOptionTypes.PUT_ON_MINIMUM
     payoffParams = [strike]
-    rainbowOption = FinEquityRainbowOption(
+    rainbowOption = TuringEquityRainbowOption(
         expiryDate, payoffType, payoffParams, numAssets)
 
     rainboxOptionValues = []
@@ -295,12 +295,12 @@ def test_FinEquityRainbowOption():
 
             payoffType1 = FinEquityRainbowOptionTypes.CALL_ON_MAXIMUM
             payoffParams1 = [strike]
-            rainbowOption1 = FinEquityRainbowOption(
+            rainbowOption1 = TuringEquityRainbowOption(
                 expiryDate, payoffType1, payoffParams1, numAssets)
 
             payoffType2 = FinEquityRainbowOptionTypes.CALL_ON_NTH
             payoffParams2 = [1, strike]
-            rainbowOption2 = FinEquityRainbowOption(
+            rainbowOption2 = TuringEquityRainbowOption(
                 expiryDate, payoffType2, payoffParams2, numAssets)
 
             start = time.time()
@@ -355,12 +355,12 @@ def test_FinEquityRainbowOption():
 
             payoffType1 = FinEquityRainbowOptionTypes.CALL_ON_MINIMUM
             payoffParams1 = [strike]
-            rainbowOption1 = FinEquityRainbowOption(
+            rainbowOption1 = TuringEquityRainbowOption(
                 expiryDate, payoffType1, payoffParams1, numAssets)
 
             payoffType2 = FinEquityRainbowOptionTypes.CALL_ON_NTH
             payoffParams2 = [2, strike]
-            rainbowOption2 = FinEquityRainbowOption(
+            rainbowOption2 = TuringEquityRainbowOption(
                 expiryDate, payoffType2, payoffParams2, numAssets)
 
             start = time.time()
@@ -411,7 +411,7 @@ def test_FinEquityRainbowOption():
 
     dividendCurves = []
     for q in dividendYields:
-        dividendCurve = FinDiscountCurveFlat(valueDate, q)
+        dividendCurve = TuringDiscountCurveFlat(valueDate, q)
         dividendCurves.append(dividendCurve)
 
 #    plt.figure(figsize=(10,8))
@@ -431,7 +431,7 @@ def test_FinEquityRainbowOption():
 
         payoffType2 = FinEquityRainbowOptionTypes.CALL_ON_NTH
         payoffParams2 = [n, strike]
-        rainbowOption2 = FinEquityRainbowOption(
+        rainbowOption2 = TuringEquityRainbowOption(
             expiryDate, payoffType2, payoffParams2, numAssets)
 
         for correlation in corrList:
@@ -491,7 +491,7 @@ def test_FinEquityRainbowOption():
 
         payoffType2 = FinEquityRainbowOptionTypes.PUT_ON_NTH
         payoffParams2 = [n, strike]
-        rainbowOption2 = FinEquityRainbowOption(
+        rainbowOption2 = TuringEquityRainbowOption(
             expiryDate, payoffType2, payoffParams2, numAssets)
 
         for correlation in corrList:

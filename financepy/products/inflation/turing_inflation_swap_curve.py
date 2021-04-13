@@ -5,13 +5,13 @@
 import numpy as np
 from scipy import optimize
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_helper_functions import labelToString
-from ...finutils.turing_helper_functions import checkArgumentTypes, _funcName
-from ...finutils.turing_global_variables import gDaysInYear
-from ...market.curves.turing_interpolator import FinInterpTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, _funcName
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.market.curves.turing_interpolator import FinInterpTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 swaptol = 1e-8
 
@@ -48,12 +48,12 @@ def _g(df, *args):
 ###############################################################################
 
 
-class FinInflationSwapCurve(FinDiscountCurve):
+class TuringInflationSwapCurve(TuringDiscountCurve):
     ''' Constructs a discount curve as implied by the prices of Ibor
     deposits, FRAs and IRS. The curve date is the date on which we are
     performing the valuation based on the information available on the
     curve date. Typically it is the date on which an amount of 1 unit paid
-    has a present value of 1. This class inherits from FinDiscountCurve
+    has a present value of 1. This class inherits from TuringDiscountCurve
     and so it has all of the methods that that class has.
 
     There are two main curve-building approaches:
@@ -78,7 +78,7 @@ class FinInflationSwapCurve(FinDiscountCurve):
 ###############################################################################
 
     def __init__(self,
-                 valuationDate: FinDate,
+                 valuationDate: TuringDate,
                  iborDeposits: list,
                  iborFRAs: list,
                  iborSwaps: list,
@@ -93,7 +93,7 @@ class FinInflationSwapCurve(FinDiscountCurve):
 
         The curve will assign a discount factor of 1.0 to the valuation date.
         '''
-        raise FinError("DO NOT USE")
+        raise TuringError("DO NOT USE")
         
         checkArgumentTypes(getattr(self, _funcName(), None), locals())
 
@@ -122,20 +122,20 @@ class FinInflationSwapCurve(FinDiscountCurve):
         numSwaps = len(iborSwaps)
 
         if numDepos + numFRAs + numSwaps == 0:
-            raise FinError("No calibration instruments.")
+            raise TuringError("No calibration instruments.")
 
         # Validation of the inputs.
         if numDepos > 0:
             for depo in iborDeposits:
                 startDt = depo._startDate
                 if startDt < self._valuationDate:
-                    raise FinError("First deposit starts before value date.")
+                    raise TuringError("First deposit starts before value date.")
 
             for depo in iborDeposits:
                 startDt = depo._startDate
                 endDt = depo._maturityDate
                 if startDt >= endDt:
-                    raise FinError("First deposit ends on or before it begins")
+                    raise TuringError("First deposit ends on or before it begins")
 
         # Ensure order of depos
         if numDepos > 1:
@@ -144,33 +144,33 @@ class FinInflationSwapCurve(FinDiscountCurve):
             for depo in iborDeposits[1:]:
                 nextDt = depo._maturityDate
                 if nextDt <= prevDt:
-                    raise FinError("Deposits must be in increasing maturity")
+                    raise TuringError("Deposits must be in increasing maturity")
                 prevDt = nextDt
 
         # Ensure that valuation date is on or after first deposit start date
         if numDepos > 1:
             if iborDeposits[0]._startDate > self._valuationDate:
-                raise FinError("Valuation date must not be before first deposit settles.")
+                raise TuringError("Valuation date must not be before first deposit settles.")
 
         if numFRAs > 0:
             for fra in iborFRAs:
                 startDt = fra._startDate
                 if startDt <= self._valuationDate:
-                    raise FinError("FRAs starts before valuation date")
+                    raise TuringError("FRAs starts before valuation date")
 
         if numFRAs > 1:
             prevDt = iborFRAs[0]._maturityDate
             for fra in iborFRAs[1:]:
                 nextDt = fra._maturityDate
                 if nextDt <= prevDt:
-                    raise FinError("FRAs must be in increasing maturity")
+                    raise TuringError("FRAs must be in increasing maturity")
                 prevDt = nextDt
 
         if numSwaps > 0:
             for swap in iborSwaps:
                 startDt = swap._startDate
                 if startDt < self._valuationDate:
-                    raise FinError("Swaps starts before valuation date.")
+                    raise TuringError("Swaps starts before valuation date.")
 
         if numSwaps > 1:
 
@@ -179,14 +179,14 @@ class FinInflationSwapCurve(FinDiscountCurve):
             for swap in iborSwaps[1:]:
                 nextStartDt = swap._startDate
                 if nextStartDt != startDt:
-                    raise FinError("Swaps must all have same start date.")
+                    raise TuringError("Swaps must all have same start date.")
 
             # Swaps must be increasing in tenor/maturity
             prevDt = iborSwaps[0]._maturityDate
             for swap in iborSwaps[1:]:
                 nextDt = swap._maturityDate
                 if nextDt <= prevDt:
-                    raise FinError("Swaps must be in increasing maturity")
+                    raise TuringError("Swaps must be in increasing maturity")
                 prevDt = nextDt
 
             # Swaps must have same cashflows for bootstrap to work
@@ -197,15 +197,15 @@ class FinInflationSwapCurve(FinDiscountCurve):
                 numFlows = len(swapCpnDates)
                 for iFlow in range(0, numFlows):
                     if swapCpnDates[iFlow] != longestSwapCpnDates[iFlow]:
-                        raise FinError("Swap coupons are not on the same date grid.")
+                        raise TuringError("Swap coupons are not on the same date grid.")
 
         #######################################################################
         # Now we have ensure they are in order check for overlaps and the like
         #######################################################################
 
-        lastDepositMaturityDate = FinDate(1, 1, 1900)
-        firstFRAMaturityDate = FinDate(1, 1, 1900)
-        lastFRAMaturityDate = FinDate(1, 1, 1900)
+        lastDepositMaturityDate = TuringDate(1, 1, 1900)
+        firstFRAMaturityDate = TuringDate(1, 1, 1900)
+        lastFRAMaturityDate = TuringDate(1, 1, 1900)
 
         if numDepos > 0:
             lastDepositMaturityDate = iborDeposits[-1]._maturityDate
@@ -221,11 +221,11 @@ class FinInflationSwapCurve(FinDiscountCurve):
             if firstFRAMaturityDate <= lastDepositMaturityDate:
                 print("FRA Maturity Date:", firstFRAMaturityDate)
                 print("Last Deposit Date:", lastDepositMaturityDate)
-                raise FinError("First FRA must end after last Deposit")
+                raise TuringError("First FRA must end after last Deposit")
 
         if numFRAs > 0 and numSwaps > 0:
             if firstSwapMaturityDate <= lastFRAMaturityDate:
-                raise FinError("First Swap must mature after last FRA")
+                raise TuringError("First Swap must mature after last FRA")
 
         # Now determine which instruments are used
         self._usedDeposits = iborDeposits
@@ -381,7 +381,7 @@ class FinInflationSwapCurve(FinDiscountCurve):
                 break
 
         if foundStart is False:
-            raise FinError("Found start is false. Swaps payments inside FRAs")
+            raise TuringError("Found start is false. Swaps payments inside FRAs")
 
         swapRates = []
         swapTimes = []
@@ -458,13 +458,13 @@ class FinInflationSwapCurve(FinDiscountCurve):
             v = depo.value(self._valuationDate, self) / depo._notional
             if abs(v - 1.0) > depoTol:
                 print("Value", v)
-                raise FinError("Deposit not repriced.")
+                raise TuringError("Deposit not repriced.")
 
         for fra in self._usedFRAs:
             v = fra.value(self._valuationDate, self) / fra._notional
             if abs(v) > fraTol:
                 print("Value", v)
-                raise FinError("FRA not repriced.")
+                raise TuringError("FRA not repriced.")
 
         for swap in self._usedSwaps:
             # We value it as of the start date of the swap
@@ -476,7 +476,7 @@ class FinInflationSwapCurve(FinDiscountCurve):
                       + " Not Repriced. Has Value", v)
                 swap.printFixedLegPV()
                 swap.printFloatLegPV()
-                raise FinError("Swap not repriced.")
+                raise TuringError("Swap not repriced.")
 
 ###############################################################################
 

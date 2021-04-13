@@ -6,8 +6,8 @@ import numpy as np
 from numba import njit, float64
 from scipy.optimize import minimize
 
-from ..finutils.turing_global_types import FinOptionTypes
-from ..finutils.turing_error import FinError
+from ..finutils.turing_global_types import TuringOptionTypes
+from ..finutils.turing_error import TuringError
 from ..finutils.turing_math import N
 from ..finutils.turing_helper_functions import labelToString
 
@@ -43,10 +43,10 @@ def volFunctionShiftedSABR(params, f, k, t):
 
     # Negative strikes or forwards
     if k <= 0:
-        raise FinError("Strike must be positive")
+        raise TuringError("Strike must be positive")
 
     if f <= 0:
-        raise FinError("Forward must be positive")
+        raise TuringError("Forward must be positive")
 
     logfk = np.log(f / k)
     b = 1.0 - beta
@@ -71,7 +71,7 @@ def volFunctionShiftedSABR(params, f, k, t):
 ###############################################################################
 
 
-class FinModelSABRShifted():
+class TuringModelSABRShifted():
     ''' SABR - Shifted Stochastic alpha beta rho model by Hagan et al. is a 
     stochastic volatility model where alpha controls the implied volatility,
     beta is the exponent on the the underlying asset's process so beta = 0
@@ -79,7 +79,7 @@ class FinModelSABRShifted():
     underlying and the volatility process. The shift allows negative rates.'''
 
     def __init__(self, alpha, beta, rho, nu, shift):
-        ''' Create FinModelSABRShifted with all of the model parameters. We 
+        ''' Create TuringModelSABRShifted with all of the model parameters. We
         also provide functions below to assist with the calibration of the 
         value of alpha. '''
 
@@ -149,9 +149,9 @@ class FinModelSABRShifted():
         d1 = (np.log((f)/(k)) + vol * vol * t / 2) / (vol * sqrtT)
         d2 = d1 - vol*sqrtT
 
-        if callOrPut == FinOptionTypes.EUROPEAN_CALL:
+        if callOrPut == TuringOptionTypes.EUROPEAN_CALL:
             return df * (f * N(d1) - k * N(d2))
-        elif callOrPut == FinOptionTypes.EUROPEAN_PUT:
+        elif callOrPut == TuringOptionTypes.EUROPEAN_PUT:
             return df * (k * N(-d2) - f * N(-d1))
         else:
             raise Exception("Option type must be a European Call(C) or Put(P)")

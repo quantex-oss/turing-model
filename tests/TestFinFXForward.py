@@ -5,15 +5,15 @@
 import sys
 sys.path.append("..")
 
-from financepy.products.fx.turing_fx_forward import FinFXForward
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
-from financepy.finutils.turing_date import FinDate
+from financepy.products.fx.turing_fx_forward import TuringFXForward
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 
@@ -23,7 +23,7 @@ def test_FinFXForward():
     #  https://stackoverflow.com/questions/48778712
     #  /fx-vanilla-call-price-in-quantlib-doesnt-match-bloomberg
 
-    valuationDate = FinDate(13, 2, 2018)
+    valuationDate = TuringDate(13, 2, 2018)
     expiryDate = valuationDate.addMonths(12)
     # Forward is on EURUSD which is expressed as number of USD per EUR
     # ccy1 = EUR and ccy2 = USD
@@ -41,34 +41,34 @@ def test_FinFXForward():
     settlementDate = valuationDate.addWeekDays(spotDays)
     maturityDate = settlementDate.addMonths(12)
     notional = 100.0
-    calendarType = FinCalendarTypes.TARGET
+    calendarType = TuringCalendarTypes.TARGET
 
     depos = []
     fras = []
     swaps = []
     depositRate = ccy1InterestRate
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate,
-                           FinDayCountTypes.ACT_360, notional, calendarType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate,
+                             TuringDayCountTypes.ACT_360, notional, calendarType)
     depos.append(depo)
-    forDiscountCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps)
+    forDiscountCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     depos = []
     fras = []
     swaps = []
     depositRate = ccy2InterestRate
-    depo = FinIborDeposit(settlementDate, maturityDate, depositRate,
-                           FinDayCountTypes.ACT_360, notional, calendarType)
+    depo = TuringIborDeposit(settlementDate, maturityDate, depositRate,
+                             TuringDayCountTypes.ACT_360, notional, calendarType)
     depos.append(depo)
-    domDiscountCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps)
+    domDiscountCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     notional = 100.0
     notionalCurrency = forName
 
-    fxForward = FinFXForward(expiryDate,
-                             strikeFXRate,
-                             currencyPair,
-                             notional,
-                             notionalCurrency)
+    fxForward = TuringFXForward(expiryDate,
+                                strikeFXRate,
+                                currencyPair,
+                                notional,
+                                notionalCurrency)
 
     testCases.header("SPOT FX", "FX FWD", "VALUE_BS")
 

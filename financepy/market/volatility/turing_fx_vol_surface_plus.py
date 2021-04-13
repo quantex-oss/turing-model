@@ -8,37 +8,37 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from numba import njit, float64, int64
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_global_types import FinOptionTypes
-from ...products.fx.turing_fx_vanilla_option import FinFXVanillaOption
-from ...models.turing_model_option_implied_dbn import optionImpliedDbn
-from ...products.fx.turing_fx_mkt_conventions import FinFXATMMethod
-from ...products.fx.turing_fx_mkt_conventions import FinFXDeltaMethod
-from ...finutils.turing_helper_functions import checkArgumentTypes, labelToString
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
+from financepy.models.turing_model_option_implied_dbn import optionImpliedDbn
+from financepy.products.fx.turing_fx_mkt_conventions import TuringFXATMMethod
+from financepy.products.fx.turing_fx_mkt_conventions import TuringFXDeltaMethod
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from ...models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 
-from ...models.turing_model_volatility_fns import volFunctionClark
-from ...models.turing_model_volatility_fns import volFunctionBloomberg
-from ...models.turing_model_volatility_fns import FinVolFunctionTypes
-from ...models.turing_model_sabr import volFunctionSABR
-from ...models.turing_model_sabr import volFunctionSABR_BETA_ONE
-from ...models.turing_model_sabr import volFunctionSABR_BETA_HALF
+from financepy.models.turing_model_volatility_fns import volFunctionClark
+from financepy.models.turing_model_volatility_fns import volFunctionBloomberg
+from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
+from financepy.models.turing_model_sabr import volFunctionSABR
+from financepy.models.turing_model_sabr import volFunctionSABR_BETA_ONE
+from financepy.models.turing_model_sabr import volFunctionSABR_BETA_HALF
 
-from ...models.turing_model_volatility_fns import FinVolFunctionTypes
+from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
-from ...finutils.turing_math import norminvcdf
+from financepy.finutils.turing_math import norminvcdf
 
-from ...models.turing_model_black_scholes_analytical import bsValue
-from ...products.fx.turing_fx_vanilla_option import fastDelta
-from ...finutils.turing_distribution import FinDistribution
+from financepy.models.turing_model_black_scholes_analytical import bsValue
+from financepy.products.fx.turing_fx_vanilla_option import fastDelta
+from financepy.finutils.turing_distribution import TuringDistribution
 
-from ...finutils.turing_solvers_1d import newton_secant
-from ...finutils.turing_solvers_nm import nelder_mead
-from ...finutils.turing_global_types import FinSolverTypes
+from financepy.finutils.turing_solvers_1d import newton_secant
+from financepy.finutils.turing_solvers_nm import nelder_mead
+from financepy.finutils.turing_global_types import TuringSolverTypes
 
 ###############################################################################
 # ISSUES
@@ -98,7 +98,7 @@ def _interpolateGap(k, strikes, gaps):
             break
 
     if index == 0:
-        raise FinError("Value not bracketed")
+        raise TuringError("Value not bracketed")
 
     k0 = strikes[index-1]
     k1 = strikes[index]
@@ -161,14 +161,14 @@ def _obj(params, *args):
                                            f, K_25D_C_MS, t)
     
         V_25D_C_MS = bsValue(s, t, K_25D_C_MS, rd, rf, sigma_K_25D_C_MS,
-                             FinOptionTypes.EUROPEAN_CALL.value)
+                             TuringOptionTypes.EUROPEAN_CALL.value)
     
         sigma_K_25D_P_MS = volFunction(volTypeValue, params, 
                                            strikesNULL, gapsNULL,
                                            f, K_25D_P_MS, t)
     
         V_25D_P_MS = bsValue(s, t, K_25D_P_MS, rd, rf, sigma_K_25D_P_MS,
-                             FinOptionTypes.EUROPEAN_PUT.value)
+                             TuringOptionTypes.EUROPEAN_PUT.value)
     
         V_25D_MS = V_25D_C_MS + V_25D_P_MS
         term25D_1 = (V_25D_MS - V_25D_MS_target)**2
@@ -184,20 +184,20 @@ def _obj(params, *args):
     if target25DRRVol > -999.0:
 
         K_25D_C = _solveForSmileStrike(s, t, rd, rf,
-                                          FinOptionTypes.EUROPEAN_CALL.value,
-                                          volTypeValue, +0.2500,
-                                          deltaMethodValue, K_25D_C_MS,
-                                          params, strikesNULL, gapsNULL)
+                                       TuringOptionTypes.EUROPEAN_CALL.value,
+                                       volTypeValue, +0.2500,
+                                       deltaMethodValue, K_25D_C_MS,
+                                       params, strikesNULL, gapsNULL)
     
         sigma_K_25D_C = volFunction(volTypeValue, params, 
                                         strikesNULL, gapsNULL,
                                         f, K_25D_C, t)
     
         K_25D_P = _solveForSmileStrike(s, t, rd, rf,
-                                          FinOptionTypes.EUROPEAN_PUT.value,
-                                          volTypeValue, -0.2500,
-                                          deltaMethodValue, K_25D_P_MS,
-                                          params, strikesNULL, gapsNULL)
+                                       TuringOptionTypes.EUROPEAN_PUT.value,
+                                       volTypeValue, -0.2500,
+                                       deltaMethodValue, K_25D_P_MS,
+                                       params, strikesNULL, gapsNULL)
     
         sigma_K_25D_P = volFunction(volTypeValue, params, 
                                         strikesNULL, gapsNULL,
@@ -221,14 +221,14 @@ def _obj(params, *args):
                                            f, K_10D_C_MS, t)
     
         V_10D_C_MS = bsValue(s, t, K_10D_C_MS, rd, rf, sigma_K_10D_C_MS,
-                             FinOptionTypes.EUROPEAN_CALL.value)
+                             TuringOptionTypes.EUROPEAN_CALL.value)
     
         sigma_K_10D_P_MS = volFunction(volTypeValue, params, 
                                            strikesNULL, gapsNULL,
                                            f, K_10D_P_MS, t)
     
         V_10D_P_MS = bsValue(s, t, K_10D_P_MS, rd, rf, sigma_K_10D_P_MS,
-                             FinOptionTypes.EUROPEAN_PUT.value)
+                             TuringOptionTypes.EUROPEAN_PUT.value)
     
         V_10D_MS = V_10D_C_MS + V_10D_P_MS
         term10D_1 = (V_10D_MS - V_10D_MS_target)**2
@@ -244,20 +244,20 @@ def _obj(params, *args):
     if target10DRRVol > -999.0:
 
         K_10D_C = _solveForSmileStrike(s, t, rd, rf,
-                                          FinOptionTypes.EUROPEAN_CALL.value,
-                                          volTypeValue, +0.1000,
-                                          deltaMethodValue, K_10D_C_MS,
-                                          params, strikesNULL, gapsNULL)
+                                       TuringOptionTypes.EUROPEAN_CALL.value,
+                                       volTypeValue, +0.1000,
+                                       deltaMethodValue, K_10D_C_MS,
+                                       params, strikesNULL, gapsNULL)
     
         sigma_K_10D_C = volFunction(volTypeValue, params, 
                                         strikesNULL, gapsNULL,
                                         f, K_10D_C, t)
     
         K_10D_P = _solveForSmileStrike(s, t, rd, rf,
-                                          FinOptionTypes.EUROPEAN_PUT.value,
-                                          volTypeValue, -0.1000,
-                                          deltaMethodValue, K_10D_P_MS,
-                                          params, strikesNULL, gapsNULL)
+                                       TuringOptionTypes.EUROPEAN_PUT.value,
+                                       volTypeValue, -0.1000,
+                                       deltaMethodValue, K_10D_P_MS,
+                                       params, strikesNULL, gapsNULL)
     
         sigma_K_10D_P = volFunction(volTypeValue, params, 
                                         strikesNULL, gapsNULL,
@@ -338,7 +338,7 @@ def _objGAP(gaps, *args):
     print("sigma_K_25D_C_MS", sigma_K_25D_C_MS)
 
     V_25D_C_MS = bsValue(s, t, K_25D_C_MS, rd, rf, sigma_K_25D_C_MS,
-                         FinOptionTypes.EUROPEAN_CALL.value)
+                         TuringOptionTypes.EUROPEAN_CALL.value)
 
     sigma_K_25D_P_MS = volFunction(volTypeValue, params, strikes, gaps, 
                                        f, K_25D_P_MS, t)
@@ -346,7 +346,7 @@ def _objGAP(gaps, *args):
     print("sigma_K_25D_P_MS", sigma_K_25D_P_MS)
 
     V_25D_P_MS = bsValue(s, t, K_25D_P_MS, rd, rf, sigma_K_25D_P_MS,
-                         FinOptionTypes.EUROPEAN_PUT.value)
+                         TuringOptionTypes.EUROPEAN_PUT.value)
 
     V_25D_MS = V_25D_C_MS + V_25D_P_MS
     term25D_1 = (V_25D_MS - V_25D_MS_target)**2
@@ -356,10 +356,10 @@ def _objGAP(gaps, *args):
     ###########################################################################
 
     K_25D_C = _solveForSmileStrike(s, t, rd, rf,
-                                      FinOptionTypes.EUROPEAN_CALL.value,
-                                      volTypeValue, +0.2500,
-                                      deltaMethodValue, K_25D_C_MS,
-                                      params, strikes, gaps)
+                                   TuringOptionTypes.EUROPEAN_CALL.value,
+                                   volTypeValue, +0.2500,
+                                   deltaMethodValue, K_25D_C_MS,
+                                   params, strikes, gaps)
 
     sigma_K_25D_C = volFunction(volTypeValue, params, strikes, gaps,
                                     f, K_25D_C, t)
@@ -367,10 +367,10 @@ def _objGAP(gaps, *args):
     print("sigma_K_25D_C", sigma_K_25D_C)
 
     K_25D_P = _solveForSmileStrike(s, t, rd, rf,
-                                      FinOptionTypes.EUROPEAN_PUT.value,
-                                      volTypeValue, -0.2500,
-                                      deltaMethodValue, K_25D_P_MS,
-                                      params, strikes, gaps)
+                                   TuringOptionTypes.EUROPEAN_PUT.value,
+                                   volTypeValue, -0.2500,
+                                   deltaMethodValue, K_25D_P_MS,
+                                   params, strikes, gaps)
 
     sigma_K_25D_P = volFunction(volTypeValue, params, strikes, gaps,
                                     f, K_25D_P, t)
@@ -390,7 +390,7 @@ def _objGAP(gaps, *args):
     print("sigma_K_10D_C_MS", sigma_K_10D_C_MS)
 
     V_10D_C_MS = bsValue(s, t, K_10D_C_MS, rd, rf, sigma_K_10D_C_MS,
-                         FinOptionTypes.EUROPEAN_CALL.value)
+                         TuringOptionTypes.EUROPEAN_CALL.value)
 
     sigma_K_10D_P_MS = volFunction(volTypeValue, params, strikes, gaps,
                                        f, K_10D_P_MS, t)
@@ -398,7 +398,7 @@ def _objGAP(gaps, *args):
     print("sigma_K_10D_P_MS", sigma_K_10D_P_MS)
 
     V_10D_P_MS = bsValue(s, t, K_10D_P_MS, rd, rf, sigma_K_10D_P_MS,
-                         FinOptionTypes.EUROPEAN_PUT.value)
+                         TuringOptionTypes.EUROPEAN_PUT.value)
 
     V_10D_MS = V_10D_C_MS + V_10D_P_MS
     term10D_1 = (V_10D_MS - V_10D_MS_target)**2
@@ -408,10 +408,10 @@ def _objGAP(gaps, *args):
     ###########################################################################
 
     K_10D_C = _solveForSmileStrike(s, t, rd, rf,
-                                      FinOptionTypes.EUROPEAN_CALL.value,
-                                      volTypeValue, +0.1000,
-                                      deltaMethodValue, K_10D_C_MS,
-                                      params, strikes, gaps)
+                                   TuringOptionTypes.EUROPEAN_CALL.value,
+                                   volTypeValue, +0.1000,
+                                   deltaMethodValue, K_10D_C_MS,
+                                   params, strikes, gaps)
 
     sigma_K_10D_C = volFunction(volTypeValue, params, strikes, gaps, 
                                     f, K_10D_C, t)
@@ -421,10 +421,10 @@ def _objGAP(gaps, *args):
     print("INIT K_10D_P_MS", K_10D_P_MS)
 
     K_10D_P = _solveForSmileStrike(s, t, rd, rf,
-                                      FinOptionTypes.EUROPEAN_PUT.value,
-                                      volTypeValue, -0.1000,
-                                      deltaMethodValue, K_10D_P_MS,
-                                      params, strikes, gaps)
+                                   TuringOptionTypes.EUROPEAN_PUT.value,
+                                   volTypeValue, -0.1000,
+                                   deltaMethodValue, K_10D_P_MS,
+                                   params, strikes, gaps)
 
     print("K_10D_P", K_10D_P)
     sigma_K_10D_P = volFunction(volTypeValue, params, strikes, gaps,
@@ -477,23 +477,23 @@ def _solveToHorizon(s, t, rd, rf,
         vol_25D_MS = atmVol + ms25DVol
     
         K_25D_C_MS = solveForStrike(s, t, rd, rf,
-                                    FinOptionTypes.EUROPEAN_CALL.value,
+                                    TuringOptionTypes.EUROPEAN_CALL.value,
                                     +0.2500,
                                     deltaMethodValue,
                                     vol_25D_MS)
     
         K_25D_P_MS = solveForStrike(s, t, rd, rf,
-                                    FinOptionTypes.EUROPEAN_PUT.value,
+                                    TuringOptionTypes.EUROPEAN_PUT.value,
                                     -0.2500,
                                     deltaMethodValue,
                                     vol_25D_MS)
     
         # USE MARKET STRANGLE VOL TO DETERMINE PRICE OF A MARKET STRANGLE
         V_25D_C_MS = bsValue(s, t, K_25D_C_MS, rd, rf, vol_25D_MS,
-                             FinOptionTypes.EUROPEAN_CALL.value)
+                             TuringOptionTypes.EUROPEAN_CALL.value)
     
         V_25D_P_MS = bsValue(s, t, K_25D_P_MS, rd, rf, vol_25D_MS,
-                             FinOptionTypes.EUROPEAN_PUT.value)
+                             TuringOptionTypes.EUROPEAN_PUT.value)
     
         # Market price of strangle in the domestic currency
         V_25D_MS = V_25D_C_MS + V_25D_P_MS
@@ -514,23 +514,23 @@ def _solveToHorizon(s, t, rd, rf,
         vol_10D_MS = atmVol + ms10DVol
     
         K_10D_C_MS = solveForStrike(s, t, rd, rf,
-                                    FinOptionTypes.EUROPEAN_CALL.value,
+                                    TuringOptionTypes.EUROPEAN_CALL.value,
                                     +0.1000,
                                     deltaMethodValue,
                                     vol_10D_MS)
     
         K_10D_P_MS = solveForStrike(s, t, rd, rf,
-                                    FinOptionTypes.EUROPEAN_PUT.value,
+                                    TuringOptionTypes.EUROPEAN_PUT.value,
                                     -0.1000,
                                     deltaMethodValue,
                                     vol_10D_MS)
     
         # USE MARKET STRANGLE VOL TO DETERMINE PRICE OF A MARKET STRANGLE
         V_10D_C_MS = bsValue(s, t, K_10D_C_MS, rd, rf, vol_10D_MS,
-                             FinOptionTypes.EUROPEAN_CALL.value)
+                             TuringOptionTypes.EUROPEAN_CALL.value)
     
         V_10D_P_MS = bsValue(s, t, K_10D_P_MS, rd, rf, vol_10D_MS,
-                             FinOptionTypes.EUROPEAN_PUT.value)
+                             TuringOptionTypes.EUROPEAN_PUT.value)
     
         # Market price of strangle in the domestic currency
         V_10D_MS = V_10D_C_MS + V_10D_P_MS
@@ -560,19 +560,19 @@ def _solveToHorizon(s, t, rd, rf,
     # to converge, so for those cases try again with CG
     # Numba version is quicker, but can be slightly away from CG output
     try:
-        if finSolverType == FinSolverTypes.NELDER_MEAD_NUMBA:
+        if finSolverType == TuringSolverTypes.NELDER_MEAD_NUMBA:
             xopt = nelder_mead(_obj, np.array(xinits), 
                                bounds=np.array([[], []]).T, args=args, tol_f=tol,
                                tol_x=tol, max_iter=1000)
-        elif finSolverType == FinSolverTypes.NELDER_MEAD:
+        elif finSolverType == TuringSolverTypes.NELDER_MEAD:
             opt = minimize(_obj, xinits, args, method="Nelder-Mead", tol=tol)
             xopt = opt.x
-        elif finSolverType == FinSolverTypes.CONJUGATE_GRADIENT:
+        elif finSolverType == TuringSolverTypes.CONJUGATE_GRADIENT:
             opt = minimize(_obj, xinits, args, method="CG", tol=tol)
             xopt = opt.x
     except:
          # If convergence fails try again with CG if necessary
-         if finSolverType != FinSolverTypes.CONJUGATE_GRADIENT:
+         if finSolverType != TuringSolverTypes.CONJUGATE_GRADIENT:
              print('Failed to converge, will try CG')
              opt = minimize(_obj, xinits, args, method="CG", tol=tol)
 
@@ -619,32 +619,32 @@ def _solveToHorizon(s, t, rd, rf,
         K_25D_P_MS = K_ATM
 
     K_25D_C = _solveForSmileStrike(s, t, rd, rf,
-                                      FinOptionTypes.EUROPEAN_CALL.value,
-                                      volTypeValue, +0.2500,
-                                      deltaMethodValue, K_25D_C_MS,
-                                      params, strikes, gaps)
+                                   TuringOptionTypes.EUROPEAN_CALL.value,
+                                   volTypeValue, +0.2500,
+                                   deltaMethodValue, K_25D_C_MS,
+                                   params, strikes, gaps)
 
     K_25D_P = _solveForSmileStrike(s, t, rd, rf,
-                                      FinOptionTypes.EUROPEAN_PUT.value,
-                                      volTypeValue, -0.2500,
-                                      deltaMethodValue, K_25D_P_MS,
-                                      params, strikes, gaps)
+                                   TuringOptionTypes.EUROPEAN_PUT.value,
+                                   volTypeValue, -0.2500,
+                                   deltaMethodValue, K_25D_P_MS,
+                                   params, strikes, gaps)
 
     if use10D is False:
         K_10D_C_MS = K_ATM
         K_10D_P_MS = K_ATM
 
     K_10D_C = _solveForSmileStrike(s, t, rd, rf,
-                                      FinOptionTypes.EUROPEAN_CALL.value,
-                                      volTypeValue, +0.1000,
-                                      deltaMethodValue, K_10D_C_MS,
-                                      params, strikes, gaps)
+                                   TuringOptionTypes.EUROPEAN_CALL.value,
+                                   volTypeValue, +0.1000,
+                                   deltaMethodValue, K_10D_C_MS,
+                                   params, strikes, gaps)
 
     K_10D_P = _solveForSmileStrike(s, t, rd, rf,
-                                      FinOptionTypes.EUROPEAN_PUT.value,
-                                      volTypeValue, -0.1000,
-                                      deltaMethodValue, K_10D_P_MS,
-                                      params, strikes, gaps)
+                                   TuringOptionTypes.EUROPEAN_PUT.value,
+                                   volTypeValue, -0.1000,
+                                   deltaMethodValue, K_10D_P_MS,
+                                   params, strikes, gaps)
 
     return (params, strikes, gaps,
             K_25D_C_MS, K_25D_P_MS, K_25D_C, K_25D_P,
@@ -666,26 +666,26 @@ def volFunction(volFunctionTypeValue, params, strikes, gaps, f, k, t):
     else:
         gapK = _interpolateGap(k, strikes, gaps)
 
-    if volFunctionTypeValue == FinVolFunctionTypes.CLARK.value:
+    if volFunctionTypeValue == TuringVolFunctionTypes.CLARK.value:
         vol = volFunctionClark(params, f, k, t) + gapK
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.SABR.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.SABR.value:
         vol = volFunctionSABR(params, f, k, t)  + gapK
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.SABR_BETA_HALF.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.SABR_BETA_HALF.value:
         vol = volFunctionSABR_BETA_HALF(params, f, k, t)  + gapK
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.SABR_BETA_ONE.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.SABR_BETA_ONE.value:
         vol = volFunctionSABR_BETA_ONE(params, f, k, t)  + gapK
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.BBG.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.BBG.value:
         vol = volFunctionBloomberg(params, f, k, t)  + gapK
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.CLARK5.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.CLARK5.value:
         vol = volFunctionClark(params, f, k, t)  + gapK
         return vol
     else:
-        raise FinError("Unknown Model Type")
+        raise TuringError("Unknown Model Type")
 
 ###############################################################################
 
@@ -781,12 +781,12 @@ def solveForStrike(spotFXRate,
     # places. It should however agree to 6-7 decimal places. Which is OK.
     # =========================================================================
 
-    if deltaMethodValue == FinFXDeltaMethod.SPOT_DELTA.value:
+    if deltaMethodValue == TuringFXDeltaMethod.SPOT_DELTA.value:
 
         domDF = np.exp(-rd*tdel)
         forDF = np.exp(-rf*tdel)
 
-        if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+        if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
             phi = +1.0
         else:
             phi = -1.0
@@ -798,12 +798,12 @@ def solveForStrike(spotFXRate,
         K = F0T * np.exp(-vsqrtt * (phi * norminvdelta - vsqrtt/2.0))
         return K
 
-    elif deltaMethodValue == FinFXDeltaMethod.FORWARD_DELTA.value:
+    elif deltaMethodValue == TuringFXDeltaMethod.FORWARD_DELTA.value:
 
         domDF = np.exp(-rd*tdel)
         forDF = np.exp(-rf*tdel)
 
-        if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+        if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
             phi = +1.0
         else:
             phi = -1.0
@@ -815,7 +815,7 @@ def solveForStrike(spotFXRate,
         K = F0T * np.exp(-vsqrtt * (phi * norminvdelta - vsqrtt/2.0))
         return K
 
-    elif deltaMethodValue == FinFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
+    elif deltaMethodValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
 
         argtuple = (spotFXRate, tdel, rd, rf, volatility,
                     deltaMethodValue, optionTypeValue, deltaTarget)
@@ -825,7 +825,7 @@ def solveForStrike(spotFXRate,
 
         return K
 
-    elif deltaMethodValue == FinFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
+    elif deltaMethodValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
 
         argtuple = (spotFXRate, tdel, rd, rf, volatility,
                     deltaMethodValue, optionTypeValue, deltaTarget)
@@ -837,17 +837,17 @@ def solveForStrike(spotFXRate,
 
     else:
 
-        raise FinError("Unknown FinFXDeltaMethod")
+        raise TuringError("Unknown TuringFXDeltaMethod")
 
 ###############################################################################
 
 
-class FinFXVolSurfacePlus():
+class TuringFXVolSurfacePlus():
     ''' Class to perform a calibration of a chosen parametrised surface to the
     prices of FX options at different strikes and expiry tenors. The
     calibration inputs are the ATM and 25 and 10 Delta volatilities in terms of
     the market strangle amd risk reversals. There is a choice of volatility
-    function from cubic in delta to full SABR. Check out FinVolFunctionTypes.
+    function from cubic in delta to full SABR. Check out TuringVolFunctionTypes.
     Parameter alpha [0,1] is used to interpolate between fitting only 25D when
     alpha=0 to fitting only 10D when alpha=1.0. Alpha=0.5 assigns equal weights
     A vol function with more parameters will give a better fit. Of course. But 
@@ -855,12 +855,12 @@ class FinFXVolSurfacePlus():
     there is no guarantee that the implied pdf will be positive.'''
 
     def __init__(self,
-                 valueDate: FinDate,
+                 valueDate: TuringDate,
                  spotFXRate: float,
                  currencyPair: str,
                  notionalCurrency: str,
-                 domDiscountCurve: FinDiscountCurve,
-                 forDiscountCurve: FinDiscountCurve,
+                 domDiscountCurve: TuringDiscountCurve,
+                 forDiscountCurve: TuringDiscountCurve,
                  tenors: (list),
                  atmVols: (list, np.ndarray),
                  mktStrangle25DeltaVols: (list, np.ndarray),
@@ -868,12 +868,12 @@ class FinFXVolSurfacePlus():
                  mktStrangle10DeltaVols: (list, np.ndarray),
                  riskReversal10DeltaVols: (list, np.ndarray),
                  alpha: float,
-                 atmMethod:FinFXATMMethod=FinFXATMMethod.FWD_DELTA_NEUTRAL,
-                 deltaMethod:FinFXDeltaMethod=FinFXDeltaMethod.SPOT_DELTA,
-                 volatilityFunctionType:FinVolFunctionTypes=FinVolFunctionTypes.CLARK,
-                 finSolverType:FinSolverTypes=FinSolverTypes.NELDER_MEAD,
+                 atmMethod:TuringFXATMMethod=TuringFXATMMethod.FWD_DELTA_NEUTRAL,
+                 deltaMethod:TuringFXDeltaMethod=TuringFXDeltaMethod.SPOT_DELTA,
+                 volatilityFunctionType:TuringVolFunctionTypes=TuringVolFunctionTypes.CLARK,
+                 finSolverType:TuringSolverTypes=TuringSolverTypes.NELDER_MEAD,
                  tol:float=1e-8):
-        ''' Create the FinFXVolSurfacePlus object by passing in market vol data
+        ''' Create the TuringFXVolSurfacePlus object by passing in market vol data
         for ATM, 25 Delta and 10 Delta strikes. The alpha weight shifts the
         fitting between 25D and 10D. Alpha = 0.0 is 100% 25D while alpha = 1.0
         is 100% 10D. An alpha of 0.50 is equally weighted. '''
@@ -898,7 +898,7 @@ class FinFXVolSurfacePlus():
         self._currencyPair = currencyPair
 
         if len(currencyPair) != 6:
-            raise FinError("Currency pair must be 6 characters.")
+            raise TuringError("Currency pair must be 6 characters.")
 
         self._forName = self._currencyPair[0:3]
         self._domName = self._currencyPair[3:6]
@@ -910,7 +910,7 @@ class FinFXVolSurfacePlus():
         self._tenors = tenors
 
         if len(atmVols) != self._numVolCurves:
-            raise FinError("Number ATM vols must equal number of tenors")
+            raise TuringError("Number ATM vols must equal number of tenors")
 
         self._atmVols = np.array(atmVols)/100.0
 
@@ -923,7 +923,7 @@ class FinFXVolSurfacePlus():
         n = len(mktStrangle25DeltaVols)
 
         if n != self._numVolCurves and n!= 0:
-            raise FinError("Number MS25D vols must equal number of tenors")
+            raise TuringError("Number MS25D vols must equal number of tenors")
 
         if n == 0:
             self._useMS25DVol = False
@@ -931,7 +931,7 @@ class FinFXVolSurfacePlus():
         n = len(riskReversal25DeltaVols)
 
         if n != self._numVolCurves and n!= 0:
-            raise FinError("Number RR25D vols must equal number of tenors")
+            raise TuringError("Number RR25D vols must equal number of tenors")
 
         if n == 0:
             self._useRR25DVol = False
@@ -939,7 +939,7 @@ class FinFXVolSurfacePlus():
         n = len(mktStrangle10DeltaVols)
 
         if n != self._numVolCurves and n!= 0:
-            raise FinError("Number MS10D vols must equal number of tenors")
+            raise TuringError("Number MS10D vols must equal number of tenors")
 
         if n == 0:
             self._useMS10DVol = False
@@ -947,19 +947,19 @@ class FinFXVolSurfacePlus():
         n = len(riskReversal10DeltaVols)
 
         if n != self._numVolCurves and n!= 0:
-            raise FinError("Number RR10D vols must equal number of tenors")
+            raise TuringError("Number RR10D vols must equal number of tenors")
 
         if n == 0:
             self._useRR10DVol = False
 
         if self._useMS10DVol != self._useRR10DVol:
-            raise FinError("You must provide both 10D RR + 10D MS or neither")
+            raise TuringError("You must provide both 10D RR + 10D MS or neither")
 
         if self._useMS25DVol != self._useRR25DVol:
-            raise FinError("You must provide both 25D RR + 25D MS or neither")
+            raise TuringError("You must provide both 25D RR + 25D MS or neither")
 
         if self._useMS10DVol is False and self._useMS25DVol is False:
-            raise FinError("No MS and RR. You must provide 10D or 25D MS + RR.")
+            raise TuringError("No MS and RR. You must provide 10D or 25D MS + RR.")
             
         self._mktStrangle25DeltaVols = np.array(mktStrangle25DeltaVols)/100.0
         self._riskReversal25DeltaVols = np.array(riskReversal25DeltaVols)/100.0
@@ -967,23 +967,23 @@ class FinFXVolSurfacePlus():
         self._riskReversal10DeltaVols = np.array(riskReversal10DeltaVols)/100.0
 
         if alpha < 0.0 or alpha > 1.0:
-            raise FinError("Alpha must be between 0.0 and 1.0")
+            raise TuringError("Alpha must be between 0.0 and 1.0")
 
         self._alpha = alpha
         
         self._atmMethod = atmMethod
         self._deltaMethod = deltaMethod
 
-        if self._deltaMethod == FinFXDeltaMethod.SPOT_DELTA:
+        if self._deltaMethod == TuringFXDeltaMethod.SPOT_DELTA:
             self._deltaMethodString = "pips_spot_delta"
-        elif self._deltaMethod == FinFXDeltaMethod.FORWARD_DELTA:
+        elif self._deltaMethod == TuringFXDeltaMethod.FORWARD_DELTA:
             self._deltaMethodString = "pips_fwd_delta"
-        elif self._deltaMethod == FinFXDeltaMethod.SPOT_DELTA_PREM_ADJ:
+        elif self._deltaMethod == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ:
             self._deltaMethodString = "pct_spot_delta_prem_adj"
-        elif self._deltaMethod == FinFXDeltaMethod.FORWARD_DELTA_PREM_ADJ:
+        elif self._deltaMethod == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ:
             self._deltaMethodString = "pct_fwd_delta_prem_adj"
         else:
-            raise FinError("Unknown Delta Type")
+            raise TuringError("Unknown Delta Type")
 
         self._volatilityFunctionType = volatilityFunctionType
         self._tenorIndex = 0
@@ -1072,7 +1072,7 @@ class FinFXVolSurfacePlus():
             vart = ((texp-t0) * vart1 + (t1-texp) * vart0) / (t1 - t0)
 
             if vart < 0.0:
-                raise FinError("Negative variance.")
+                raise TuringError("Negative variance.")
 
             volt = np.sqrt(vart/texp)
 
@@ -1138,25 +1138,25 @@ class FinFXVolSurfacePlus():
         initialGuess = self._K_ATM[index0]
 
         K0 = _solveForSmileStrike(s, texp, self._rd[index0], self._rf[index0],
-                                  FinOptionTypes.EUROPEAN_CALL.value,
+                                  TuringOptionTypes.EUROPEAN_CALL.value,
                                   volTypeValue, callDelta,
                                   deltaMethodValue,
                                   initialGuess,
-                                  self._parameters[index0], 
-                                  self._strikes[index0], 
+                                  self._parameters[index0],
+                                  self._strikes[index0],
                                   self._gaps[index0])
 
         if index1 != index0:
 
-            K1 = _solveForSmileStrike(s, texp, 
-                                      self._rd[index1], 
+            K1 = _solveForSmileStrike(s, texp,
+                                      self._rd[index1],
                                       self._rf[index1],
-                                      FinOptionTypes.EUROPEAN_CALL.value,
+                                      TuringOptionTypes.EUROPEAN_CALL.value,
                                       volTypeValue, callDelta,
                                       deltaMethodValue,
                                       initialGuess,
-                                      self._parameters[index1], 
-                                      self._strikes[index1], 
+                                      self._parameters[index1],
+                                      self._strikes[index1],
                                       self._gaps[index1])
         else:
 
@@ -1241,12 +1241,12 @@ class FinFXVolSurfacePlus():
         initialGuess = self._K_ATM[index0]
 
         K0 = _solveForSmileStrike(s, texp, self._rd[index0], self._rf[index0],
-                                  FinOptionTypes.EUROPEAN_CALL.value,
+                                  TuringOptionTypes.EUROPEAN_CALL.value,
                                   volTypeValue, callDelta,
                                   deltaMethodValue,
                                   initialGuess,
-                                  self._parameters[index0], 
-                                  self._strikes[index0], 
+                                  self._parameters[index0],
+                                  self._strikes[index0],
                                   self._gaps[index0])
 
         vol0 = volFunction(volTypeValue, self._parameters[index0],
@@ -1255,15 +1255,15 @@ class FinFXVolSurfacePlus():
 
         if index1 != index0:
 
-            K1 = _solveForSmileStrike(s, texp, 
-                                      self._rd[index1], 
+            K1 = _solveForSmileStrike(s, texp,
+                                      self._rd[index1],
                                       self._rf[index1],
-                                      FinOptionTypes.EUROPEAN_CALL.value,
+                                      TuringOptionTypes.EUROPEAN_CALL.value,
                                       volTypeValue, callDelta,
                                       deltaMethodValue,
                                       initialGuess,
-                                      self._parameters[index1], 
-                                      self._strikes[index1], 
+                                      self._parameters[index1],
+                                      self._strikes[index1],
                                       self._gaps[index1])
 
             vol1 = volFunction(volTypeValue, self._parameters[index1],
@@ -1283,7 +1283,7 @@ class FinFXVolSurfacePlus():
             kt = ((texp-t0) * K1 + (t1-texp) * K0) / (t1 - t0)
 
             if vart < 0.0:
-                raise FinError("Failed interpolation due to negative variance.")
+                raise TuringError("Failed interpolation due to negative variance.")
 
             volt = np.sqrt(vart/texp)
 
@@ -1296,27 +1296,27 @@ class FinFXVolSurfacePlus():
 
 ###############################################################################
 
-    def _buildVolSurface(self, finSolverType=FinSolverTypes.NELDER_MEAD, tol=1e-8):
+    def _buildVolSurface(self, finSolverType=TuringSolverTypes.NELDER_MEAD, tol=1e-8):
         ''' Main function to construct the vol surface. '''
 
         s = self._spotFXRate
         numVolCurves = self._numVolCurves
 
-        if self._volatilityFunctionType == FinVolFunctionTypes.CLARK:
+        if self._volatilityFunctionType == TuringVolFunctionTypes.CLARK:
             numParameters = 3
-        elif self._volatilityFunctionType == FinVolFunctionTypes.SABR:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.SABR:
             numParameters = 4
-        elif self._volatilityFunctionType == FinVolFunctionTypes.SABR_BETA_ONE:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.SABR_BETA_ONE:
             numParameters = 3
-        elif self._volatilityFunctionType == FinVolFunctionTypes.SABR_BETA_HALF:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.SABR_BETA_HALF:
             numParameters = 3
-        elif self._volatilityFunctionType == FinVolFunctionTypes.BBG:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.BBG:
             numParameters = 3
-        elif self._volatilityFunctionType == FinVolFunctionTypes.CLARK5:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.CLARK5:
             numParameters = 5
         else:
             print(self._volatilityFunctionType)
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         self._parameters = np.zeros([numVolCurves, numParameters])
 
@@ -1366,16 +1366,16 @@ class FinFXVolSurfacePlus():
             atmVol = self._atmVols[i]
 
             # This follows exposition in Clarke Page 52
-            if self._atmMethod == FinFXATMMethod.SPOT:
+            if self._atmMethod == TuringFXATMMethod.SPOT:
                 self._K_ATM[i] = s
-            elif self._atmMethod == FinFXATMMethod.FWD:
+            elif self._atmMethod == TuringFXATMMethod.FWD:
                 self._K_ATM[i] = f
-            elif self._atmMethod == FinFXATMMethod.FWD_DELTA_NEUTRAL:
+            elif self._atmMethod == TuringFXATMMethod.FWD_DELTA_NEUTRAL:
                 self._K_ATM[i] = f * np.exp(atmVol*atmVol*texp/2.0)
-            elif self._atmMethod == FinFXATMMethod.FWD_DELTA_NEUTRAL_PREM_ADJ:
+            elif self._atmMethod == TuringFXATMMethod.FWD_DELTA_NEUTRAL_PREM_ADJ:
                 self._K_ATM[i] = f * np.exp(-atmVol*atmVol*texp/2.0)
             else:
-                raise FinError("Unknown Delta Type")
+                raise TuringError("Unknown Delta Type")
 
         #######################################################################
         # THE ACTUAL COMPUTATION LOOP STARTS HERE
@@ -1418,7 +1418,7 @@ class FinFXVolSurfacePlus():
             s50 = atmVol                   # ATM
             s90 = atmVol + ms10 - rr10/2.0 # 10D Put (90D Call)
 
-            if self._volatilityFunctionType == FinVolFunctionTypes.CLARK:
+            if self._volatilityFunctionType == TuringVolFunctionTypes.CLARK:
 
                 # Our preference is to fit to the 10D wings first
                 if self._useMS10DVol is False:
@@ -1434,7 +1434,7 @@ class FinFXVolSurfacePlus():
                     c2 = np.log(s10*s90/atmVol/atmVol) / 0.32
                     xinit = [c0, c1, c2]
 
-            elif self._volatilityFunctionType == FinVolFunctionTypes.SABR:
+            elif self._volatilityFunctionType == TuringVolFunctionTypes.SABR:
                 # SABR parameters are alpha, nu, rho
                 # SABR parameters are alpha, nu, rho
                 alpha = 0.174
@@ -1444,7 +1444,7 @@ class FinFXVolSurfacePlus():
 
                 xinit = [alpha, beta, rho, nu]
 
-            elif self._volatilityFunctionType == FinVolFunctionTypes.SABR_BETA_ONE:
+            elif self._volatilityFunctionType == TuringVolFunctionTypes.SABR_BETA_ONE:
                 # SABR parameters are alpha, nu, rho
                 alpha = 0.174
                 beta = 1.0 # FIXED
@@ -1453,7 +1453,7 @@ class FinFXVolSurfacePlus():
 
                 xinit = [alpha, rho, nu]
 
-            elif self._volatilityFunctionType == FinVolFunctionTypes.SABR_BETA_HALF:
+            elif self._volatilityFunctionType == TuringVolFunctionTypes.SABR_BETA_HALF:
                 # SABR parameters are alpha, nu, rho
                 alpha = 0.174
                 beta = 0.50 # FIXED
@@ -1462,7 +1462,7 @@ class FinFXVolSurfacePlus():
  
                 xinit = [alpha, rho, nu]
 
-            elif self._volatilityFunctionType == FinVolFunctionTypes.BBG:
+            elif self._volatilityFunctionType == TuringVolFunctionTypes.BBG:
 
                 # Our preference is to fit to the 10D wings first
                 if self._useMS10DVol is False:
@@ -1478,7 +1478,7 @@ class FinFXVolSurfacePlus():
 
                 xinit = [a, b, c]
 
-            elif self._volatilityFunctionType == FinVolFunctionTypes.CLARK5:
+            elif self._volatilityFunctionType == TuringVolFunctionTypes.CLARK5:
 
                 # Our preference is to fit to the 10D wings first
                 if self._useMS10DVol is False:
@@ -1495,7 +1495,7 @@ class FinFXVolSurfacePlus():
                     xinit = [c0, c1, c2, 0.0, 0.0]
 
             else:
-                raise FinError("Unknown Model Type")
+                raise TuringError("Unknown Model Type")
 
             xinits.append(xinit)
             ginits.append(ginit)
@@ -1586,19 +1586,19 @@ class FinFXVolSurfacePlus():
                     print("IN RSK REVERSAL 10D VOL: %9.6f %%"%
                           (100.0*self._riskReversal10DeltaVols[i]))
 
-            call = FinFXVanillaOption(expiryDate,
-                                      K_dummy,
-                                      self._currencyPair,
-                                      FinOptionTypes.EUROPEAN_CALL,
-                                      1.0,
-                                      self._notionalCurrency, )
+            call = TuringFXVanillaOption(expiryDate,
+                                         K_dummy,
+                                         self._currencyPair,
+                                         TuringOptionTypes.EUROPEAN_CALL,
+                                         1.0,
+                                         self._notionalCurrency, )
 
-            put = FinFXVanillaOption(expiryDate,
-                                     K_dummy,
-                                     self._currencyPair,
-                                     FinOptionTypes.EUROPEAN_PUT,
-                                     1.0,
-                                     self._notionalCurrency)
+            put = TuringFXVanillaOption(expiryDate,
+                                        K_dummy,
+                                        self._currencyPair,
+                                        TuringOptionTypes.EUROPEAN_PUT,
+                                        1.0,
+                                        self._notionalCurrency)
 
             ###################################################################
             # AT THE MONEY
@@ -2038,7 +2038,7 @@ class FinFXVolSurfacePlus():
 
     def impliedDbns(self, lowFX, highFX, numIntervals):
         ''' Calculate the pdf for each tenor horizon. Returns a list of
-        FinDistribution objects, one for each tenor horizon. '''
+        TuringDistribution objects, one for each tenor horizon. '''
 
         dbns = []
 
@@ -2076,7 +2076,7 @@ class FinFXVolSurfacePlus():
 
             density = optionImpliedDbn(self._spotFXRate, t, rd, rf, Ks, vols)
 
-            dbn = FinDistribution(Ks, density)
+            dbn = TuringDistribution(Ks, density)
             dbns.append(dbn)
 
         return dbns

@@ -7,34 +7,34 @@ import numpy as np
 from numba import njit
 
 # from scipy import optimize
-from ...finutils.turing_solvers_1d import newton_secant, bisection, newton
+from financepy.finutils.turing_solvers_1d import newton_secant, bisection, newton
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_types import FinOptionTypes
-from ...finutils.turing_helper_functions import checkArgumentTypes, labelToString
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from ...models.turing_model import FinModel
-from ...models.turing_model_black_scholes import FinModelBlackScholes
-from ...models.turing_model_black_scholes_analytical import bsValue
-from ...models.turing_model_black_scholes_analytical import bsDelta
-from ...models.turing_model_black_scholes_analytical import bsVega
-from ...models.turing_model_black_scholes_analytical import bsGamma
-from ...models.turing_model_black_scholes_analytical import bsRho
-from ...models.turing_model_black_scholes_analytical import bsTheta
-from ...models.turing_model_black_scholes_analytical import bsImpliedVolatility
-from ...models.turing_model_black_scholes_analytical import bsIntrinsic
+from financepy.models.turing_model import FinModel
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.models.turing_model_black_scholes_analytical import bsValue
+from financepy.models.turing_model_black_scholes_analytical import bsDelta
+from financepy.models.turing_model_black_scholes_analytical import bsVega
+from financepy.models.turing_model_black_scholes_analytical import bsGamma
+from financepy.models.turing_model_black_scholes_analytical import bsRho
+from financepy.models.turing_model_black_scholes_analytical import bsTheta
+from financepy.models.turing_model_black_scholes_analytical import bsImpliedVolatility
+from financepy.models.turing_model_black_scholes_analytical import bsIntrinsic
 
 
-from ...models.turing_model_black_scholes_mc import _valueMC_NONUMBA_NONUMPY
-from ...models.turing_model_black_scholes_mc import _valueMC_NUMPY_NUMBA
-from ...models.turing_model_black_scholes_mc import _valueMC_NUMBA_ONLY
-from ...models.turing_model_black_scholes_mc import _valueMC_NUMPY_ONLY
-from ...models.turing_model_black_scholes_mc import _valueMC_NUMBA_PARALLEL
+from financepy.models.turing_model_black_scholes_mc import _valueMC_NONUMBA_NONUMPY
+from financepy.models.turing_model_black_scholes_mc import _valueMC_NUMPY_NUMBA
+from financepy.models.turing_model_black_scholes_mc import _valueMC_NUMBA_ONLY
+from financepy.models.turing_model_black_scholes_mc import _valueMC_NUMPY_ONLY
+from financepy.models.turing_model_black_scholes_mc import _valueMC_NUMBA_PARALLEL
 
-from ...finutils.turing_math import N
+from financepy.finutils.turing_math import N
 
 ###############################################################################
 
@@ -73,21 +73,21 @@ def _fvega(v, *args):
 
 class FinEquityVanillaOption():
     ''' Class for managing plain vanilla European calls and puts on equities.
-    For American calls and puts see the FinEquityAmericanOption class. '''
+    For American calls and puts see the TuringEquityAmericanOption class. '''
 
     def __init__(self,
-                 expiryDate: (FinDate, list),
+                 expiryDate: (TuringDate, list),
                  strikePrice: (float, np.ndarray),
-                 optionType: (FinOptionTypes, list),
+                 optionType: (TuringOptionTypes, list),
                  numOptions: float = 1.0):
         ''' Create the Equity Vanilla option object by specifying the expiry
         date, the option strike, the option type and the number of options. '''
 
         checkArgumentTypes(self.__init__, locals())
 
-        if optionType != FinOptionTypes.EUROPEAN_CALL and \
-           optionType != FinOptionTypes.EUROPEAN_PUT:
-            raise FinError("Unknown Option Type" + str(optionType))
+        if optionType != TuringOptionTypes.EUROPEAN_CALL and \
+           optionType != TuringOptionTypes.EUROPEAN_PUT:
+            raise TuringError("Unknown Option Type" + str(optionType))
 
         self._expiryDate = expiryDate
         self._strikePrice = strikePrice
@@ -98,13 +98,13 @@ class FinEquityVanillaOption():
 ###############################################################################
 
     def intrinsic(self,
-                  valueDate: (FinDate, list),
+                  valueDate: (TuringDate, list),
                   stockPrice: (np.ndarray, float),
-                  discountCurve: FinDiscountCurve,
-                  dividendCurve: FinDiscountCurve):
+                  discountCurve: TuringDiscountCurve,
+                  dividendCurve: TuringDiscountCurve):
         ''' Equity Vanilla Option valuation using Black-Scholes model. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             texp = (self._expiryDate - valueDate) / gDaysInYear
         else:
             texp = valueDate
@@ -131,14 +131,14 @@ class FinEquityVanillaOption():
 ###############################################################################
 
     def value(self,
-              valueDate: (FinDate, list),
+              valueDate: (TuringDate, list),
               stockPrice: (np.ndarray, float),
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model: FinModel):
         ''' Equity Vanilla Option valuation using Black-Scholes model. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             texp = (self._expiryDate - valueDate) / gDaysInYear
         else:
             texp = valueDate
@@ -146,10 +146,10 @@ class FinEquityVanillaOption():
         self._texp = texp
 
         if np.any(stockPrice <= 0.0):
-            raise FinError("Stock price must be greater than zero.")
+            raise TuringError("Stock price must be greater than zero.")
 
         if np.any(texp < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         s0 = stockPrice
 
@@ -169,7 +169,7 @@ class FinEquityVanillaOption():
             value = bsValue(s0, texp, k, r, q, v, self._optionType.value)
 
         else:
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         value = value * self._numOptions
         return value
@@ -177,14 +177,14 @@ class FinEquityVanillaOption():
 ###############################################################################
 
     def delta(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model):
         ''' Calculate the analytical delta of a European vanilla option. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             texp = (self._expiryDate - valueDate) / gDaysInYear
         else:
             texp = valueDate
@@ -192,10 +192,10 @@ class FinEquityVanillaOption():
         self._texp = texp
 
         if np.any(stockPrice <= 0.0):
-            raise FinError("Stock price must be greater than zero.")
+            raise TuringError("Stock price must be greater than zero.")
 
         if np.any(texp < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         s0 = stockPrice
         texp = np.maximum(texp, 1e-10)
@@ -214,30 +214,30 @@ class FinEquityVanillaOption():
             delta = bsDelta(s0, texp, k, r, q, v, self._optionType.value)
 
         else:
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         return delta
 
 ###############################################################################
 
     def gamma(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model:FinModel):
         ''' Calculate the analytical gamma of a European vanilla option. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             texp = (self._expiryDate - valueDate) / gDaysInYear
         else:
             texp = valueDate
 
         if np.any(stockPrice <= 0.0):
-            raise FinError("Stock price must be greater than zero.")
+            raise TuringError("Stock price must be greater than zero.")
 
         if np.any(texp < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         s0 = stockPrice
 
@@ -257,30 +257,30 @@ class FinEquityVanillaOption():
             gamma = bsGamma(s0, texp, k, r, q, v, self._optionType.value)
 
         else:
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         return gamma
 
 ###############################################################################
 
     def vega(self,
-             valueDate: FinDate,
+             valueDate: TuringDate,
              stockPrice: float,
-             discountCurve: FinDiscountCurve,
-             dividendCurve: FinDiscountCurve,
+             discountCurve: TuringDiscountCurve,
+             dividendCurve: TuringDiscountCurve,
              model:FinModel):
         ''' Calculate the analytical vega of a European vanilla option. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             texp = (self._expiryDate - valueDate) / gDaysInYear
         else:
             texp = valueDate
 
         if np.any(stockPrice <= 0.0):
-            raise FinError("Stock price must be greater than zero.")
+            raise TuringError("Stock price must be greater than zero.")
 
         if np.any(texp < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         s0 = stockPrice
         texp = np.maximum(texp, 1e-10)
@@ -299,30 +299,30 @@ class FinEquityVanillaOption():
             vega = bsVega(s0, texp, k, r, q, v, self._optionType.value)
 
         else:
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         return vega
 
 ###############################################################################
 
     def theta(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               model:FinModel):
         ''' Calculate the analytical theta of a European vanilla option. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             texp = (self._expiryDate - valueDate) / gDaysInYear
         else:
             texp = valueDate
 
         if np.any(stockPrice <= 0.0):
-            raise FinError("Stock price must be greater than zero.")
+            raise TuringError("Stock price must be greater than zero.")
 
         if np.any(texp < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         s0 = stockPrice
         texp = np.maximum(texp, 1e-10)
@@ -341,30 +341,30 @@ class FinEquityVanillaOption():
             theta = bsTheta(s0, texp, k, r, q, v, self._optionType.value)
 
         else:
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         return theta
 
 ###############################################################################
 
     def rho(self,
-            valueDate: FinDate,
+            valueDate: TuringDate,
             stockPrice: float,
-            discountCurve: FinDiscountCurve,
-            dividendCurve: FinDiscountCurve,
+            discountCurve: TuringDiscountCurve,
+            dividendCurve: TuringDiscountCurve,
             model:FinModel):
         ''' Calculate the analytical rho of a European vanilla option. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             texp = (self._expiryDate - valueDate) / gDaysInYear
         else:
             texp = valueDate
 
         if np.any(stockPrice <= 0.0):
-            raise FinError("Stock price must be greater than zero.")
+            raise TuringError("Stock price must be greater than zero.")
 
         if np.any(texp < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         s0 = stockPrice
         texp = np.maximum(texp, 1e-10)
@@ -383,17 +383,17 @@ class FinEquityVanillaOption():
             rho = bsRho(s0, texp, k, r, q, v, self._optionType.value)
 
         else:
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         return rho
 
 ###############################################################################
 
     def impliedVolatility(self,
-                          valueDate: FinDate,
+                          valueDate: TuringDate,
                           stockPrice: (float, list, np.ndarray),
-                          discountCurve: FinDiscountCurve,
-                          dividendCurve: FinDiscountCurve,
+                          discountCurve: TuringDiscountCurve,
+                          dividendCurve: TuringDiscountCurve,
                           price):
         ''' Calculate the Black-Scholes implied volatility of a European 
         vanilla option. '''
@@ -421,10 +421,10 @@ class FinEquityVanillaOption():
 ###############################################################################
 
     def valueMC_NUMPY_ONLY(self,
-                           valueDate: FinDate,
+                           valueDate: TuringDate,
                            stockPrice: float,
-                           discountCurve: FinDiscountCurve,
-                           dividendCurve: FinDiscountCurve,
+                           discountCurve: TuringDiscountCurve,
+                           dividendCurve: TuringDiscountCurve,
                            model:FinModel,
                            numPaths: int = 10000,
                            seed: int = 4242,
@@ -456,10 +456,10 @@ class FinEquityVanillaOption():
 ###############################################################################
 
     def valueMC_NUMBA_ONLY(self,
-                           valueDate: FinDate,
+                           valueDate: TuringDate,
                            stockPrice: float,
-                           discountCurve: FinDiscountCurve,
-                           dividendCurve: FinDiscountCurve,
+                           discountCurve: TuringDiscountCurve,
+                           dividendCurve: TuringDiscountCurve,
                            model:FinModel,
                            numPaths: int = 10000,
                            seed: int = 4242,
@@ -491,14 +491,14 @@ class FinEquityVanillaOption():
 ###############################################################################
 
     def valueMC_NUMBA_PARALLEL(self,
-                           valueDate: FinDate,
-                           stockPrice: float,
-                           discountCurve: FinDiscountCurve,
-                           dividendCurve: FinDiscountCurve,
-                           model:FinModel,
-                           numPaths: int = 10000,
-                           seed: int = 4242,
-                           useSobol: int = 0):
+                               valueDate: TuringDate,
+                               stockPrice: float,
+                               discountCurve: TuringDiscountCurve,
+                               dividendCurve: TuringDiscountCurve,
+                               model:FinModel,
+                               numPaths: int = 10000,
+                               seed: int = 4242,
+                               useSobol: int = 0):
 
         texp = (self._expiryDate - valueDate) / gDaysInYear
 
@@ -528,14 +528,14 @@ class FinEquityVanillaOption():
 ###############################################################################
 
     def valueMC_NUMPY_NUMBA(self,
-                      valueDate: FinDate,
-                      stockPrice: float,
-                      discountCurve: FinDiscountCurve,
-                      dividendCurve: FinDiscountCurve,
-                      model:FinModel,
-                      numPaths: int = 10000,
-                      seed: int = 4242,
-                      useSobol: int = 0):
+                            valueDate: TuringDate,
+                            stockPrice: float,
+                            discountCurve: TuringDiscountCurve,
+                            dividendCurve: TuringDiscountCurve,
+                            model:FinModel,
+                            numPaths: int = 10000,
+                            seed: int = 4242,
+                            useSobol: int = 0):
 
         texp = (self._expiryDate - valueDate) / gDaysInYear
 
@@ -563,14 +563,14 @@ class FinEquityVanillaOption():
 ###############################################################################
 
     def valueMC_NONUMBA_NONUMPY(self,
-                      valueDate: FinDate,
-                      stockPrice: float,
-                      discountCurve: FinDiscountCurve,
-                      dividendCurve: FinDiscountCurve,
-                      model:FinModel,
-                      numPaths: int = 10000,
-                      seed: int = 4242,
-                      useSobol: int = 0):
+                                valueDate: TuringDate,
+                                stockPrice: float,
+                                discountCurve: TuringDiscountCurve,
+                                dividendCurve: TuringDiscountCurve,
+                                model:FinModel,
+                                numPaths: int = 10000,
+                                seed: int = 4242,
+                                useSobol: int = 0):
 
         texp = (self._expiryDate - valueDate) / gDaysInYear
 
@@ -598,10 +598,10 @@ class FinEquityVanillaOption():
 ###############################################################################
 
     def valueMC(self,
-                valueDate: FinDate,
+                valueDate: TuringDate,
                 stockPrice: float,
-                discountCurve: FinDiscountCurve,
-                dividendCurve: FinDiscountCurve,
+                discountCurve: TuringDiscountCurve,
+                dividendCurve: TuringDiscountCurve,
                 model:FinModel,
                 numPaths: int = 10000,
                 seed: int = 4242,

@@ -11,8 +11,8 @@ from numba import njit, float64, float64
 from ..finutils.turing_math import NVect, NPrimeVect
 from ..finutils.turing_global_variables import gSmall
 from ..finutils.turing_helper_functions import labelToString
-from ..finutils.turing_global_types import FinOptionTypes
-from ..finutils.turing_error import FinError
+from ..finutils.turing_global_types import TuringOptionTypes
+from ..finutils.turing_error import TuringError
 
 ###############################################################################
 # TODO: Use Numba ?
@@ -27,10 +27,10 @@ def calculateD1D2(f, t, k, v):
     sqrtT = np.sqrt(t)
 
     if f <= 0.0:
-        raise FinError("Forward is zero.")
+        raise TuringError("Forward is zero.")
 
     if k <= 0.0:
-        raise FinError("Strike is zero.")
+        raise TuringError("Strike is zero.")
 
     d1 = (np.log(f/k) + vol * vol * t / 2.0) / (vol * sqrtT)
     d2 = d1 - vol * sqrtT
@@ -71,12 +71,12 @@ class FinModelBlack():
         
         [d1, d2] = calculateD1D2(f, t, k, v)
         
-        if callOrPut == FinOptionTypes.EUROPEAN_CALL:
+        if callOrPut == TuringOptionTypes.EUROPEAN_CALL:
             value = df * (f * NVect(d1) - k * NVect(d2))
-        elif callOrPut == FinOptionTypes.EUROPEAN_PUT:
+        elif callOrPut == TuringOptionTypes.EUROPEAN_PUT:
             value = df * (k * NVect(-d2) - f * NVect(-d1))
         else:
-            raise FinError("Option type must be a European Call or Put")
+            raise TuringError("Option type must be a European Call or Put")
 
         return value
 
@@ -99,12 +99,12 @@ class FinModelBlack():
 
         [d1, d2] = calculateD1D2(f, t, k, v)
 
-        if callOrPut == FinOptionTypes.EUROPEAN_CALL:
+        if callOrPut == TuringOptionTypes.EUROPEAN_CALL:
             delta = df * NVect(d1)
-        elif callOrPut == FinOptionTypes.EUROPEAN_PUT:
+        elif callOrPut == TuringOptionTypes.EUROPEAN_PUT:
             delta = - df * NVect(-d1)
         else:
-            raise FinError("Option type must be a European Call or Put")
+            raise TuringError("Option type must be a European Call or Put")
 
         return delta
 
@@ -153,14 +153,14 @@ class FinModelBlack():
 
         sqrtT = np.sqrt(t)
 
-        if callOrPut == FinOptionTypes.EUROPEAN_CALL:
+        if callOrPut == TuringOptionTypes.EUROPEAN_CALL:
             theta = df * (-(f * v * NPrimeVect(d1)) / (2*sqrtT) + r * f * NVect(d1)
                           - r * k * NVect(d2))        
-        elif callOrPut == FinOptionTypes.EUROPEAN_PUT:
+        elif callOrPut == TuringOptionTypes.EUROPEAN_PUT:
             theta = df * (-(f * v * NPrimeVect(d1)) / (2*sqrtT) - r * f * NVect(-d1)
                           + r * k * NVect(-d2))
         else:
-            raise FinError("Option type must be a European Call or Put")
+            raise TuringError("Option type must be a European Call or Put")
 
         return theta
 
@@ -183,12 +183,12 @@ class FinModelBlack():
         
         [d1, d2] = calculateD1D2(f, t, k, v)
         
-        if callOrPut == FinOptionTypes.EUROPEAN_CALL:
+        if callOrPut == TuringOptionTypes.EUROPEAN_CALL:
             vega = df * f * sqrtT * NPrimeVect(d1)
-        elif callOrPut == FinOptionTypes.EUROPEAN_PUT:
+        elif callOrPut == TuringOptionTypes.EUROPEAN_PUT:
             vega = df * f * sqrtT * NPrimeVect(d1)
         else:
-            raise FinError("Option type must be a European Call or Put")
+            raise TuringError("Option type must be a European Call or Put")
 
         return vega
 

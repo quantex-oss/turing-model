@@ -8,39 +8,39 @@ from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from numba import jit, njit, float64, int64
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_global_types import FinOptionTypes
-from ...products.fx.turing_fx_vanilla_option import FinFXVanillaOption
-from ...models.turing_model_option_implied_dbn import optionImpliedDbn
-from ...products.fx.turing_fx_mkt_conventions import FinFXATMMethod
-from ...products.fx.turing_fx_mkt_conventions import FinFXDeltaMethod
-from ...finutils.turing_helper_functions import checkArgumentTypes, labelToString
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
+from financepy.models.turing_model_option_implied_dbn import optionImpliedDbn
+from financepy.products.fx.turing_fx_mkt_conventions import TuringFXATMMethod
+from financepy.products.fx.turing_fx_mkt_conventions import TuringFXDeltaMethod
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from ...models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 
-from ...models.turing_model_volatility_fns import FinVolFunctionTypes
-from ...models.turing_model_volatility_fns import volFunctionClark
-from ...models.turing_model_volatility_fns import volFunctionBloomberg
-from ...models.turing_model_volatility_fns import volFunctionSVI
-from ...models.turing_model_volatility_fns import volFunctionSSVI
-from ...models.turing_model_sabr import volFunctionSABR
-from ...models.turing_model_sabr import volFunctionSABR_BETA_HALF
-from ...models.turing_model_sabr import volFunctionSABR_BETA_ONE
+from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
+from financepy.models.turing_model_volatility_fns import volFunctionClark
+from financepy.models.turing_model_volatility_fns import volFunctionBloomberg
+from financepy.models.turing_model_volatility_fns import volFunctionSVI
+from financepy.models.turing_model_volatility_fns import volFunctionSSVI
+from financepy.models.turing_model_sabr import volFunctionSABR
+from financepy.models.turing_model_sabr import volFunctionSABR_BETA_HALF
+from financepy.models.turing_model_sabr import volFunctionSABR_BETA_ONE
 
-from ...models.turing_model_volatility_fns import FinVolFunctionTypes
+from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
-from ...finutils.turing_math import norminvcdf
+from financepy.finutils.turing_math import norminvcdf
 
-from ...models.turing_model_black_scholes_analytical import bsValue
-from ...products.fx.turing_fx_vanilla_option import fastDelta
-from ...finutils.turing_distribution import FinDistribution
+from financepy.models.turing_model_black_scholes_analytical import bsValue
+from financepy.products.fx.turing_fx_vanilla_option import fastDelta
+from financepy.finutils.turing_distribution import TuringDistribution
 
-from ...finutils.turing_solvers_1d import newton_secant
-from ...finutils.turing_solvers_nm import nelder_mead
-from ...finutils.turing_global_types import FinSolverTypes
+from financepy.finutils.turing_solvers_1d import newton_secant
+from financepy.finutils.turing_solvers_nm import nelder_mead
+from financepy.finutils.turing_global_types import TuringSolverTypes
 
 ###############################################################################
 # ISSUES
@@ -100,7 +100,7 @@ from ...finutils.turing_global_types import FinSolverTypes
 #             break
 
 #     if index == 0:
-#         raise FinError("Value not bracketed")
+#         raise TuringError("Value not bracketed")
 
 #     k0 = strikes[index-1]
 #     k1 = strikes[index]
@@ -168,20 +168,20 @@ def _solveToHorizon(t, f,
     # to converge, so for those cases try again with CG
     # Numba version is quicker, but can be slightly away from CG output
     try:
-        if finSolverType == FinSolverTypes.NELDER_MEAD_NUMBA:
+        if finSolverType == TuringSolverTypes.NELDER_MEAD_NUMBA:
             xopt = nelder_mead(_obj, np.array(xinits), 
                                bounds=np.array([[], []]).T, 
                                args=args, tol_f=tol,
                                tol_x=tol, max_iter=1000)
-        elif finSolverType == FinSolverTypes.NELDER_MEAD:
+        elif finSolverType == TuringSolverTypes.NELDER_MEAD:
             opt = minimize(_obj, xinits, args, method="Nelder-Mead", tol=tol)
             xopt = opt.x
-        elif finSolverType == FinSolverTypes.CONJUGATE_GRADIENT:
+        elif finSolverType == TuringSolverTypes.CONJUGATE_GRADIENT:
             opt = minimize(_obj, xinits, args, method="CG", tol=tol)
             xopt = opt.x
     except:
         # If convergence fails try again with CG if necessary
-        if finSolverType != FinSolverTypes.CONJUGATE_GRADIENT:
+        if finSolverType != TuringSolverTypes.CONJUGATE_GRADIENT:
             print('Failed to converge, will try CG')
             opt = minimize(_obj, xinits, args, method="CG", tol=tol)
             xopt = opt.x
@@ -201,32 +201,32 @@ def volFunction(volFunctionTypeValue, params, f, k, t):
     ''' Return the volatility for a strike using a given polynomial
     interpolation following Section 3.9 of Iain Clark book. '''
 
-    if volFunctionTypeValue == FinVolFunctionTypes.CLARK.value:
+    if volFunctionTypeValue == TuringVolFunctionTypes.CLARK.value:
         vol = volFunctionClark(params, f, k, t)
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.SABR_BETA_ONE.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.SABR_BETA_ONE.value:
         vol = volFunctionSABR_BETA_ONE(params, f, k, t)
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.SABR_BETA_HALF.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.SABR_BETA_HALF.value:
         vol = volFunctionSABR_BETA_HALF(params, f, k, t)
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.BBG.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.BBG.value:
         vol = volFunctionBloomberg(params, f, k, t)
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.SABR.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.SABR.value:
         vol = volFunctionSABR(params, f, k, t)
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.CLARK5.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.CLARK5.value:
         vol = volFunctionClark(params, f, k, t)
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.SVI.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.SVI.value:
         vol = volFunctionSVI(params, f, k, t)
         return vol
-    elif volFunctionTypeValue == FinVolFunctionTypes.SSVI.value:
+    elif volFunctionTypeValue == TuringVolFunctionTypes.SSVI.value:
         vol = volFunctionSSVI(params, f, k, t)
         return vol
     else:
-        raise FinError("Unknown Model Type")
+        raise TuringError("Unknown Model Type")
 
 ###############################################################################
 
@@ -320,12 +320,12 @@ def volFunction(volFunctionTypeValue, params, f, k, t):
 #     # places. It should however agree to 6-7 decimal places. Which is OK.
 #     # =========================================================================
 
-#     if deltaMethodValue == FinFXDeltaMethod.SPOT_DELTA.value:
+#     if deltaMethodValue == TuringFXDeltaMethod.SPOT_DELTA.value:
 
 #         domDF = np.exp(-rd*tdel)
 #         forDF = np.exp(-rf*tdel)
 
-#         if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+#         if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
 #             phi = +1.0
 #         else:
 #             phi = -1.0
@@ -337,12 +337,12 @@ def volFunction(volFunctionTypeValue, params, f, k, t):
 #         K = F0T * np.exp(-vsqrtt * (phi * norminvdelta - vsqrtt/2.0))
 #         return K
 
-#     elif deltaMethodValue == FinFXDeltaMethod.FORWARD_DELTA.value:
+#     elif deltaMethodValue == TuringFXDeltaMethod.FORWARD_DELTA.value:
 
 #         domDF = np.exp(-rd*tdel)
 #         forDF = np.exp(-rf*tdel)
 
-#         if optionTypeValue == FinOptionTypes.EUROPEAN_CALL.value:
+#         if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
 #             phi = +1.0
 #         else:
 #             phi = -1.0
@@ -354,7 +354,7 @@ def volFunction(volFunctionTypeValue, params, f, k, t):
 #         K = F0T * np.exp(-vsqrtt * (phi * norminvdelta - vsqrtt/2.0))
 #         return K
 
-#     elif deltaMethodValue == FinFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
+#     elif deltaMethodValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
 
 #         argtuple = (spotFXRate, tdel, rd, rf, volatility,
 #                     deltaMethodValue, optionTypeValue, deltaTarget)
@@ -364,7 +364,7 @@ def volFunction(volFunctionTypeValue, params, f, k, t):
 
 #         return K
 
-#     elif deltaMethodValue == FinFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
+#     elif deltaMethodValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
 
 #         argtuple = (spotFXRate, tdel, rd, rf, volatility,
 #                     deltaMethodValue, optionTypeValue, deltaTarget)
@@ -376,7 +376,7 @@ def volFunction(volFunctionTypeValue, params, f, k, t):
 
 #     else:
 
-#         raise FinError("Unknown FinFXDeltaMethod")
+#         raise TuringError("Unknown TuringFXDeltaMethod")
 
 ###############################################################################
 
@@ -385,17 +385,17 @@ class FinSwaptionVolSurface():
     ''' Class to perform a calibration of a chosen parametrised surface to the
     prices of swaptions at different expiry dates and swap tenors. There is a 
     choice of volatility function from cubic in delta to full SABR and SSVI. 
-    Check out FinVolFunctionTypes. Visualising the volatility curve is useful. 
+    Check out TuringVolFunctionTypes. Visualising the volatility curve is useful.
     Also, there is no guarantee that the implied pdf will be positive.'''
 
     def __init__(self,
-                 valueDate: FinDate,
+                 valueDate: TuringDate,
                  expiryDates: (list),
                  fwdSwapRates: (list, np.ndarray),
                  strikeGrid: (np.ndarray),
                  volatilityGrid: (np.ndarray),
-                 volatilityFunctionType:FinVolFunctionTypes=FinVolFunctionTypes.SABR,
-                 finSolverType:FinSolverTypes=FinSolverTypes.NELDER_MEAD):
+                 volatilityFunctionType:TuringVolFunctionTypes=TuringVolFunctionTypes.SABR,
+                 finSolverType:TuringSolverTypes=TuringSolverTypes.NELDER_MEAD):
         ''' Create the FinSwaptionVolSurface object by passing in market vol 
         data for a list of strikes and expiry dates. '''
 
@@ -404,19 +404,19 @@ class FinSwaptionVolSurface():
         self._valueDate = valueDate
 
         if len(strikeGrid.shape) != 2:
-            raise FinError("Strike grid must be a 2D grid of values")
+            raise TuringError("Strike grid must be a 2D grid of values")
 
         if len(volatilityGrid.shape) != 2:
-            raise FinError("Volatility grid must be a 2D grid of values")
+            raise TuringError("Volatility grid must be a 2D grid of values")
             
         if len(strikeGrid) != len(volatilityGrid):
-            raise FinError("Strike grid and volatility grid must have same size")
+            raise TuringError("Strike grid and volatility grid must have same size")
 
         if len(strikeGrid[0]) != len(volatilityGrid[0]):
-            raise FinError("Strike grid and volatility grid must have same size")
+            raise TuringError("Strike grid and volatility grid must have same size")
 
         if len(expiryDates) != len(volatilityGrid[0]):
-            raise FinError("Expiry dates not same size as volatility grid")
+            raise TuringError("Expiry dates not same size as volatility grid")
 
         self._numExpiryDates = len(volatilityGrid[0])
         self._numStrikes = len(volatilityGrid)
@@ -506,7 +506,7 @@ class FinSwaptionVolSurface():
             vart = ((texp-t0) * vart1 + (t1-texp) * vart0) / (t1 - t0)
 
             if vart < 0.0:
-                raise FinError("Negative variance.")
+                raise TuringError("Negative variance.")
 
             volt = np.sqrt(vart/texp)
 
@@ -572,7 +572,7 @@ class FinSwaptionVolSurface():
     #     initialGuess = self._K_ATM[index0]
 
     #     K0 = _solveForSmileStrike(s, texp, self._rd[index0], self._rf[index0],
-    #                               FinOptionTypes.EUROPEAN_CALL.value,
+    #                               TuringOptionTypes.EUROPEAN_CALL.value,
     #                               volTypeValue, callDelta,
     #                               deltaMethodValue,
     #                               initialGuess,
@@ -585,7 +585,7 @@ class FinSwaptionVolSurface():
     #         K1 = _solveForSmileStrike(s, texp, 
     #                                   self._rd[index1], 
     #                                   self._rf[index1],
-    #                                   FinOptionTypes.EUROPEAN_CALL.value,
+    #                                   TuringOptionTypes.EUROPEAN_CALL.value,
     #                                   volTypeValue, callDelta,
     #                                   deltaMethodValue,
     #                                   initialGuess,
@@ -675,7 +675,7 @@ class FinSwaptionVolSurface():
     #     initialGuess = self._K_ATM[index0]
 
     #     K0 = _solveForSmileStrike(s, texp, self._rd[index0], self._rf[index0],
-    #                               FinOptionTypes.EUROPEAN_CALL.value,
+    #                               TuringOptionTypes.EUROPEAN_CALL.value,
     #                               volTypeValue, callDelta,
     #                               deltaMethodValue,
     #                               initialGuess,
@@ -692,7 +692,7 @@ class FinSwaptionVolSurface():
     #         K1 = _solveForSmileStrike(s, texp, 
     #                                   self._rd[index1], 
     #                                   self._rf[index1],
-    #                                   FinOptionTypes.EUROPEAN_CALL.value,
+    #                                   TuringOptionTypes.EUROPEAN_CALL.value,
     #                                   volTypeValue, callDelta,
     #                                   deltaMethodValue,
     #                                   initialGuess,
@@ -717,7 +717,7 @@ class FinSwaptionVolSurface():
     #         kt = ((texp-t0) * K1 + (t1-texp) * K0) / (t1 - t0)
 
     #         if vart < 0.0:
-    #             raise FinError("Failed interpolation due to negative variance.")
+    #             raise TuringError("Failed interpolation due to negative variance.")
 
     #         volt = np.sqrt(vart/texp)
 
@@ -730,28 +730,28 @@ class FinSwaptionVolSurface():
 
 ###############################################################################
 
-    def _buildVolSurface(self, finSolverType=FinSolverTypes.NELDER_MEAD):
+    def _buildVolSurface(self, finSolverType=TuringSolverTypes.NELDER_MEAD):
         ''' Main function to construct the vol surface. '''
 
-        if self._volatilityFunctionType == FinVolFunctionTypes.CLARK:
+        if self._volatilityFunctionType == TuringVolFunctionTypes.CLARK:
             numParameters = 3
-        elif self._volatilityFunctionType == FinVolFunctionTypes.SABR_BETA_ONE:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.SABR_BETA_ONE:
             numParameters = 3
-        elif self._volatilityFunctionType == FinVolFunctionTypes.SABR_BETA_HALF:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.SABR_BETA_HALF:
             numParameters = 3
-        elif self._volatilityFunctionType == FinVolFunctionTypes.BBG:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.BBG:
             numParameters = 3
-        elif self._volatilityFunctionType == FinVolFunctionTypes.SABR:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.SABR:
             numParameters = 4
-        elif self._volatilityFunctionType == FinVolFunctionTypes.CLARK5:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.CLARK5:
             numParameters = 5
-        elif self._volatilityFunctionType == FinVolFunctionTypes.SVI:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.SVI:
             numParameters = 5
-        elif self._volatilityFunctionType == FinVolFunctionTypes.SSVI:
+        elif self._volatilityFunctionType == TuringVolFunctionTypes.SSVI:
             numParameters = 5
         else:
             print(self._volatilityFunctionType)
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         numExpiryDates = self._numExpiryDates
 
@@ -837,7 +837,7 @@ class FinSwaptionVolSurface():
 
     # def impliedDbns(self, lowS, highS, numIntervals):
     #     ''' Calculate the pdf for each tenor horizon. Returns a list of
-    #     FinDistribution objects, one for each tenor horizon. '''
+    #     TuringDistribution objects, one for each tenor horizon. '''
 
     #     dbns = []
 
@@ -873,7 +873,7 @@ class FinSwaptionVolSurface():
 
     #         density = optionImpliedDbn(self._stockPrice, t, r, q, Ks, vols)
 
-    #         dbn = FinDistribution(Ks, density)
+    #         dbn = TuringDistribution(Ks, density)
     #         dbns.append(dbn)
 
     #     return dbns

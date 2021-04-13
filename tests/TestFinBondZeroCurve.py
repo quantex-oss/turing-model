@@ -8,14 +8,14 @@ sys.path.append("..")
 import os
 import datetime as dt
 
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate, fromDatetime
-from financepy.products.bonds.turing_bond import FinBond
-from financepy.products.bonds.turing_bond_zero_curve import FinBondZeroCurve
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate, fromDatetime
+from financepy.products.bonds.turing_bond import TuringBond
+from financepy.products.bonds.turing_bond_zero_curve import TuringBondZeroCurve
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 plotGraphs = False
 
@@ -29,9 +29,9 @@ def test_FinBondZeroCurve():
     bondDataFrame = pd.read_csv(path, sep='\t')
     bondDataFrame['mid'] = 0.5*(bondDataFrame['bid'] + bondDataFrame['ask'])
 
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
-    settlement = FinDate(19, 9, 2012)
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
+    settlement = TuringDate(19, 9, 2012)
 
     bonds = []
     cleanPrices = []
@@ -40,16 +40,16 @@ def test_FinBondZeroCurve():
         dateString = bondRow['maturity']
         matDatetime = dt.datetime.strptime(dateString, '%d-%b-%y')
         maturityDt = fromDatetime(matDatetime)
-        issueDt = FinDate(maturityDt._d, maturityDt._m, 2000)
+        issueDt = TuringDate(maturityDt._d, maturityDt._m, 2000)
         coupon = bondRow['coupon']/100.0
         cleanPrice = bondRow['mid']
-        bond = FinBond(issueDt, maturityDt, coupon, freqType, accrualType)
+        bond = TuringBond(issueDt, maturityDt, coupon, freqType, accrualType)
         bonds.append(bond)
         cleanPrices.append(cleanPrice)
 
 ###############################################################################
 
-    bondCurve = FinBondZeroCurve(settlement, bonds, cleanPrices)
+    bondCurve = TuringBondZeroCurve(settlement, bonds, cleanPrices)
 
     testCases.header("DATE", "ZERO RATE")
 

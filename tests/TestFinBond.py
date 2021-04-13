@@ -8,21 +8,21 @@ import datetime as dt
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_global_types import FinSwapTypes
-from financepy.products.bonds.turing_bond import FinYTMCalcType
-from financepy.products.bonds.turing_bond import FinBond
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
+from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.products.bonds.turing_bond import TuringYTMCalcType
+from financepy.products.bonds.turing_bond import TuringBond
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
 from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_date import FinDate, fromDatetime
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate, fromDatetime
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 
 
@@ -30,11 +30,11 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 
 def buildIborCurve(valuationDate):
 
-    depoDCCType = FinDayCountTypes.THIRTY_E_360_ISDA
+    depoDCCType = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
     depositRate = 0.050
 
-    depo0 = FinIborDeposit(
+    depo0 = TuringIborDeposit(
         valuationDate,
         "1D",
         depositRate,
@@ -44,34 +44,34 @@ def buildIborCurve(valuationDate):
     settlementDate = valuationDate.addWeekDays(spotDays)
 
     maturityDate = settlementDate.addMonths(1)
-    depo1 = FinIborDeposit(settlementDate,
-        maturityDate,
-        depositRate,
-        depoDCCType)
+    depo1 = TuringIborDeposit(settlementDate,
+                              maturityDate,
+                              depositRate,
+                              depoDCCType)
 
     maturityDate = settlementDate.addMonths(3)
-    depo2 = FinIborDeposit(
+    depo2 = TuringIborDeposit(
         settlementDate,
         maturityDate,
         depositRate,
         depoDCCType)
 
     maturityDate = settlementDate.addMonths(6)
-    depo3 = FinIborDeposit(
+    depo3 = TuringIborDeposit(
         settlementDate,
         maturityDate,
         depositRate,
         depoDCCType)
 
     maturityDate = settlementDate.addMonths(9)
-    depo4 = FinIborDeposit(
+    depo4 = TuringIborDeposit(
         settlementDate,
         maturityDate,
         depositRate,
         depoDCCType)
 
     maturityDate = settlementDate.addMonths(12)
-    depo5 = FinIborDeposit(
+    depo5 = TuringIborDeposit(
         settlementDate,
         maturityDate,
         depositRate,
@@ -85,8 +85,8 @@ def buildIborCurve(valuationDate):
     depos.append(depo5)
 
     fras = []
-    fixedDCCType = FinDayCountTypes.ACT_365F
-    fixedFreqType = FinFrequencyTypes.SEMI_ANNUAL
+    fixedDCCType = TuringDayCountTypes.ACT_365F
+    fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
 
     swaps = []
 
@@ -95,7 +95,7 @@ def buildIborCurve(valuationDate):
     swap1 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         swapRate,
         fixedFreqType,
         fixedDCCType)
@@ -108,7 +108,7 @@ def buildIborCurve(valuationDate):
     swap2 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         swapRate,
         fixedFreqType,
         fixedDCCType)
@@ -121,7 +121,7 @@ def buildIborCurve(valuationDate):
     swap3 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         swapRate,
         fixedFreqType,
         fixedDCCType)
@@ -133,7 +133,7 @@ def buildIborCurve(valuationDate):
     swap4 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         swapRate,
         fixedFreqType,
         fixedDCCType)
@@ -145,7 +145,7 @@ def buildIborCurve(valuationDate):
     swap5 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         swapRate,
         fixedFreqType,
         fixedDCCType)
@@ -157,7 +157,7 @@ def buildIborCurve(valuationDate):
     swap6 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         swapRate,
         fixedFreqType,
         fixedDCCType)
@@ -169,7 +169,7 @@ def buildIborCurve(valuationDate):
     swap7 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         swapRate,
         fixedFreqType,
         fixedDCCType)
@@ -181,7 +181,7 @@ def buildIborCurve(valuationDate):
     swap8 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         swapRate,
         fixedFreqType,
         fixedDCCType)
@@ -193,7 +193,7 @@ def buildIborCurve(valuationDate):
     swap9 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         swapRate,
         fixedFreqType,
         fixedDCCType)
@@ -201,10 +201,10 @@ def buildIborCurve(valuationDate):
 
 #    print(swap9._fixedLeg._paymentDates)
 
-    liborCurve = FinIborSingleCurve(valuationDate,
-                                    depos,
-                                    fras,
-                                    swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate,
+                                       depos,
+                                       fras,
+                                       swaps)
 
     if 1 == 0:
         import numpy as np
@@ -231,11 +231,11 @@ def test_FinBond():
     bondDataFrame = pd.read_csv(path, sep='\t')
     bondDataFrame['mid'] = 0.5*(bondDataFrame['bid'] + bondDataFrame['ask'])
 
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    settlementDate = FinDate(19, 9, 2012)
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    settlementDate = TuringDate(19, 9, 2012)
     face = ONE_MILLION
 
-    for accrualType in FinDayCountTypes:
+    for accrualType in TuringDayCountTypes:
 
         testCases.header("MATURITY", "COUPON", "CLEAN_PRICE", "ACCD_DAYS",
                          "ACCRUED", "YTM")
@@ -245,12 +245,12 @@ def test_FinBond():
             dateString = bond['maturity']
             matDatetime = dt.datetime.strptime(dateString, '%d-%b-%y')
             maturityDt = fromDatetime(matDatetime)
-            issueDt = FinDate(maturityDt._d, maturityDt._m, 2000)
+            issueDt = TuringDate(maturityDt._d, maturityDt._m, 2000)
 
             coupon = bond['coupon']/100.0
             cleanPrice = bond['mid']
-            bond = FinBond(issueDt, maturityDt,
-                           coupon, freqType, accrualType, 100)
+            bond = TuringBond(issueDt, maturityDt,
+                              coupon, freqType, accrualType, 100)
 
             ytm = bond.yieldToMaturity(settlementDate, cleanPrice)
             accd = bond._accruedInterest
@@ -263,16 +263,16 @@ def test_FinBond():
     ###########################################################################
     #  EXAMPLE FROM http://bondtutor.com/btchp4/topic6/topic6.htm
 
-    accrualConvention = FinDayCountTypes.ACT_ACT_ICMA
+    accrualConvention = TuringDayCountTypes.ACT_ACT_ICMA
     y = 0.062267
-    settlementDate = FinDate(19, 4, 1994)
-    issueDate = FinDate(15, 7, 1990)
-    maturityDate = FinDate(15, 7, 1997)
+    settlementDate = TuringDate(19, 4, 1994)
+    issueDate = TuringDate(15, 7, 1990)
+    maturityDate = TuringDate(15, 7, 1997)
     coupon = 0.085
     face = ONE_MILLION
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    bond = FinBond(issueDate, maturityDate,
-                   coupon, freqType, accrualConvention, face)
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    bond = TuringBond(issueDate, maturityDate,
+                      coupon, freqType, accrualConvention, face)
 
     testCases.header("FIELD", "VALUE")
     fullPrice = bond.fullPriceFromYTM(settlementDate, y)
@@ -311,9 +311,9 @@ def test_FinBond():
 
     # When the libor curve is the flat bond curve then the ASW is zero by
     # definition
-    flatCurve = FinDiscountCurveFlat(settlementDate,
-                                     ytm,
-                                     FinFrequencyTypes.SEMI_ANNUAL)
+    flatCurve = TuringDiscountCurveFlat(settlementDate,
+                                        ytm,
+                                        TuringFrequencyTypes.SEMI_ANNUAL)
 
     testCases.header("FIELD", "VALUE")
 
@@ -352,20 +352,20 @@ def test_FinBond():
 ##########################################################################
 
     testCases.banner("BLOOMBERG US TREASURY EXAMPLE")
-    settlementDate = FinDate(21, 7, 2017)
-    issueDate = FinDate(15, 5, 2010)
-    maturityDate = FinDate(15, 5, 2027)
+    settlementDate = TuringDate(21, 7, 2017)
+    issueDate = TuringDate(15, 5, 2010)
+    maturityDate = TuringDate(15, 5, 2027)
     coupon = 0.02375
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
     face = 100.0
 
-    bond = FinBond(issueDate,
-                   maturityDate,
-                   coupon,
-                   freqType,
-                   accrualType,
-                   face)
+    bond = TuringBond(issueDate,
+                      maturityDate,
+                      coupon,
+                      freqType,
+                      accrualType,
+                      face)
 
     testCases.header("FIELD", "VALUE")
     cleanPrice = 99.7808417
@@ -374,15 +374,15 @@ def test_FinBond():
     testCases.print("Current Yield = ", yld)
 
     ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               FinYTMCalcType.UK_DMO)
+                               TuringYTMCalcType.UK_DMO)
     testCases.print("UK DMO Yield To Maturity = ", ytm)
 
     ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               FinYTMCalcType.US_STREET)
+                               TuringYTMCalcType.US_STREET)
     testCases.print("US STREET Yield To Maturity = ", ytm)
 
     ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               FinYTMCalcType.US_TREASURY)
+                               TuringYTMCalcType.US_TREASURY)
     testCases.print("US TREASURY Yield To Maturity = ", ytm)
 
     fullPrice = bond.fullPriceFromYTM(settlementDate, ytm)
@@ -414,16 +414,16 @@ def test_FinBond():
 ##########################################################################
 
     testCases.banner("BLOOMBERG APPLE CORP BOND EXAMPLE")
-    settlementDate = FinDate(21, 7, 2017)
-    issueDate = FinDate(13, 5, 2012)
-    maturityDate = FinDate(13, 5, 2022)
+    settlementDate = TuringDate(21, 7, 2017)
+    issueDate = TuringDate(13, 5, 2012)
+    maturityDate = TuringDate(13, 5, 2022)
     coupon = 0.027
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.THIRTY_E_360_ISDA
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.THIRTY_E_360_ISDA
     face = 100.0
 
-    bond = FinBond(issueDate, maturityDate,
-                   coupon, freqType, accrualType, face)
+    bond = TuringBond(issueDate, maturityDate,
+                      coupon, freqType, accrualType, face)
 
     testCases.header("FIELD", "VALUE")
     cleanPrice = 101.581564
@@ -432,15 +432,15 @@ def test_FinBond():
     testCases.print("Current Yield", yld)
 
     ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               FinYTMCalcType.UK_DMO)
+                               TuringYTMCalcType.UK_DMO)
     testCases.print("UK DMO Yield To Maturity", ytm)
 
     ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               FinYTMCalcType.US_STREET)
+                               TuringYTMCalcType.US_STREET)
     testCases.print("US STREET Yield To Maturity", ytm)
 
     ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               FinYTMCalcType.US_TREASURY)
+                               TuringYTMCalcType.US_TREASURY)
     testCases.print("US TREASURY Yield To Maturity", ytm)
 
     fullPrice = bond.fullPriceFromYTM(settlementDate, ytm)
@@ -472,19 +472,19 @@ def test_FinBond():
 
 def test_FinBondExDividend():
 
-    issueDate = FinDate(7, 9, 2000)
-    maturityDate = FinDate(7, 9, 2020)
+    issueDate = TuringDate(7, 9, 2000)
+    maturityDate = TuringDate(7, 9, 2020)
     coupon = 0.05
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
     face = 100.0
     exDivDays = 7
     testCases.header("LABEL", "VALUE")
 
-    calendarType = FinCalendarTypes.UNITED_KINGDOM
-    bond = FinBond(issueDate, maturityDate, coupon,
-                   freqType, accrualType, face)
-    settlementDate = FinDate(7, 9, 2003)
+    calendarType = TuringCalendarTypes.UNITED_KINGDOM
+    bond = TuringBond(issueDate, maturityDate, coupon,
+                      freqType, accrualType, face)
+    settlementDate = TuringDate(7, 9, 2003)
     accrued = bond.calcAccruedInterest(settlementDate, exDivDays, calendarType)
     testCases.print("SettlementDate:", settlementDate)
     testCases.print("Accrued:", accrued)
@@ -493,19 +493,19 @@ def test_FinBondExDividend():
     testCases.banner("=======================================================")
     testCases.header("SETTLEMENT", "ACCRUED")
 
-    issueDate = FinDate(7, 9, 2000)
-    maturityDate = FinDate(7, 9, 2020)
+    issueDate = TuringDate(7, 9, 2000)
+    maturityDate = TuringDate(7, 9, 2020)
     coupon = 0.05
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
     face = 100.0
     exDivDays = 7
 
-    calendarType = FinCalendarTypes.UNITED_KINGDOM
-    bond = FinBond(issueDate, maturityDate, coupon,
-                   freqType, accrualType, face)
+    calendarType = TuringCalendarTypes.UNITED_KINGDOM
+    bond = TuringBond(issueDate, maturityDate, coupon,
+                      freqType, accrualType, face)
 
-    settlementDate = FinDate(25, 8, 2010)
+    settlementDate = TuringDate(25, 8, 2010)
 
     for _ in range(0, 13):
         settlementDate = settlementDate.addDays(1)

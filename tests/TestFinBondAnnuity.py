@@ -7,38 +7,38 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_calendar import FinDateGenRuleTypes
-from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_date import FinDate, setDateFormatType, FinDateFormatTypes
-from financepy.products.bonds.turing_bond_annuity import FinBondAnnuity
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
+from financepy.products.bonds.turing_bond_annuity import TuringBondAnnuity
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 
 def test_FinBondAnnuity():
 
-    settlementDate = FinDate(20, 6, 2018)
+    settlementDate = TuringDate(20, 6, 2018)
 
     #   print("==============================================================")
     #   print("SEMI-ANNUAL FREQUENCY")
     #   print("==============================================================")
 
-    maturityDate = FinDate(20, 6, 2019)
+    maturityDate = TuringDate(20, 6, 2019)
     coupon = 0.05
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    calendarType = FinCalendarTypes.WEEKEND
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
-    basisType = FinDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    calendarType = TuringCalendarTypes.WEEKEND
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
+    basisType = TuringDayCountTypes.ACT_360
     face = 1000000
 
-    annuity = FinBondAnnuity(
+    annuity = TuringBondAnnuity(
         maturityDate,
         coupon,
         freqType,
@@ -61,15 +61,15 @@ def test_FinBondAnnuity():
 #    print("QUARTERLY FREQUENCY")
 #    print("===============================================================")
 
-    maturityDate = FinDate(20, 6, 2028)
+    maturityDate = TuringDate(20, 6, 2028)
     coupon = 0.05
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    calendarType = FinCalendarTypes.WEEKEND
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
-    basisType = FinDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    calendarType = TuringCalendarTypes.WEEKEND
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
+    basisType = TuringDayCountTypes.ACT_360
 
-    annuity = FinBondAnnuity(
+    annuity = TuringBondAnnuity(
         maturityDate,
         coupon,
         freqType,
@@ -92,15 +92,15 @@ def test_FinBondAnnuity():
 #    print("MONTHLY FREQUENCY")
 #    print("==================================================================")
 
-    maturityDate = FinDate(20, 6, 2028)
+    maturityDate = TuringDate(20, 6, 2028)
     coupon = 0.05
-    freqType = FinFrequencyTypes.MONTHLY
-    calendarType = FinCalendarTypes.WEEKEND
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
-    basisType = FinDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.MONTHLY
+    calendarType = TuringCalendarTypes.WEEKEND
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
+    basisType = TuringDayCountTypes.ACT_360
 
-    annuity = FinBondAnnuity(
+    annuity = TuringBondAnnuity(
         maturityDate,
         coupon,
         freqType,
@@ -123,15 +123,15 @@ def test_FinBondAnnuity():
 #    print("FORWARD GEN")
 #    print("==================================================================")
 
-    maturityDate = FinDate(20, 6, 2028)
+    maturityDate = TuringDate(20, 6, 2028)
     coupon = 0.05
-    freqType = FinFrequencyTypes.ANNUAL
-    calendarType = FinCalendarTypes.WEEKEND
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.FORWARD
-    basisType = FinDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.ANNUAL
+    calendarType = TuringCalendarTypes.WEEKEND
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.FORWARD
+    basisType = TuringDayCountTypes.ACT_360
 
-    annuity = FinBondAnnuity(
+    annuity = TuringBondAnnuity(
         maturityDate,
         coupon,
         freqType,
@@ -154,15 +154,15 @@ def test_FinBondAnnuity():
 #    print("BACKWARD GEN WITH SHORT END STUB")
 #    print("==================================================================")
 
-    maturityDate = FinDate(20, 6, 2028)
+    maturityDate = TuringDate(20, 6, 2028)
     coupon = 0.05
-    freqType = FinFrequencyTypes.ANNUAL
-    calendarType = FinCalendarTypes.WEEKEND
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.FORWARD
-    basisType = FinDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.ANNUAL
+    calendarType = TuringCalendarTypes.WEEKEND
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.FORWARD
+    basisType = TuringDayCountTypes.ACT_360
 
-    annuity = FinBondAnnuity(
+    annuity = TuringBondAnnuity(
         maturityDate,
         coupon,
         freqType,
@@ -185,15 +185,15 @@ def test_FinBondAnnuity():
 #    print("FORWARD GEN WITH LONG END STUB")
 #    print("==================================================================")
 
-    maturityDate = FinDate(20, 6, 2028)
+    maturityDate = TuringDate(20, 6, 2028)
     coupon = 0.05
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    calendarType = FinCalendarTypes.WEEKEND
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.FORWARD
-    basisType = FinDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    calendarType = TuringCalendarTypes.WEEKEND
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.FORWARD
+    basisType = TuringDayCountTypes.ACT_360
 
-    annuity = FinBondAnnuity(
+    annuity = TuringBondAnnuity(
         maturityDate,
         coupon,
         freqType,

@@ -10,20 +10,20 @@ sys.path.append("..")
 
 from financepy.finutils.turing_date import *
 from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.market.curves.turing_discount_curve import FinDiscountCurve
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.market.curves.turing_discount_curve_ns import FinDiscountCurveNS
-from financepy.market.curves.turing_discount_curve_nss import FinDiscountCurveNSS
-from financepy.market.curves.turing_discount_curve_pwf import FinDiscountCurvePWF
-from financepy.market.curves.turing_discount_curve_pwl import FinDiscountCurvePWL
-from financepy.market.curves.turing_discount_curve_zeros import FinDiscountCurveZeros
-from financepy.market.curves.turing_discount_curve_poly import FinDiscountCurvePoly
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_ns import TuringDiscountCurveNS
+from financepy.market.curves.turing_discount_curve_nss import TuringDiscountCurveNSS
+from financepy.market.curves.turing_discount_curve_pwf import TuringDiscountCurvePWF
+from financepy.market.curves.turing_discount_curve_pwl import TuringDiscountCurvePWL
+from financepy.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from financepy.market.curves.turing_discount_curve_poly import TuringDiscountCurvePoly
 from financepy.finutils.turing_global_variables import gDaysInYear
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
-setDateFormatType(FinDateFormatTypes.UK_LONG)
+setDateFormatType(TuringDateFormatTypes.UK_LONG)
 
 PLOT_GRAPHS = False
 
@@ -35,7 +35,7 @@ PLOT_GRAPHS = False
 def test_FinDiscountCurves():
 
     # Create a curve from times and discount factors
-    valuationDate = FinDate(1, 1, 2018)
+    valuationDate = TuringDate(1, 1, 2018)
     years = [1.0, 2.0, 3.0, 4.0, 5.0]
     dates = valuationDate.addYears(years)
     years2 = []
@@ -48,32 +48,32 @@ def test_FinDiscountCurves():
     discountFactors = np.exp(-np.array(rates) * np.array(years2))
     curvesList = []
 
-    finDiscountCurve = FinDiscountCurve(valuationDate, dates, discountFactors,
-                                        FinInterpTypes.FLAT_FWD_RATES)
+    finDiscountCurve = TuringDiscountCurve(valuationDate, dates, discountFactors,
+                                           FinInterpTypes.FLAT_FWD_RATES)
     curvesList.append(finDiscountCurve)
 
-    finDiscountCurveFlat = FinDiscountCurveFlat(valuationDate, 0.05)
+    finDiscountCurveFlat = TuringDiscountCurveFlat(valuationDate, 0.05)
     curvesList.append(finDiscountCurveFlat)
 
-    finDiscountCurveNS = FinDiscountCurveNS(valuationDate, 0.0305, -0.01,
-                                            0.08, 10.0)
+    finDiscountCurveNS = TuringDiscountCurveNS(valuationDate, 0.0305, -0.01,
+                                               0.08, 10.0)
     curvesList.append(finDiscountCurveNS)
 
-    finDiscountCurveNSS = FinDiscountCurveNSS(valuationDate, 0.035, -0.02,
-                                              0.09, 0.1, 1.0, 2.0)
+    finDiscountCurveNSS = TuringDiscountCurveNSS(valuationDate, 0.035, -0.02,
+                                                 0.09, 0.1, 1.0, 2.0)
     curvesList.append(finDiscountCurveNSS)
 
-    finDiscountCurvePoly = FinDiscountCurvePoly(valuationDate, [0.05, 0.002,
-                                                                -0.00005])
+    finDiscountCurvePoly = TuringDiscountCurvePoly(valuationDate, [0.05, 0.002,
+                                                                   -0.00005])
     curvesList.append(finDiscountCurvePoly)
 
-    finDiscountCurvePWF = FinDiscountCurvePWF(valuationDate, dates, rates)
+    finDiscountCurvePWF = TuringDiscountCurvePWF(valuationDate, dates, rates)
     curvesList.append(finDiscountCurvePWF)
 
-    finDiscountCurvePWL = FinDiscountCurvePWL(valuationDate, dates, rates)
+    finDiscountCurvePWL = TuringDiscountCurvePWL(valuationDate, dates, rates)
     curvesList.append(finDiscountCurvePWL)
 
-    finDiscountCurveZeros = FinDiscountCurveZeros(valuationDate, dates, rates)
+    finDiscountCurveZeros = TuringDiscountCurveZeros(valuationDate, dates, rates)
     curvesList.append(finDiscountCurveZeros)
 
     curveNames = []

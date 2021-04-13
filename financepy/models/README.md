@@ -13,7 +13,7 @@ Also, Numba is used extensively, resulting in code speedups of between x 10 and 
 # Generic Arbitrage-Free Models
 There are the following arbitrage-free models:
 * FinModelBlack is Black's model for pricing forward starting contracts (in the forward measure) assuming the forward is lognormally distributed.
-* FinModelBlackShifted is Black's model for pricing forward starting contracts (in the forward measure) assuming the forward plus a shift is lognormally distributed. CHECK
+* TuringModelBlackShifted is Black's model for pricing forward starting contracts (in the forward measure) assuming the forward plus a shift is lognormally distributed. CHECK
 * FinModelBachelier prices options assuming the underlying evolves according to a Gaussian (normal) process.
 * FinSABR Model is a stochastic volatility model for forward values with a closed form approximate solution for the implied volatility. It is widely used for pricing European style interest rate options, specifically caps and floors and also swaptions.
 * FinSABRShifted Model is a stochastic volatility model for forward value with a closed form approximate solution for the implied volatility. It is widely used for pricing European style interest rate options, specifically caps and floors and also swaptions.

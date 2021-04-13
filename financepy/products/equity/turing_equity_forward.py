@@ -5,26 +5,26 @@
 import numpy as np
 
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_global_types import FinLongShort
-from ...finutils.turing_error import FinError
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_global_types import TuringLongShort
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 # ADD START DATE TO CLASS ?
 ###############################################################################
 
 
-class FinEquityForward():
+class TuringEquityForward():
     ''' Contract to buy or sell a stock in future at a price agreed today. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  forwardPrice: float,  # PRICE OF 1 UNIT OF FOREIGN IN DOM CCY
                  notional: float,
-                 longShort: FinLongShort = FinLongShort.LONG):
-        ''' Creates a FinEquityForward which allows the owner to buy the stock
+                 longShort: TuringLongShort = TuringLongShort.LONG):
+        ''' Creates a TuringEquityForward which allows the owner to buy the stock
         at a price agreed today. Need to specify if LONG or SHORT.'''
 
         checkArgumentTypes(self.__init__, locals())
@@ -44,16 +44,16 @@ class FinEquityForward():
         ''' Calculate the value of an equity forward contract from the stock 
         price and discound and dividend curves. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             t = (self._expiryDate - valueDate) / gDaysInYear
         else:
             t = valueDate
 
         if np.any(stockPrice <= 0.0):
-            raise FinError("Stock price must be greater than zero.")
+            raise TuringError("Stock price must be greater than zero.")
 
         if np.any(t < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         t = np.maximum(t, 1e-10)
 
@@ -67,7 +67,7 @@ class FinEquityForward():
         v = (fwdStockPrice - self._forwardPrice)
         v = v * self._notional * discountDF
         
-        if self._longShort == FinLongShort.SHORT:
+        if self._longShort == TuringLongShort.SHORT:
             v = v * (-1.0)
 
         return v
@@ -81,16 +81,16 @@ class FinEquityForward():
                 dividendCurve):
         ''' Calculate the forward price of the equity forward contract. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             t = (self._expiryDate - valueDate) / gDaysInYear
         else:
             t = valueDate
 
         if np.any(stockPrice <= 0.0):
-            raise FinError("spotFXRate must be greater than zero.")
+            raise TuringError("spotFXRate must be greater than zero.")
 
         if np.any(t < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         t = np.maximum(t, 1e-10)
 

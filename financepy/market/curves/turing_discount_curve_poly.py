@@ -4,31 +4,31 @@
 
 import numpy as np
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_variables import gSmall
-from ...finutils.turing_helper_functions import labelToString
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_helper_functions import timesFromDates
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_variables import gSmall
+from financepy.finutils.turing_helper_functions import labelToString
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_helper_functions import timesFromDates
 
 ###############################################################################
 
 
-class FinDiscountCurvePoly(FinDiscountCurve):
+class TuringDiscountCurvePoly(TuringDiscountCurve):
     ''' Zero Rate Curve of a specified frequency parametrised using a cubic
     polynomial. The zero rate is assumed to be continuously compounded but
     this can be amended by providing a frequency when extracting zero rates.
     We also need to specify a Day count convention for time calculations.
-    The class inherits all of the methods from FinDiscountCurve. '''
+    The class inherits all of the methods from TuringDiscountCurve. '''
 
     def __init__(self,
-                 valuationDate: FinDate,
+                 valuationDate: TuringDate,
                  coefficients: (list, np.ndarray),
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.CONTINUOUS,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_ACT_ISDA):
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA):
         ''' Create zero rate curve parametrised using a cubic curve from
         coefficients and specifying a compounding frequency type and day count
         convention. '''
@@ -44,22 +44,22 @@ class FinDiscountCurvePoly(FinDiscountCurve):
 ###############################################################################
 
     def zeroRate(self,
-                 dts: (list, FinDate),
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.CONTINUOUS,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_360):
+                 dts: (list, TuringDate),
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360):
         ''' Calculation of zero rates with specified frequency according to
-        polynomial parametrisation. This method overrides FinDiscountCurve.
+        polynomial parametrisation. This method overrides TuringDiscountCurve.
         The parametrisation is not strictly in terms of continuously compounded
         zero rates, this function allows other compounding and day counts.
         This function returns a single or vector of zero rates given a vector
         of dates so must use Numpy functions. The default frequency is a
         continuously compounded rate and ACT ACT day counting. '''
 
-        if isinstance(freqType, FinFrequencyTypes) is False:
-            raise FinError("Invalid Frequency type.")
+        if isinstance(freqType, TuringFrequencyTypes) is False:
+            raise TuringError("Invalid Frequency type.")
 
-        if isinstance(dayCountType, FinDayCountTypes) is False:
-            raise FinError("Invalid Day Count type.")
+        if isinstance(dayCountType, TuringDayCountTypes) is False:
+            raise TuringError("Invalid Day Count type.")
 
         # Get day count times to use with curve day count convention
         dcTimes = timesFromDates(dts, self._valuationDate, self._dayCountType)
@@ -98,7 +98,7 @@ class FinDiscountCurvePoly(FinDiscountCurve):
 ###############################################################################
 
     def df(self,
-           dates: (list, FinDate)):
+           dates: (list, TuringDate)):
         ''' Calculate the fwd rate to maturity date but with times as inputs.
         This function is used internally and should be discouraged for external
         use. The compounding frequency defaults to that specified in the

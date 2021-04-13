@@ -5,44 +5,44 @@
 import sys
 sys.path.append("..")
 
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_frequency import FinFrequencyTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##############################################################################
 
 def test_FinFlatCurve():
 
-    curveDate = FinDate(1, 1, 2019)
+    curveDate = TuringDate(1, 1, 2019)
     months = range(1, 60, 3)
     dates = curveDate.addMonths(months)
     testCases.header("COMPOUNDING", "DFS")
-    compounding = FinFrequencyTypes.CONTINUOUS
+    compounding = TuringFrequencyTypes.CONTINUOUS
 
-    flatCurve = FinDiscountCurveFlat(curveDate, 0.05, compounding)
+    flatCurve = TuringDiscountCurveFlat(curveDate, 0.05, compounding)
     dfs = flatCurve.df(dates)
     testCases.print(compounding, dfs)
 
-    compounding = FinFrequencyTypes.ANNUAL
-    flatCurve = FinDiscountCurveFlat(curveDate, 0.05, compounding)
+    compounding = TuringFrequencyTypes.ANNUAL
+    flatCurve = TuringDiscountCurveFlat(curveDate, 0.05, compounding)
     dfs = flatCurve.df(dates)
     testCases.print(compounding, dfs)
 
-    compounding = FinFrequencyTypes.SEMI_ANNUAL
-    flatCurve = FinDiscountCurveFlat(curveDate, 0.05, compounding)
+    compounding = TuringFrequencyTypes.SEMI_ANNUAL
+    flatCurve = TuringDiscountCurveFlat(curveDate, 0.05, compounding)
     dfs = flatCurve.df(dates)
     testCases.print(compounding, dfs)
 
-    compounding = FinFrequencyTypes.QUARTERLY
-    flatCurve = FinDiscountCurveFlat(curveDate, 0.05, compounding)
+    compounding = TuringFrequencyTypes.QUARTERLY
+    flatCurve = TuringDiscountCurveFlat(curveDate, 0.05, compounding)
     dfs = flatCurve.df(dates)
     testCases.print(compounding, dfs)
 
-    compounding = FinFrequencyTypes.MONTHLY
-    flatCurve = FinDiscountCurveFlat(curveDate, 0.05, compounding)
+    compounding = TuringFrequencyTypes.MONTHLY
+    flatCurve = TuringDiscountCurveFlat(curveDate, 0.05, compounding)
     dfs = flatCurve.df(dates)
     testCases.print(compounding, dfs)
 

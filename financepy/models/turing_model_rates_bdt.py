@@ -5,11 +5,11 @@
 import numpy as np
 from numba import njit, float64, int64
 
-from ..finutils.turing_error import FinError
+from ..finutils.turing_error import TuringError
 from ..finutils.turing_math import accruedInterpolator
 from ..market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
 from ..finutils.turing_helper_functions import labelToString
-from ..finutils.turing_global_types import FinExerciseTypes
+from ..finutils.turing_global_types import TuringExerciseTypes
 from ..finutils.turing_global_variables import gSmall
 
 interp = FinInterpTypes.FLAT_FWD_RATES.value
@@ -22,14 +22,14 @@ interp = FinInterpTypes.FLAT_FWD_RATES.value
 
 def optionExerciseTypesToInt(optionExerciseType):
 
-    if optionExerciseType == FinExerciseTypes.EUROPEAN:
+    if optionExerciseType == TuringExerciseTypes.EUROPEAN:
         return 1
-    if optionExerciseType == FinExerciseTypes.BERMUDAN:
+    if optionExerciseType == TuringExerciseTypes.BERMUDAN:
         return 2
-    if optionExerciseType == FinExerciseTypes.AMERICAN:
+    if optionExerciseType == TuringExerciseTypes.AMERICAN:
         return 3
     else:
-        raise FinError("Unknown option exercise type.")
+        raise TuringError("Unknown option exercise type.")
 
 ###############################################################################
 
@@ -79,7 +79,7 @@ def searchRoot(x0, m, Q, rt, dfEnd, dt, sigma):
         df = f1 - f0
 
         if df == 0.0:
-            raise FinError("Search for alpha fails due to zero derivative")
+            raise TuringError("Search for alpha fails due to zero derivative")
 
         x = x1 - f1 * (x1-x0)/df
         x0, f0 = x1, f1
@@ -89,7 +89,7 @@ def searchRoot(x0, m, Q, rt, dfEnd, dt, sigma):
         if (abs(f1) <= max_error):
             return x1
 
-    raise FinError("Search root deriv FAILED to find alpha.")
+    raise TuringError("Search root deriv FAILED to find alpha.")
 
 ###############################################################################
 
@@ -229,7 +229,7 @@ def bermudanSwaption_Tree_Fast(texp, tmat,
 
             elif exerciseTypeInt == 3 and m > expiryStep:
 
-                raise FinError("American optionality not completed.")
+                raise TuringError("American optionality not completed.")
 
                 ## Need to define floating value on all grid dates
 
@@ -283,7 +283,7 @@ def americanBondOption_Tree_Fast(texp, tmat,
 
         if tcpn < 0.0:
             print(couponTimes)
-            raise FinError("Coupon times must be positive.")
+            raise TuringError("Coupon times must be positive.")
 
         n = int(tcpn/_dt + 0.50)
         ttree = _treeTimes[n]
@@ -303,7 +303,7 @@ def americanBondOption_Tree_Fast(texp, tmat,
     #     print("MAPPED AMOUNTS", mappedAmounts)
     #
     #    if mappedTimes[0] > gSmall:
-    #        raise FinError("Mapped times [0] must be <= 0 for first coupon > 0")
+    #        raise TuringError("Mapped times [0] must be <= 0 for first coupon > 0")
     #
     ###########################################################################
 
@@ -641,7 +641,7 @@ def buildTreeFast(sigma, treeTimes, numTimeSteps, discountFactors):
 ###############################################################################
 
 
-class FinModelRatesBDT():
+class TuringModelRatesBDT():
 
     def __init__(self, 
                  sigma: float, 
@@ -651,12 +651,12 @@ class FinModelRatesBDT():
         and is given by d(log(r)) = theta(t) * dt + sigma * dW. Althopugh '''
 
         if sigma < 0.0:
-            raise FinError("Negative volatility not allowed.")
+            raise TuringError("Negative volatility not allowed.")
 
         self._sigma = sigma
 
         if numTimeSteps < 3:
-            raise FinError("Drift fitting requires at least 3 time steps.")
+            raise TuringError("Drift fitting requires at least 3 time steps.")
 
         self._numTimeSteps = numTimeSteps
 
@@ -672,10 +672,10 @@ class FinModelRatesBDT():
     def buildTree(self, treeMat, dfTimes, dfValues):
 
         if isinstance(dfTimes, np.ndarray) is False:
-            raise FinError("DF TIMES must be a numpy vector")
+            raise TuringError("DF TIMES must be a numpy vector")
 
         if isinstance(dfValues, np.ndarray) is False:
-            raise FinError("DF VALUES must be a numpy vector")
+            raise TuringError("DF VALUES must be a numpy vector")
 
         interp = FinInterpTypes.FLAT_FWD_RATES.value
 
@@ -711,10 +711,10 @@ class FinModelRatesBDT():
         tmat = couponTimes[-1]
 
         if texp > tmat:
-            raise FinError("Option expiry after bond matures.")
+            raise TuringError("Option expiry after bond matures.")
 
         if texp < 0.0:
-            raise FinError("Option expiry time negative.")
+            raise TuringError("Option expiry time negative.")
 
         #######################################################################
 
@@ -743,10 +743,10 @@ class FinModelRatesBDT():
         tmat = couponTimes[-1]
 
         if texp > tmat:
-            raise FinError("Option expiry after bond matures.")
+            raise TuringError("Option expiry after bond matures.")
 
         if texp < 0.0:
-            raise FinError("Option expiry time negative.")
+            raise TuringError("Option expiry time negative.")
 
         #######################################################################
 

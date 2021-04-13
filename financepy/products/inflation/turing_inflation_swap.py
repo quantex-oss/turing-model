@@ -3,18 +3,18 @@
 ##############################################################################
 
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_calendar import FinCalendar
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_calendar import TuringCalendar
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 
 
-class FinInflationSwap(object):
+class TuringInflationSwap(object):
     ''' Class for managing LIBOR forward rate agreements. A forward rate
     agreement is an agreement to exchange a fixed pre-agreed rate for a
     floating rate linked to LIBOR that is not known until some specified
@@ -40,34 +40,34 @@ class FinInflationSwap(object):
     This should be amended later. '''
 
     def __init__(self,
-                 startDate: FinDate,  # The date the FRA starts to accrue
-                 maturityDateOrTenor: (FinDate, str),  # End of the Ibor rate period
+                 startDate: TuringDate,  # The date the FRA starts to accrue
+                 maturityDateOrTenor: (TuringDate, str),  # End of the Ibor rate period
                  fraRate: float,  # The fixed contractual FRA rate
-                 dayCountType: FinDayCountTypes,  # For interest period
+                 dayCountType: TuringDayCountTypes,  # For interest period
                  notional: float = 100.0,
                  payFixedRate: bool = True,  # True if the FRA rate is being paid
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.MODIFIED_FOLLOWING):
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING):
         ''' Create a Forward Rate Agreeement object. '''
 
         print("DO NOT USE")
-        raise FinError("DO NOT USE")
+        raise TuringError("DO NOT USE")
         
         checkArgumentTypes(self.__init__, locals())
 
         self._calendarType = calendarType
         self._busDayAdjustType = busDayAdjustType
 
-        if type(maturityDateOrTenor) == FinDate:
+        if type(maturityDateOrTenor) == TuringDate:
             maturityDate = maturityDateOrTenor
         else:
             maturityDate = startDate.addTenor(maturityDateOrTenor)
-            calendar = FinCalendar(self._calendarType)
+            calendar = TuringCalendar(self._calendarType)
             maturityDate = calendar.adjust(maturityDate,
                                            self._busDayAdjustType)
 
         if startDate > maturityDate:
-            raise FinError("Settlement date after maturity date")
+            raise TuringError("Settlement date after maturity date")
 
         self._startDate = startDate
         self._maturityDate = maturityDate
@@ -83,7 +83,7 @@ class FinInflationSwap(object):
         market FRA rate. The same curve is used for calculating the forward
         Ibor and for doing discounting on the expected forward payment. '''
 
-        dc = FinDayCount(self._dayCountType)
+        dc = TuringDayCount(self._dayCountType)
         accFactor = dc.yearFrac(self._startDate, self._maturityDate)[0]
         df1 = liborCurve.df(self._startDate)
         df2 = liborCurve.df(self._maturityDate)
@@ -105,7 +105,7 @@ class FinInflationSwap(object):
         ''' Determine the maturity date discount factor needed to refit
         the FRA given the libor curve anbd the contract FRA rate. '''
 
-        dc = FinDayCount(self._dayCountType)
+        dc = TuringDayCount(self._dayCountType)
         df1 = liborCurve.df(self._startDate)
         accFactor = dc.yearFrac(self._startDate, self._maturityDate)[0]
         df2 = df1 / (1.0 + accFactor * self._fraRate)
@@ -117,7 +117,7 @@ class FinInflationSwap(object):
         ''' Determine the value of the Deposit given a Ibor curve. '''
 
         flow_settle = self._notional
-        dc = FinDayCount(self._dayCountType)
+        dc = TuringDayCount(self._dayCountType)
         accFactor = dc.yearFrac(self._startDate, self._maturityDate)[0]
         flow_maturity = (1.0 + accFactor * self._fraRate) * self._notional
 

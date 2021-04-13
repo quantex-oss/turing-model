@@ -7,16 +7,16 @@ sys.path.append("..")
 
 import numpy as np
 
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.market.volatility.turing_fx_vol_surface import FinFXVolSurface
-from financepy.market.volatility.turing_fx_vol_surface_plus import FinFXVolSurfacePlus
-from financepy.market.volatility.turing_fx_vol_surface_plus import FinFXATMMethod
-from financepy.market.volatility.turing_fx_vol_surface_plus import FinFXDeltaMethod
-from financepy.finutils.turing_date import FinDate
-from financepy.models.turing_model_volatility_fns import FinVolFunctionTypes
+from financepy.market.volatility.turing_fx_vol_surface_plus import TuringFXVolSurfacePlus
+from financepy.market.volatility.turing_fx_vol_surface_plus import TuringFXATMMethod
+from financepy.market.volatility.turing_fx_vol_surface_plus import TuringFXDeltaMethod
+from financepy.finutils.turing_date import TuringDate
+from financepy.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 import matplotlib.pyplot as plt
 
@@ -37,15 +37,15 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = FinDate(10, 4, 2020)
+        valueDate = TuringDate(10, 4, 2020)
 
         forName = "EUR"
         domName = "USD"
         forCCRate = 0.03460  # EUR
         domCCRate = 0.02940  # USD
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 1.3465
@@ -59,27 +59,27 @@ def test_FinFXMktVolSurface1(verboseCalibration):
 
         notionalCurrency = forName
 
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL
-        deltaMethod = FinFXDeltaMethod.SPOT_DELTA
-        volFunctionType = FinVolFunctionTypes.CLARK5
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
+        deltaMethod = TuringFXDeltaMethod.SPOT_DELTA
+        volFunctionType = TuringVolFunctionTypes.CLARK5
         alpha = 0.5 # FIT WINGS AT 10D if ALPHA = 1.0
 
-        fxMarketPlus = FinFXVolSurfacePlus(valueDate,
-                                       spotFXRate,
-                                       currencyPair,
-                                       notionalCurrency,
-                                       domDiscountCurve,
-                                       forDiscountCurve,
-                                       tenors,
-                                       atmVols,
-                                       marketStrangle25DeltaVols,
-                                       riskReversal25DeltaVols,
-                                       marketStrangle10DeltaVols,
-                                       riskReversal10DeltaVols,
-                                       alpha,
-                                       atmMethod,
-                                       deltaMethod, 
-                                       volFunctionType)
+        fxMarketPlus = TuringFXVolSurfacePlus(valueDate,
+                                              spotFXRate,
+                                              currencyPair,
+                                              notionalCurrency,
+                                              domDiscountCurve,
+                                              forDiscountCurve,
+                                              tenors,
+                                              atmVols,
+                                              marketStrangle25DeltaVols,
+                                              riskReversal25DeltaVols,
+                                              marketStrangle10DeltaVols,
+                                              riskReversal10DeltaVols,
+                                              alpha,
+                                              atmMethod,
+                                              deltaMethod,
+                                              volFunctionType)
 
         fxMarketPlus.checkCalibration(False)
 
@@ -106,15 +106,15 @@ def test_FinFXMktVolSurface2(verboseCalibration):
         # Example from Book extract by Iain Clarke using Tables 3.3 and 3.4
         # print("EURJPY EXAMPLE CLARK")
 
-        valueDate = FinDate(10, 4, 2020)
+        valueDate = TuringDate(10, 4, 2020)
 
         forName = "EUR"
         domName = "JPY"
         forCCRate = 0.0294  # EUR
         domCCRate = 0.0171  # USD
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 90.72
@@ -129,26 +129,26 @@ def test_FinFXMktVolSurface2(verboseCalibration):
 
         notionalCurrency = forName
 
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL_PREM_ADJ
-        deltaMethod = FinFXDeltaMethod.SPOT_DELTA_PREM_ADJ
-        volFunctionType = FinVolFunctionTypes.CLARK5
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL_PREM_ADJ
+        deltaMethod = TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ
+        volFunctionType = TuringVolFunctionTypes.CLARK5
 
-        fxMarketPlus = FinFXVolSurfacePlus(valueDate,
-                                           spotFXRate,
-                                           currencyPair,
-                                           notionalCurrency,
-                                           domDiscountCurve,
-                                           forDiscountCurve,
-                                           tenors,
-                                           atmVols,
-                                           marketStrangle25DeltaVols,
-                                           riskReversal25DeltaVols,
-                                           marketStrangle10DeltaVols,
-                                           riskReversal10DeltaVols,
-                                           alpha,
-                                           atmMethod,
-                                           deltaMethod,
-                                           volFunctionType)
+        fxMarketPlus = TuringFXVolSurfacePlus(valueDate,
+                                              spotFXRate,
+                                              currencyPair,
+                                              notionalCurrency,
+                                              domDiscountCurve,
+                                              forDiscountCurve,
+                                              tenors,
+                                              atmVols,
+                                              marketStrangle25DeltaVols,
+                                              riskReversal25DeltaVols,
+                                              marketStrangle10DeltaVols,
+                                              riskReversal10DeltaVols,
+                                              alpha,
+                                              atmMethod,
+                                              deltaMethod,
+                                              volFunctionType)
 
 #        fxMarketPlus.checkCalibration(True)
 
@@ -176,15 +176,15 @@ def test_FinFXMktVolSurface3(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 4.4 and 4.5
         # where we examine the calibration to a full surface in Chapter 4
 
-        valueDate = FinDate(10, 4, 2020)
+        valueDate = TuringDate(10, 4, 2020)
 
         forName = "EUR"
         domName = "USD"
         forCCRate = 0.03460  # EUR
         domCCRate = 0.02940  # USD
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 1.3465
@@ -201,27 +201,27 @@ def test_FinFXMktVolSurface3(verboseCalibration):
         # I HAVE NO YET MADE DELTA METHOD A VECTOR FOR EACH TERM AS I WOULD
         # NEED TO DO AS DESCRIBED IN CLARK PAGE 70
         
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL
-        deltaMethod = FinFXDeltaMethod.FORWARD_DELTA # THIS IS DIFFERENT
-        volFunctionType = FinVolFunctionTypes.CLARK5
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
+        deltaMethod = TuringFXDeltaMethod.FORWARD_DELTA # THIS IS DIFFERENT
+        volFunctionType = TuringVolFunctionTypes.CLARK5
         alpha = 0.5 # FIT WINGS AT 10D if ALPHA = 1.0
 
-        fxMarketPlus = FinFXVolSurfacePlus(valueDate,
-                                       spotFXRate,
-                                       currencyPair,
-                                       notionalCurrency,
-                                       domDiscountCurve,
-                                       forDiscountCurve,
-                                       tenors,
-                                       atmVols,
-                                       marketStrangle25DeltaVols,
-                                       riskReversal25DeltaVols,
-                                       marketStrangle10DeltaVols,
-                                       riskReversal10DeltaVols,
-                                       alpha,
-                                       atmMethod,
-                                       deltaMethod, 
-                                       volFunctionType)
+        fxMarketPlus = TuringFXVolSurfacePlus(valueDate,
+                                              spotFXRate,
+                                              currencyPair,
+                                              notionalCurrency,
+                                              domDiscountCurve,
+                                              forDiscountCurve,
+                                              tenors,
+                                              atmVols,
+                                              marketStrangle25DeltaVols,
+                                              riskReversal25DeltaVols,
+                                              marketStrangle10DeltaVols,
+                                              riskReversal10DeltaVols,
+                                              alpha,
+                                              atmMethod,
+                                              deltaMethod,
+                                              volFunctionType)
 
         fxMarketPlus.checkCalibration(False)
 
@@ -313,15 +313,15 @@ def test_FinFXMktVolSurface4(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = FinDate(10, 4, 2020)
+        valueDate = TuringDate(10, 4, 2020)
 
         forName = "EUR"
         domName = "USD"
         forCCRate = 0.03460  # EUR
         domCCRate = 0.02940  # USD
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 1.3465
@@ -338,27 +338,27 @@ def test_FinFXMktVolSurface4(verboseCalibration):
         
         notionalCurrency = forName
 
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL
-        deltaMethod = FinFXDeltaMethod.SPOT_DELTA
-        volFunctionType = FinVolFunctionTypes.CLARK
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
+        deltaMethod = TuringFXDeltaMethod.SPOT_DELTA
+        volFunctionType = TuringVolFunctionTypes.CLARK
         alpha = 0.50 # FIT WINGS AT 10D if ALPHA = 1.0
 
-        fxMarketPlus = FinFXVolSurfacePlus(valueDate,
-                                       spotFXRate,
-                                       currencyPair,
-                                       notionalCurrency,
-                                       domDiscountCurve,
-                                       forDiscountCurve,
-                                       tenors,
-                                       atmVols,
-                                       marketStrangle25DeltaVols,
-                                       riskReversal25DeltaVols,
-                                       marketStrangle10DeltaVols,
-                                       riskReversal10DeltaVols,
-                                       alpha,
-                                       atmMethod,
-                                       deltaMethod, 
-                                       volFunctionType)
+        fxMarketPlus = TuringFXVolSurfacePlus(valueDate,
+                                              spotFXRate,
+                                              currencyPair,
+                                              notionalCurrency,
+                                              domDiscountCurve,
+                                              forDiscountCurve,
+                                              tenors,
+                                              atmVols,
+                                              marketStrangle25DeltaVols,
+                                              riskReversal25DeltaVols,
+                                              marketStrangle10DeltaVols,
+                                              riskReversal10DeltaVols,
+                                              alpha,
+                                              atmMethod,
+                                              deltaMethod,
+                                              volFunctionType)
 
         fxMarketPlus.checkCalibration(False)
 
@@ -406,15 +406,15 @@ def test_FinFXMktVolSurface5(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = FinDate(10, 4, 2020)
+        valueDate = TuringDate(10, 4, 2020)
 
         forName = "EUR"
         domName = "USD"
         forCCRate = 0.03460  # EUR
         domCCRate = 0.02940  # USD
 
-        domDiscountCurve = FinDiscountCurveFlat(valueDate, domCCRate)
-        forDiscountCurve = FinDiscountCurveFlat(valueDate, forCCRate)
+        domDiscountCurve = TuringDiscountCurveFlat(valueDate, domCCRate)
+        forDiscountCurve = TuringDiscountCurveFlat(valueDate, forCCRate)
 
         currencyPair = forName + domName
         spotFXRate = 1.3465
@@ -431,27 +431,27 @@ def test_FinFXMktVolSurface5(verboseCalibration):
         
         notionalCurrency = forName
 
-        atmMethod = FinFXATMMethod.FWD_DELTA_NEUTRAL
-        deltaMethod = FinFXDeltaMethod.SPOT_DELTA
-        volFunctionType = FinVolFunctionTypes.CLARK
+        atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
+        deltaMethod = TuringFXDeltaMethod.SPOT_DELTA
+        volFunctionType = TuringVolFunctionTypes.CLARK
         alpha = 0.50 # FIT WINGS AT 10D if ALPHA = 1.0
 
-        fxMarketPlus = FinFXVolSurfacePlus(valueDate,
-                                       spotFXRate,
-                                       currencyPair,
-                                       notionalCurrency,
-                                       domDiscountCurve,
-                                       forDiscountCurve,
-                                       tenors,
-                                       atmVols,
-                                       marketStrangle25DeltaVols,
-                                       riskReversal25DeltaVols,
-                                       marketStrangle10DeltaVols,
-                                       riskReversal10DeltaVols,
-                                       alpha,
-                                       atmMethod,
-                                       deltaMethod, 
-                                       volFunctionType)
+        fxMarketPlus = TuringFXVolSurfacePlus(valueDate,
+                                              spotFXRate,
+                                              currencyPair,
+                                              notionalCurrency,
+                                              domDiscountCurve,
+                                              forDiscountCurve,
+                                              tenors,
+                                              atmVols,
+                                              marketStrangle25DeltaVols,
+                                              riskReversal25DeltaVols,
+                                              marketStrangle10DeltaVols,
+                                              riskReversal10DeltaVols,
+                                              alpha,
+                                              atmMethod,
+                                              deltaMethod,
+                                              volFunctionType)
 
         fxMarketPlus.checkCalibration(False)
 

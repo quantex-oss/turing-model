@@ -6,7 +6,7 @@
 from math import exp, sqrt, fabs, log
 from numba import njit, boolean, int64, float64, vectorize
 import numpy as np
-from .turing_error import FinError
+from .turing_error import TuringError
 
 PI = 3.14159265358979323846
 INVROOT2PI = 0.3989422804014327
@@ -46,7 +46,7 @@ def accruedInterpolator(tset: float,  # Settlement time in years
     print("CPN TIMES", couponTimes)
     print("CPN AMNTS", couponAmounts)
  
-    raise FinError("Failed to calculate accrued")
+    raise TuringError("Failed to calculate accrued")
 
 ###############################################################################
 
@@ -91,9 +91,9 @@ def testRange(x: np.ndarray,
     upper bound. '''
     for i in range(0, len(x)):
         if x[i] < lower:
-            raise FinError("Value below lower.")
+            raise TuringError("Value below lower.")
         if x[i] > upper:
-            raise FinError("Value above upper.")
+            raise TuringError("Value above upper.")
 
 ###############################################################################
 
@@ -512,7 +512,7 @@ def norminvcdf(p):
 
     # If argument out of bounds, raise error
     if p < 0.0 or p > 1.0:
-        raise FinError("p must be between 0.0 and 1.0")
+        raise TuringError("p must be between 0.0 and 1.0")
 
     if p == 0.0:
         p = 1e-10
@@ -554,7 +554,7 @@ def phi2(h1, hk, r):
     ''' Drezner and Wesolowsky implementation of bi-variate normal '''
 
 #    if abs(r) > 0.9999999:
-#        raise FinError("Phi2: |Correlation| > 1")
+#        raise TuringError("Phi2: |Correlation| > 1")
 
     x = [0.0, 0.0, 0.0, 0.0, 0.0]
     w = [0.0, 0.0, 0.0, 0.0, 0.0]

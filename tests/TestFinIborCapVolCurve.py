@@ -7,12 +7,12 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate
-from financepy.market.volatility.turing_ibor_cap_vol_curve import FinIborCapVolCurve
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 
@@ -20,7 +20,7 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 def test_FinCapVolCurve():
 
     # Reproduces example in Table 32.1 of Hull Book
-    valuationDate = FinDate(1, 1, 2020)
+    valuationDate = TuringDate(1, 1, 2020)
 
     capVolDates = []
     capletVolTenor = "1Y"
@@ -37,11 +37,11 @@ def test_FinCapVolCurve():
                        16.79, 16.30, 16.01, 15.76, 15.54]
     capVolatilities = np.array(capVolatilities)/100.0
 
-    dayCountType = FinDayCountTypes.ACT_ACT_ISDA
-    volCurve = FinIborCapVolCurve(valuationDate,
-                                   capVolDates,
-                                   capVolatilities,
-                                   dayCountType)
+    dayCountType = TuringDayCountTypes.ACT_ACT_ISDA
+    volCurve = TuringIborCapVolCurve(valuationDate,
+                                     capVolDates,
+                                     capVolatilities,
+                                     dayCountType)
 
     testCases.header("DATE", "CAPVOL", "CAPLETVOL")
     for dt in capVolDates:

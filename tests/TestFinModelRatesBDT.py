@@ -8,23 +8,23 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate
-from financepy.market.curves.turing_discount_curve import FinDiscountCurve
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.products.bonds.turing_bond import FinBond
+from financepy.finutils.turing_date import TuringDate
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.products.bonds.turing_bond import TuringBond
 from financepy.products.rates.turing_ibor_swaption import FinIborSwaption
-from financepy.products.rates.turing_ibor_swaption import FinSwapTypes
+from financepy.products.rates.turing_ibor_swaption import TuringSwapTypes
 from financepy.models.turing_model_black import FinModelBlack
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
 from financepy.finutils.turing_global_variables import gDaysInYear
-from financepy.market.curves.turing_discount_curve_zeros import FinDiscountCurveZeros
-from financepy.models.turing_model_rates_bdt import FinModelRatesBDT
+from financepy.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from financepy.models.turing_model_rates_bdt import TuringModelRatesBDT
 from financepy.finutils.turing_helper_functions import printTree
-from financepy.finutils.turing_global_types import FinExerciseTypes
+from financepy.finutils.turing_global_types import TuringExerciseTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 PLOT_GRAPHS = False
 
@@ -36,21 +36,21 @@ def testBlackModelCheck():
     # Used to check swaption price below - we have Ts = 1 and Te = 4
     # Expect a price around 122 cents which is what I find.
 
-    valuationDate = FinDate(1, 1, 2020)
-    liborCurve = FinDiscountCurveFlat(valuationDate, 0.06,
-                                      FinFrequencyTypes.SEMI_ANNUAL)
+    valuationDate = TuringDate(1, 1, 2020)
+    liborCurve = TuringDiscountCurveFlat(valuationDate, 0.06,
+                                         TuringFrequencyTypes.SEMI_ANNUAL)
 
-    settlementDate = FinDate(1, 1, 2020)
-    exerciseDate = FinDate(1, 1, 2021)
-    maturityDate = FinDate(1, 1, 2024)
+    settlementDate = TuringDate(1, 1, 2020)
+    exerciseDate = TuringDate(1, 1, 2021)
+    maturityDate = TuringDate(1, 1, 2024)
 
     fixedCoupon = 0.06
-    fixedFrequencyType = FinFrequencyTypes.SEMI_ANNUAL
-    fixedDayCountType = FinDayCountTypes.THIRTY_E_360_ISDA
+    fixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360_ISDA
     notional = 100.0
 
     # Pricing a PAY
-    swaptionType = FinSwapTypes.PAY
+    swaptionType = TuringSwapTypes.PAY
     swaption = FinIborSwaption(settlementDate,
                                 exerciseDate,
                                 maturityDate,
@@ -72,7 +72,7 @@ def test_BDTExampleOne():
     # HULL BOOK NOTES
     # http://www-2.rotman.utoronto.ca/~hull/technicalnotes/TechnicalNote23.pdf
 
-    valuationDate = FinDate(1, 1, 2020)
+    valuationDate = TuringDate(1, 1, 2020)
     years = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
     zeroDates = valuationDate.addYears(years)
     zeroRates = [0.00, 0.10, 0.11, 0.12, 0.125, 0.13]
@@ -83,10 +83,10 @@ def test_BDTExampleOne():
     testCases.header("RATES")
     testCases.print(zeroRates)
 
-    curve = FinDiscountCurveZeros(valuationDate,
-                                  zeroDates,
-                                  zeroRates,
-                                  FinFrequencyTypes.ANNUAL)
+    curve = TuringDiscountCurveZeros(valuationDate,
+                                     zeroDates,
+                                     zeroRates,
+                                     TuringFrequencyTypes.ANNUAL)
 
     yieldVol = 0.16
 
@@ -100,7 +100,7 @@ def test_BDTExampleOne():
     years = np.array(years)
     dfs = np.array(dfs)
 
-    model = FinModelRatesBDT(yieldVol, numTimeSteps)
+    model = TuringModelRatesBDT(yieldVol, numTimeSteps)
     model.buildTree(tmat, years, dfs)
 
 ###############################################################################
@@ -113,14 +113,14 @@ def test_BDTExampleTwo():
 
     testCases.banner("===================== FIG 28.11 HULL BOOK =============")
 
-    settlementDate = FinDate(1, 12, 2019)
-    issueDate = FinDate(1, 12, 2015)
+    settlementDate = TuringDate(1, 12, 2019)
+    issueDate = TuringDate(1, 12, 2015)
     expiryDate = settlementDate.addTenor("18m")
     maturityDate = settlementDate.addTenor("10Y")
     coupon = 0.05
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
-    bond = FinBond(issueDate, maturityDate, coupon, freqType, accrualType)
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
+    bond = TuringBond(issueDate, maturityDate, coupon, freqType, accrualType)
 
     couponTimes = []
     couponFlows = []
@@ -156,7 +156,7 @@ def test_BDTExampleTwo():
     testCases.header("LABEL", "VALUES")
     testCases.print("TIMES:", times)
 
-    curve = FinDiscountCurve(settlementDate, dates, dfs)
+    curve = TuringDiscountCurve(settlementDate, dates, dfs)
 
     price = bond.cleanPriceFromDiscountCurve(settlementDate, curve)
     testCases.print("Fixed Income Price:", price)
@@ -165,12 +165,12 @@ def test_BDTExampleTwo():
 
     # Test convergence
     numStepsList = [5] #[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
-    exerciseType = FinExerciseTypes.AMERICAN
+    exerciseType = TuringExerciseTypes.AMERICAN
 
     testCases.header("Values")
     treeVector = []
     for numTimeSteps in numStepsList:
-        model = FinModelRatesBDT(sigma, numTimeSteps)
+        model = TuringModelRatesBDT(sigma, numTimeSteps)
         model.buildTree(tmat, times, dfs)
         v = model.bondOption(texp, strikePrice,
                              face, couponTimes, couponFlows, exerciseType)
@@ -201,16 +201,16 @@ def test_BDTExampleThree():
     # This is a sanity check
     testBlackModelCheck()
 
-    settlementDate = FinDate(1, 1, 2020)
+    settlementDate = TuringDate(1, 1, 2020)
     times = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0])
     dates = settlementDate.addYears(times)
     rate = 0.06
     dfs = 1.0 / (1.0 + rate/2.0)**(2.0*times)
-    curve = FinDiscountCurve(settlementDate, dates, dfs)
+    curve = TuringDiscountCurve(settlementDate, dates, dfs)
 
     coupon = 0.06
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
     strikePrice = 100.0
     face = 100.0
     # Andersen paper
@@ -219,13 +219,13 @@ def test_BDTExampleThree():
     testCases.header("ExerciseType", "Sigma", "NumSteps", "Texp", "Tmat", 
                      "V_Fixed", "V_pay", "V_rec")
 
-    for exerciseType in [FinExerciseTypes.EUROPEAN,
-                         FinExerciseTypes.BERMUDAN]:
+    for exerciseType in [TuringExerciseTypes.EUROPEAN,
+                         TuringExerciseTypes.BERMUDAN]:
 
         for maturityYears in [4.0, 5.0, 10.0, 20.0]:
 
             maturityDate = settlementDate.addYears(maturityYears)
-            issueDate = FinDate(maturityDate._d, maturityDate._m, 2000)
+            issueDate = TuringDate(maturityDate._d, maturityDate._m, 2000)
 
             if maturityYears == 4.0 or maturityYears == 5.0:
                 sigma = 0.2012
@@ -241,7 +241,7 @@ def test_BDTExampleThree():
                 tmat = (maturityDate - settlementDate) / gDaysInYear
                 texp = (expiryDate - settlementDate) / gDaysInYear
 
-                bond = FinBond(issueDate, maturityDate, coupon, freqType, accrualType)
+                bond = TuringBond(issueDate, maturityDate, coupon, freqType, accrualType)
 
                 couponTimes = []
                 couponFlows = []
@@ -257,7 +257,7 @@ def test_BDTExampleThree():
 
                 price = bond.cleanPriceFromDiscountCurve(settlementDate, curve)
 
-                model = FinModelRatesBDT(sigma, numTimeSteps)
+                model = TuringModelRatesBDT(sigma, numTimeSteps)
                 model.buildTree(tmat, times, dfs)
 
                 v = model.bermudanSwaption(texp,

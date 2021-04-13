@@ -5,16 +5,16 @@
 import numpy as np
 
 
-from ...finutils.turing_math import N
-from ...finutils.turing_global_variables import gDaysInYear, gSmall
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
+from financepy.finutils.turing_math import N
+from financepy.finutils.turing_global_variables import gDaysInYear, gSmall
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
 
-from ...models.turing_gbm_process import FinGBMProcess
-from ...products.equity.turing_equity_option import FinEquityOption
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_global_types import FinOptionTypes
+from financepy.models.turing_gbm_process import FinGBMProcess
+from financepy.products.equity.turing_equity_option import TuringEquityOption
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_global_types import TuringOptionTypes
 
 ##########################################################################
 # TODO: Attempt control variate adjustment to monte carlo
@@ -30,22 +30,22 @@ from ...finutils.turing_global_types import FinOptionTypes
 ##########################################################################
 
 
-class FinEquityFixedLookbackOption(FinEquityOption):
+class TuringEquityFixedLookbackOption(TuringEquityOption):
     ''' This is an equity option in which the strike of the option is fixed but
     the value of the stock price used to determine the payoff is the maximum
     in the case of a call option, and a minimum in the case of a put option.'''
 
     def __init__(self,
-                 expiryDate: FinDate,
-                 optionType: FinOptionTypes,
+                 expiryDate: TuringDate,
+                 optionType: TuringOptionTypes,
                  strikePrice: float):
         ''' Create the FixedLookbackOption by specifying the expiry date, the
         option type and the option strike. '''
 
         checkArgumentTypes(self.__init__, locals())
 
-        if optionType != FinOptionTypes.EUROPEAN_CALL and optionType != FinOptionTypes.EUROPEAN_PUT:
-            raise FinError("Option type must be EUROPEAN_CALL or EUROPEAN_PUT")
+        if optionType != TuringOptionTypes.EUROPEAN_CALL and optionType != TuringOptionTypes.EUROPEAN_PUT:
+            raise TuringError("Option type must be EUROPEAN_CALL or EUROPEAN_PUT")
 
         self._expiryDate = expiryDate
         self._optionType = optionType
@@ -54,10 +54,10 @@ class FinEquityFixedLookbackOption(FinEquityOption):
 ###############################################################################
 
     def value(self,
-              valueDate: FinDate,
+              valueDate: TuringDate,
               stockPrice: float,
-              discountCurve: FinDiscountCurve,
-              dividendCurve: FinDiscountCurve,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
               volatility: float,
               stockMinMax: float):
         ''' Valuation of the Fixed Lookback option using Black-Scholes using
@@ -79,14 +79,14 @@ class FinEquityFixedLookbackOption(FinEquityOption):
         smin = 0.0
         smax = 0.0
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             smax = stockMinMax
             if smax < s0:
-                raise FinError("The Smax value must be >= the stock price.")
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+                raise TuringError("The Smax value must be >= the stock price.")
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             smin = stockMinMax
             if smin > s0:
-                raise FinError("The Smin value must be <= the stock price.")
+                raise TuringError("The Smin value must be <= the stock price.")
 
         # There is a risk of an overflow in the limit of q=r which
         # we remove by adjusting the value of the dividend
@@ -102,7 +102,7 @@ class FinEquityFixedLookbackOption(FinEquityOption):
         sqrtT = np.sqrt(t)
 
         # Taken from Hull Page 536 (6th edition) and Haug Page 143
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
 
             if k > smax:
 
@@ -134,7 +134,7 @@ class FinEquityFixedLookbackOption(FinEquityOption):
                 v = df * (smax - k) + s0 * dq * N(e1) - \
                     smax * df * N(e2) + s0 * df * u * term
 
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
 
             if k >= smin:
                 f1 = (np.log(s0/smin) + (b + v * v / 2.0) * t) / v / sqrtT
@@ -166,18 +166,18 @@ class FinEquityFixedLookbackOption(FinEquityOption):
                 v = k * df * N(-d2) - s0 * dq * N(-d1) + s0 * df * u * term
 
         else:
-            raise FinError("Unknown lookback option type:" +
-                           str(self._optionType))
+            raise TuringError("Unknown lookback option type:" +
+                              str(self._optionType))
 
         return v
 
 ###############################################################################
 
     def valueMC(self,
-                valueDate: FinDate,
+                valueDate: TuringDate,
                 stockPrice: float,
-                discountCurve: FinDiscountCurve,
-                dividendCurve: FinDiscountCurve,
+                discountCurve: TuringDiscountCurve,
+                dividendCurve: TuringDiscountCurve,
                 volatility: float,
                 stockMinMax: float,
                 numPaths: int = 10000,
@@ -201,15 +201,15 @@ class FinEquityFixedLookbackOption(FinEquityOption):
         smin = 0.0
         smax = 0.0
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             smax = stockMinMax
             if smax < stockPrice:
-                raise FinError(
+                raise TuringError(
                     "Smax must be greater than or equal to the stock price.")
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             smin = stockMinMax
             if smin > stockPrice:
-                raise FinError(
+                raise TuringError(
                     "Smin must be less than or equal to the stock price.")
 
         model = FinGBMProcess()
@@ -220,18 +220,18 @@ class FinEquityFixedLookbackOption(FinEquityOption):
         numPaths = 2 * numPaths
         payoff = np.zeros(numPaths)
 
-        if optionType == FinOptionTypes.EUROPEAN_CALL:
+        if optionType == TuringOptionTypes.EUROPEAN_CALL:
             SMax = np.max(Sall, axis=1)
             smaxs = np.ones(numPaths) * smax
             payoff = np.maximum(SMax - k, 0.0)
             payoff = np.maximum(payoff, smaxs - k)
-        elif optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif optionType == TuringOptionTypes.EUROPEAN_PUT:
             SMin = np.min(Sall, axis=1)
             smins = np.ones(numPaths) * smin
             payoff = np.maximum(k - SMin, 0.0)
             payoff = np.maximum(payoff, k - smins)
         else:
-            raise FinError("Unknown lookback option type:" + str(optionType))
+            raise TuringError("Unknown lookback option type:" + str(optionType))
 
         v = payoff.mean() * df
         return v

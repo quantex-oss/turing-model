@@ -2,16 +2,16 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_calendar import FinCalendarTypes, FinDateGenRuleTypes
-from ...finutils.turing_calendar import FinCalendar, FinBusDayAdjustTypes
-from ...finutils.turing_helper_functions import checkArgumentTypes, labelToString
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_global_types import FinSwapTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes, TuringDateGenRuleTypes
+from financepy.finutils.turing_calendar import TuringCalendar, TuringBusDayAdjustTypes
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 from .turing_float_leg import FinFloatLeg
 
@@ -30,20 +30,20 @@ class FinIborOIS(object):
     which the implied index rates are extracted. '''
     
     def __init__(self,
-                 effectiveDate: FinDate,  # Date interest starts to accrue
-                 terminationDateOrTenor: (FinDate, str),  # Date contract ends
-                 iborType: FinSwapTypes,
-                 iborFreqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 iborDayCountType: FinDayCountTypes  = FinDayCountTypes.THIRTY_E_360,
+                 effectiveDate: TuringDate,  # Date interest starts to accrue
+                 terminationDateOrTenor: (TuringDate, str),  # Date contract ends
+                 iborType: TuringSwapTypes,
+                 iborFreqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 iborDayCountType: TuringDayCountTypes  = TuringDayCountTypes.THIRTY_E_360,
                  iborSpread: float = 0.0,
-                 oisFreqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 oisDayCountType: FinDayCountTypes = FinDayCountTypes.THIRTY_E_360,
+                 oisFreqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 oisDayCountType: TuringDayCountTypes = TuringDayCountTypes.THIRTY_E_360,
                  oisSpread: float = 0.0,
                  oisPaymentLag: int = 0,
                  notional: float = ONE_MILLION,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
         ''' Create a Ibor basis swap contract giving the contract start
         date, its maturity, frequency and day counts on the two floating 
         legs and notional. The floating leg parameters have default
@@ -55,21 +55,21 @@ class FinIborOIS(object):
 
         checkArgumentTypes(self.__init__, locals())
 
-        if type(terminationDateOrTenor) == FinDate:
+        if type(terminationDateOrTenor) == TuringDate:
             self._terminationDate = terminationDateOrTenor
         else:
             self._terminationDate = effectiveDate.addTenor(terminationDateOrTenor)
 
-        calendar = FinCalendar(calendarType)
+        calendar = TuringCalendar(calendarType)
         self._maturityDate = calendar.adjust(self._terminationDate,
                                              busDayAdjustType)
 
         if effectiveDate > self._maturityDate:
-            raise FinError("Start date after maturity date")
+            raise TuringError("Start date after maturity date")
 
-        oisType = FinSwapTypes.PAY
-        if iborType == FinSwapTypes.PAY:
-            oisType = FinSwapTypes.RECEIVE
+        oisType = TuringSwapTypes.PAY
+        if iborType == TuringSwapTypes.PAY:
+            oisType = TuringSwapTypes.RECEIVE
         
         principal = 0.0
 
@@ -102,10 +102,10 @@ class FinIborOIS(object):
 ###############################################################################
 
     def value(self,
-              valuationDate: FinDate,
-              discountCurve: FinDiscountCurve,
-              indexIborCurve: FinDiscountCurve = None,
-              indexOISCurve: FinDiscountCurve = None,
+              valuationDate: TuringDate,
+              discountCurve: TuringDiscountCurve,
+              indexIborCurve: TuringDiscountCurve = None,
+              indexOISCurve: TuringDiscountCurve = None,
               firstFixingRateLeg1=None,
               firstFixingRateLeg2=None):
         ''' Value the interest rate swap on a value date given a single Ibor

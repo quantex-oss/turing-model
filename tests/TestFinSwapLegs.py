@@ -6,37 +6,37 @@ import sys
 sys.path.append("..")
 
 from financepy.finutils.turing_math import ONE_MILLION
-from financepy.finutils.turing_global_types import FinSwapTypes
-from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
-from financepy.finutils.turing_calendar import FinDateGenRuleTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_amount import FinAmount
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_calendar import FinCalendarTypes
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_global_types import TuringSwapTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_amount import TuringAmount
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_date import TuringDate
 from financepy.products.rates.turing_fixed_leg import FinFixedLeg
 from financepy.products.rates.turing_float_leg import FinFloatLeg
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 
 def test_FinFixedIborSwapLeg():
 
-    effectiveDate = FinDate(28, 10, 2020)
-    maturityDate = FinDate(28, 10, 2025)
+    effectiveDate = TuringDate(28, 10, 2020)
+    maturityDate = TuringDate(28, 10, 2025)
     
     coupon = -0.44970/100.0
-    freqType = FinFrequencyTypes.ANNUAL    
-    dayCountType = FinDayCountTypes.THIRTY_360_BOND
+    freqType = TuringFrequencyTypes.ANNUAL
+    dayCountType = TuringDayCountTypes.THIRTY_360_BOND
     notional = 10.0 * ONE_MILLION
-    legPayRecType = FinSwapTypes.PAY
-    calendarType = FinCalendarTypes.TARGET
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+    legPayRecType = TuringSwapTypes.PAY
+    calendarType = TuringCalendarTypes.TARGET
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
     paymentLag = 0
     principal = 0.0
 
@@ -57,17 +57,17 @@ def test_FinFixedIborSwapLeg():
 
 def test_FinFixedOISSwapLeg():
 
-    effectiveDate = FinDate(28, 10, 2020)
-    maturityDate = FinDate(28, 10, 2025)
+    effectiveDate = TuringDate(28, 10, 2020)
+    maturityDate = TuringDate(28, 10, 2025)
     
     coupon = -0.515039/100.0
-    freqType = FinFrequencyTypes.ANNUAL    
-    dayCountType = FinDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.ANNUAL
+    dayCountType = TuringDayCountTypes.ACT_360
     notional = 10.0 * ONE_MILLION
-    legPayRecType = FinSwapTypes.PAY
-    calendarType = FinCalendarTypes.TARGET
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+    legPayRecType = TuringSwapTypes.PAY
+    calendarType = TuringCalendarTypes.TARGET
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
     paymentLag = 1
     principal = 0.0
 
@@ -88,17 +88,17 @@ def test_FinFixedOISSwapLeg():
 
 def test_FinFloatIborLeg():
 
-    effectiveDate = FinDate(28, 10, 2020)
-    maturityDate = FinDate(28, 10, 2025)
+    effectiveDate = TuringDate(28, 10, 2020)
+    maturityDate = TuringDate(28, 10, 2025)
     
     spread = 0.0
-    freqType = FinFrequencyTypes.ANNUAL    
-    dayCountType = FinDayCountTypes.THIRTY_360_BOND
+    freqType = TuringFrequencyTypes.ANNUAL
+    dayCountType = TuringDayCountTypes.THIRTY_360_BOND
     notional = 10.0 * ONE_MILLION
-    legPayRecType = FinSwapTypes.PAY
-    calendarType = FinCalendarTypes.TARGET
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+    legPayRecType = TuringSwapTypes.PAY
+    calendarType = TuringCalendarTypes.TARGET
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
     paymentLag = 0
     principal = 0.0
 
@@ -115,7 +115,7 @@ def test_FinFloatIborLeg():
                                busDayAdjustType,
                                dateGenRuleType)
 
-    liborCurve = FinDiscountCurveFlat(effectiveDate, 0.05)
+    liborCurve = TuringDiscountCurveFlat(effectiveDate, 0.05)
 
     firstFixing = 0.03
 
@@ -127,17 +127,17 @@ def test_FinFloatIborLeg():
 
 def test_FinFloatOISLeg():
 
-    effectiveDate = FinDate(28, 10, 2020)
-    maturityDate = FinDate(28, 10, 2025)
+    effectiveDate = TuringDate(28, 10, 2020)
+    maturityDate = TuringDate(28, 10, 2025)
     
     spread = 0.0
-    freqType = FinFrequencyTypes.ANNUAL    
-    dayCountType = FinDayCountTypes.ACT_360
+    freqType = TuringFrequencyTypes.ANNUAL
+    dayCountType = TuringDayCountTypes.ACT_360
     notional = 10.0 * ONE_MILLION
-    legPayRecType = FinSwapTypes.PAY
-    calendarType = FinCalendarTypes.TARGET
-    busDayAdjustType = FinBusDayAdjustTypes.FOLLOWING
-    dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+    legPayRecType = TuringSwapTypes.PAY
+    calendarType = TuringCalendarTypes.TARGET
+    busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
+    dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
     paymentLag = 1
     principal = 0.0
 
@@ -154,7 +154,7 @@ def test_FinFloatOISLeg():
                                   busDayAdjustType,
                                   dateGenRuleType)
 
-    liborCurve = FinDiscountCurveFlat(effectiveDate, 0.05)
+    liborCurve = TuringDiscountCurveFlat(effectiveDate, 0.05)
 
     firstFixing = 0.03
 

@@ -8,20 +8,20 @@ sys.path.append("..")
 from financepy.models.turing_process_simulator import FinProcessTypes
 from financepy.models.turing_process_simulator import FinGBMNumericalScheme
 from financepy.products.equity.turing_equity_barrier_option import FinEquityBarrierTypes
-from financepy.products.equity.turing_equity_barrier_option import FinEquityBarrierOption
+from financepy.products.equity.turing_equity_barrier_option import TuringEquityBarrierOption
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 def test_FinEquityBarrierOption():
 
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 1, 2016)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 1, 2016)
     stockPrice = 100.0
     volatility = 0.20
     interestRate = 0.05
@@ -32,8 +32,8 @@ def test_FinEquityBarrierOption():
     scheme = FinGBMNumericalScheme.NORMAL
     processType = FinProcessTypes.GBM
 
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)    
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
     model = FinModelBlackScholes(volatility)
 
@@ -59,7 +59,7 @@ def test_FinEquityBarrierOption():
             B = 110.0
             K = 100.0
 
-            option = FinEquityBarrierOption(
+            option = TuringEquityBarrierOption(
                 expiryDate, K, optionType, B, numObservationsPerYear)
             value = option.value(
                 valueDate,
@@ -95,7 +95,7 @@ def test_FinEquityBarrierOption():
             B = 100.0
             K = 110.0
 
-            option = FinEquityBarrierOption(
+            option = TuringEquityBarrierOption(
                 expiryDate, K, optionType, B, numObservationsPerYear)
             value = option.value(
                 valueDate,
@@ -139,7 +139,7 @@ def test_FinEquityBarrierOption():
 
         for stockPrice in stockPrices:
 
-            barrierOption = FinEquityBarrierOption(
+            barrierOption = TuringEquityBarrierOption(
                 expiryDate, 100.0, optionType, B, numObservationsPerYear)
 
             value = barrierOption.value(

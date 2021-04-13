@@ -8,22 +8,22 @@ import time
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate, dateRange
-from financepy.finutils.turing_date import FinDateFormatTypes
+from financepy.finutils.turing_date import TuringDate, dateRange
+from financepy.finutils.turing_date import TuringDateFormatTypes
 from financepy.finutils.turing_date import setDateFormatType
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
-setDateFormatType(FinDateFormatTypes.UK_LONGEST)
+setDateFormatType(TuringDateFormatTypes.UK_LONGEST)
 
 def test_FinDate():
 
-    startDate = FinDate(1, 1, 2018)
+    startDate = TuringDate(1, 1, 2018)
 
-    assert FinDate(1, 1, 2018) == FinDate.fromString('1-1-2018', '%d-%m-%Y')
+    assert TuringDate(1, 1, 2018) == TuringDate.fromString('1-1-2018', '%d-%m-%Y')
 
     testCases.header("DATE", "MONTHS", "CDS DATE")
 
@@ -31,7 +31,7 @@ def test_FinDate():
         nextCDSDate = startDate.nextCDSDate(numMonths)
         testCases.print(str(startDate), numMonths, str(nextCDSDate))
 
-    startDate = FinDate(1, 1, 2018)
+    startDate = TuringDate(1, 1, 2018)
 
     testCases.header("STARTDATE", "MONTHS", "CDS DATE")
 
@@ -45,7 +45,7 @@ def test_FinDate():
 
 def test_FinDateTenors():
 
-    startDate = FinDate(23, 2, 2018)
+    startDate = TuringDate(23, 2, 2018)
 
     testCases.header("TENOR", "DATE")
     tenor = "5d"
@@ -83,7 +83,7 @@ def test_FinDateTenors():
 
 def test_FinDateRange():
 
-    startDate = FinDate(1, 1, 2010)
+    startDate = TuringDate(1, 1, 2010)
 
     testCases.header("Tenor", "Dates")
 
@@ -110,7 +110,7 @@ def test_FinDateRange():
 
 def test_FinDateAddMonths():
 
-    startDate = FinDate(1, 1, 2010)
+    startDate = TuringDate(1, 1, 2010)
 
     testCases.header("Months", "Dates")
 
@@ -128,7 +128,7 @@ def test_FinDateAddMonths():
 
 def test_FinDateAddYears():
 
-    startDate = FinDate(1, 1, 2010)
+    startDate = TuringDate(1, 1, 2010)
 
     testCases.header("Years", "Dates")
 
@@ -164,7 +164,7 @@ def test_FinDateSpeed():
     start = time.time()
     dateList = []
     for _ in range(0, numSteps):
-        startDate = FinDate(1, 1, 2010)
+        startDate = TuringDate(1, 1, 2010)
         dateList.append(startDate)
     end = time.time()
     elapsed = end - start
@@ -181,10 +181,10 @@ def test_FinDateSpeed():
 
 def test_FinDateFormat():
 
-    dt = FinDate(20, 10, 2019)    
+    dt = TuringDate(20, 10, 2019)
     testCases.header("FORMAT", "DATE")
 
-    for formatType in FinDateFormatTypes:
+    for formatType in TuringDateFormatTypes:
         setDateFormatType(formatType) 
         testCases.print(formatType.name, dt)
 
@@ -194,32 +194,32 @@ def test_FinDateFormat():
 def test_IntraDay():
 
     testCases.header("Date1", "Date2", "Diff")
-    d1 = FinDate(20, 10, 2019, 0, 0, 0)
-    d2 = FinDate(25, 10, 2019, 0, 0, 0)
+    d1 = TuringDate(20, 10, 2019, 0, 0, 0)
+    d2 = TuringDate(25, 10, 2019, 0, 0, 0)
     diff = d2 - d1
     testCases.print(d1, d2, diff)
     testCases.print(d1._excelDate, d2._excelDate, diff)
 
     ###########################################################################
 
-    d1 = FinDate(20, 10, 2019, 10, 0, 0)
-    d2 = FinDate(25, 10, 2019, 10, 25, 0)
+    d1 = TuringDate(20, 10, 2019, 10, 0, 0)
+    d2 = TuringDate(25, 10, 2019, 10, 25, 0)
     diff = d2 - d1
     testCases.print(d1, d2, diff)
     testCases.print(d1._excelDate, d2._excelDate, diff)
 
     ###########################################################################
 
-    d1 = FinDate(20, 10, 2019, 10, 0, 0)
-    d2 = FinDate(20, 10, 2019, 10, 25, 30)
+    d1 = TuringDate(20, 10, 2019, 10, 0, 0)
+    d2 = TuringDate(20, 10, 2019, 10, 25, 30)
     diff = d2 - d1
     testCases.print(d1, d2, diff)
     testCases.print(d1._excelDate, d2._excelDate, diff)
 
     ###########################################################################
 
-    d1 = FinDate(19, 10, 2019, 10, 0, 0)
-    d2 = FinDate(20, 10, 2019, 10, 25, 40)
+    d1 = TuringDate(19, 10, 2019, 10, 0, 0)
+    d2 = TuringDate(20, 10, 2019, 10, 25, 40)
     diff = d2 - d1
     testCases.print(d1, d2, diff)
     testCases.print(d1._excelDate, d2._excelDate, diff)
@@ -228,52 +228,52 @@ def test_IntraDay():
 
 def test_FinDateEOM():
 
-    dt = FinDate(29, 2, 2000)    
+    dt = TuringDate(29, 2, 2000)
     assert(dt.isEOM() == True)
 
-    dt = FinDate(28, 2, 2001)    
+    dt = TuringDate(28, 2, 2001)
     assert(dt.isEOM() == True)
 
-    dt = FinDate(29, 2, 2004)    
+    dt = TuringDate(29, 2, 2004)
     assert(dt.isEOM() == True)
 
-    dt = FinDate(28, 2, 2005)    
+    dt = TuringDate(28, 2, 2005)
     assert(dt.isEOM() == True)
 
-    dt = FinDate(31, 3, 2003)    
+    dt = TuringDate(31, 3, 2003)
     assert(dt.isEOM() == True)
 
-    dt = FinDate(30, 4, 2004)    
+    dt = TuringDate(30, 4, 2004)
     assert(dt.isEOM() == True)
 
-    dt = FinDate(31, 5, 2004)    
+    dt = TuringDate(31, 5, 2004)
     assert(dt.isEOM() == True)
 
-    dt = FinDate(31, 12, 2010)    
+    dt = TuringDate(31, 12, 2010)
     assert(dt.isEOM() == True)
 
-    dt = FinDate(2, 2, 2000)    
+    dt = TuringDate(2, 2, 2000)
     assert(dt.EOM().isEOM() == True)
 
-    dt = FinDate(24, 2, 2001)    
+    dt = TuringDate(24, 2, 2001)
     assert(dt.EOM().isEOM() == True)
 
-    dt = FinDate(22, 2, 2004)    
+    dt = TuringDate(22, 2, 2004)
     assert(dt.EOM().isEOM() == True)
 
-    dt = FinDate(1, 2, 2005)    
+    dt = TuringDate(1, 2, 2005)
     assert(dt.EOM().isEOM() == True)
 
-    dt = FinDate(1, 3, 2003)    
+    dt = TuringDate(1, 3, 2003)
     assert(dt.EOM().isEOM() == True)
 
-    dt = FinDate(3, 4, 2004)    
+    dt = TuringDate(3, 4, 2004)
     assert(dt.EOM().isEOM() == True)
 
-    dt = FinDate(5, 5, 2004)    
+    dt = TuringDate(5, 5, 2004)
     assert(dt.EOM().isEOM() == True)
 
-    dt = FinDate(7, 12, 2010)    
+    dt = TuringDate(7, 12, 2010)
     assert(dt.EOM().isEOM() == True)
 
 ###############################################################################
@@ -296,4 +296,4 @@ elapsed = end - start
 
 testCases.compareTestCases()
 
-setDateFormatType(FinDateFormatTypes.UK_LONG)
+setDateFormatType(TuringDateFormatTypes.UK_LONG)

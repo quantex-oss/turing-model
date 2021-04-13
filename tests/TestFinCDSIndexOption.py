@@ -9,19 +9,19 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.products.credit.turing_cds_index_portfolio import FinCDSIndexPortfolio
-from financepy.products.credit.turing_cds_index_option import FinCDSIndexOption
+from financepy.products.credit.turing_cds_index_portfolio import TuringCDSIndexPortfolio
+from financepy.products.credit.turing_cds_index_option import TuringCDSIndexOption
 from financepy.products.credit.turing_cds import FinCDS
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from financepy.products.credit.turing_cds_curve import FinCDSCurve
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_types import TuringSwapTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 # TO DO
@@ -34,22 +34,22 @@ testCases = FinTestCases(__file__, globalTestCaseMode)
 def buildIborCurve(tradeDate):
 
     valuationDate = tradeDate.addDays(1)
-    dcType = FinDayCountTypes.ACT_360
+    dcType = TuringDayCountTypes.ACT_360
     depos = []
 
     depos = []
     fras = []
     swaps = []
 
-    dcType = FinDayCountTypes.THIRTY_E_360_ISDA
-    fixedFreq = FinFrequencyTypes.SEMI_ANNUAL
+    dcType = TuringDayCountTypes.THIRTY_E_360_ISDA
+    fixedFreq = TuringFrequencyTypes.SEMI_ANNUAL
     settlementDate = valuationDate
 
     maturityDate = settlementDate.addMonths(12)
     swap1 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0502,
         fixedFreq,
         dcType)
@@ -59,7 +59,7 @@ def buildIborCurve(tradeDate):
     swap2 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0502,
         fixedFreq,
         dcType)
@@ -69,7 +69,7 @@ def buildIborCurve(tradeDate):
     swap3 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0501,
         fixedFreq,
         dcType)
@@ -79,7 +79,7 @@ def buildIborCurve(tradeDate):
     swap4 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0502,
         fixedFreq,
         dcType)
@@ -89,13 +89,13 @@ def buildIborCurve(tradeDate):
     swap5 = FinIborSwap(
         settlementDate,
         maturityDate,
-        FinSwapTypes.PAY,
+        TuringSwapTypes.PAY,
         0.0501,
         fixedFreq,
         dcType)
     swaps.append(swap5)
 
-    liborCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     return liborCurve
 
@@ -108,7 +108,7 @@ def buildFlatIssuerCurve(tradeDate, liborCurve, spread, recoveryRate):
 
     cdsMarketContracts = []
 
-    maturityDate = FinDate(29, 6, 2010)
+    maturityDate = TuringDate(29, 6, 2010)
     cds = FinCDS(valuationDate, maturityDate, spread)
     cdsMarketContracts.append(cds)
 
@@ -124,7 +124,7 @@ def buildFlatIssuerCurve(tradeDate, liborCurve, spread, recoveryRate):
 
 def test_fullPriceCDSIndexOption():
 
-    tradeDate = FinDate(1, 8, 2007)
+    tradeDate = TuringDate(1, 8, 2007)
     stepInDate = tradeDate.addDays(1)
     valuationDate = stepInDate
 
@@ -168,10 +168,10 @@ def test_fullPriceCDSIndexOption():
     ##########################################################################
 
     indexUpfronts = [0.0, 0.0, 0.0, 0.0]
-    indexMaturityDates = [FinDate(20, 12, 2009),
-                          FinDate(20, 12, 2011),
-                          FinDate(20, 12, 2013),
-                          FinDate(20, 12, 2016)]
+    indexMaturityDates = [TuringDate(20, 12, 2009),
+                          TuringDate(20, 12, 2011),
+                          TuringDate(20, 12, 2013),
+                          TuringDate(20, 12, 2016)]
     indexRecovery = 0.40
 
     testCases.banner(
@@ -179,8 +179,8 @@ def test_fullPriceCDSIndexOption():
 
     indexCoupon = 0.004
     volatility = 0.50
-    expiryDate = FinDate(1, 2, 2008)
-    maturityDate = FinDate(20, 12, 2011)
+    expiryDate = TuringDate(1, 2, 2008)
+    maturityDate = TuringDate(20, 12, 2011)
     notional = 10000.0
     tolerance = 1e-6
 
@@ -212,7 +212,7 @@ def test_fullPriceCDSIndexOption():
 
             indexSpreads = [index / 10000.0] * 4
 
-            indexPortfolio = FinCDSIndexPortfolio()
+            indexPortfolio = TuringCDSIndexPortfolio()
             adjustedIssuerCurves = indexPortfolio.hazardRateAdjustIntrinsic(
                 valuationDate,
                 issuerCurves,
@@ -239,11 +239,11 @@ def test_fullPriceCDSIndexOption():
 
             start = time.time()
 
-            option = FinCDSIndexOption(expiryDate,
-                                       maturityDate,
-                                       indexCoupon,
-                                       strike / 10000.0,
-                                       notional)
+            option = TuringCDSIndexOption(expiryDate,
+                                          maturityDate,
+                                          indexCoupon,
+                                          strike / 10000.0,
+                                          notional)
 
             v_pay_1, v_rec_1, strikeValue, mu, expH = option.valueAnderson(
                 valuationDate, adjustedIssuerCurves, indexRecovery, volatility)

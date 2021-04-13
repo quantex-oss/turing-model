@@ -4,11 +4,11 @@
 
 import numpy as np
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_helper_functions import labelToString
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
 
 ##########################################################################
 # TODO: Calibration
@@ -17,7 +17,7 @@ from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
 ##########################################################################
 
 
-class FinIborCapVolCurve():
+class TuringIborCapVolCurve():
     ''' Class to manage a term structure of cap (flat) volatilities and to
     do the conversion to caplet (spot) volatilities. This does not manage a
     strike dependency, only a term structure. The cap and caplet volatilies
@@ -42,18 +42,18 @@ class FinIborCapVolCurve():
         numVols = len(capSigmas)
 
         if numTimes != numVols:
-            raise FinError("Date and volatility vectors not same length.")
+            raise TuringError("Date and volatility vectors not same length.")
 
         if numTimes < 2:
-            raise FinError("FinCapVolCurve requires at least two dates/vols")
+            raise TuringError("FinCapVolCurve requires at least two dates/vols")
 
         if curveDate != capMaturityDates[0]:
-            raise FinError("FinCapFloorDates must start on curve date")
+            raise TuringError("FinCapFloorDates must start on curve date")
 
         self._curveDate = curveDate
 
         if capSigmas[0] != 0.0:
-            raise FinError("Curve date cap floor volatility must equal zero")
+            raise TuringError("Curve date cap floor volatility must equal zero")
 
         self._capSigmas = np.array(capSigmas)
         self._capletGammas = []
@@ -62,17 +62,17 @@ class FinIborCapVolCurve():
         prevDt = self._curveDate
         for dt in capMaturityDates[1:]:
             if dt < prevDt:
-                raise FinError("CapFloorLet Dates not in increasing order")
+                raise TuringError("CapFloorLet Dates not in increasing order")
 
             if dt == prevDt:
-                raise FinError("Two successive dates are identical")
+                raise TuringError("Two successive dates are identical")
 
             prevDt = dt
 
         self._capMaturityDates = capMaturityDates
 
-        if isinstance(dayCountType, FinDayCountTypes) is False:
-            raise FinError("DayCountType must be of type FinDayCountTypes.")
+        if isinstance(dayCountType, TuringDayCountTypes) is False:
+            raise TuringError("DayCountType must be of type TuringDayCountTypes.")
 
         self._dayCountType = dayCountType
 
@@ -88,7 +88,7 @@ class FinIborCapVolCurve():
         self._times = []
         self._taus = []
 
-        dayCounter = FinDayCount(self._dayCountType)
+        dayCounter = TuringDayCount(self._dayCountType)
         prevDt = self._curveDate
         numCaps = len(self._capMaturityDates)
 
@@ -113,7 +113,7 @@ class FinIborCapVolCurve():
             volIbor2 = ((volCap**2) * sumTau - cumIbor2Tau) / tau
 
             if volIbor2 < 0.0:
-                raise FinError("Error due to negative caplet variance.")
+                raise TuringError("Error due to negative caplet variance.")
 
             volIbor = np.sqrt(volIbor2)
             self._capletGammas[i] = volIbor
@@ -127,7 +127,7 @@ class FinIborCapVolCurve():
         the intercaplet spacing period used when creating the class object.
         The volatility interpolation is piecewise flat. '''
 
-        if isinstance(dt, FinDate):
+        if isinstance(dt, TuringDate):
             t = (dt - self._curveDate) / gDaysInYear
         else:
             t = dt
@@ -157,7 +157,7 @@ class FinIborCapVolCurve():
         the last caplet/floorlet in the cap/floor. The volatility interpolation
         is piecewise flat. '''
 
-        if isinstance(dt, FinDate):
+        if isinstance(dt, TuringDate):
             t = (dt - self._curveDate) / gDaysInYear
         else:
             t = dt

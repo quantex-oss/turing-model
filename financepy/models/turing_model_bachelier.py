@@ -8,7 +8,7 @@ import numpy as np
 from scipy.stats import norm
 
 from ..finutils.turing_helper_functions import labelToString
-from ..finutils.turing_global_types import FinOptionTypes
+from ..finutils.turing_global_types import TuringOptionTypes
 
 ###############################################################################
 # NOTE: Need to convert option types to use enums.
@@ -41,9 +41,9 @@ class FinModelBachelier():
         vol = self._volatility
         d = (f-k) / (vol * sqrtT)
 
-        if callOrPut == FinOptionTypes.EUROPEAN_CALL:
+        if callOrPut == TuringOptionTypes.EUROPEAN_CALL:
             return df * ((f - k) * norm.cdf(d) + vol * sqrtT * norm.pdf(d))
-        elif callOrPut == FinOptionTypes.EUROPEAN_PUT:
+        elif callOrPut == TuringOptionTypes.EUROPEAN_PUT:
             return df * ((k - f) * norm.cdf(-d) + vol * sqrtT * norm.pdf(d))
         else:
             raise Exception("Option type must be a European Call(C) or Put(P)")

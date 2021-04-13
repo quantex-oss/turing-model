@@ -4,16 +4,16 @@
 
 import numpy as np
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gDaysInYear
 
 ##########################################################################
 # TODO: Market calibration (fitting)
 ##########################################################################
 
 
-class FinIborCapVolCurveFn():
+class TuringIborCapVolCurveFn():
     ''' Class to manage a term structure of caplet volatilities using the
     parametric form suggested by Rebonato (1999). '''
 
@@ -35,12 +35,12 @@ class FinIborCapVolCurveFn():
     def capFloorletVol(self, dt):
         ''' Return the caplet volatility. '''
 
-        if isinstance(dt, FinDate):
+        if isinstance(dt, TuringDate):
             t = (dt - self._curveDate) / gDaysInYear
             vol = (self._a + self._b*t) * np.exp(-self._c*t) + self._d
 
         if vol < 0.0:
-            raise FinError("Negative volatility. Not permitted.")
+            raise TuringError("Negative volatility. Not permitted.")
 
         return vol
 

@@ -6,26 +6,26 @@ import numpy as np
 from scipy import optimize
 from numba import njit
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_math import nprime
-from ...finutils.turing_global_variables import gDaysInYear, gSmall
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_types import FinOptionTypes
-#from ...products.fx.FinFXModelTypes import FinFXModel
-#from ...products.fx.FinFXModelTypes import FinFXModelBlackScholes
-#from ...products.fx.FinFXModelTypes import FinFXModelSABR
-from ...products.fx.turing_fx_mkt_conventions import FinFXDeltaMethod
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_math import nprime
+from financepy.finutils.turing_global_variables import gDaysInYear, gSmall
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_types import TuringOptionTypes
+#from financepy.products.fx.FinFXModelTypes import FinFXModel
+#from financepy.products.fx.FinFXModelTypes import FinFXModelBlackScholes
+#from financepy.products.fx.FinFXModelTypes import FinFXModelSABR
+from financepy.products.fx.turing_fx_mkt_conventions import TuringFXDeltaMethod
 
-from ...models.turing_model_crr_tree import crrTreeValAvg
-from ...models.turing_model_sabr import volFunctionSABR
-from ...models.turing_model_sabr import FinModelSABR
-from ...models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.models.turing_model_crr_tree import crrTreeValAvg
+from financepy.models.turing_model_sabr import volFunctionSABR
+from financepy.models.turing_model_sabr import FinModelSABR
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 
-from ...models.turing_model_black_scholes_analytical import bsValue, bsDelta
+from financepy.models.turing_model_black_scholes_analytical import bsValue, bsDelta
 
-from ...finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
 
-from ...finutils.turing_math import N
+from financepy.finutils.turing_math import N
 
 
 ###############################################################################
@@ -89,21 +89,21 @@ def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
 
     pips_spot_delta = bsDelta(s, t, k, rd, rf, vol, optionTypeValue)
 
-    if deltaTypeValue == FinFXDeltaMethod.SPOT_DELTA.value:
+    if deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA.value:
         return pips_spot_delta
-    elif deltaTypeValue == FinFXDeltaMethod.FORWARD_DELTA.value:
+    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA.value:
         pips_fwd_delta = pips_spot_delta * np.exp(rf*t)
         return pips_fwd_delta
-    elif deltaTypeValue == FinFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
+    elif deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
         vpctf = bsValue(s, t, k, rd, rf, vol, optionTypeValue) / s
         pct_spot_delta_prem_adj = pips_spot_delta - vpctf
         return pct_spot_delta_prem_adj
-    elif deltaTypeValue == FinFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
+    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
         vpctf = bsValue(s, t, k, rd, rf, vol, optionTypeValue) / s
         pct_fwd_delta_prem_adj = np.exp(rf*t) * (pips_spot_delta - vpctf)
         return pct_fwd_delta_prem_adj
     else:
-        raise FinError("Unknown FinFXDeltaMethod")
+        raise TuringError("Unknown TuringFXDeltaMethod")
 
 ###############################################################################
     
@@ -171,7 +171,7 @@ def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
 ###############################################################################
 
 
-class FinFXVanillaOption():
+class TuringFXVanillaOption():
     ''' This is a class for an FX Option trade. It permits the user to
     calculate the price of an FX Option trade which can be expressed in a
     number of ways depending on the investor or hedger's currency. It aslo
@@ -179,10 +179,10 @@ class FinFXVanillaOption():
     well as the various Greek risk sensitivies. '''
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  strikeFXRate: (float, np.ndarray),  # 1 unit of foreign in domestic
                  currencyPair: str,  # FORDOM
-                 optionType: (FinOptionTypes, list),
+                 optionType: (TuringOptionTypes, list),
                  notional: float,
                  premCurrency: str,
                  spotDays: int = 0):
@@ -203,16 +203,16 @@ class FinFXVanillaOption():
         price in USD (CCY2) of 1 unit of EUR (CCY1)'''
 
         if deliveryDate < expiryDate:
-            raise FinError("Delivery date must be on or after expiry date.")
+            raise TuringError("Delivery date must be on or after expiry date.")
 
         if len(currencyPair) != 6:
-            raise FinError("Currency pair must be 6 characters.")
+            raise TuringError("Currency pair must be 6 characters.")
 
         self._expiryDate = expiryDate
         self._deliveryDate = deliveryDate
 
         if np.any(strikeFXRate < 0.0):
-            raise FinError("Negative strike.")
+            raise TuringError("Negative strike.")
 
         self._strikeFXRate = strikeFXRate
 
@@ -221,17 +221,17 @@ class FinFXVanillaOption():
         self._domName = self._currencyPair[3:6]
 
         if premCurrency != self._domName and premCurrency != self._forName:
-            raise FinError("Premium currency not in currency pair.")
+            raise TuringError("Premium currency not in currency pair.")
 
         self._premCurrency = premCurrency
 
         self._notional = notional
 
-        if optionType != FinOptionTypes.EUROPEAN_CALL and \
-           optionType != FinOptionTypes.EUROPEAN_PUT and\
-           optionType != FinOptionTypes.AMERICAN_CALL and \
-           optionType != FinOptionTypes.AMERICAN_PUT:
-            raise FinError("Unknown Option Type:" + optionType)
+        if optionType != TuringOptionTypes.EUROPEAN_CALL and \
+           optionType != TuringOptionTypes.EUROPEAN_PUT and\
+           optionType != TuringOptionTypes.AMERICAN_CALL and \
+           optionType != TuringOptionTypes.AMERICAN_PUT:
+            raise TuringError("Unknown Option Type:" + optionType)
 
         self._optionType = optionType
         self._spotDays = spotDays
@@ -249,7 +249,7 @@ class FinFXVanillaOption():
         Recall that Domestic = CCY2 and Foreign = CCY1 and FX rate is in
         price in domestic of one unit of foreign currency. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             spotDate = valueDate.addWeekDays(self._spotDays)
             tdel = (self._deliveryDate - spotDate) / gDaysInYear
             texp = (self._expiryDate - valueDate) / gDaysInYear
@@ -258,10 +258,10 @@ class FinFXVanillaOption():
             texp = tdel
 
         if np.any(spotFXRate <= 0.0):
-            raise FinError("spotFXRate must be greater than zero.")
+            raise TuringError("spotFXRate must be greater than zero.")
 
         if tdel < 0.0:
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         tdel = np.maximum(tdel, 1e-10)
         
@@ -289,30 +289,30 @@ class FinFXVanillaOption():
                                              F0T, K, tdel)
 
             if np.any(volatility < 0.0):
-                raise FinError("Volatility should not be negative.")
+                raise TuringError("Volatility should not be negative.")
 
             v = np.maximum(volatility, 1e-10)
 
-            if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+            if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
 
                 vdf = bsValue(S0, texp, K, rd, rf, v,
-                              FinOptionTypes.EUROPEAN_CALL.value)
+                              TuringOptionTypes.EUROPEAN_CALL.value)
 
-            elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+            elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
 
                 vdf = bsValue(S0, texp, K, rd, rf, v,
-                              FinOptionTypes.EUROPEAN_PUT.value)
+                              TuringOptionTypes.EUROPEAN_PUT.value)
 
-            elif self._optionType == FinOptionTypes.AMERICAN_CALL:
+            elif self._optionType == TuringOptionTypes.AMERICAN_CALL:
                 numStepsPerYear = 100
                 vdf = crrTreeValAvg(S0, rd, rf, volatility, numStepsPerYear,
-                          texp, FinOptionTypes.AMERICAN_CALL.value, K)['value']
-            elif self._optionType == FinOptionTypes.AMERICAN_PUT:
+                                    texp, TuringOptionTypes.AMERICAN_CALL.value, K)['value']
+            elif self._optionType == TuringOptionTypes.AMERICAN_PUT:
                 numStepsPerYear = 100
                 vdf = crrTreeValAvg(S0, rd, rf, volatility, numStepsPerYear,
-                           texp, FinOptionTypes.AMERICAN_PUT.value, K)['value']
+                                    texp, TuringOptionTypes.AMERICAN_PUT.value, K)['value']
             else:
-                raise FinError("Unknown option type")
+                raise TuringError("Unknown option type")
 
         # The option value v is in domestic currency terms but the value of
         # the option may be quoted in either currency terms and so we calculate
@@ -325,7 +325,7 @@ class FinFXVanillaOption():
             notional_dom = self._notional * self._strikeFXRate
             notional_for = self._notional
         else:
-            raise FinError("Invalid notional currency.")
+            raise TuringError("Invalid notional currency.")
 
         vdf = vdf
         pips_dom = vdf
@@ -397,7 +397,7 @@ class FinFXVanillaOption():
         definitions can be found on Page 44 of Foreign Exchange Option Pricing
         by Iain Clark, published by Wiley Finance. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             spotDate = valueDate.addWeekDays(self._spotDays)
             tdel = (self._deliveryDate - spotDate) / gDaysInYear
             texp = (self._expiryDate - valueDate) / gDaysInYear
@@ -406,10 +406,10 @@ class FinFXVanillaOption():
             texp = tdel
 
         if np.any(spotFXRate <= 0.0):
-            raise FinError("Spot FX Rate must be greater than zero.")
+            raise TuringError("Spot FX Rate must be greater than zero.")
 
         if np.any(tdel < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         tdel = np.maximum(tdel, 1e-10)
 
@@ -427,7 +427,7 @@ class FinFXVanillaOption():
             v = model._volatility
 
             if np.any(v < 0.0):
-                raise FinError("Volatility should not be negative.")
+                raise TuringError("Volatility should not be negative.")
 
             v = np.maximum(v, gSmall)
 
@@ -489,16 +489,16 @@ class FinFXVanillaOption():
         ''' This function calculates the FX Option Gamma using the spot delta.
         '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             t = (self._expiryDate - valueDate) / gDaysInYear
         else:
             t = valueDate
 
         if np.any(spotFXRate <= 0.0):
-            raise FinError("FX Rate must be greater than zero.")
+            raise TuringError("FX Rate must be greater than zero.")
 
         if np.any(t < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         t = np.maximum(t, 1e-10)
 
@@ -516,7 +516,7 @@ class FinFXVanillaOption():
             volatility = model._volatility
 
             if np.any(volatility) < 0.0:
-                raise FinError("Volatility should not be negative.")
+                raise TuringError("Volatility should not be negative.")
 
             volatility = np.maximum(volatility, 1e-10)
 
@@ -529,7 +529,7 @@ class FinFXVanillaOption():
             gamma = np.exp(-rf * t) * nprime(d1)
             gamma = gamma / S0 / den
         else:
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         return gamma
 
@@ -544,16 +544,16 @@ class FinFXVanillaOption():
         ''' This function calculates the FX Option Vega using the spot delta.
         '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             t = (self._expiryDate - valueDate) / gDaysInYear
         else:
             t = valueDate
 
         if np.any(spotFXRate <= 0.0):
-            raise FinError("Spot FX Rate must be greater than zero.")
+            raise TuringError("Spot FX Rate must be greater than zero.")
 
         if np.any(t < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         t = np.maximum(t, 1e-10)
 
@@ -571,7 +571,7 @@ class FinFXVanillaOption():
             volatility = model._volatility
 
             if np.any(volatility) < 0.0:
-                raise FinError("Volatility should not be negative.")
+                raise TuringError("Volatility should not be negative.")
 
             volatility = np.maximum(volatility, 1e-10)
 
@@ -583,7 +583,7 @@ class FinFXVanillaOption():
             d1 = (lnS0k + (mu + v2 / 2.0) * t) / den
             vega = S0 * sqrtT * np.exp(-rf * t) * nprime(d1)
         else:
-            raise FinError("Unknown Model type")
+            raise TuringError("Unknown Model type")
 
         return vega
 
@@ -597,16 +597,16 @@ class FinFXVanillaOption():
               model):
         ''' This function calculates the time decay of the FX option. '''
 
-        if type(valueDate) == FinDate:
+        if type(valueDate) == TuringDate:
             t = (self._expiryDate - valueDate) / gDaysInYear
         else:
             t = valueDate
 
         if np.any(spotFXRate <= 0.0):
-            raise FinError("Spot FX Rate must be greater than zero.")
+            raise TuringError("Spot FX Rate must be greater than zero.")
 
         if np.any(t < 0.0):
-            raise FinError("Time to expiry must be positive.")
+            raise TuringError("Time to expiry must be positive.")
 
         t = np.maximum(t, 1e-10)
 
@@ -624,7 +624,7 @@ class FinFXVanillaOption():
             vol = model._volatility
 
             if np.any(vol) < 0.0:
-                raise FinError("Volatility should not be negative.")
+                raise TuringError("Volatility should not be negative.")
 
             vol = np.maximum(vol, 1e-10)
 
@@ -636,19 +636,19 @@ class FinFXVanillaOption():
             d1 = (lnS0k + (mu + v2 / 2.0) * t) / den
             d2 = (lnS0k + (mu - v2 / 2.0) * t) / den
 
-            if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+            if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
                 v = - S0 * np.exp(-rf * t) * nprime(d1) * vol / 2.0 / sqrtT
                 v = v + rf * S0 * np.exp(-rf * t) * N(d1)
                 v = v - rd * K * np.exp(-rd * t) * N(d2)
-            elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+            elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
                 v = - S0 * np.exp(-rf * t) * nprime(d1) * vol / 2.0 / sqrtT
                 v = v + rd * K * np.exp(-rd * t) * N(-d2)
                 v = v - rf * S0 * np.exp(-rf * t) * N(-d1)
             else:
-                raise FinError("Unknown option type")
+                raise TuringError("Unknown option type")
 
         else:
-            raise FinError("Unknown Model Type")
+            raise TuringError("Unknown Model Type")
 
         return v
 
@@ -690,7 +690,7 @@ class FinFXVanillaOption():
         if isinstance(model, FinModelBlackScholes):
             volatility = model._volatility
         else:
-            raise FinError("Model Type invalid")
+            raise TuringError("Model Type invalid")
 
         np.random.seed(seed)
         t = (self._expiryDate - valueDate) / gDaysInYear
@@ -713,14 +713,14 @@ class FinFXVanillaOption():
         s_1 = s * m
         s_2 = s / m
 
-        if self._optionType == FinOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
             payoff_a_1 = np.maximum(s_1 - K, 0.0)
             payoff_a_2 = np.maximum(s_2 - K, 0.0)
-        elif self._optionType == FinOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
             payoff_a_1 = np.maximum(K - s_1, 0.0)
             payoff_a_2 = np.maximum(K - s_2, 0.0)
         else:
-            raise FinError("Unknown option type.")
+            raise TuringError("Unknown option type.")
 
         payoff = np.mean(payoff_a_1) + np.mean(payoff_a_2)
         v = payoff * np.exp(-rd * t) / 2.0

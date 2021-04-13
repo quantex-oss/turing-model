@@ -5,14 +5,14 @@
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_global_types import FinOptionTypes
-from financepy.products.equity.turing_equity_digital_option import FinEquityDigitalOption, FinDigitalOptionTypes
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from financepy.products.equity.turing_equity_digital_option import TuringEquityDigitalOption, FinDigitalOptionTypes
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
-from financepy.finutils.turing_date import FinDate
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from financepy.finutils.turing_date import TuringDate
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##########################################################################
 
@@ -21,14 +21,14 @@ def test_FinEquityDigitalOption():
 
     underlyingType = FinDigitalOptionTypes.CASH_OR_NOTHING
 
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 1, 2016)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 1, 2016)
     stockPrice = 100.0
     volatility = 0.30
     interestRate = 0.05
     dividendYield = 0.01
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
     
     model = FinModelBlackScholes(volatility)
     import time
@@ -50,8 +50,8 @@ def test_FinEquityDigitalOption():
 
     for numPaths in numPathsList:
 
-        callOption = FinEquityDigitalOption(
-            expiryDate, 100.0, FinOptionTypes.EUROPEAN_CALL, underlyingType)
+        callOption = TuringEquityDigitalOption(
+            expiryDate, 100.0, TuringOptionTypes.EUROPEAN_CALL, underlyingType)
         value = callOption.value(
             valueDate,
             stockPrice,
@@ -88,8 +88,8 @@ def test_FinEquityDigitalOption():
     callOptionThetas = []
 
     for stockPrice in stockPrices:
-        callOption = FinEquityDigitalOption(
-            expiryDate, 100.0, FinOptionTypes.EUROPEAN_CALL, underlyingType)
+        callOption = TuringEquityDigitalOption(
+            expiryDate, 100.0, TuringOptionTypes.EUROPEAN_CALL, underlyingType)
         value = callOption.value(
             valueDate,
             stockPrice,
@@ -125,8 +125,8 @@ def test_FinEquityDigitalOption():
     putOptionThetas = []
 
     for stockPrice in stockPrices:
-        putOption = FinEquityDigitalOption(
-            expiryDate, 100.0, FinOptionTypes.EUROPEAN_PUT, underlyingType)
+        putOption = TuringEquityDigitalOption(
+            expiryDate, 100.0, TuringOptionTypes.EUROPEAN_PUT, underlyingType)
         value = putOption.value(
             valueDate,
             stockPrice,

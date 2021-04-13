@@ -5,16 +5,16 @@
 #TODO  Add Japan 
 
 
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_error import FinError
-from ...finutils.turing_calendar import FinCalendarTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_calendar import TuringCalendarTypes
 
 
 from enum import Enum
 
 
-class FinBondMarkets(Enum):
+class TuringBondMarkets(Enum):
     AUSTRIA = 1,
     BELGIUM = 2,
     CYPRUS = 3,
@@ -60,10 +60,10 @@ def getTreasuryBondMarketConventions(country):
     and the number of days from trade date to settlement date.
     This is for Treasury markets. And for secondary bond markets. '''
 
-    annual = FinFrequencyTypes.ANNUAL
-    semi_annual = FinFrequencyTypes.SEMI_ANNUAL
-    act_act = FinDayCountTypes.ACT_ACT_ICMA
-    thirtye360 = FinDayCountTypes.THIRTY_E_360
+    annual = TuringFrequencyTypes.ANNUAL
+    semi_annual = TuringFrequencyTypes.SEMI_ANNUAL
+    act_act = TuringDayCountTypes.ACT_ACT_ICMA
+    thirtye360 = TuringDayCountTypes.THIRTY_E_360
 
     # TODO: CHECK CONVENTIONS
     
@@ -73,76 +73,76 @@ def getTreasuryBondMarketConventions(country):
     # SETTLEMENT DAYS
     # NUM EX DIVIDEND DAYS AND CALENDAR TO USE
 
-    if country == FinBondMarkets.AUSTRIA:
+    if country == TuringBondMarkets.AUSTRIA:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.AUSTRALIA:
-        return (act_act, annual, 2, 7, FinCalendarTypes.NONE)
-    elif country == FinBondMarkets.BELGIUM:
+    elif country == TuringBondMarkets.AUSTRALIA:
+        return (act_act, annual, 2, 7, TuringCalendarTypes.NONE)
+    elif country == TuringBondMarkets.BELGIUM:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.CYPRUS:
+    elif country == TuringBondMarkets.CYPRUS:
         return (act_act, semi_annual, 2, 0, None)
-    elif country == FinBondMarkets.ESTONIA:
+    elif country == TuringBondMarkets.ESTONIA:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.FINLAND:
+    elif country == TuringBondMarkets.FINLAND:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.FRANCE:
+    elif country == TuringBondMarkets.FRANCE:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.GERMANY:
+    elif country == TuringBondMarkets.GERMANY:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.GREECE:
+    elif country == TuringBondMarkets.GREECE:
         return (act_act, annual, 3, 0, None)
-    elif country == FinBondMarkets.IRELAND:
+    elif country == TuringBondMarkets.IRELAND:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.ITALY:
+    elif country == TuringBondMarkets.ITALY:
         return (act_act, semi_annual, 2, 0, None)
-    elif country == FinBondMarkets.LATVIA:
+    elif country == TuringBondMarkets.LATVIA:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.LITHUANIA:
+    elif country == TuringBondMarkets.LITHUANIA:
         return (act_act, annual, 1, 0, None)
-    elif country == FinBondMarkets.LUXEMBOURG:
+    elif country == TuringBondMarkets.LUXEMBOURG:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.MALTA:
+    elif country == TuringBondMarkets.MALTA:
         return (act_act, semi_annual, 2, 0, None)
-    elif country == FinBondMarkets.NETHERLANDS:
+    elif country == TuringBondMarkets.NETHERLANDS:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.PORTUGAL:
+    elif country == TuringBondMarkets.PORTUGAL:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.SLOVAKIA:
+    elif country == TuringBondMarkets.SLOVAKIA:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.SLOVENIA:
+    elif country == TuringBondMarkets.SLOVENIA:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.SPAIN:
+    elif country == TuringBondMarkets.SPAIN:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.ESM:
+    elif country == TuringBondMarkets.ESM:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.EFSF:
+    elif country == TuringBondMarkets.EFSF:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.BULGARIA:
+    elif country == TuringBondMarkets.BULGARIA:
         return (act_act, semi_annual, 0, 0, None)
-    elif country == FinBondMarkets.CROATIA:
+    elif country == TuringBondMarkets.CROATIA:
         return (act_act, semi_annual, 3, 0, None)
-    elif country == FinBondMarkets.CZECH_REPUBLIC:
+    elif country == TuringBondMarkets.CZECH_REPUBLIC:
         return (act_act, semi_annual, 2, 0, None)
-    elif country == FinBondMarkets.DENMARK:
+    elif country == TuringBondMarkets.DENMARK:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.HUNGARY:
+    elif country == TuringBondMarkets.HUNGARY:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.POLAND:
+    elif country == TuringBondMarkets.POLAND:
         return (act_act, semi_annual, 2, 0, None)
-    elif country == FinBondMarkets.ROMANIA:
+    elif country == TuringBondMarkets.ROMANIA:
         return (act_act, semi_annual, 2, 0, None)
-    elif country == FinBondMarkets.SOUTH_AFRICA:
-        return (act_act, annual, 2, 10, FinCalendarTypes.NONE) # CHECK
-    elif country == FinBondMarkets.SWEDEN:
+    elif country == TuringBondMarkets.SOUTH_AFRICA:
+        return (act_act, annual, 2, 10, TuringCalendarTypes.NONE) # CHECK
+    elif country == TuringBondMarkets.SWEDEN:
         return (thirtye360, annual, 2, 0, None)
-    elif country == FinBondMarkets.JAPAN:
+    elif country == TuringBondMarkets.JAPAN:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.SWITZERLAND:
+    elif country == TuringBondMarkets.SWITZERLAND:
         return (act_act, annual, 2, 0, None)
-    elif country == FinBondMarkets.UNITED_STATES:
+    elif country == TuringBondMarkets.UNITED_STATES:
         return (act_act, semi_annual, 2, 0, None)
-    elif country == FinBondMarkets.UNITED_KINGDOM:
-        return (act_act, semi_annual, 1, 6, FinCalendarTypes.UK)  # OR 7 DAYS ?
+    elif country == TuringBondMarkets.UNITED_KINGDOM:
+        return (act_act, semi_annual, 1, 6, TuringCalendarTypes.UK)  # OR 7 DAYS ?
     else:
         print("Unknown Country:", country)
         return (None, None, None, None, None)

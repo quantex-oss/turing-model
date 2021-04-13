@@ -3,11 +3,11 @@
 ##############################################################################
 
 
-from .turing_error import FinError
-from .turing_date import FinDate
-from .turing_calendar import (FinCalendar, FinCalendarTypes)
-from .turing_calendar import (FinBusDayAdjustTypes, FinDateGenRuleTypes)
-from .turing_frequency import (FinFrequency, FinFrequencyTypes)
+from .turing_error import TuringError
+from .turing_date import TuringDate
+from .turing_calendar import (TuringCalendar, TuringCalendarTypes)
+from .turing_calendar import (TuringBusDayAdjustTypes, TuringDateGenRuleTypes)
+from .turing_frequency import (TuringFrequency, TuringFrequencyTypes)
 from .turing_helper_functions import labelToString
 from .turing_helper_functions import checkArgumentTypes
 
@@ -15,7 +15,7 @@ from .turing_helper_functions import checkArgumentTypes
 # TODO: Start and end date to allow for long stubs
 ###############################################################################
 
-class FinSchedule(object):
+class TuringSchedule(object):
     ''' A schedule is a set of dates generated according to ISDA standard
     rules which starts on the next date after the effective date and runs up to
     a termination date. Dates are adjusted to a provided calendar. The zeroth
@@ -23,17 +23,17 @@ class FinSchedule(object):
     Next Coupon Date (NCD). We reference ISDA 2006.'''
 
     def __init__(self,
-                 effectiveDate: FinDate, # Also known as the start date
-                 terminationDate: FinDate, # This is UNADJUSTED (set flag to adjust it)
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.ANNUAL,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD,
-                 adjustTerminationDate:bool = True, # Default is to adjust
-                 endOfMonthFlag:bool = False, # All flow dates are EOM if True
+                 effectiveDate: TuringDate,  # Also known as the start date
+                 terminationDate: TuringDate,  # This is UNADJUSTED (set flag to adjust it)
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.ANNUAL,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD,
+                 adjustTerminationDate:bool = True,  # Default is to adjust
+                 endOfMonthFlag:bool = False,  # All flow dates are EOM if True
                  firstDate = None,  # First coupon date
                  nextToLastDate = None): # Penultimate coupon date
-        ''' Create FinSchedule object which calculates a sequence of dates
+        ''' Create TuringSchedule object which calculates a sequence of dates
         following the ISDA convention for fixed income products, mainly swaps. 
 
         If the date gen rule type is FORWARD we get the unadjusted dates by stepping 
@@ -69,7 +69,7 @@ class FinSchedule(object):
         checkArgumentTypes(self.__init__, locals())
 
         if effectiveDate >= terminationDate:
-            raise FinError("Effective date must be before termination date.")
+            raise TuringError("Effective date must be before termination date.")
 
         self._effectiveDate = effectiveDate
         self._terminationDate = terminationDate
@@ -81,7 +81,7 @@ class FinSchedule(object):
                 self._firstDate = firstDate
                 print("FIRST DATE NOT IMPLEMENTED") # TODO
             else:
-                raise FinError("First date must be after effective date and" +
+                raise TuringError("First date must be after effective date and" +
                                " before termination date")
         
         if nextToLastDate is None:
@@ -91,7 +91,7 @@ class FinSchedule(object):
                 self._nextToLastDate = nextToLastDate
                 print("NEXT TO LAST DATE NOT IMPLEMENTED") # TODO
             else:
-                raise FinError("Next to last date must be after effective date and" +
+                raise TuringError("Next to last date must be after effective date and" +
                                " before termination date")
 
         self._freqType = freqType
@@ -127,14 +127,14 @@ class FinSchedule(object):
         rules and also adjust these dates for holidays according to the
         specified business day convention and the specified calendar. '''
 
-        calendar = FinCalendar(self._calendarType)
-        frequency = FinFrequency(self._freqType)
+        calendar = TuringCalendar(self._calendarType)
+        frequency = TuringFrequency(self._freqType)
         numMonths = int(12 / frequency)
 
         unadjustedScheduleDates = []
         self._adjustedDates = []
 
-        if self._dateGenRuleType == FinDateGenRuleTypes.BACKWARD:
+        if self._dateGenRuleType == TuringDateGenRuleTypes.BACKWARD:
 
             nextDate = self._terminationDate
             flowNum = 0
@@ -169,7 +169,7 @@ class FinSchedule(object):
 
             self._adjustedDates.append(self._terminationDate)
 
-        elif self._dateGenRuleType == FinDateGenRuleTypes.FORWARD:
+        elif self._dateGenRuleType == TuringDateGenRuleTypes.FORWARD:
 
             # This needs checking
             nextDate = self._effectiveDate
@@ -212,16 +212,16 @@ class FinSchedule(object):
         #######################################################################
 
         if len(self._adjustedDates) < 2:
-            raise FinError("Schedule has two dates only.")
+            raise TuringError("Schedule has two dates only.")
 
         prevDt = self._adjustedDates[0]
         for dt in self._adjustedDates[1:]:
  
             if dt == prevDt:
-                raise FinError("Two matching dates in schedule")
+                raise TuringError("Two matching dates in schedule")
 
             if dt < prevDt: # Dates must be ordered
-                raise FinError("Dates are not monotonic")
+                raise TuringError("Dates are not monotonic")
 
             prevDt = dt           
 

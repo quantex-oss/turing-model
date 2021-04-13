@@ -2,34 +2,34 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_frequency import FinFrequency, FinFrequencyTypes
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_schedule import FinSchedule
-from ...finutils.turing_calendar import FinBusDayAdjustTypes
-from ...finutils.turing_calendar import FinDateGenRuleTypes
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_error import FinError
-from ...finutils.turing_helper_functions import checkArgumentTypes, labelToString
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_helper_functions import checkArgumentTypes, labelToString
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 ###############################################################################
 
 
-class FinBondAnnuity(object):
+class TuringBondAnnuity(object):
     ''' An annuity is a vector of dates and flows generated according to ISDA
     standard rules which starts on the next date after the start date
     (effective date) and runs up to an end date with no principal repayment.
     Dates are then adjusted according to a specified calendar. '''
 
     def __init__(self,
-                 maturityDate: FinDate,
+                 maturityDate: TuringDate,
                  coupon: float,
-                 freqType: FinFrequencyTypes,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD,
-                 dayCountConventionType: FinDayCountTypes = FinDayCountTypes.ACT_360,
+                 freqType: TuringFrequencyTypes,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD,
+                 dayCountConventionType: TuringDayCountTypes = TuringDayCountTypes.ACT_360,
                  face: float = 100.0):
 
         checkArgumentTypes(self.__init__, locals())
@@ -37,7 +37,7 @@ class FinBondAnnuity(object):
         self._maturityDate = maturityDate
         self._coupon = coupon
         self._freqType = freqType
-        self._frequency = FinFrequency(freqType)
+        self._frequency = TuringFrequency(freqType)
 
         # ISDA Style conventions
         self._calendarType = calendarType
@@ -49,7 +49,7 @@ class FinBondAnnuity(object):
         self._par = 100.0
 
         self._flowDates = []
-        self._settlementDate = FinDate(1, 1, 1900)
+        self._settlementDate = TuringDate(1, 1, 1900)
         self._accruedInterest = None
         self._accruedDays = 0.0
         self._alpha = 0.0
@@ -57,8 +57,8 @@ class FinBondAnnuity(object):
 ###############################################################################
 
     def cleanPriceFromDiscountCurve(self,
-                                    settlementDate: FinDate,
-                                    discountCurve: FinDiscountCurve):
+                                    settlementDate: TuringDate,
+                                    discountCurve: TuringDiscountCurve):
         ''' Calculate the bond price using some discount curve to present-value
         the bond's cashflows. '''
 
@@ -71,8 +71,8 @@ class FinBondAnnuity(object):
 ###############################################################################
 
     def fullPriceFromDiscountCurve(self,
-                                   settlementDate: FinDate,
-                                   discountCurve: FinDiscountCurve):
+                                   settlementDate: TuringDate,
+                                   discountCurve: TuringDiscountCurve):
         ''' Calculate the bond price using some discount curve to present-value
         the bond's cashflows. '''
 
@@ -92,33 +92,33 @@ class FinBondAnnuity(object):
 ###############################################################################
 
     def calculateFlowDatesPayments(self,
-                                   settlementDate: FinDate):
+                                   settlementDate: TuringDate):
 
         # No need to generate flows if settlement date has not changed
         if settlementDate == self._settlementDate:
             return
 
         if settlementDate == self._maturityDate:
-            raise FinError("Settlement date is maturity date.")
+            raise TuringError("Settlement date is maturity date.")
 
         self._settlementDate = settlementDate
-        calendarType = FinCalendarTypes.NONE
-        busDayRuleType = FinBusDayAdjustTypes.NONE
-        dateGenRuleType = FinDateGenRuleTypes.BACKWARD
+        calendarType = TuringCalendarTypes.NONE
+        busDayRuleType = TuringBusDayAdjustTypes.NONE
+        dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
 
-        self._flowDates = FinSchedule(settlementDate,
-                                      self._maturityDate,
-                                      self._freqType,
-                                      calendarType,
-                                      busDayRuleType,
-                                      dateGenRuleType)._generate()
+        self._flowDates = TuringSchedule(settlementDate,
+                                         self._maturityDate,
+                                         self._freqType,
+                                         calendarType,
+                                         busDayRuleType,
+                                         dateGenRuleType)._generate()
 
         self._pcd = self._flowDates[0]
         self._ncd = self._flowDates[1]
         self.calcAccruedInterest(settlementDate)
 
         self._flowAmounts = [0.0]
-        basis = FinDayCount(self._dayCountConventionType)
+        basis = TuringDayCount(self._dayCountConventionType)
 
         prevDt = self._pcd
 
@@ -131,7 +131,7 @@ class FinBondAnnuity(object):
 ###############################################################################
 
     def calcAccruedInterest(self,
-                            settlementDate: FinDate):
+                            settlementDate: TuringDate):
         ''' Calculate the amount of coupon that has accrued between the
         previous coupon date and the settlement date. '''
 
@@ -139,9 +139,9 @@ class FinBondAnnuity(object):
             self.calculateFlowDatesPayments(settlementDate)
 
         if len(self._flowDates) == 0:
-            raise FinError("Accrued interest - not enough flow dates.")
+            raise TuringError("Accrued interest - not enough flow dates.")
 
-        dc = FinDayCount(self._dayCountConventionType)
+        dc = TuringDayCount(self._dayCountConventionType)
 
         (accFactor, num, _) = dc.yearFrac(self._pcd,
                                           settlementDate,
@@ -157,7 +157,7 @@ class FinBondAnnuity(object):
 ###############################################################################
 
     def printFlows(self,
-                   settlementDate: FinDate):
+                   settlementDate: TuringDate):
         ''' Print a list of the unadjusted coupon payment dates used in
         analytic calculations for the bond. '''
 

@@ -4,18 +4,18 @@
 
 import numpy as np
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_math import testMonotonicity
-from ...finutils.turing_helper_functions import labelToString
-from ...finutils.turing_helper_functions import timesFromDates
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...finutils.turing_date import daysInMonth
-from ...finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_math import testMonotonicity
+from financepy.finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_helper_functions import timesFromDates
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_date import daysInMonth
+from financepy.finutils.turing_global_variables import gDaysInYear
 
 ###############################################################################
 
-class FinInflationIndexCurve():
+class TuringInflationIndexCurve():
     ''' This is a curve calculated from a set of dates and CPI-like numbers. It
     should start at the issue date of the bond (or index). It also requires a
     lag in months. Here is a reference to the CPI curve used for TIPS.
@@ -35,13 +35,13 @@ class FinInflationIndexCurve():
 
         # Validate curve
         if len(indexDates) == 0:
-            raise FinError("Dates has zero length")
+            raise TuringError("Dates has zero length")
 
         if len(indexDates) != len(indexValues):
-            raise FinError("Dates and Values are not the same length")
+            raise TuringError("Dates and Values are not the same length")
 
         if lagInMonths < 0:
-            raise FinError("Lag must be positive.")
+            raise TuringError("Lag must be positive.")
 
         self._indexDates = np.array(indexDates)
         self._indexValues = np.array(indexValues)
@@ -51,16 +51,16 @@ class FinInflationIndexCurve():
         self._indexTimes = timesFromDates(indexDates, self._baseDate)
 
         if testMonotonicity(self._indexTimes) is False:
-            raise FinError("Times or dates are not sorted in increasing order")
+            raise TuringError("Times or dates are not sorted in increasing order")
 
 ###############################################################################
 
-    def indexValue(self, dt: FinDate):
+    def indexValue(self, dt: TuringDate):
         ''' Calculate index value by interpolating the CPI curve '''
 
         lagMonthsAgoDt = dt.addMonths(-self._lagInMonths)
         
-        cpiFirstDate = FinDate(1, lagMonthsAgoDt._m, lagMonthsAgoDt._y) 
+        cpiFirstDate = TuringDate(1, lagMonthsAgoDt._m, lagMonthsAgoDt._y)
         cpiSecondDate = cpiFirstDate.addMonths(1)
         
         cpiFirstTime = (cpiFirstDate - self._baseDate) / gDaysInYear
@@ -83,7 +83,7 @@ class FinInflationIndexCurve():
 
 ###############################################################################
 
-    def indexRatio(self, dt: FinDate):
+    def indexRatio(self, dt: TuringDate):
         ''' Calculate index value by interpolating the CPI curve '''
 
         vt = self.indexValue(dt)

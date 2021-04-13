@@ -6,16 +6,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import scale
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import scale
+from financepy.finutils.turing_helper_functions import labelToString
 
-from .turing_bond_yield_curve_model import FinCurveFitPolynomial
-from .turing_bond_yield_curve_model import FinCurveFitNelsonSiegel
-from .turing_bond_yield_curve_model import FinCurveFitNelsonSiegelSvensson
-from .turing_bond_yield_curve_model import FinCurveFitBSpline
+from .turing_bond_yield_curve_model import TuringCurveFitPolynomial
+from .turing_bond_yield_curve_model import TuringCurveFitNelsonSiegel
+from .turing_bond_yield_curve_model import TuringCurveFitNelsonSiegelSvensson
+from .turing_bond_yield_curve_model import TuringCurveFitBSpline
 
 from scipy.optimize import curve_fit
 from scipy.interpolate import splrep
@@ -25,15 +25,15 @@ from scipy.interpolate import splrep
 ###############################################################################
 
 
-class FinBondYieldCurve():
+class TuringBondYieldCurve():
     ''' Class to do fitting of the yield curve and to enable interpolation of
     yields. Because yields assume a flat term structure for each bond, this
     class does not allow discounting to be done and so does not inherit from
-    FinDiscountCurve. It should only be used for visualisation and simple
+    TuringDiscountCurve. It should only be used for visualisation and simple
     interpolation but not for full term-structure-consistent pricing. '''
 
     def __init__(self,
-                 settlementDate: FinDate,
+                 settlementDate: TuringDate,
                  bonds: list,
                  ylds: (np.ndarray, list),
                  curveFit):
@@ -55,13 +55,13 @@ class FinBondYieldCurve():
             yearsToMaturities.append(maturityYears)
         self._yearsToMaturity = np.array(yearsToMaturities)
 
-        if fitType is FinCurveFitPolynomial:
+        if fitType is TuringCurveFitPolynomial:
 
             d = fit._power
             coeffs = np.polyfit(self._yearsToMaturity, self._ylds, deg=d)
             fit._coeffs = coeffs
 
-        elif fitType is FinCurveFitNelsonSiegel:
+        elif fitType is TuringCurveFitNelsonSiegel:
 
             xdata = self._yearsToMaturity
             ydata = self._ylds
@@ -74,7 +74,7 @@ class FinBondYieldCurve():
             fit._beta3 = popt[2]
             fit._tau = popt[3]
 
-        elif fitType is FinCurveFitNelsonSiegelSvensson:
+        elif fitType is TuringCurveFitNelsonSiegelSvensson:
 
             xdata = self._yearsToMaturity
             ydata = self._ylds
@@ -89,7 +89,7 @@ class FinBondYieldCurve():
             fit._tau1 = popt[4]
             fit._tau2 = popt[5]
 
-        elif fitType is FinCurveFitBSpline:
+        elif fitType is TuringCurveFitBSpline:
 
             xdata = self._yearsToMaturity
             ydata = self._ylds
@@ -99,14 +99,14 @@ class FinBondYieldCurve():
             fit._spline = spline
 
         else:
-            raise FinError("Unrecognised curve fit type.")
+            raise TuringError("Unrecognised curve fit type.")
 
 ###############################################################################
 
     def interpolatedYield(self,
-                          maturityDate: FinDate):
+                          maturityDate: TuringDate):
 
-        if type(maturityDate) is FinDate:
+        if type(maturityDate) is TuringDate:
             t = (maturityDate - self._settlementDate) / gDaysInYear
         elif type(maturityDate) is list:
             t = maturityDate
@@ -115,20 +115,20 @@ class FinBondYieldCurve():
         elif type(maturityDate) is float or type(maturityDate) is np.float64:
             t = maturityDate
         else:
-            raise FinError("Unknown date type.")
+            raise TuringError("Unknown date type.")
 
         fit = self._curveFit
 
-        if type(fit) == FinCurveFitPolynomial:
+        if type(fit) == TuringCurveFitPolynomial:
             yld = fit._interpolatedYield(t)
-        elif type(fit) == FinCurveFitNelsonSiegel:
+        elif type(fit) == TuringCurveFitNelsonSiegel:
             yld = fit._interpolatedYield(t,
                                          fit._beta1,
                                          fit._beta2,
                                          fit._beta3,
                                          fit._tau)
 
-        elif type(fit) == FinCurveFitNelsonSiegelSvensson:
+        elif type(fit) == TuringCurveFitNelsonSiegelSvensson:
             yld = fit._interpolatedYield(t,
                                          fit._beta1,
                                          fit._beta2,
@@ -137,7 +137,7 @@ class FinBondYieldCurve():
                                          fit._tau1,
                                          fit._tau2)
 
-        elif type(fit) == FinCurveFitBSpline:
+        elif type(fit) == TuringCurveFitBSpline:
             yld = fit._interpolatedYield(t)
 
         return yld

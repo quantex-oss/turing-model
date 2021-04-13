@@ -2,10 +2,10 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from .turing_date import FinDate, monthDaysLeapYear, monthDaysNotLeapYear, datediff
+from .turing_date import TuringDate, monthDaysLeapYear, monthDaysNotLeapYear, datediff
 from .turing_date import isLeapYear
-from .turing_error import FinError
-from .turing_frequency import FinFrequencyTypes, FinFrequency
+from .turing_error import TuringError
+from .turing_frequency import TuringFrequencyTypes, TuringFrequency
 from .turing_global_variables import gDaysInYear
 
 from enum import Enum
@@ -19,7 +19,7 @@ from enum import Enum
 ###############################################################################
 
 
-def isLastDayOfFeb(dt: FinDate):
+def isLastDayOfFeb(dt: TuringDate):
     # Return true if we are on the last day of February
     if dt._m == 2:
         isLeap = isLeapYear(dt._y)
@@ -44,7 +44,7 @@ def isLastDayOfFeb(dt: FinDate):
 #    ACT_365L = 9  # the 29 Feb is counted if it is in the date range
 ###############################################################################
         
-class FinDayCountTypes(Enum):
+class TuringDayCountTypes(Enum):
     THIRTY_360_BOND = 1  
     THIRTY_E_360 = 2  
     THIRTY_E_360_ISDA = 3  
@@ -59,26 +59,26 @@ class FinDayCountTypes(Enum):
 ###############################################################################
 
 
-class FinDayCount(object):
+class TuringDayCount(object):
     ''' Calculate the fractional day count between two dates according to a
     specified day count convention. '''
 
     def __init__(self,
-                 dccType: FinDayCountTypes):
+                 dccType: TuringDayCountTypes):
         ''' Create Day Count convention by passing in the Day Count Type. '''
 
-        if dccType not in FinDayCountTypes:
-            raise FinError("Need to pass FinDayCountType")
+        if dccType not in TuringDayCountTypes:
+            raise TuringError("Need to pass FinDayCountType")
 
         self._type = dccType
 
 ###############################################################################
 
     def yearFrac(self,
-                 dt1: FinDate,    # Start of coupon period
-                 dt2: FinDate,    # Settlement (for bonds) or period end(swaps)
-                 dt3: FinDate = None,   # End of coupon period for accrued
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.ANNUAL,
+                 dt1: TuringDate,  # Start of coupon period
+                 dt2: TuringDate,  # Settlement (for bonds) or period end(swaps)
+                 dt3: TuringDate = None,  # End of coupon period for accrued
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.ANNUAL,
                  isTerminationDate: bool = False):  # Is dt2 a termination date
         ''' This method performs two functions:
 
@@ -115,7 +115,7 @@ class FinDayCount(object):
         num = 0
         den = 0
 
-        if self._type == FinDayCountTypes.THIRTY_360_BOND:
+        if self._type == TuringDayCountTypes.THIRTY_360_BOND:
             # It is in accordance with section 4.16(f) of ISDA 2006 Definitions
             # Also known as 30/360, Bond Basis, 30A/360, 30-360 US Municipal
             # This method does not consider February as a special case.
@@ -131,7 +131,7 @@ class FinDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == FinDayCountTypes.THIRTY_E_360:
+        elif self._type == TuringDayCountTypes.THIRTY_E_360:
             # This is in section 4.16(g) of ISDA 2006 Definitions
             # Also known as 30/360 Eurobond, 30/360 ISMA, 30/360 ICMA,
             # 30/360 European, Special German, Eurobond basis (ISDA 2006)
@@ -148,7 +148,7 @@ class FinDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == FinDayCountTypes.THIRTY_E_360_ISDA:
+        elif self._type == TuringDayCountTypes.THIRTY_E_360_ISDA:
             # This is 30E/360 (ISDA 2000), 30E/360 (ISDA) section 4.16(h)
             # of ISDA 2006 Definitions, German, Eurobond basis (ISDA 2000)
 
@@ -171,7 +171,7 @@ class FinDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == FinDayCountTypes.THIRTY_E_PLUS_360:
+        elif self._type == TuringDayCountTypes.THIRTY_E_PLUS_360:
 
             if d1 == 31:
                 d1 = 30
@@ -185,7 +185,7 @@ class FinDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == FinDayCountTypes.ACT_ACT_ISDA:
+        elif self._type == TuringDayCountTypes.ACT_ACT_ISDA:
 
             if isLeapYear(y1):
                 denom1 = 366
@@ -203,8 +203,8 @@ class FinDayCount(object):
                 accFactor = (dt2 - dt1) / denom1
                 return (accFactor, num, den)
             else:
-                daysYear1 = datediff(dt1, FinDate(1, 1, y1+1))
-                daysYear2 = datediff(FinDate(1, 1, y2), dt2)
+                daysYear1 = datediff(dt1, TuringDate(1, 1, y1 + 1))
+                daysYear2 = datediff(TuringDate(1, 1, y2), dt2)
                 accFactor1 = daysYear1 / denom1
                 accFactor2 = daysYear2 / denom2
                 yearDiff = y2 - y1 - 1.0
@@ -215,38 +215,38 @@ class FinDayCount(object):
                 accFactor = accFactor1 + accFactor2 + yearDiff
                 return (accFactor, num, den)
 
-        elif self._type == FinDayCountTypes.ACT_ACT_ICMA:
+        elif self._type == TuringDayCountTypes.ACT_ACT_ICMA:
 
-            freq = FinFrequency(freqType)
+            freq = TuringFrequency(freqType)
 
             if dt3 is None or freq is None:
-                raise FinError("ACT_ACT_ICMA requires three dates and a freq")
+                raise TuringError("ACT_ACT_ICMA requires three dates and a freq")
 
             num = dt2 - dt1
             den = freq * (dt3 - dt1)
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == FinDayCountTypes.ACT_365F:
+        elif self._type == TuringDayCountTypes.ACT_365F:
 
             num = dt2 - dt1
             den = 365
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == FinDayCountTypes.ACT_360:
+        elif self._type == TuringDayCountTypes.ACT_360:
 
             num = dt2 - dt1
             den = 360
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == FinDayCountTypes.ACT_365L:
+        elif self._type == TuringDayCountTypes.ACT_365L:
 
             # The ISDA calculator sheet appears to split this across the
             # non-leap and the leap year which I do not see in any conventions.
 
-            freq = FinFrequency(freqType)
+            freq = TuringFrequency(freqType)
 
             if dt3 is None:
                 y3 = y2
@@ -257,11 +257,11 @@ class FinDayCount(object):
             den = 365
 
             if isLeapYear(y1):
-                feb29 = FinDate(29, 2, y1)
+                feb29 = TuringDate(29, 2, y1)
             elif isLeapYear(y3):
-                feb29 = FinDate(29, 2, y3)
+                feb29 = TuringDate(29, 2, y3)
             else:
-                feb29 = FinDate(1, 1, 1900)
+                feb29 = TuringDate(1, 1, 1900)
 
             if freq == 1:
                 if feb29 > dt1 and feb29 <= dt3:
@@ -273,7 +273,7 @@ class FinDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == FinDayCountTypes.SIMPLE:
+        elif self._type == TuringDayCountTypes.SIMPLE:
             
             num = dt2 - dt1
             den = gDaysInYear
@@ -282,8 +282,8 @@ class FinDayCount(object):
 
         else:
 
-            raise FinError(str(self._type) +
-                           " is not one of FinDayCountTypes")
+            raise TuringError(str(self._type) +
+                           " is not one of TuringDayCountTypes")
 
 ###############################################################################
 

@@ -2,17 +2,17 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_global_variables import gSmall
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes, FinFrequency
-from ...finutils.turing_calendar import FinCalendarTypes,  FinDateGenRuleTypes
-from ...finutils.turing_calendar import FinCalendar, FinBusDayAdjustTypes
-from ...finutils.turing_schedule import FinSchedule
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_global_types import FinSwapTypes
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_global_variables import gSmall
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes, TuringFrequency
+from financepy.finutils.turing_calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
+from financepy.finutils.turing_calendar import TuringCalendar, TuringBusDayAdjustTypes
+from financepy.finutils.turing_schedule import TuringSchedule
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_global_types import TuringSwapTypes
 
 ##########################################################################
 
@@ -29,19 +29,19 @@ class FinFixedIborXCcySwap(object):
     from the curve from which the implied index rates are extracted. '''
     
     def __init__(self,
-                 effectiveDate: FinDate,  # Date interest starts to accrue
-                 terminationDateOrTenor: (FinDate, str),  # Date contract ends
-                 fixedLegType: FinSwapTypes,
+                 effectiveDate: TuringDate,  # Date interest starts to accrue
+                 terminationDateOrTenor: (TuringDate, str),  # Date contract ends
+                 fixedLegType: TuringSwapTypes,
                  fixedCoupon: float,  # Fixed coupon (annualised)
-                 fixedFreqType: FinFrequencyTypes,
-                 fixedDayCountType: FinDayCountTypes,
+                 fixedFreqType: TuringFrequencyTypes,
+                 fixedDayCountType: TuringDayCountTypes,
                  floatSpread: float = 0.0,
-                 floatFreqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 floatDayCountType: FinDayCountTypes = FinDayCountTypes.THIRTY_E_360,
+                 floatFreqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 floatDayCountType: TuringDayCountTypes = TuringDayCountTypes.THIRTY_E_360,
                  notional: float = ONE_MILLION,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
         ''' Create an interest rate swap contract giving the contract start
         date, its maturity, fixed coupon, fixed leg frequency, fixed leg day
         count convention and notional. The floating leg parameters have default
@@ -53,17 +53,17 @@ class FinFixedIborXCcySwap(object):
 
         checkArgumentTypes(self.__init__, locals())
 
-        if type(terminationDateOrTenor) == FinDate:
+        if type(terminationDateOrTenor) == TuringDate:
             self._terminationDate = terminationDateOrTenor
         else:
             self._terminationDate = effectiveDate.addTenor(terminationDateOrTenor)
 
-        calendar = FinCalendar(calendarType)
+        calendar = TuringCalendar(calendarType)
         self._maturityDate = calendar.adjust(self._terminationDate,
                                              busDayAdjustType)
 
         if effectiveDate > self._maturityDate:
-            raise FinError("Start date after maturity date")
+            raise TuringError("Start date after maturity date")
 
         self._effectiveDate = effectiveDate
         self._notional = notional
@@ -139,7 +139,7 @@ class FinFixedIborXCcySwap(object):
 
         value = fixedLegValue - floatLegValue
 
-        if self._fixedLegType == FinSwapTypes.PAY:
+        if self._fixedLegType == TuringSwapTypes.PAY:
             value = value * (-1.0)
 
         return value
@@ -149,7 +149,7 @@ class FinFixedIborXCcySwap(object):
     def _generateFixedLegPaymentDates(self):
         ''' Generate the fixed leg payment dates all the way back to
         the start date of the swap which may precede the valuation date'''
-        self._adjustedFixedDates = FinSchedule(
+        self._adjustedFixedDates = TuringSchedule(
             self._effectiveDate,
             self._terminationDate,
             self._fixedFrequencyType,
@@ -162,7 +162,7 @@ class FinFixedIborXCcySwap(object):
     def _generateFloatLegPaymentDates(self):
         ''' Generate the floating leg payment dates all the way back to
         the start date of the swap which may precede the valuation date'''
-        self._adjustedFloatDates = FinSchedule(
+        self._adjustedFloatDates = TuringSchedule(
             self._effectiveDate,
             self._terminationDate,
             self._floatFrequencyType,
@@ -175,7 +175,7 @@ class FinFixedIborXCcySwap(object):
     def fixedDates(self):
         ''' return a vector of the fixed leg payment dates '''
         if self._adjustedFixedDates is None:
-            raise FinError("Fixed dates have not been generated")
+            raise TuringError("Fixed dates have not been generated")
 
         return self._adjustedFixedDates[1:]
 
@@ -184,7 +184,7 @@ class FinFixedIborXCcySwap(object):
     def floatDates(self):
         ''' return a vector of the fixed leg payment dates '''
         if self._adjustedFloatDates is None:
-            raise FinError("Float dates have not been generated")
+            raise TuringError("Float dates have not been generated")
 
         return self._adjustedFloatDates[1:]
 
@@ -217,7 +217,7 @@ class FinFixedIborXCcySwap(object):
         dfT = discountCurve.df(self._maturityDate)
 
         if abs(pv01) < gSmall:
-            raise FinError("PV01 is zero. Cannot compute swap rate.")
+            raise TuringError("PV01 is zero. Cannot compute swap rate.")
 
         cpn = (df0 - dfT) / pv01
         return cpn
@@ -234,7 +234,7 @@ class FinFixedIborXCcySwap(object):
         self._fixedFlowPVs = []
         self._fixedTotalPV = []
 
-        dayCounter = FinDayCount(self._fixedDayCountType)
+        dayCounter = TuringDayCount(self._fixedDayCountType)
 
         ''' The swap may have started in the past but we can only value
         payments that have occurred after the valuation date. '''
@@ -286,7 +286,7 @@ class FinFixedIborXCcySwap(object):
         self._fixedYearFracs = []
         self._fixedFlows = []
 
-        dayCounter = FinDayCount(self._fixedDayCountType)
+        dayCounter = TuringDayCount(self._fixedDayCountType)
 
         ''' Now PV fixed leg flows. '''
         prevDt = self._adjustedFixedDates[0]
@@ -309,10 +309,10 @@ class FinFixedIborXCcySwap(object):
         used in the pricing of a cash-settled swaption in the FinIborSwaption
         class. This method does not affect the standard valuation methods.'''
 
-        m = FinFrequency(frequencyType)
+        m = TuringFrequency(frequencyType)
 
         if m == 0:
-            raise FinError("Frequency cannot be zero.")
+            raise TuringError("Frequency cannot be zero.")
 
         ''' The swap may have started in the past but we can only value
         payments that have occurred after the valuation date. '''
@@ -360,7 +360,7 @@ class FinFixedIborXCcySwap(object):
         self._floatTotalPV = []
         self._firstFixingRate = firstFixingRate
 
-        basis = FinDayCount(self._floatDayCountType)
+        basis = TuringDayCount(self._floatDayCountType)
 
         ''' The swap may have started in the past but we can only value
         payments that have occurred after the start date. '''
@@ -463,7 +463,7 @@ class FinFixedIborXCcySwap(object):
         print(header)
 
         if self._fixedStartIndex is None:
-            raise FinError("Need to value swap before calling this function.")
+            raise TuringError("Need to value swap before calling this function.")
 
         startIndex = self._fixedStartIndex
 

@@ -7,14 +7,14 @@ import numpy as np
 
 ###############################################################################
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_helper_functions import labelToString
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_helper_functions import timesFromDates
-from ...market.curves.turing_interpolator import FinInterpTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_helper_functions import timesFromDates
+from financepy.market.curves.turing_interpolator import FinInterpTypes
 
 ###############################################################################
 # TODO: Do I need to add a day count to ensure rate and times are linked in
@@ -22,19 +22,19 @@ from ...market.curves.turing_interpolator import FinInterpTypes
 ###############################################################################
 
 
-class FinDiscountCurveFlat(FinDiscountCurve):
+class TuringDiscountCurveFlat(TuringDiscountCurve):
     ''' A very simple discount curve based on a single zero rate with its
     own specified compounding method. Hence the curve is assumed to be flat.
     It is used for quick and dirty analysis and when limited information is
-    available. It inherits several methods from FinDiscountCurve. '''
+    available. It inherits several methods from TuringDiscountCurve. '''
 
 ###############################################################################
 
     def __init__(self,
-                 valuationDate: FinDate,
+                 valuationDate: TuringDate,
                  flatRate: (float, np.ndarray),
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.CONTINUOUS,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_ACT_ISDA):
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA):
         ''' Create a discount curve which is flat. This is very useful for
         quick testing and simply requires a curve date a rate and a compound
         frequency. As we have entered a rate, a corresponding day count
@@ -64,20 +64,20 @@ class FinDiscountCurveFlat(FinDiscountCurve):
 
     def bump(self,
              bumpSize: float):
-        ''' Creates a new FinDiscountCurveFlat object with the entire curve
+        ''' Creates a new TuringDiscountCurveFlat object with the entire curve
         bumped up by the bumpsize. All other parameters are preserved.'''
 
         rBumped = self._flatRate + bumpSize
-        discCurve = FinDiscountCurveFlat(self._valuationDate,
-                                         rBumped,
-                                         freqType=self._freqType,
-                                         dayCountType=self._dayCountType)
+        discCurve = TuringDiscountCurveFlat(self._valuationDate,
+                                            rBumped,
+                                            freqType=self._freqType,
+                                            dayCountType=self._dayCountType)
         return discCurve
 
 ###############################################################################
 
     def df(self,
-           dates: (FinDate, list)):
+           dates: (TuringDate, list)):
         ''' Return discount factors given a single or vector of dates. The
         discount factor depends on the rate and this in turn depends on its
         compounding frequency and it defaults to continuous compounding. It
@@ -95,7 +95,7 @@ class FinDiscountCurveFlat(FinDiscountCurve):
                              self._freqType,
                              self._dayCountType)
 
-        if isinstance(dates, FinDate):
+        if isinstance(dates, TuringDate):
             return dfs[0]
         else:
             return np.array(dfs)

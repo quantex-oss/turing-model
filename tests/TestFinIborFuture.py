@@ -8,17 +8,17 @@ sys.path.append("..")
 from financepy.products.rates.turing_ibor_future import FinIborFuture
 from financepy.finutils.turing_date import *
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
-setDateFormatType(FinDateFormatTypes.UK_LONG)
+setDateFormatType(TuringDateFormatTypes.UK_LONG)
 
 ###############################################################################
 
 
 def test_FinIborFuture():
 
-    todayDate = FinDate(5, 5, 2020)
+    todayDate = TuringDate(5, 5, 2020)
 
     testCases.header("VALUES")
 

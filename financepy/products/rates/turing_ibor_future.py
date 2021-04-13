@@ -8,14 +8,14 @@
 
 import numpy as np
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_date import FinDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_date import TuringDate
 
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...products.rates.turing_ibor_fra import FinIborFRA
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.products.rates.turing_ibor_fra import FinIborFRA
 
 ###############################################################################
 
@@ -27,10 +27,10 @@ class FinIborFuture(object):
     # https://www.cmegroup.com/education/files/eurodollar-futures-the-basics-file01.pdf
 
     def __init__(self,
-                 todayDate: FinDate,
+                 todayDate: TuringDate,
                  futureNumber: int,  # The number of the future after todayDate
                  futureTenor: str = "3M",  # '1M', '2M', '3M'
-                 accrualType: FinDayCountTypes = FinDayCountTypes.ACT_360,
+                 accrualType: TuringDayCountTypes = TuringDayCountTypes.ACT_360,
                  contractSize: float = ONE_MILLION):
         ''' Create an interest rate futures contract which has the same
         conventions as those traded on the CME. The current date, the tenor of
@@ -40,10 +40,10 @@ class FinIborFuture(object):
         checkArgumentTypes(self.__init__, locals())
 
         if futureNumber < 1:
-            raise FinError("Future number must be 1 or more")
+            raise TuringError("Future number must be 1 or more")
 
         if futureTenor != "3M" and futureTenor != "3m":
-            raise FinError("Only 3M IMM futures handled currently.")
+            raise TuringError("Only 3M IMM futures handled currently.")
 
         self._deliveryDate = todayDate.nextIMMDate()
 

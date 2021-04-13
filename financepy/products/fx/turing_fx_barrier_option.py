@@ -7,18 +7,18 @@ import numpy as np
 from enum import Enum
 
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_math import N
-from ...finutils.turing_global_variables import gDaysInYear
-from ...products.fx.turing_fx_option import FinFXOption
-from ...models.turing_process_simulator import FinProcessSimulator
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...finutils.turing_date import FinDate
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_math import N
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.products.fx.turing_fx_option import TuringFXOption
+from financepy.models.turing_process_simulator import FinProcessSimulator
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
 
 ###############################################################################
 
 
-class FinFXBarrierTypes(Enum):
+class TuringFXBarrierTypes(Enum):
     DOWN_AND_OUT_CALL = 1
     DOWN_AND_IN_CALL = 2
     UP_AND_OUT_CALL = 3
@@ -31,13 +31,13 @@ class FinFXBarrierTypes(Enum):
 ###############################################################################
 
 
-class FinFXBarrierOption(FinFXOption):
+class TuringFXBarrierOption(TuringFXOption):
 
     def __init__(self,
-                 expiryDate: FinDate,
+                 expiryDate: TuringDate,
                  strikeFXRate: float,  # 1 unit of foreign in domestic
-                 currencyPair: str,    # FORDOM
-                 optionType: FinFXBarrierTypes,
+                 currencyPair: str,  # FORDOM
+                 optionType: TuringFXBarrierTypes,
                  barrierLevel: float,
                  numObservationsPerYear: int,
                  notional: float,
@@ -95,21 +95,21 @@ class FinFXBarrierOption(FinFXOption):
         p = K * df * N(-d2) - S0 * dq * N(-d1)
 #        print("CALL:",c,"PUT:",p)
 
-        if self._optionType == FinFXBarrierTypes.DOWN_AND_OUT_CALL and S0 <= h:
+        if self._optionType == TuringFXBarrierTypes.DOWN_AND_OUT_CALL and S0 <= h:
             return 0.0
-        elif self._optionType == FinFXBarrierTypes.UP_AND_OUT_CALL and S0 >= h:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_OUT_CALL and S0 >= h:
             return 0.0
-        elif self._optionType == FinFXBarrierTypes.UP_AND_OUT_PUT and S0 >= h:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_OUT_PUT and S0 >= h:
             return 0.0
-        elif self._optionType == FinFXBarrierTypes.DOWN_AND_OUT_PUT and S0 <= h:
+        elif self._optionType == TuringFXBarrierTypes.DOWN_AND_OUT_PUT and S0 <= h:
             return 0.0
-        elif self._optionType == FinFXBarrierTypes.DOWN_AND_IN_CALL and S0 <= h:
+        elif self._optionType == TuringFXBarrierTypes.DOWN_AND_IN_CALL and S0 <= h:
             return c
-        elif self._optionType == FinFXBarrierTypes.UP_AND_IN_CALL and S0 >= h:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_IN_CALL and S0 >= h:
             return c
-        elif self._optionType == FinFXBarrierTypes.UP_AND_IN_PUT and S0 >= h:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_IN_PUT and S0 >= h:
             return p
-        elif self._optionType == FinFXBarrierTypes.DOWN_AND_IN_PUT and S0 <= h:
+        elif self._optionType == TuringFXBarrierTypes.DOWN_AND_IN_PUT and S0 <= h:
             return p
 
         numObservations = t * self._numObservationsPerYear
@@ -117,25 +117,25 @@ class FinFXBarrierOption(FinFXOption):
         # Correction by Broadie, Glasserman and Kou, Mathematical Finance, 1997
         # Adjusts the barrier for discrete and not continuous observations
         h_adj = h
-        if self._optionType == FinFXBarrierTypes.DOWN_AND_OUT_CALL:
+        if self._optionType == TuringFXBarrierTypes.DOWN_AND_OUT_CALL:
             h_adj = h * exp(-0.5826 * volatility * sqrt(t / numObservations))
-        elif self._optionType == FinFXBarrierTypes.DOWN_AND_IN_CALL:
+        elif self._optionType == TuringFXBarrierTypes.DOWN_AND_IN_CALL:
             h_adj = h * exp(-0.5826 * volatility * sqrt(t / numObservations))
-        elif self._optionType == FinFXBarrierTypes.UP_AND_IN_CALL:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_IN_CALL:
             h_adj = h * exp(0.5826 * volatility * sqrt(t / numObservations))
-        elif self._optionType == FinFXBarrierTypes.UP_AND_OUT_CALL:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_OUT_CALL:
             h_adj = h * exp(0.5826 * volatility * sqrt(t / numObservations))
-        elif self._optionType == FinFXBarrierTypes.UP_AND_IN_PUT:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_IN_PUT:
             h_adj = h * exp(0.5826 * volatility * sqrt(t / numObservations))
-        elif self._optionType == FinFXBarrierTypes.UP_AND_OUT_PUT:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_OUT_PUT:
             h_adj = h * exp(0.5826 * volatility * sqrt(t / numObservations))
-        elif self._optionType == FinFXBarrierTypes.DOWN_AND_OUT_PUT:
+        elif self._optionType == TuringFXBarrierTypes.DOWN_AND_OUT_PUT:
             h_adj = h * exp(-0.5826 * volatility * sqrt(t / numObservations))
-        elif self._optionType == FinFXBarrierTypes.DOWN_AND_IN_PUT:
+        elif self._optionType == TuringFXBarrierTypes.DOWN_AND_IN_PUT:
             h_adj = h * exp(-0.5826 * volatility * sqrt(t / numObservations))
         else:
-            raise FinError("Unknown barrier option type." +
-                           str(self._optionType))
+            raise TuringError("Unknown barrier option type." +
+                              str(self._optionType))
 
         h = h_adj
 
@@ -148,7 +148,7 @@ class FinFXBarrierOption(FinFXOption):
         y1 = log(h / S0) / sigmaRootT + ll * sigmaRootT
         hOverS = h / S0
 
-        if self._optionType == FinFXBarrierTypes.DOWN_AND_OUT_CALL:
+        if self._optionType == TuringFXBarrierTypes.DOWN_AND_OUT_CALL:
             if h >= K:
                 c_do = S0 * dq * N(x1) - K * df * N(x1 - sigmaRootT) \
                     - S0 * dq * pow(hOverS, 2.0 * ll) * N(y1) \
@@ -158,7 +158,7 @@ class FinFXBarrierOption(FinFXOption):
                 c_di = S0 * dq * pow(hOverS, 2.0 * ll) * N(y) \
                     - K * df * pow(hOverS, 2.0 * ll - 2.0) * N(y - sigmaRootT)
                 price = c - c_di
-        elif self._optionType == FinFXBarrierTypes.DOWN_AND_IN_CALL:
+        elif self._optionType == TuringFXBarrierTypes.DOWN_AND_IN_CALL:
             if h <= K:
                 c_di = S0 * dq * pow(hOverS, 2.0 * ll) * N(y) \
                     - K * df * pow(hOverS, 2.0 * ll - 2.0) * N(y - sigmaRootT)
@@ -169,7 +169,7 @@ class FinFXBarrierOption(FinFXOption):
                     - S0 * dq * pow(hOverS, 2.0 * ll) * N(y1) \
                     + K * df * pow(hOverS, 2.0 * ll - 2.0) * N(y1 - sigmaRootT)
                 price = c - c_do
-        elif self._optionType == FinFXBarrierTypes.UP_AND_IN_CALL:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_IN_CALL:
             if h >= K:
                 c_ui = S0 * dq * N(x1) - K * df * N(x1 - sigmaRootT) \
                     - S0 * dq * pow(hOverS, 2.0 * ll) * (N(-y) - N(-y1)) \
@@ -177,7 +177,7 @@ class FinFXBarrierOption(FinFXOption):
                 price = c_ui
             else:
                 price = c
-        elif self._optionType == FinFXBarrierTypes.UP_AND_OUT_CALL:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_OUT_CALL:
             if h > K:
                 c_ui = S0 * dq * N(x1) - K * df * N(x1 - sigmaRootT) \
                      - S0 * dq * pow(hOverS, 2.0 * ll) * (N(-y) - N(-y1)) \
@@ -185,7 +185,7 @@ class FinFXBarrierOption(FinFXOption):
                 price = c - c_ui
             else:
                 price = 0.0
-        elif self._optionType == FinFXBarrierTypes.UP_AND_IN_PUT:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_IN_PUT:
             if h > K:
                 p_ui = -S0 * dq * pow(hOverS, 2.0 * ll) * N(-y) \
                     + K * df * pow(hOverS, 2.0 * ll - 2.0) * N(-y + sigmaRootT)
@@ -196,7 +196,7 @@ class FinFXBarrierOption(FinFXOption):
                     + S0 * dq * pow(hOverS, 2.0 * ll) * N(-y1) \
                     - K * df * pow(hOverS, 2.0 * ll - 2.0) * N(-y1 + sigmaRootT)
                 price = p - p_uo
-        elif self._optionType == FinFXBarrierTypes.UP_AND_OUT_PUT:
+        elif self._optionType == TuringFXBarrierTypes.UP_AND_OUT_PUT:
             if h >= K:
                 p_ui = -S0 * dq * pow(hOverS, 2.0 * ll) * N(-y) \
                     + K * df * pow(hOverS, 2.0 * ll - 2.0) * N(-y + sigmaRootT)
@@ -207,7 +207,7 @@ class FinFXBarrierOption(FinFXOption):
                     + S0 * dq * pow(hOverS, 2.0 * ll) * N(-y1) \
                     - K * df * pow(hOverS, 2.0 * ll - 2.0) * N(-y1 + sigmaRootT)
                 price = p_uo
-        elif self._optionType == FinFXBarrierTypes.DOWN_AND_OUT_PUT:
+        elif self._optionType == TuringFXBarrierTypes.DOWN_AND_OUT_PUT:
             if h >= K:
                 price = 0.0
             else:
@@ -216,7 +216,7 @@ class FinFXBarrierOption(FinFXOption):
                     + S0 * dq * pow(hOverS, 2.0 * ll) * (N(y) - N(y1)) \
                     - K * df * pow(hOverS, 2.0 * ll - 2.0) * (N(y - sigmaRootT) - N(y1 - sigmaRootT))
                 price = p - p_di
-        elif self._optionType == FinFXBarrierTypes.DOWN_AND_IN_PUT:
+        elif self._optionType == TuringFXBarrierTypes.DOWN_AND_IN_PUT:
             if h >= K:
                 price = p
             else:
@@ -226,8 +226,8 @@ class FinFXBarrierOption(FinFXOption):
                     - K * df * pow(hOverS, 2.0 * ll - 2.0) * (N(y - sigmaRootT) - N(y1 - sigmaRootT))
                 price = p_di
         else:
-            raise FinError("Unknown barrier option type." +
-                           str(self._optionType))
+            raise TuringError("Unknown barrier option type." +
+                              str(self._optionType))
 
         return price
 
@@ -257,13 +257,13 @@ class FinFXBarrierOption(FinFXOption):
 
         #######################################################################
 
-        if optionType == FinFXBarrierTypes.DOWN_AND_OUT_CALL and S0 <= B:
+        if optionType == TuringFXBarrierTypes.DOWN_AND_OUT_CALL and S0 <= B:
             return 0.0
-        elif optionType == FinFXBarrierTypes.UP_AND_OUT_CALL and S0 >= B:
+        elif optionType == TuringFXBarrierTypes.UP_AND_OUT_CALL and S0 >= B:
             return 0.0
-        elif optionType == FinFXBarrierTypes.DOWN_AND_OUT_PUT and S0 <= B:
+        elif optionType == TuringFXBarrierTypes.DOWN_AND_OUT_PUT and S0 <= B:
             return 0.0
-        elif optionType == FinFXBarrierTypes.UP_AND_OUT_PUT and S0 >= B:
+        elif optionType == TuringFXBarrierTypes.UP_AND_OUT_PUT and S0 >= B:
             return 0.0
 
         #######################################################################
@@ -271,13 +271,13 @@ class FinFXBarrierOption(FinFXOption):
         simpleCall = False
         simplePut = False
 
-        if optionType == FinFXBarrierTypes.DOWN_AND_IN_CALL and S0 <= B:
+        if optionType == TuringFXBarrierTypes.DOWN_AND_IN_CALL and S0 <= B:
             simpleCall = True
-        elif optionType == FinFXBarrierTypes.UP_AND_IN_CALL and S0 >= B:
+        elif optionType == TuringFXBarrierTypes.UP_AND_IN_CALL and S0 >= B:
             simpleCall = True
-        elif optionType == FinFXBarrierTypes.UP_AND_IN_PUT and S0 >= B:
+        elif optionType == TuringFXBarrierTypes.UP_AND_IN_PUT and S0 >= B:
             simplePut = True
-        elif optionType == FinFXBarrierTypes.DOWN_AND_IN_PUT and S0 <= B:
+        elif optionType == TuringFXBarrierTypes.DOWN_AND_IN_PUT and S0 <= B:
             simplePut = True
 
         if simplePut or simpleCall:
@@ -306,20 +306,20 @@ class FinFXBarrierOption(FinFXOption):
 
         (numPaths, numTimeSteps) = Sall.shape
 
-        if optionType == FinFXBarrierTypes.DOWN_AND_IN_CALL or \
-           optionType == FinFXBarrierTypes.DOWN_AND_OUT_CALL or \
-           optionType == FinFXBarrierTypes.DOWN_AND_IN_PUT or \
-           optionType == FinFXBarrierTypes.DOWN_AND_OUT_PUT:
+        if optionType == TuringFXBarrierTypes.DOWN_AND_IN_CALL or \
+           optionType == TuringFXBarrierTypes.DOWN_AND_OUT_CALL or \
+           optionType == TuringFXBarrierTypes.DOWN_AND_IN_PUT or \
+           optionType == TuringFXBarrierTypes.DOWN_AND_OUT_PUT:
 
             barrierCrossedFromAbove = [False] * numPaths
 
             for p in range(0, numPaths):
                 barrierCrossedFromAbove[p] = np.any(Sall[p] <= B)
 
-        if optionType == FinFXBarrierTypes.UP_AND_IN_CALL or \
-           optionType == FinFXBarrierTypes.UP_AND_OUT_CALL or \
-           optionType == FinFXBarrierTypes.UP_AND_IN_PUT or \
-           optionType == FinFXBarrierTypes.UP_AND_OUT_PUT:
+        if optionType == TuringFXBarrierTypes.UP_AND_IN_CALL or \
+           optionType == TuringFXBarrierTypes.UP_AND_OUT_CALL or \
+           optionType == TuringFXBarrierTypes.UP_AND_IN_PUT or \
+           optionType == TuringFXBarrierTypes.UP_AND_OUT_PUT:
 
             barrierCrossedFromBelow = [False] * numPaths
             for p in range(0, numPaths):
@@ -328,29 +328,29 @@ class FinFXBarrierOption(FinFXOption):
         payoff = np.zeros(numPaths)
         ones = np.ones(numPaths)
 
-        if optionType == FinFXBarrierTypes.DOWN_AND_OUT_CALL:
+        if optionType == TuringFXBarrierTypes.DOWN_AND_OUT_CALL:
             payoff = np.maximum(Sall[:, -1] - K, 0.0) * \
                 (ones - barrierCrossedFromAbove)
-        elif optionType == FinFXBarrierTypes.DOWN_AND_IN_CALL:
+        elif optionType == TuringFXBarrierTypes.DOWN_AND_IN_CALL:
             payoff = np.maximum(Sall[:, -1] - K, 0.0) * barrierCrossedFromAbove
-        elif optionType == FinFXBarrierTypes.UP_AND_IN_CALL:
+        elif optionType == TuringFXBarrierTypes.UP_AND_IN_CALL:
             payoff = np.maximum(Sall[:, -1] - K, 0.0) * barrierCrossedFromBelow
-        elif optionType == FinFXBarrierTypes.UP_AND_OUT_CALL:
+        elif optionType == TuringFXBarrierTypes.UP_AND_OUT_CALL:
             payoff = np.maximum(Sall[:, -1] - K, 0.0) * \
                 (ones - barrierCrossedFromBelow)
-        elif optionType == FinFXBarrierTypes.UP_AND_IN_PUT:
+        elif optionType == TuringFXBarrierTypes.UP_AND_IN_PUT:
             payoff = np.maximum(K - Sall[:, -1], 0.0) * barrierCrossedFromBelow
-        elif optionType == FinFXBarrierTypes.UP_AND_OUT_PUT:
+        elif optionType == TuringFXBarrierTypes.UP_AND_OUT_PUT:
             payoff = np.maximum(K - Sall[:, -1], 0.0) * \
                 (ones - barrierCrossedFromBelow)
-        elif optionType == FinFXBarrierTypes.DOWN_AND_OUT_PUT:
+        elif optionType == TuringFXBarrierTypes.DOWN_AND_OUT_PUT:
             payoff = np.maximum(K - Sall[:, -1], 0.0) * \
                 (ones - barrierCrossedFromAbove)
-        elif optionType == FinFXBarrierTypes.DOWN_AND_IN_PUT:
+        elif optionType == TuringFXBarrierTypes.DOWN_AND_IN_PUT:
             payoff = np.maximum(K - Sall[:, -1], 0.0) * barrierCrossedFromAbove
         else:
-            raise FinError("Unknown barrier option type." +
-                           str(self._optionType))
+            raise TuringError("Unknown barrier option type." +
+                              str(self._optionType))
 
         v = payoff.mean() * exp(-rd*t)
 

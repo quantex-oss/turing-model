@@ -4,25 +4,25 @@
 
 import numpy as np
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_math import ONE_MILLION
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_global_types import FinOptionTypes
-from .turing_fx_vanilla_option import FinFXVanillaOption
-from ...models.turing_model_black_scholes import FinModelBlackScholes
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_global_types import TuringOptionTypes
+from .turing_fx_vanilla_option import TuringFXVanillaOption
+from financepy.models.turing_model_black_scholes import FinModelBlackScholes
 
-from ...finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
 
 ###############################################################################
 
 
-class FinFXVarianceSwap(object):
+class TuringFXVarianceSwap(object):
     ''' Class for managing an FX variance swap contract. '''
 
     def __init__(self,
-                 effectiveDate: FinDate,
-                 maturityDateOrTenor: [FinDate, str],
+                 effectiveDate: TuringDate,
+                 maturityDateOrTenor: [TuringDate, str],
                  strikeVariance: float,
                  notional: float = ONE_MILLION,
                  payStrikeFlag: bool = True):
@@ -30,13 +30,13 @@ class FinFXVarianceSwap(object):
 
         checkArgumentTypes(self.__init__, locals())
 
-        if type(maturityDateOrTenor) == FinDate:
+        if type(maturityDateOrTenor) == TuringDate:
             maturityDate = maturityDateOrTenor
         else:
             maturityDate = effectiveDate.addTenor(maturityDateOrTenor)
 
         if effectiveDate >= maturityDate:
-            raise FinError("Start date after or same as maturity date")
+            raise TuringError("Start date after or same as maturity date")
 
         self._effectiveDate = effectiveDate
         self._maturityDate = maturityDate
@@ -121,8 +121,8 @@ class FinFXVarianceSwap(object):
         self._numPutOptions = numPutOptions
         self._numCallOptions = numCallOptions
 
-        callType = FinOptionTypes.EUROPEAN_CALL
-        putType = FinOptionTypes.EUROPEAN_PUT
+        callType = TuringOptionTypes.EUROPEAN_CALL
+        putType = TuringOptionTypes.EUROPEAN_PUT
 
         tmat = (self._maturityDate - valuationDate)/gDaysInYear
 
@@ -197,7 +197,7 @@ class FinFXVarianceSwap(object):
         for n in range(0, numPutOptions):
             k = putK[n]
             vol = volatilityCurve.volatility(k)
-            opt = FinFXVanillaOption(self._maturityDate, k, putType)
+            opt = TuringFXVanillaOption(self._maturityDate, k, putType)
             model = FinModelBlackScholes(vol)
             v = opt.value(valuationDate, s0, discountCurve,
                           dividendCurve, model)
@@ -207,7 +207,7 @@ class FinFXVarianceSwap(object):
         for n in range(0, numCallOptions):
             k = callK[n]
             vol = volatilityCurve.volatility(k)
-            opt = FinFXVanillaOption(self._maturityDate, k, callType)
+            opt = TuringFXVanillaOption(self._maturityDate, k, callType)
             model = FinModelBlackScholes(vol)
             v = opt.value(valuationDate, s0, discountCurve,
                           dividendCurve, model)
@@ -229,7 +229,7 @@ class FinFXVarianceSwap(object):
 
         for i in range(0, numObservations):
             if closePrices[i] <= 0.0:
-                raise FinError("Stock prices must be greater than zero")
+                raise TuringError("Stock prices must be greater than zero")
 
         cumX2 = 0.0
 

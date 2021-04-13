@@ -7,8 +7,8 @@
 import numpy as np
 
 from numba import njit, float64, int64, prange
-from ..finutils.turing_global_types import FinOptionTypes
-from ..finutils.turing_error import FinError
+from ..finutils.turing_global_types import TuringOptionTypes
+from ..finutils.turing_error import TuringError
 from ..models.turing_sobol import getGaussianSobol
 from math import exp
 
@@ -31,7 +31,7 @@ def _valueMC_NONUMBA_NONUMPY(s, t, K,  optionType, r, q, v, numPaths, seed, useS
 
     ss = s * exp((mu - v2 / 2.0) * t)
 
-    if optionType == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionType == TuringOptionTypes.EUROPEAN_CALL.value:
 
         for i in range(0, numPaths):
             s_1 = ss * exp(+g[i] * vsqrtt)
@@ -39,7 +39,7 @@ def _valueMC_NONUMBA_NONUMPY(s, t, K,  optionType, r, q, v, numPaths, seed, useS
             payoff += max(s_1 - K, 0.0)
             payoff += max(s_2 - K, 0.0)
 
-    elif optionType == FinOptionTypes.EUROPEAN_PUT.value:
+    elif optionType == TuringOptionTypes.EUROPEAN_PUT.value:
 
         for i in range(0, numPaths):
             s_1 = ss * exp(+g[i] * vsqrtt)
@@ -48,7 +48,7 @@ def _valueMC_NONUMBA_NONUMPY(s, t, K,  optionType, r, q, v, numPaths, seed, useS
             payoff += max(K - s_2, 0.0)
 
     else:
-        raise FinError("Unknown option type.")
+        raise TuringError("Unknown option type.")
 
     v = payoff * np.exp(-r * t) / numPaths / 2.0
     return v
@@ -75,14 +75,14 @@ def _valueMC_NUMPY_ONLY(s, t, K, optionType, r, q, v, numPaths, seed, useSobol):
     s_2 = ss / m
 
     # Not sure if it is correct to do antithetics with sobols but why not ?
-    if optionType == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionType == TuringOptionTypes.EUROPEAN_CALL.value:
         payoff_a_1 = np.maximum(s_1 - K, 0.0)
         payoff_a_2 = np.maximum(s_2 - K, 0.0)
-    elif optionType == FinOptionTypes.EUROPEAN_PUT.value:
+    elif optionType == TuringOptionTypes.EUROPEAN_PUT.value:
         payoff_a_1 = np.maximum(K - s_1, 0.0)
         payoff_a_2 = np.maximum(K - s_2, 0.0)
     else:
-        raise FinError("Unknown option type.")
+        raise TuringError("Unknown option type.")
 
     payoff = np.mean(payoff_a_1) + np.mean(payoff_a_2)
     v = payoff * np.exp(-r * t) / 2.0
@@ -112,14 +112,14 @@ def _valueMC_NUMPY_NUMBA(s, t, K, optionType, r, q, v, numPaths, seed, useSobol)
     s_2 = ss / m
 
     # Not sure if it is correct to do antithetics with sobols but why not ?
-    if optionType == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionType == TuringOptionTypes.EUROPEAN_CALL.value:
         payoff_a_1 = np.maximum(s_1 - K, 0.0)
         payoff_a_2 = np.maximum(s_2 - K, 0.0)
-    elif optionType == FinOptionTypes.EUROPEAN_PUT.value:
+    elif optionType == TuringOptionTypes.EUROPEAN_PUT.value:
         payoff_a_1 = np.maximum(K - s_1, 0.0)
         payoff_a_2 = np.maximum(K - s_2, 0.0)
     else:
-        raise FinError("Unknown option type.")
+        raise TuringError("Unknown option type.")
 
     payoff = np.mean(payoff_a_1) + np.mean(payoff_a_2)
     v = payoff * np.exp(-r * t) / 2.0
@@ -146,7 +146,7 @@ def _valueMC_NUMBA_ONLY(s, t, K, optionType, r, q, v, numPaths, seed, useSobol):
  
     ss = s * np.exp((mu - v2 / 2.0) * t)
 
-    if optionType == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionType == TuringOptionTypes.EUROPEAN_CALL.value:
 
         for i in range(0, numPaths):
             gg = g[i]
@@ -155,7 +155,7 @@ def _valueMC_NUMBA_ONLY(s, t, K, optionType, r, q, v, numPaths, seed, useSobol):
             payoff += max(s_1 - K, 0.0)
             payoff += max(s_2 - K, 0.0)
 
-    elif optionType == FinOptionTypes.EUROPEAN_PUT.value:
+    elif optionType == TuringOptionTypes.EUROPEAN_PUT.value:
 
         for i in range(0, numPaths):
             gg = g[i]
@@ -165,7 +165,7 @@ def _valueMC_NUMBA_ONLY(s, t, K, optionType, r, q, v, numPaths, seed, useSobol):
             payoff += max(K - s_2, 0.0)
 
     else:
-        raise FinError("Unknown option type.")
+        raise TuringError("Unknown option type.")
 
     v = payoff * np.exp(-r * t) / numPaths / 2.0
     return v
@@ -193,7 +193,7 @@ def _valueMC_NUMBA_PARALLEL(s, t, K,  optionType, r, q, v, numPaths, seed, useSo
     payoff1 = 0.0
     payoff2 = 0.0
 
-    if optionType == FinOptionTypes.EUROPEAN_CALL.value:
+    if optionType == TuringOptionTypes.EUROPEAN_CALL.value:
         
         for i in prange(0, numPaths):
             s_1 = ss * exp(+g[i] * vsqrtt)
@@ -201,7 +201,7 @@ def _valueMC_NUMBA_PARALLEL(s, t, K,  optionType, r, q, v, numPaths, seed, useSo
             payoff1 += max(s_1 - K, 0.0)
             payoff2 += max(s_2 - K, 0.0)
 
-    elif optionType == FinOptionTypes.EUROPEAN_PUT.value:
+    elif optionType == TuringOptionTypes.EUROPEAN_PUT.value:
 
         for i in prange(0, numPaths):
             s_1 = ss * exp(+g[i] * vsqrtt)
@@ -210,7 +210,7 @@ def _valueMC_NUMBA_PARALLEL(s, t, K,  optionType, r, q, v, numPaths, seed, useSo
             payoff2 += max(K - s_2, 0.0)
 
     else:
-        raise FinError("Unknown option type.")
+        raise TuringError("Unknown option type.")
 
     averagePayoff = (payoff1 + payoff2) / 2.0 / numPaths
     v = averagePayoff * np.exp(-r * t)

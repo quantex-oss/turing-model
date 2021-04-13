@@ -4,35 +4,35 @@
 
 import numpy as np
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_global_variables import gSmall
-from ...finutils.turing_error import FinError
-from ...market.curves.turing_discount_curve import FinDiscountCurve
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...finutils.turing_helper_functions import labelToString
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...finutils.turing_helper_functions import timesFromDates
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_global_variables import gSmall
+from financepy.finutils.turing_error import TuringError
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_helper_functions import timesFromDates
 
 ###############################################################################
 
 
-class FinDiscountCurveNS(FinDiscountCurve):
+class TuringDiscountCurveNS(TuringDiscountCurve):
     ''' Implementation of Nelson-Siegel parametrisation of a discount curve.
     The internal rate is a continuously compounded rate but you can calculate
     alternative frequencies by providing a corresponding compounding frequency.
     A day count convention is needed to ensure that dates are converted to the
-    correct time in years. The class inherits methods from FinDiscountCurve.'''
+    correct time in years. The class inherits methods from TuringDiscountCurve.'''
 
     def __init__(self,
-                 valuationDate: FinDate,
+                 valuationDate: TuringDate,
                  beta0: float,
                  beta1: float,
                  beta2: float,
                  tau: float,
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.CONTINUOUS,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_ACT_ISDA):
-        ''' Creation of a FinDiscountCurveNS object. Parameters are provided
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA):
+        ''' Creation of a TuringDiscountCurveNS object. Parameters are provided
         individually for beta0, beta1, beta2 and tau. The zero rates produced
         by this parametrisation have an implicit compounding convention that
         defaults to continuous but which can be overridden. '''
@@ -40,7 +40,7 @@ class FinDiscountCurveNS(FinDiscountCurve):
         checkArgumentTypes(self.__init__, locals())
 
         if tau <= 0:
-            raise FinError("Tau must be positive")
+            raise TuringError("Tau must be positive")
 
         self._valuationDate = valuationDate
         self._beta0 = beta0
@@ -53,22 +53,22 @@ class FinDiscountCurveNS(FinDiscountCurve):
 ###############################################################################
 
     def zeroRate(self,
-                 dates: (list, FinDate),
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.CONTINUOUS,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_360):
+                 dates: (list, TuringDate),
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360):
         ''' Calculation of zero rates with specified frequency according to
-        NS parametrisation. This method overrides that in FinDiscountCurve.
+        NS parametrisation. This method overrides that in TuringDiscountCurve.
         The parametrisation is not strictly in terms of continuously compounded
         zero rates, this function allows other compounding and day counts.
         This function returns a single or vector of zero rates given a vector
         of dates so must use Numpy functions. The default frequency is a
         continuously compounded rate and ACT ACT day counting. '''
 
-        if isinstance(freqType, FinFrequencyTypes) is False:
-            raise FinError("Invalid Frequency type.")
+        if isinstance(freqType, TuringFrequencyTypes) is False:
+            raise TuringError("Invalid Frequency type.")
 
-        if isinstance(dayCountType, FinDayCountTypes) is False:
-            raise FinError("Invalid Day Count type.")
+        if isinstance(dayCountType, TuringDayCountTypes) is False:
+            raise TuringError("Invalid Day Count type.")
 
         # Get day count times to use with curve day count convention
         dcTimes = timesFromDates(dates,
@@ -112,7 +112,7 @@ class FinDiscountCurveNS(FinDiscountCurve):
 ###############################################################################
 
     def df(self,
-           dates: (FinDate, list)):
+           dates: (TuringDate, list)):
         ''' Return discount factors given a single or vector of dates. The
         discount factor depends on the rate and this in turn depends on its
         compounding frequency and it defaults to continuous compounding. It

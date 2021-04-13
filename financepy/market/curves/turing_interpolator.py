@@ -4,8 +4,8 @@
 
 from numba import njit, float64, int64
 import numpy as np
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_variables import gSmall
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_variables import gSmall
 
 
 from scipy.interpolate import PchipInterpolator
@@ -45,7 +45,7 @@ def interpolate(t: (float, np.ndarray),  # time or array of times
         
         if t < 0.0:
             print(t)
-            raise FinError("Interpolate times must all be >= 0")
+            raise TuringError("Interpolate times must all be >= 0")
 
         u = _uinterpolate(t, times, dfs, method)
         return u
@@ -53,13 +53,13 @@ def interpolate(t: (float, np.ndarray),  # time or array of times
 
         if np.any(t < 0.0):
             print(t)
-            raise FinError("Interpolate times must all be >= 0")
+            raise TuringError("Interpolate times must all be >= 0")
 
         v = _vinterpolate(t, times, dfs, method)
 
         return v
     else:
-        raise FinError("Unknown input type" + type(t))
+        raise TuringError("Unknown input type" + type(t))
 
 ###############################################################################
 
@@ -164,7 +164,7 @@ def _uinterpolate(t, times, dfs, method):
 
     else:
         print(method)
-        raise FinError("Invalid interpolation scheme.")
+        raise TuringError("Invalid interpolation scheme.")
 
 ###############################################################################
 
@@ -283,13 +283,13 @@ class FinInterpolator():
         The value of x can be an array so that the function is vectorised. '''
 
         if self._dfs is None:
-            raise FinError("Dfs have not been set.")
+            raise TuringError("Dfs have not been set.")
 
         if type(t) is float or type(t) is np.float64:
 
             if t < 0.0:
                 print(t)
-                raise FinError("Interpolate times must all be >= 0")
+                raise TuringError("Interpolate times must all be >= 0")
 
             if np.abs(t) < gSmall:
                 return 1.0
@@ -300,12 +300,12 @@ class FinInterpolator():
 
             if np.any(t < 0.0):
                 print(t)
-                raise FinError("Interpolate times must all be >= 0")
+                raise TuringError("Interpolate times must all be >= 0")
 
             tvec = t
 
         else:
-            raise FinError("t is not a recognized type")
+            raise TuringError("t is not a recognized type")
         
         if self._interpType == FinInterpTypes.PCHIP_LOG_DISCOUNT:
         

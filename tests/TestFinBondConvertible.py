@@ -9,78 +9,78 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.products.bonds.turing_bond_convertible import FinBondConvertible
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.products.bonds.turing_bond_convertible import TuringBondConvertible
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 
 def test_FinBondConvertible():
 
-    settlementDate = FinDate(31, 12, 2003)
-    startConvertDate = FinDate(31, 12, 2003)
-    maturityDate = FinDate(15, 3, 2022)
+    settlementDate = TuringDate(31, 12, 2003)
+    startConvertDate = TuringDate(31, 12, 2003)
+    maturityDate = TuringDate(15, 3, 2022)
     conversionRatio = 38.4615  # adjust for face
     coupon = 0.0575
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualBasis = FinDayCountTypes.ACT_365F
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualBasis = TuringDayCountTypes.ACT_365F
     face = 1000.0
 
     callPrice = 1100
-    callDates = [FinDate(20, 3, 2007),
-                 FinDate(15, 3, 2012),
-                 FinDate(15, 3, 2017)]
+    callDates = [TuringDate(20, 3, 2007),
+                 TuringDate(15, 3, 2012),
+                 TuringDate(15, 3, 2017)]
     callPrices = np.array([callPrice, callPrice, callPrice])
 
     putPrice = 90
-    putDates = [FinDate(20, 3, 2007),
-                FinDate(15, 3, 2012),
-                FinDate(15, 3, 2017)]
+    putDates = [TuringDate(20, 3, 2007),
+                TuringDate(15, 3, 2012),
+                TuringDate(15, 3, 2017)]
     putPrices = np.array([putPrice, putPrice, putPrice])
 
-    bond = FinBondConvertible(maturityDate,
-                              coupon,
-                              freqType,
-                              startConvertDate,
-                              conversionRatio,
-                              callDates,
-                              callPrices,
-                              putDates,
-                              putPrices,
-                              accrualBasis,
-                              face)
+    bond = TuringBondConvertible(maturityDate,
+                                 coupon,
+                                 freqType,
+                                 startConvertDate,
+                                 conversionRatio,
+                                 callDates,
+                                 callPrices,
+                                 putDates,
+                                 putPrices,
+                                 accrualBasis,
+                                 face)
 #    print(bond)
 
-    dividendDates = [FinDate(20, 3, 2007),
-                     FinDate(15, 3, 2008),
-                     FinDate(15, 3, 2009),
-                     FinDate(15, 3, 2010),
-                     FinDate(15, 3, 2011),
-                     FinDate(15, 3, 2012),
-                     FinDate(15, 3, 2013),
-                     FinDate(15, 3, 2014),
-                     FinDate(15, 3, 2015),
-                     FinDate(15, 3, 2016),
-                     FinDate(15, 3, 2017),
-                     FinDate(15, 3, 2018),
-                     FinDate(15, 3, 2019),
-                     FinDate(15, 3, 2020),
-                     FinDate(15, 3, 2021),
-                     FinDate(15, 3, 2022)]
+    dividendDates = [TuringDate(20, 3, 2007),
+                     TuringDate(15, 3, 2008),
+                     TuringDate(15, 3, 2009),
+                     TuringDate(15, 3, 2010),
+                     TuringDate(15, 3, 2011),
+                     TuringDate(15, 3, 2012),
+                     TuringDate(15, 3, 2013),
+                     TuringDate(15, 3, 2014),
+                     TuringDate(15, 3, 2015),
+                     TuringDate(15, 3, 2016),
+                     TuringDate(15, 3, 2017),
+                     TuringDate(15, 3, 2018),
+                     TuringDate(15, 3, 2019),
+                     TuringDate(15, 3, 2020),
+                     TuringDate(15, 3, 2021),
+                     TuringDate(15, 3, 2022)]
 
     dividendYields = [0.00] * 16
     stockPrice = 28.5
     stockVolatility = 0.370
     rate = 0.04
-    discountCurve = FinDiscountCurveFlat(settlementDate,
-                                         rate,
-                                         FinFrequencyTypes.CONTINUOUS)
+    discountCurve = TuringDiscountCurveFlat(settlementDate,
+                                            rate,
+                                            TuringFrequencyTypes.CONTINUOUS)
     creditSpread = 0.00
     recoveryRate = 0.40
     numStepsPerYear = 20

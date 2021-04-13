@@ -8,13 +8,13 @@ import datetime as dt
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_date import FinDate, fromDatetime
-from financepy.products.bonds.turing_bond import FinBond
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
+from financepy.finutils.turing_date import TuringDate, fromDatetime
+from financepy.products.bonds.turing_bond import TuringBond
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
@@ -25,25 +25,25 @@ def test_FinBondPortfolio():
     bondDataFrame = pd.read_csv(path, sep='\t')
     bondDataFrame['mid'] = 0.5*(bondDataFrame['bid'] + bondDataFrame['ask'])
 
-    freqType = FinFrequencyTypes.SEMI_ANNUAL
-    accrualType = FinDayCountTypes.ACT_ACT_ICMA
+    freqType = TuringFrequencyTypes.SEMI_ANNUAL
+    accrualType = TuringDayCountTypes.ACT_ACT_ICMA
 
-    settlement = FinDate(19, 9, 2012)
+    settlement = TuringDate(19, 9, 2012)
 
     testCases.header("DCTYPE", "MATDATE", "CPN", "PRICE", "ACCD", "YTM")
 
-    for accrualType in FinDayCountTypes:
+    for accrualType in TuringDayCountTypes:
 
         for _, bond in bondDataFrame.iterrows():
 
             dateString = bond['maturity']
             matDatetime = dt.datetime.strptime(dateString, '%d-%b-%y')
             maturityDt = fromDatetime(matDatetime)
-            issueDt = FinDate(maturityDt._d, maturityDt._m, 2000)
+            issueDt = TuringDate(maturityDt._d, maturityDt._m, 2000)
             coupon = bond['coupon']/100.0
             cleanPrice = bond['mid']
-            bond = FinBond(issueDt, maturityDt, 
-                           coupon, freqType, accrualType)
+            bond = TuringBond(issueDt, maturityDt,
+                              coupon, freqType, accrualType)
 
             ytm = bond.yieldToMaturity(settlement, cleanPrice)
             accd = bond._accruedInterest

@@ -7,28 +7,28 @@
 
 import numpy as np
 
-from ...finutils.turing_error import FinError
+from financepy.finutils.turing_error import TuringError
 
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes, FinDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
 
-from ...products.credit.turing_cds import FinCDS
+from financepy.products.credit.turing_cds import FinCDS
 
-from ...models.turing_model_gaussian_copula_1f import homogeneousBasketLossDbn
-from ...models.turing_model_gaussian_copula import defaultTimesGC
-from ...models.turing_model_student_t_copula import FinModelStudentTCopula
+from financepy.models.turing_model_gaussian_copula_1f import homogeneousBasketLossDbn
+from financepy.models.turing_model_gaussian_copula import defaultTimesGC
+from financepy.models.turing_model_student_t_copula import TuringModelStudentTCopula
 
-from ...products.credit.turing_cds_curve import FinCDSCurve
+from financepy.products.credit.turing_cds_curve import FinCDSCurve
 
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import ONE_MILLION
-from ...market.curves.turing_interpolator import interpolate, FinInterpTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import ONE_MILLION
+from financepy.market.curves.turing_interpolator import interpolate, FinInterpTypes
 
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_helper_functions import labelToString
 
 ###############################################################################
 # TODO: Convert functions to use NUMBA!!
@@ -40,16 +40,16 @@ class FinCDSBasket(object):
     ''' Class to deal with n-to-default CDS baskets. '''
 
     def __init__(self,
-                 stepInDate: FinDate,
-                 maturityDate: FinDate,
+                 stepInDate: TuringDate,
+                 maturityDate: TuringDate,
                  notional: float = ONE_MILLION,
                  runningCoupon: float = 0.0,
                  longProtection: bool = True,
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_360,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
 
         checkArgumentTypes(self.__init__, locals())
 
@@ -91,7 +91,7 @@ class FinCDSBasket(object):
 
         adjustedDates = self._cdsContract._adjustedDates
         numFlows = len(adjustedDates)
-        dayCount = FinDayCount(self._dayCountType)
+        dayCount = TuringDayCount(self._dayCountType)
 
         averageAccrualFactor = 0.0
 
@@ -169,7 +169,7 @@ class FinCDSBasket(object):
         numCredits = len(issuerCurves)
 
         if nToDefault > numCredits or nToDefault < 1:
-            raise FinError("nToDefault must be 1 to numCredits")
+            raise TuringError("nToDefault must be 1 to numCredits")
 
         defaultTimes = defaultTimesGC(issuerCurves,
                                       correlationMatrix,
@@ -206,9 +206,9 @@ class FinCDSBasket(object):
         numCredits = len(issuerCurves)
 
         if nToDefault > numCredits or nToDefault < 1:
-            raise FinError("nToDefault must be 1 to numCredits")
+            raise TuringError("nToDefault must be 1 to numCredits")
 
-        model = FinModelStudentTCopula()
+        model = TuringModelStudentTCopula()
 
         defaultTimes = model.defaultTimes(issuerCurves,
                                           correlationMatrix,
@@ -245,15 +245,15 @@ class FinCDSBasket(object):
         numCredits = len(issuerCurves)
 
         if numCredits == 0:
-            raise FinError("Num Credits is zero")
+            raise TuringError("Num Credits is zero")
 
         if nToDefault < 1 or nToDefault > numCredits:
-            raise FinError("NToDefault must be 1 to numCredits")
+            raise TuringError("NToDefault must be 1 to numCredits")
 
         tmat = (self._maturityDate - valuationDate) / gDaysInYear
 
         if tmat < 0.0:
-            raise FinError("Value date is after maturity date")
+            raise TuringError("Value date is after maturity date")
 
         paymentDates = self._cdsContract._adjustedDates
         numTimes = len(paymentDates)

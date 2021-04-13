@@ -9,56 +9,56 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from financepy.finutils.turing_global_types import FinCapFloorTypes
+from financepy.finutils.turing_global_types import TuringCapFloorTypes
 from financepy.products.rates.turing_ibor_cap_floor import FinIborCapFloor
 from financepy.products.rates.turing_ibor_swap import FinIborSwap
-from financepy.products.rates.turing_ibor_swap import FinSwapTypes
-from financepy.products.rates.turing_ibor_deposit import FinIborDeposit
-from financepy.products.rates.turing_ibor_single_curve import FinIborSingleCurve
+from financepy.products.rates.turing_ibor_swap import TuringSwapTypes
+from financepy.products.rates.turing_ibor_deposit import TuringIborDeposit
+from financepy.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 
-from financepy.finutils.turing_frequency import FinFrequencyTypes
-from financepy.finutils.turing_day_count import FinDayCountTypes
-from financepy.finutils.turing_date import FinDate
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.finutils.turing_date import TuringDate
 
-from financepy.finutils.turing_calendar import FinCalendarTypes
-from financepy.finutils.turing_calendar import FinBusDayAdjustTypes
-from financepy.finutils.turing_calendar import FinDateGenRuleTypes
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes
+from financepy.finutils.turing_calendar import TuringDateGenRuleTypes
 
-from financepy.finutils.turing_global_types import FinSwapTypes
+from financepy.finutils.turing_global_types import TuringSwapTypes
 
-from financepy.market.curves.turing_discount_curve_zeros import FinDiscountCurveZeros
+from financepy.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
 from financepy.market.curves.turing_interpolator import FinInterpTypes
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from financepy.models.turing_model_black import FinModelBlack
 from financepy.models.turing_model_bachelier import FinModelBachelier
-from financepy.models.turing_model_black_shifted import FinModelBlackShifted
+from financepy.models.turing_model_black_shifted import TuringModelBlackShifted
 from financepy.models.turing_model_sabr import FinModelSABR
-from financepy.models.turing_model_sabr_shifted import FinModelSABRShifted
+from financepy.models.turing_model_sabr_shifted import TuringModelSABRShifted
 from financepy.models.turing_model_rates_hw import FinModelRatesHW
 
 from financepy.finutils.turing_global_variables import gDaysInYear
 
-from financepy.market.volatility.turing_ibor_cap_vol_curve import FinIborCapVolCurve
-from financepy.finutils.turing_schedule import FinSchedule
+from financepy.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
+from financepy.finutils.turing_schedule import TuringSchedule
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ##############################################################################
 
 def test_FinIborDepositsAndSwaps(valuationDate):
 
-    depoBasis = FinDayCountTypes.THIRTY_E_360_ISDA
+    depoBasis = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
 
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
     depositRate = 0.05
 
-    depo1 = FinIborDeposit(settlementDate, "1M", depositRate, depoBasis)
-    depo2 = FinIborDeposit(settlementDate, "3M", depositRate, depoBasis)
-    depo3 = FinIborDeposit(settlementDate, "6M", depositRate, depoBasis)
+    depo1 = TuringIborDeposit(settlementDate, "1M", depositRate, depoBasis)
+    depo2 = TuringIborDeposit(settlementDate, "3M", depositRate, depoBasis)
+    depo3 = TuringIborDeposit(settlementDate, "6M", depositRate, depoBasis)
 
     depos.append(depo1)
     depos.append(depo2)
@@ -67,9 +67,9 @@ def test_FinIborDepositsAndSwaps(valuationDate):
     fras = []
 
     swaps = []
-    fixedBasis = FinDayCountTypes.ACT_365F
-    fixedFreq = FinFrequencyTypes.SEMI_ANNUAL
-    fixedLegType = FinSwapTypes.PAY
+    fixedBasis = TuringDayCountTypes.ACT_365F
+    fixedFreq = TuringFrequencyTypes.SEMI_ANNUAL
+    fixedLegType = TuringSwapTypes.PAY
 
     swapRate = 0.05
     swap1 = FinIborSwap(settlementDate, "1Y", fixedLegType, swapRate, fixedFreq, fixedBasis)
@@ -80,7 +80,7 @@ def test_FinIborDepositsAndSwaps(valuationDate):
     swaps.append(swap2)
     swaps.append(swap3)
 
-    liborCurve = FinIborSingleCurve(valuationDate, depos, fras, swaps)
+    liborCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     return liborCurve
 
@@ -89,7 +89,7 @@ def test_FinIborDepositsAndSwaps(valuationDate):
 
 def test_FinIborCapFloor():
 
-    todayDate = FinDate(20, 6, 2019)
+    todayDate = TuringDate(20, 6, 2019)
     valuationDate = todayDate
     startDate = todayDate.addWeekDays(2)
     maturityDate = startDate.addTenor("1Y")
@@ -108,14 +108,14 @@ def test_FinIborCapFloor():
                      "SABR_SHFTD", "HW", "BACH")
 
     model1 = FinModelBlack(0.20)
-    model2 = FinModelBlackShifted(0.25, 0.0)
+    model2 = TuringModelBlackShifted(0.25, 0.0)
     model3 = FinModelSABR(0.013, 0.5, 0.5, 0.5)
-    model4 = FinModelSABRShifted(0.013, 0.5, 0.5, 0.5, -0.008)
+    model4 = TuringModelSABRShifted(0.013, 0.5, 0.5, 0.5, -0.008)
     model5 = FinModelRatesHW(0.30, 0.01)
     model6 = FinModelBachelier(0.01)
 
     for k in strikes:
-        capFloorType = FinCapFloorTypes.CAP
+        capFloorType = TuringCapFloorTypes.CAP
         capfloor = FinIborCapFloor(startDate, maturityDate, capFloorType, k)
         cvalue1 = capfloor.value(valuationDate, liborCurve, model1)
         cvalue2 = capfloor.value(valuationDate, liborCurve, model2)
@@ -129,7 +129,7 @@ def test_FinIborCapFloor():
                      "SABR_SHFTD", "HW", "BACH")
 
     for k in strikes:
-        capFloorType = FinCapFloorTypes.FLOOR
+        capFloorType = TuringCapFloorTypes.FLOOR
         capfloor = FinIborCapFloor(startDate, maturityDate, capFloorType, k)
         fvalue1 = capfloor.value(valuationDate, liborCurve, model1)
         fvalue2 = capfloor.value(valuationDate, liborCurve, model2)
@@ -147,7 +147,7 @@ def test_FinIborCapFloor():
                      "SABR SHFTD", "HW", "BACH")
 
     for k in strikes:
-        capFloorType = FinCapFloorTypes.CAP
+        capFloorType = TuringCapFloorTypes.CAP
         capfloor = FinIborCapFloor(startDate, maturityDate, capFloorType, k)
         cvalue1 = capfloor.value(valuationDate, liborCurve, model1)
         cvalue2 = capfloor.value(valuationDate, liborCurve, model2)
@@ -156,7 +156,7 @@ def test_FinIborCapFloor():
         cvalue5 = capfloor.value(valuationDate, liborCurve, model5)
         cvalue6 = capfloor.value(valuationDate, liborCurve, model6)
 
-        capFloorType = FinCapFloorTypes.FLOOR
+        capFloorType = TuringCapFloorTypes.FLOOR
         capfloor = FinIborCapFloor(startDate, maturityDate, capFloorType, k)
         fvalue1 = capfloor.value(valuationDate, liborCurve, model1)
         fvalue2 = capfloor.value(valuationDate, liborCurve, model2)
@@ -183,14 +183,14 @@ def test_FinIborCapFloorVolCurve():
     demonstrate they are the same - NOT SURE THAT HULLS BOOKS FORMULA WORKS FOR
     OPTIONS. '''
 
-    todayDate = FinDate(20, 6, 2019)
+    todayDate = TuringDate(20, 6, 2019)
     valuationDate = todayDate
     maturityDate = valuationDate.addTenor("3Y")
-    dayCountType = FinDayCountTypes.THIRTY_E_360
-    frequency = FinFrequencyTypes.ANNUAL
+    dayCountType = TuringDayCountTypes.THIRTY_E_360
+    frequency = TuringFrequencyTypes.ANNUAL
 
     k = 0.04
-    capFloorType = FinCapFloorTypes.CAP
+    capFloorType = TuringCapFloorTypes.CAP
     capFloor = FinIborCapFloor(valuationDate,
                                 maturityDate,
                                 capFloorType,
@@ -199,15 +199,15 @@ def test_FinIborCapFloorVolCurve():
                                 frequency,
                                 dayCountType)
 
-    capVolDates = FinSchedule(valuationDate,
-                              valuationDate.addTenor("10Y"),
-                              frequency)._generate()
+    capVolDates = TuringSchedule(valuationDate,
+                                 valuationDate.addTenor("10Y"),
+                                 frequency)._generate()
 
     flatRate = 0.04
-    liborCurve = FinDiscountCurveFlat(valuationDate,
-                                      flatRate,
-                                      frequency,
-                                      dayCountType)
+    liborCurve = TuringDiscountCurveFlat(valuationDate,
+                                         flatRate,
+                                         frequency,
+                                         dayCountType)
 
     flat = False
     if flat is True:
@@ -220,10 +220,10 @@ def test_FinIborCapFloorVolCurve():
     capVolatilities = np.array(capVolatilities)/100.0
     capVolatilities[0] = 0.0
 
-    volCurve = FinIborCapVolCurve(valuationDate,
-                                   capVolDates,
-                                   capVolatilities,
-                                   dayCountType)
+    volCurve = TuringIborCapVolCurve(valuationDate,
+                                     capVolDates,
+                                     capVolatilities,
+                                     dayCountType)
 
 #    print(volCurve._capletGammas)
 
@@ -265,23 +265,23 @@ def test_FinIborCapFloorVolCurve():
 def test_FinIborCapletHull():
 
     #  Hull Page 703, example 29.3
-    todayDate = FinDate(20, 6, 2019)
+    todayDate = TuringDate(20, 6, 2019)
     valuationDate = todayDate
     maturityDate = valuationDate.addTenor("2Y")
-    liborCurve = FinDiscountCurveFlat(valuationDate,
-                                      0.070,
-                                      FinFrequencyTypes.QUARTERLY,
-                                      FinDayCountTypes.THIRTY_E_360)
+    liborCurve = TuringDiscountCurveFlat(valuationDate,
+                                         0.070,
+                                         TuringFrequencyTypes.QUARTERLY,
+                                         TuringDayCountTypes.THIRTY_E_360)
 
     k = 0.08
-    capFloorType = FinCapFloorTypes.CAP
+    capFloorType = TuringCapFloorTypes.CAP
     capFloor = FinIborCapFloor(valuationDate,
-                                maturityDate,
-                                capFloorType,
-                                k,
-                                None,
-                                FinFrequencyTypes.QUARTERLY,
-                                FinDayCountTypes.THIRTY_E_360)
+                               maturityDate,
+                               capFloorType,
+                               k,
+                               None,
+                               TuringFrequencyTypes.QUARTERLY,
+                               TuringDayCountTypes.THIRTY_E_360)
 
     # Value cap using a single flat cap volatility
     model = FinModelBlack(0.20)
@@ -306,38 +306,38 @@ def test_FinIborCapletHull():
 
 def test_FinIborCapFloorQLExample():
 
-    valuationDate = FinDate(14, 6, 2016)
+    valuationDate = TuringDate(14, 6, 2016)
 
-    dates = [FinDate(14, 6, 2016), FinDate(14, 9, 2016),
-             FinDate(14, 12, 2016), FinDate(14, 6, 2017),
-             FinDate(14, 6, 2019), FinDate(14, 6, 2021),
-             FinDate(15, 6, 2026), FinDate(16, 6, 2031),
-             FinDate(16, 6, 2036), FinDate(14, 6, 2046)]
+    dates = [TuringDate(14, 6, 2016), TuringDate(14, 9, 2016),
+             TuringDate(14, 12, 2016), TuringDate(14, 6, 2017),
+             TuringDate(14, 6, 2019), TuringDate(14, 6, 2021),
+             TuringDate(15, 6, 2026), TuringDate(16, 6, 2031),
+             TuringDate(16, 6, 2036), TuringDate(14, 6, 2046)]
 
     rates = [0.000000, 0.006616, 0.007049, 0.007795,
              0.009599, 0.011203, 0.015068, 0.017583,
              0.018998, 0.020080]
 
-    freqType = FinFrequencyTypes.ANNUAL
-    dayCountType = FinDayCountTypes.ACT_ACT_ISDA
+    freqType = TuringFrequencyTypes.ANNUAL
+    dayCountType = TuringDayCountTypes.ACT_ACT_ISDA
 
-    discountCurve = FinDiscountCurveZeros(valuationDate,
-                                          dates,
-                                          rates,
-                                          freqType,
-                                          dayCountType,
-                                          FinInterpTypes.LINEAR_ZERO_RATES)
+    discountCurve = TuringDiscountCurveZeros(valuationDate,
+                                             dates,
+                                             rates,
+                                             freqType,
+                                             dayCountType,
+                                             FinInterpTypes.LINEAR_ZERO_RATES)
 
-    startDate = FinDate(14, 6, 2016)
-    endDate = FinDate(14, 6, 2026)
-    calendarType = FinCalendarTypes.UNITED_STATES
-    busDayAdjustType = FinBusDayAdjustTypes.MODIFIED_FOLLOWING
-    freqType = FinFrequencyTypes.QUARTERLY
-    dateGenRuleType = FinDateGenRuleTypes.FORWARD
+    startDate = TuringDate(14, 6, 2016)
+    endDate = TuringDate(14, 6, 2026)
+    calendarType = TuringCalendarTypes.UNITED_STATES
+    busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
+    freqType = TuringFrequencyTypes.QUARTERLY
+    dateGenRuleType = TuringDateGenRuleTypes.FORWARD
     lastFixing = 0.0065560
     notional = 1000000
-    dayCountType = FinDayCountTypes.ACT_360
-    optionType = FinCapFloorTypes.CAP
+    dayCountType = TuringDayCountTypes.ACT_360
+    optionType = TuringCapFloorTypes.CAP
     strikeRate = 0.02
 
     cap = FinIborCapFloor(startDate, endDate, optionType, strikeRate,

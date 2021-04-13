@@ -6,54 +6,54 @@
 from math import exp, log, sqrt
 
 
-from ...finutils.turing_calendar import FinCalendarTypes
-from ...finutils.turing_calendar import FinBusDayAdjustTypes, FinDateGenRuleTypes
-from ...finutils.turing_day_count import FinDayCount, FinDayCountTypes
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import ONE_MILLION, INVROOT2PI, N
-from ...finutils.turing_error import FinError
-from ...products.credit.turing_cds_curve import FinCDSCurve
-from ...products.credit.turing_cds import FinCDS
-from ...finutils.turing_helper_functions import checkArgumentTypes
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_calendar import TuringCalendarTypes
+from financepy.finutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
+from financepy.finutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import ONE_MILLION, INVROOT2PI, N
+from financepy.finutils.turing_error import TuringError
+from financepy.products.credit.turing_cds_curve import FinCDSCurve
+from financepy.products.credit.turing_cds import FinCDS
+from financepy.finutils.turing_helper_functions import checkArgumentTypes
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_helper_functions import labelToString
 
 RPV01_INDEX = 1  # 0 is FULL, 1 is CLEAN
 
 ###############################################################################
 
 
-class FinCDSIndexOption(object):
+class TuringCDSIndexOption(object):
 
     ''' Class to manage the pricing and risk management of an option to enter
     into a CDS index. Different pricing algorithms are presented.'''
 
     def __init__(self,
-                 expiryDate: FinDate,
-                 maturityDate: FinDate,
+                 expiryDate: TuringDate,
+                 maturityDate: TuringDate,
                  indexCoupon: float,
                  strikeCoupon: float,
                  notional: float = ONE_MILLION,
                  longProtection: bool = True,
-                 freqType: FinFrequencyTypes = FinFrequencyTypes.QUARTERLY,
-                 dayCountType: FinDayCountTypes = FinDayCountTypes.ACT_360,
-                 calendarType: FinCalendarTypes = FinCalendarTypes.WEEKEND,
-                 busDayAdjustType: FinBusDayAdjustTypes = FinBusDayAdjustTypes.FOLLOWING,
-                 dateGenRuleType: FinDateGenRuleTypes = FinDateGenRuleTypes.BACKWARD):
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360,
+                 calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
+                 busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
+                 dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
         ''' Initialisation of the class object. Note that a large number of the
         inputs are set to default values in line with the standard contract.'''
 
         checkArgumentTypes(self.__init__, locals())
 
         if expiryDate > maturityDate:
-            raise FinError("Expiry date after end date")
+            raise TuringError("Expiry date after end date")
 
         if indexCoupon < 0.0:
-            raise FinError("Index coupon is negative")
+            raise TuringError("Index coupon is negative")
 
         if strikeCoupon < 0.0:
-            raise FinError("Index Option strike coupon is negative")
+            raise TuringError("Index Option strike coupon is negative")
 
         self._expiryDate = expiryDate
         self._maturityDate = maturityDate
@@ -225,7 +225,7 @@ class FinCDSIndexOption(object):
                                  indexRecovery, liborCurve) - expH
 
         if f * fmid >= 0.0:
-            raise FinError("Solution not bracketed.")
+            raise TuringError("Solution not bracketed.")
 
         if f < 0.0:
             rtb = x1
@@ -306,7 +306,7 @@ class FinCDSIndexOption(object):
         intH = 0.0
         intMaxH = 0.0
 
-        dayCount = FinDayCount(self._dayCountType)
+        dayCount = TuringDayCount(self._dayCountType)
         pcd = flowDates[0]  # PCD
         eff = self._expiryDate
         accrualFactorPCDToExpiry = dayCount.yearFrac(pcd, eff)[0]

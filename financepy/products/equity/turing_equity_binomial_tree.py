@@ -9,10 +9,10 @@ from enum import Enum
 import numpy as np
 from numba import jit, njit, float64, int64
 
-from ...finutils.turing_error import FinError
-from ...finutils.turing_global_variables import gDaysInYear
-from ...finutils.turing_math import heaviside
-from ...finutils.turing_helper_functions import labelToString
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.finutils.turing_math import heaviside
+from financepy.finutils.turing_helper_functions import labelToString
 
 ###############################################################################
 
@@ -54,10 +54,10 @@ def _validatePayoff(payoffType, payoffParams):
     elif payoffType == FinEquityTreePayoffTypes.LOG_OPTION.value:
         numParams = 1
     else:
-        raise FinError("Unknown payoff type")
+        raise TuringError("Unknown payoff type")
 
     if len(payoffParams) != numParams:
-        raise FinError(
+        raise TuringError(
             "Number of parameters required for " +
             str(payoffType) +
             " must be " +
@@ -88,7 +88,7 @@ def _payoffValue(s, payoffType, payoffParams):
     elif payoffType == FinEquityTreePayoffTypes.LOG_OPTION.value:
         payoff = max(log(s) - payoffParams[0], 0.0)
     else:
-        raise FinError("Unknown payoff type")
+        raise TuringError("Unknown payoff type")
 
     return payoff
 

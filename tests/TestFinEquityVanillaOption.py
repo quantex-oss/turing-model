@@ -9,30 +9,30 @@ sys.path.append("..")
 
 import numpy as np
 
-from financepy.finutils.turing_global_types import FinOptionTypes
+from financepy.finutils.turing_global_types import TuringOptionTypes
 from financepy.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
-from financepy.market.curves.turing_discount_curve_flat import FinDiscountCurveFlat
+from financepy.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from financepy.models.turing_model_black_scholes import FinModelBlackScholes
-from financepy.finutils.turing_date import FinDate
-from financepy.finutils.turing_error import FinError
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_error import TuringError
 
-from FinTestCases import FinTestCases, globalTestCaseMode
-testCases = FinTestCases(__file__, globalTestCaseMode)
+from TuringTestCases import TuringTestCases, globalTestCaseMode
+testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 ###############################################################################
 
 
 def test_FinEquityVanillaOption():
 
-    valueDate = FinDate(1, 1, 2015)
-    expiryDate = FinDate(1, 7, 2015)
+    valueDate = TuringDate(1, 1, 2015)
+    expiryDate = TuringDate(1, 7, 2015)
     stockPrice = 100
     volatility = 0.30
     interestRate = 0.05
     dividendYield = 0.01
     model = FinModelBlackScholes(volatility)
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
     numPathsList = [10000, 20000, 40000, 80000, 160000, 320000]
 
@@ -41,7 +41,7 @@ def test_FinEquityVanillaOption():
     for numPaths in numPathsList:
 
         callOption = FinEquityVanillaOption(
-            expiryDate, 100.0, FinOptionTypes.EUROPEAN_CALL)
+            expiryDate, 100.0, TuringOptionTypes.EUROPEAN_CALL)
         value = callOption.value(valueDate, stockPrice, discountCurve,
                                  dividendCurve, model)
         start = time.time()
@@ -62,8 +62,8 @@ def test_FinEquityVanillaOption():
 
     for stockPrice in stockPrices:
 
-        callOption = FinEquityVanillaOption(expiryDate, 100.0, 
-                                            FinOptionTypes.EUROPEAN_CALL)
+        callOption = FinEquityVanillaOption(expiryDate, 100.0,
+                                            TuringOptionTypes.EUROPEAN_CALL)
 
         value = callOption.value(valueDate, stockPrice, discountCurve,
                                  dividendCurve, model)
@@ -92,8 +92,8 @@ def test_FinEquityVanillaOption():
 
     for stockPrice in stockPrices:
 
-        putOption = FinEquityVanillaOption(expiryDate, 100.0, 
-                                           FinOptionTypes.EUROPEAN_PUT)
+        putOption = FinEquityVanillaOption(expiryDate, 100.0,
+                                           TuringOptionTypes.EUROPEAN_PUT)
 
         value = putOption.value(valueDate, stockPrice, discountCurve,
                                 dividendCurve, model)
@@ -121,8 +121,8 @@ def test_FinEquityVanillaOption():
 
     for stockPrice in stockPrices:
 
-        callOption = FinEquityVanillaOption(expiryDate, 100.0, 
-                                            FinOptionTypes.EUROPEAN_CALL)
+        callOption = FinEquityVanillaOption(expiryDate, 100.0,
+                                            TuringOptionTypes.EUROPEAN_CALL)
         value = callOption.value(valueDate, stockPrice, discountCurve,
                                  dividendCurve, model)
         delta = callOption.delta(valueDate, stockPrice, discountCurve,
@@ -142,8 +142,8 @@ def test_FinEquityVanillaOption():
 
     for stockPrice in stockPrices:
         
-        putOption = FinEquityVanillaOption(expiryDate, 100.0, 
-                                           FinOptionTypes.EUROPEAN_PUT)
+        putOption = FinEquityVanillaOption(expiryDate, 100.0,
+                                           TuringOptionTypes.EUROPEAN_PUT)
 
         value = putOption.value(valueDate, stockPrice, discountCurve,
                                  dividendCurve, model)
@@ -161,17 +161,17 @@ def test_FinEquityVanillaOption():
 def testImpliedVolatility_NEW():
 
 
-    valueDate = FinDate(1, 1, 2015)
+    valueDate = TuringDate(1, 1, 2015)
     stockPrice = 100.0
     interestRate = 0.05
     dividendYield = 0.03
-    discountCurve = FinDiscountCurveFlat(valueDate, interestRate)
-    dividendCurve = FinDiscountCurveFlat(valueDate, dividendYield)
+    discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
+    dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
     strikes = np.linspace(50, 150, 11)
     timesToExpiry = [0.003, 0.01, 0.1, 0.5, 1.0, 2.0, 5.0]    
     sigmas = np.arange(1, 100, 5) / 100.0
-    optionTypes = [FinOptionTypes.EUROPEAN_CALL, FinOptionTypes.EUROPEAN_PUT]
+    optionTypes = [TuringOptionTypes.EUROPEAN_CALL, TuringOptionTypes.EUROPEAN_PUT]
 
     testCases.header("OPT_TYPE", "TEXP", "STOCK_PRICE", "STRIKE", "INTRINSIC",
                      "VALUE", "INPUT_VOL", "IMPLIED_VOL")

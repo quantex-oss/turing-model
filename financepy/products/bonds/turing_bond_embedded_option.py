@@ -2,17 +2,17 @@
 # Copyright (C) 2018, 2019, 2020 Dominic O'Kane
 ##############################################################################
 
-from ...finutils.turing_global_variables import gDaysInYear
-from ...models.turing_model_rates_hw import FinModelRatesHW
-from ...models.turing_model_rates_bk import FinModelRatesBK
-from ...finutils.turing_error import FinError
-from ...finutils.turing_frequency import FinFrequencyTypes
-from ...finutils.turing_day_count import FinDayCountTypes
-from ...products.bonds.turing_bond import FinBond
+from financepy.finutils.turing_global_variables import gDaysInYear
+from financepy.models.turing_model_rates_hw import FinModelRatesHW
+from financepy.models.turing_model_rates_bk import TuringModelRatesBK
+from financepy.finutils.turing_error import TuringError
+from financepy.finutils.turing_frequency import TuringFrequencyTypes
+from financepy.finutils.turing_day_count import TuringDayCountTypes
+from financepy.products.bonds.turing_bond import TuringBond
 
-from ...finutils.turing_date import FinDate
-from ...finutils.turing_helper_functions import labelToString, checkArgumentTypes
-from ...market.curves.turing_discount_curve import FinDiscountCurve
+from financepy.finutils.turing_date import TuringDate
+from financepy.finutils.turing_helper_functions import labelToString, checkArgumentTypes
+from financepy.market.curves.turing_discount_curve import TuringDiscountCurve
 
 from enum import Enum
 import numpy as np
@@ -24,7 +24,7 @@ from typing import List
 ###############################################################################
 
 
-class FinBondModelTypes(Enum):
+class TuringBondModelTypes(Enum):
     BLACK = 1
     HO_LEE = 2
     HULL_WHITE = 3
@@ -33,7 +33,7 @@ class FinBondModelTypes(Enum):
 ###############################################################################
 
 
-class FinBondOptionTypes(Enum):
+class TuringBondOptionTypes(Enum):
     EUROPEAN_CALL = 1
     EUROPEAN_PUT = 2
     AMERICAN_CALL = 3
@@ -43,21 +43,21 @@ class FinBondOptionTypes(Enum):
 ###############################################################################
 
 
-class FinBondEmbeddedOption(object):
+class TuringBondEmbeddedOption(object):
     ''' Class for fixed coupon bonds with embedded call or put optionality. '''
 
     def __init__(self,
-                 issueDate: FinDate,
-                 maturityDate: FinDate,  # FinDate
+                 issueDate: TuringDate,
+                 maturityDate: TuringDate,  # TuringDate
                  coupon: float,  # Annualised coupon - 0.03 = 3.00%
-                 freqType: FinFrequencyTypes,
-                 accrualType: FinDayCountTypes,
-                 callDates: List[FinDate],
+                 freqType: TuringFrequencyTypes,
+                 accrualType: TuringDayCountTypes,
+                 callDates: List[TuringDate],
                  callPrices: List[float],
-                 putDates: List[FinDate],
+                 putDates: List[TuringDate],
                  putPrices: List[float],
                  faceAmount: float = 100.0):
-        ''' Create a FinBondEmbeddedOption object with a maturity date, coupon
+        ''' Create a TuringBondEmbeddedOption object with a maturity date, coupon
         and all of the bond inputs. '''
 
         checkArgumentTypes(self.__init__, locals())
@@ -68,51 +68,51 @@ class FinBondEmbeddedOption(object):
         self._freqType = freqType
         self._accrualType = accrualType
 
-        self._bond = FinBond(issueDate,
-                             maturityDate,
-                             coupon,
-                             freqType,
-                             accrualType,
-                             faceAmount)
+        self._bond = TuringBond(issueDate,
+                                maturityDate,
+                                coupon,
+                                freqType,
+                                accrualType,
+                                faceAmount)
 
         # Validate call and put schedules
         for dt in callDates:
             if dt > self._maturityDate:
-                raise FinError("Call date after bond maturity date")
+                raise TuringError("Call date after bond maturity date")
 
         if len(callDates) > 0:
             dtprev = callDates[0]
             for dt in callDates[1:]:
                 if dt <= dtprev:
-                    raise FinError("Call dates not increasing")
+                    raise TuringError("Call dates not increasing")
                 else:
                     dtprev = dt
 
         for dt in putDates:
             if dt > self._maturityDate:
-                raise FinError("Put date after bond maturity date")
+                raise TuringError("Put date after bond maturity date")
 
         if len(putDates) > 0:
             dtprev = putDates[0]
             for dt in putDates[1:]:
                 if dt <= dtprev:
-                    raise FinError("Put dates not increasing")
+                    raise TuringError("Put dates not increasing")
                 else:
                     dtprev = dt
 
         for px in callPrices:
             if px < 0.0:
-                raise FinError("Call price must be positive.")
+                raise TuringError("Call price must be positive.")
 
         for px in putPrices:
             if px < 0.0:
-                raise FinError("Put price must be positive.")
+                raise TuringError("Put price must be positive.")
 
         if len(callDates) != len(callPrices):
-            raise FinError("Number of call dates and call prices not the same")
+            raise TuringError("Number of call dates and call prices not the same")
 
         if len(putDates) != len(putPrices):
-            raise FinError("Number of put dates and put prices not the same")
+            raise TuringError("Number of put dates and put prices not the same")
 
         self._callDates = callDates
         self._callPrices = callPrices
@@ -124,8 +124,8 @@ class FinBondEmbeddedOption(object):
 ###############################################################################
 
     def value(self,
-              settlementDate: FinDate,
-              discountCurve: FinDiscountCurve,
+              settlementDate: TuringDate,
+              discountCurve: TuringDiscountCurve,
               model):
         ''' Value the bond that settles on the specified date that can have
         both embedded call and put options. This is done using the specified
@@ -194,7 +194,7 @@ class FinBondEmbeddedOption(object):
 
             return {'bondwithoption': v_bondwithoption, 'bondpure': v_bondpure}
 
-        elif isinstance(model, FinModelRatesBK):
+        elif isinstance(model, TuringModelRatesBK):
 
             ''' Because we not have a closed form bond price we need to build
             the tree out to the bond maturity which is after option expiry. '''
@@ -217,7 +217,7 @@ class FinBondEmbeddedOption(object):
 
             return {'bondwithoption': v_bondwithoption, 'bondpure': v_bondpure}
         else:
-            raise FinError("Unknown model type")
+            raise TuringError("Unknown model type")
 
 ###############################################################################
 
