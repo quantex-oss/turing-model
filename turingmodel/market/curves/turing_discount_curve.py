@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from .turing_interpolator import FinInterpolator, FinInterpTypes, interpolate
+from .turing_interpolator import TuringInterpolator, TuringInterpTypes, interpolate
 
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_error import TuringError
@@ -32,7 +32,7 @@ class TuringDiscountCurve():
                  valuationDate: TuringDate,
                  dfDates: list,
                  dfValues: np.ndarray,
-                 interpType: FinInterpTypes = FinInterpTypes.FLAT_FWD_RATES):
+                 interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES):
         ''' Create the discount curve from a vector of times and discount
         factors with an anchor date and specify an interpolation scheme. As we
         are explicity linking dates and discount factors, we do not need to
@@ -77,7 +77,7 @@ class TuringDiscountCurve():
         self._interpType = interpType
         self._freqType = TuringFrequencyTypes.CONTINUOUS
         self._dayCountType = None  # Not needed for this curve
-        self._interpolator = FinInterpolator(self._interpType)
+        self._interpolator = TuringInterpolator(self._interpType)
         self._interpolator.fit(self._times, self._dfs)
 
 ###############################################################################
@@ -213,7 +213,7 @@ class TuringDiscountCurve():
         a swap that has a price of par today. This is the same as a Libor swap
         rate except that we do not do any business day adjustments. '''
 
-        # Note that this function does not call the FinIborSwap class to
+        # Note that this function does not call the TuringIborSwap class to
         # calculate the swap rate since that will create a circular dependency.
         # I therefore recreate the actual calculation of the swap rate here.
 
@@ -298,9 +298,9 @@ class TuringDiscountCurve():
         ''' Hidden function to calculate a discount factor from a time or a
         vector of times. Discourage usage in favour of passing in dates. '''
 
-        if self._interpType is FinInterpTypes.FLAT_FWD_RATES or\
-            self._interpType is FinInterpTypes.LINEAR_ZERO_RATES or\
-                self._interpType is FinInterpTypes.LINEAR_FWD_RATES:
+        if self._interpType is TuringInterpTypes.FLAT_FWD_RATES or\
+            self._interpType is TuringInterpTypes.LINEAR_ZERO_RATES or\
+                self._interpType is TuringInterpTypes.LINEAR_FWD_RATES:
                     
                     df = interpolate(t,
                                      self._times,

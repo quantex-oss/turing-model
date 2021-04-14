@@ -19,8 +19,8 @@ from turingmodel.turingutils.turing_schedule import TuringSchedule
 from turingmodel.products.equity.turing_equity_option import TuringEquityOption
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurve
 
-from turingmodel.models.turing_model_black_scholes import bsValue, FinModelBlackScholes
-from turingmodel.models.turing_model import FinModel
+from turingmodel.models.turing_model_black_scholes import bsValue, TuringModelBlackScholes
+from turingmodel.models.turing_model import TuringModel
 
 ###############################################################################
 # TODO: Do we need to day count adjust option payoffs ?
@@ -77,7 +77,7 @@ class TuringEquityCliquetOption(TuringEquityOption):
               stockPrice: float,
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
-              model:FinModel):
+              model:TuringModel):
         ''' Value the cliquet option as a sequence of options using the Black-
         Scholes model. '''
 
@@ -94,7 +94,7 @@ class TuringEquityCliquetOption(TuringEquityOption):
         CALL = TuringOptionTypes.EUROPEAN_CALL
         PUT = TuringOptionTypes.EUROPEAN_PUT
 
-        if isinstance(model, FinModelBlackScholes):
+        if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
             v = max(v, 1e-6)

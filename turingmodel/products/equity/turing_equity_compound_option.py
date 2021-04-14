@@ -16,7 +16,7 @@ from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 
 from turingmodel.products.equity.turing_equity_option import TuringEquityOption
-from turingmodel.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
+from turingmodel.products.equity.turing_equity_vanilla_option import TuringEquityVanillaOption
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurve
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
@@ -408,7 +408,7 @@ class TuringEquityCompoundOption(TuringEquityOption):
                            dividendYield,
                            model):
 
-        option = FinEquityVanillaOption(expiryDate2, strikePrice2, optionType2)
+        option = TuringEquityVanillaOption(expiryDate2, strikePrice2, optionType2)
 
         discountCurve = TuringDiscountCurveFlat(expiryDate1, interestRate)
         dividendCurve = TuringDiscountCurveFlat(expiryDate1, dividendYield)

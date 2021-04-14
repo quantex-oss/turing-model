@@ -19,7 +19,7 @@ from turingmodel.products.fx.turing_fx_mkt_conventions import TuringFXDeltaMetho
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes, labelToString
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 
 from turingmodel.models.turing_model_volatility_fns import TuringVolFunctionTypes
 from turingmodel.models.turing_model_volatility_fns import volFunctionClark
@@ -381,7 +381,7 @@ def volFunction(volFunctionTypeValue, params, f, k, t):
 ###############################################################################
 
 
-class FinSwaptionVolSurface():
+class TuringSwaptionVolSurface():
     ''' Class to perform a calibration of a chosen parametrised surface to the
     prices of swaptions at different expiry dates and swap tenors. There is a 
     choice of volatility function from cubic in delta to full SABR and SSVI. 
@@ -396,7 +396,7 @@ class FinSwaptionVolSurface():
                  volatilityGrid: (np.ndarray),
                  volatilityFunctionType:TuringVolFunctionTypes=TuringVolFunctionTypes.SABR,
                  finSolverType:TuringSolverTypes=TuringSolverTypes.NELDER_MEAD):
-        ''' Create the FinSwaptionVolSurface object by passing in market vol 
+        ''' Create the TuringSwaptionVolSurface object by passing in market vol
         data for a list of strikes and expiry dates. '''
 
         checkArgumentTypes(self.__init__, locals())

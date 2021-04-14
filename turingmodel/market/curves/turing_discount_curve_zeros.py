@@ -13,7 +13,7 @@ from turingmodel.turingutils.turing_helper_functions import labelToString
 from turingmodel.turingutils.turing_helper_functions import timesFromDates
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes
-from .turing_interpolator import FinInterpTypes, FinInterpolator
+from .turing_interpolator import TuringInterpTypes, TuringInterpolator
 
 
 ###############################################################################
@@ -37,7 +37,7 @@ class TuringDiscountCurveZeros(TuringDiscountCurve):
                  zeroRates: (list, np.ndarray),
                  freqType: TuringFrequencyTypes = TuringFrequencyTypes.ANNUAL,
                  dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA,
-                 interpType: FinInterpTypes = FinInterpTypes.FLAT_FWD_RATES):
+                 interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES):
         ''' Create the discount curve from a vector of dates and zero rates
         factors. The first date is the curve anchor. Then a vector of zero
         dates and then another same-length vector of rates. The rate is to the
@@ -82,7 +82,7 @@ class TuringDiscountCurveZeros(TuringDiscountCurve):
                              self._dayCountType)
 
         self._dfs = np.array(dfs)
-        self._interpolator = FinInterpolator(self._interpType)
+        self._interpolator = TuringInterpolator(self._interpType)
         self._interpolator.fit(self._times, self._dfs)
 
 # ###############################################################################

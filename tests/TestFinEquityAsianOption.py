@@ -8,10 +8,10 @@ import sys
 sys.path.append("..")
 
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.products.equity.turing_equity_asian_option import FinEquityAsianOption
-from turingmodel.products.equity.turing_equity_asian_option import FinAsianOptionValuationMethods
+from turingmodel.products.equity.turing_equity_asian_option import TuringEquityAsianOption
+from turingmodel.products.equity.turing_equity_asian_option import TuringAsianOptionValuationMethods
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -40,15 +40,15 @@ def testConvergence():
     K = 100
     seed = 1976
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
-    asianOption = FinEquityAsianOption(startAveragingDate,
-                                       expiryDate,
-                                       K,
-                                       TuringOptionTypes.EUROPEAN_CALL,
-                                       numObservations)
+    asianOption = TuringEquityAsianOption(startAveragingDate,
+                                          expiryDate,
+                                          K,
+                                          TuringOptionTypes.EUROPEAN_CALL,
+                                          numObservations)
 
     testCases.header(
         "K",
@@ -93,7 +93,7 @@ def testConvergence():
                                            discountCurve,
                                            dividendCurve,
                                            model,
-                                           FinAsianOptionValuationMethods.GEOMETRIC,
+                                           TuringAsianOptionValuationMethods.GEOMETRIC,
                                            accruedAverage)
 
         valueTurnbullWakeman = asianOption.value(valueDate,
@@ -101,7 +101,7 @@ def testConvergence():
                                                  discountCurve,
                                                  dividendCurve,
                                                  model,
-                                                 FinAsianOptionValuationMethods.TURNBULL_WAKEMAN,
+                                                 TuringAsianOptionValuationMethods.TURNBULL_WAKEMAN,
                                                  accruedAverage)
 
         valueCurran = asianOption.value(valueDate,
@@ -109,7 +109,7 @@ def testConvergence():
                                         discountCurve,
                                         dividendCurve,
                                         model,
-                                        FinAsianOptionValuationMethods.CURRAN,
+                                        TuringAsianOptionValuationMethods.CURRAN,
                                         accruedAverage)
 
         valuesGeometric.append(valueGeometric)
@@ -154,13 +154,13 @@ def testTimeEvolution():
     K = 100
     seed = 1976
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
-    asianOption = FinEquityAsianOption(startAveragingDate,
-                                       expiryDate,
-                                       K,
-                                       TuringOptionTypes.EUROPEAN_CALL,
-                                       numObservations)
+    asianOption = TuringEquityAsianOption(startAveragingDate,
+                                          expiryDate,
+                                          K,
+                                          TuringOptionTypes.EUROPEAN_CALL,
+                                          numObservations)
 
     testCases.header(
         "Date",
@@ -217,7 +217,7 @@ def testTimeEvolution():
                                            discountCurve,
                                            dividendCurve,
                                            model,
-                                           FinAsianOptionValuationMethods.GEOMETRIC,
+                                           TuringAsianOptionValuationMethods.GEOMETRIC,
                                            accruedAverage)
 
         valueTurnbullWakeman = asianOption.value(valueDate,
@@ -225,7 +225,7 @@ def testTimeEvolution():
                                                  discountCurve,
                                                  dividendCurve,
                                                  model,
-                                                 FinAsianOptionValuationMethods.TURNBULL_WAKEMAN,
+                                                 TuringAsianOptionValuationMethods.TURNBULL_WAKEMAN,
                                                  accruedAverage)
 
         valueCurran = asianOption.value(valueDate,
@@ -233,7 +233,7 @@ def testTimeEvolution():
                                         discountCurve,
                                         dividendCurve,
                                         model,
-                                        FinAsianOptionValuationMethods.CURRAN,
+                                        TuringAsianOptionValuationMethods.CURRAN,
                                         accruedAverage)
 
         valuesGeometric.append(valueGeometric)
@@ -280,15 +280,15 @@ def testMCTimings():
     K = 100
     seed = 1976
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
-    asianOption = FinEquityAsianOption(startAveragingDate,
-                                       expiryDate,
-                                       K,
-                                       TuringOptionTypes.EUROPEAN_CALL,
-                                       numObservations)
+    asianOption = TuringEquityAsianOption(startAveragingDate,
+                                          expiryDate,
+                                          K,
+                                          TuringOptionTypes.EUROPEAN_CALL,
+                                          numObservations)
 
     testCases.header(
         "NUMPATHS",

@@ -14,7 +14,7 @@ from turingmodel.turingutils.turing_helper_functions import labelToString
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.turingutils.turing_helper_functions import timesFromDates
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
 
 ###############################################################################
 # TODO: Do I need to add a day count to ensure rate and times are linked in
@@ -50,7 +50,7 @@ class TuringDiscountCurveFlat(TuringDiscountCurve):
         self._dayCountType = dayCountType
 
         # This is used by some inherited functions so we choose the simplest
-        self._interpType = FinInterpTypes.FLAT_FWD_RATES
+        self._interpType = TuringInterpTypes.FLAT_FWD_RATES
 
         # Need to set up a grid of times and discount factors
         years = np.linspace(0.0, 10.0, 41)

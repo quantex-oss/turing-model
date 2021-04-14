@@ -9,7 +9,7 @@ from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_math import N, M
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_error import TuringError
-from turingmodel.models.turing_gbm_process import FinGBMProcess
+from turingmodel.models.turing_gbm_process import TuringGBMProcess
 from turingmodel.products.equity.turing_equity_option import TuringEquityOption
 
 from enum import Enum
@@ -81,7 +81,7 @@ def valueMCFast(t,
     r = -np.log(df)/t
     mus = r - dividendYields
 
-    model = FinGBMProcess()
+    model = TuringGBMProcess()
 
     numTimeSteps = 2
     Sall = model.getPathsAssets(numAssets, numPaths, numTimeSteps,

@@ -26,7 +26,7 @@ from turingmodel.turingutils.turing_math import N
 from enum import Enum
 
 
-class FinAsianOptionValuationMethods(Enum):
+class TuringAsianOptionValuationMethods(Enum):
     GEOMETRIC = 1,
     TURNBULL_WAKEMAN = 2,
     CURRAN = 3
@@ -339,7 +339,7 @@ def _valueMC_fast_CV_NUMBA(t0, t, tau, K, n, optionType, stockPrice,
 ###############################################################################
 
 
-class FinEquityAsianOption():
+class TuringEquityAsianOption():
     ''' Class for an Equity Asian Option. This is an option with a final payoff
     linked to the averaging of the stock price over some specified period
     before the option expires. The valuation is done for both an arithmetic and
@@ -376,11 +376,11 @@ class FinEquityAsianOption():
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
               model,
-              method: FinAsianOptionValuationMethods,
+              method: TuringAsianOptionValuationMethods,
               accruedAverage: float = None):
         ''' Calculate the value of an Asian option using one of the specified
         analytical approximations for an average rate option. These are the
-        three enumerated values in the enum FinAsianOptionValuationMethods. The
+        three enumerated values in the enum TuringAsianOptionValuationMethods. The
         choices of approximation are (i) GEOMETRIC - the average is a geometric
         one as in paper by Kenna and Worst (1990), (ii) TURNBULL_WAKEMAN -
         this is a value based on an edgeworth expansion of the moments of the
@@ -395,7 +395,7 @@ class FinEquityAsianOption():
         if valueDate > self._expiryDate:
             raise TuringError("Value date after expiry date.")
 
-        if method == FinAsianOptionValuationMethods.GEOMETRIC:
+        if method == TuringAsianOptionValuationMethods.GEOMETRIC:
             v = self._valueGeometric(valueDate,
                                      stockPrice,
                                      discountCurve,
@@ -403,7 +403,7 @@ class FinEquityAsianOption():
                                      model,
                                      accruedAverage)
 
-        elif method == FinAsianOptionValuationMethods.TURNBULL_WAKEMAN:
+        elif method == TuringAsianOptionValuationMethods.TURNBULL_WAKEMAN:
             v = self._valueTurnbullWakeman(valueDate,
                                            stockPrice,
                                            discountCurve,
@@ -411,7 +411,7 @@ class FinEquityAsianOption():
                                            model,
                                            accruedAverage)
 
-        elif method == FinAsianOptionValuationMethods.CURRAN:
+        elif method == TuringAsianOptionValuationMethods.CURRAN:
             v = self._valueCurran(valueDate,
                                   stockPrice,
                                   discountCurve,

@@ -13,7 +13,7 @@ from turingmodel.products.bonds.turing_bond import TuringYTMCalcType
 from turingmodel.products.bonds.turing_bond import TuringBond
 from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_date import TuringDate, fromDatetime
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
@@ -92,7 +92,7 @@ def buildIborCurve(valuationDate):
 
     swapRate = 0.05
     maturityDate = settlementDate.addMonths(24)
-    swap1 = FinIborSwap(
+    swap1 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -105,7 +105,7 @@ def buildIborCurve(valuationDate):
     swaps.append(swap1)
 
     maturityDate = settlementDate.addMonths(36)
-    swap2 = FinIborSwap(
+    swap2 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -118,7 +118,7 @@ def buildIborCurve(valuationDate):
 
     
     maturityDate = settlementDate.addMonths(48)
-    swap3 = FinIborSwap(
+    swap3 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -130,7 +130,7 @@ def buildIborCurve(valuationDate):
 #    print(swap3._fixedLeg._paymentDates)
 
     maturityDate = settlementDate.addMonths(60)
-    swap4 = FinIborSwap(
+    swap4 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -142,7 +142,7 @@ def buildIborCurve(valuationDate):
 #    print(swap4._fixedLeg._paymentDates)
 
     maturityDate = settlementDate.addMonths(72)
-    swap5 = FinIborSwap(
+    swap5 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -154,7 +154,7 @@ def buildIborCurve(valuationDate):
 #    print(swap5._fixedLeg._paymentDates)
 
     maturityDate = settlementDate.addMonths(84)
-    swap6 = FinIborSwap(
+    swap6 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -166,7 +166,7 @@ def buildIborCurve(valuationDate):
 #    print(swap6._fixedLeg._paymentDates)
 
     maturityDate = settlementDate.addMonths(96)
-    swap7 = FinIborSwap(
+    swap7 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -178,7 +178,7 @@ def buildIborCurve(valuationDate):
 #    print(swap7._fixedLeg._paymentDates)
 
     maturityDate = settlementDate.addMonths(108)
-    swap8 = FinIborSwap(
+    swap8 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -190,7 +190,7 @@ def buildIborCurve(valuationDate):
 #    print(swap8._fixedLeg._paymentDates)
 
     maturityDate = settlementDate.addMonths(120)
-    swap9 = FinIborSwap(
+    swap9 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,

@@ -17,16 +17,16 @@ from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 
 from turingmodel.models.turing_model_rates_bdt import TuringModelRatesBDT
 from turingmodel.models.turing_model_rates_bk import TuringModelRatesBK
-from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
 
 ###############################################################################
 
 
-class FinIborBermudanSwaption(object):
+class TuringIborBermudanSwaption(object):
     ''' This is the class for the Bermudan-style swaption, an option to enter
     into a swap (payer or receiver of the fixed coupon), that starts in the
     future and with a fixed maturity, at a swap rate fixed today. This swaption
@@ -100,19 +100,19 @@ class FinIborBermudanSwaption(object):
         floatSpread = 0.0
 
         # The underlying is a swap in which we pay the fixed amount
-        self._underlyingSwap = FinIborSwap(self._exerciseDate,
-                                           self._maturityDate,
-                                           self._fixedLegType,
-                                           self._fixedCoupon,
-                                           self._fixedFrequencyType,
-                                           self._fixedDayCountType,
-                                           self._notional,
-                                           floatSpread,
-                                           self._floatFrequencyType,
-                                           self._floatDayCountType,
-                                           self._calendarType,
-                                           self._busDayAdjustType,
-                                           self._dateGenRuleType)
+        self._underlyingSwap = TuringIborSwap(self._exerciseDate,
+                                              self._maturityDate,
+                                              self._fixedLegType,
+                                              self._fixedCoupon,
+                                              self._fixedFrequencyType,
+                                              self._fixedDayCountType,
+                                              self._notional,
+                                              floatSpread,
+                                              self._floatFrequencyType,
+                                              self._floatDayCountType,
+                                              self._calendarType,
+                                              self._busDayAdjustType,
+                                              self._dateGenRuleType)
 
         #  I need to do this to generate the fixed leg flows
         self._pv01 = self._underlyingSwap.pv01(valuationDate, discountCurve)
@@ -162,7 +162,7 @@ class FinIborBermudanSwaption(object):
         # the multi-callable nature of the Bermudan Swaption
         #######################################################################
 
-        if isinstance(model, TuringModelRatesBDT) or isinstance(model, TuringModelRatesBK) or isinstance(model, FinModelRatesHW):
+        if isinstance(model, TuringModelRatesBDT) or isinstance(model, TuringModelRatesBK) or isinstance(model, TuringModelRatesHW):
 
             model.buildTree(tmat, dfTimes, dfValues)
 

@@ -140,7 +140,7 @@ def getAssets(numAssets,
 ###############################################################################
 
 
-class FinGBMProcess():
+class TuringGBMProcess():
 
     def getPaths(self,
                  numPaths: int,

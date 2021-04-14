@@ -8,7 +8,7 @@ sys.path.append("..")
 from turingmodel.products.equity.turing_equity_one_touch_option import TuringEquityOneTouchOption
 from turingmodel.products.equity.turing_equity_one_touch_option import TuringTouchOptionPayoffTypes
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -25,7 +25,7 @@ def test_FinFXOneTouchOption():
     expiryDate = TuringDate(2, 7, 2016)
     volatility = 0.20
     barrierLevel = 1.0  # H
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     domesticRate = 0.10
     foreignRate = 0.03

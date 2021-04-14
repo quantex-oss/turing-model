@@ -17,7 +17,7 @@ from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 ##########################################################################
 
 
-class FinFixedIborXCcySwap(object):
+class TuringFixedIborXCcySwap(object):
     ''' Class for managing a cross currency swap contract. This is a contract
     in which a fixed payment leg in one currency is exchanged for floating
     payments in a second currency. There is an exchange of par at maturity.
@@ -306,7 +306,7 @@ class FinFixedIborXCcySwap(object):
                         frequencyType):
         ''' Calculate the forward value of an annuity of a forward starting
         swap using a single flat discount rate equal to the swap rate. This is
-        used in the pricing of a cash-settled swaption in the FinIborSwaption
+        used in the pricing of a cash-settled swaption in the TuringIborSwaption
         class. This method does not affect the standard valuation methods.'''
 
         m = TuringFrequency(frequencyType)

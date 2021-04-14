@@ -11,7 +11,7 @@ from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_math import N
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.products.fx.turing_fx_option import TuringFXOption
-from turingmodel.models.turing_process_simulator import FinProcessSimulator
+from turingmodel.models.turing_process_simulator import TuringProcessSimulator
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from turingmodel.turingutils.turing_date import TuringDate
 
@@ -251,7 +251,7 @@ class TuringFXBarrierOption(TuringFXOption):
         S0 = spotFXRate
         optionType = self._optionType
 
-        process = FinProcessSimulator()
+        process = TuringProcessSimulator()
 
         rd = domInterestRate
 

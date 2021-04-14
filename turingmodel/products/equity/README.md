@@ -1,13 +1,13 @@
 #Equity Products
 This folder contains a set of Equity-related products. It includes:
 
-## FinEquityVanillaOption
+## TuringEquityVanillaOption
 Handles simple European-style call and put options on a dividend paying stock with analytical and monte-carlo valuations.
 
 ## TuringEquityAmericanOption
 Handles America-style call and put options on a dividend paying stock with tree-based valuations.
 
-## FinEquityAsianOption 
+## TuringEquityAsianOption 
 Handles call and put options where the payoff is determined by the average-stock price over some period before expiry.
 
 ## TuringEquityBasketOption
@@ -31,7 +31,7 @@ Handles an option which either knocks-in or knocks-out if a specified barrier is
 ## TuringEquityRainbowOption
 TBD
 
-## FinEquityVarianceSwap
+## TuringEquityVarianceSwap
 TBD
 
 Products that have not yet been implemented include:

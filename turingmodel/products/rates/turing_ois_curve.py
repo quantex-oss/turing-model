@@ -11,11 +11,11 @@ from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_helper_functions import labelToString
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes, _funcName
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes, FinInterpolator
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes, TuringInterpolator
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
 from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turingmodel.products.rates.turing_ois import FinOIS
+from turingmodel.products.rates.turing_ois import TuringOIS
 
 swaptol = 1e-10
 
@@ -105,7 +105,7 @@ class TuringOISCurve(TuringDiscountCurve):
                  oisDeposits: list,
                  oisFRAs: list,
                  oisSwaps: list,
-                 interpType: FinInterpTypes = FinInterpTypes.FLAT_FWD_RATES,
+                 interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES,
                  checkRefit: bool = False):  # Set to True to test it works
         ''' Create an instance of an overnight index rate swap curve given a
         valuation date and a set of OIS rates. Some of these may
@@ -218,8 +218,8 @@ class TuringOISCurve(TuringDiscountCurve):
 
             for swap in oisSwaps:
 
-                if isinstance(swap, FinOIS) is False:
-                    raise TuringError("Swap is not of type FinOIS")
+                if isinstance(swap, TuringOIS) is False:
+                    raise TuringError("Swap is not of type TuringOIS")
 
                 startDt = swap._effectiveDate
                 if startDt < self._valuationDate:
@@ -310,7 +310,7 @@ class TuringOISCurve(TuringDiscountCurve):
         of interpolation approaches between the swap rates and other rates. It
         involves the use of a solver. '''
 
-        self._interpolator = FinInterpolator(self._interpType)
+        self._interpolator = TuringInterpolator(self._interpType)
         self._times = np.array([])
         self._dfs = np.array([])
 
@@ -376,7 +376,7 @@ class TuringOISCurve(TuringDiscountCurve):
         the linear swap rate method that is fast and exact as it does not
         require the use of a solver. It is also market standard. '''
 
-        self._interpolator = FinInterpolator(self._interpType)
+        self._interpolator = TuringInterpolator(self._interpType)
 
         self._times = np.array([])
         self._dfs = np.array([])
@@ -544,7 +544,7 @@ class TuringOISCurve(TuringDiscountCurve):
     #     ''' get a vector of dates and values for the overnight rate implied by
     #     the OIS rate term structure. '''
 
-    #     # Note that this function does not call the FinIborSwap class to
+    #     # Note that this function does not call the TuringIborSwap class to
     #     # calculate the swap rate since that will create a circular dependency.
     #     # I therefore recreate the actual calculation of the swap rate here.
 

@@ -10,7 +10,7 @@ The classes are as follows:
 ### TuringEquityVolSurface
 Constructs an equity volatility surface that fits to a grid of market volatilities at a set of strikes and expiry dates. It implements the SVI parameteric form for fitting and interpolating volatilities. It also provides plotting of the volatility curve and surfaces.
 
-### FinFXVolSurface
+### TuringFXVolSurface
 FX volatility as a function of option expiry and strike. This class constructs the surface from the ATM volatility plus a choice of 10 and 25 delta strangles and risk reversals or both. This is done for multiple expiry dates. A number of curve fitting choices are possible including polynomial in delta and SABR.
 
 ## FinIborCapFloorVol

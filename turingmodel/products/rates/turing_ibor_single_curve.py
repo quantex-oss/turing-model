@@ -15,11 +15,11 @@ from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_helper_functions import labelToString
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes, _funcName
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes, FinInterpolator
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes, TuringInterpolator
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turingmodel.products.rates.turing_ibor_fra import FinIborFRA
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_fra import TuringIborFRA
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 
 swaptol = 1e-10
 
@@ -79,9 +79,9 @@ def _costFunction(dfs, *args):
     # For curves that need a fit function, we fit it now 
     liborCurve._interpolator.fit(liborCurve._times, liborCurve._dfs)
 
-    if liborCurve._interpType == FinInterpTypes.CUBIC_SPLINE_LOGDFS:
+    if liborCurve._interpType == TuringInterpTypes.CUBIC_SPLINE_LOGDFS:
         liborCurve._splineFunction = CubicSpline(times, values)
-    elif liborCurve._interpType == FinInterpTypes.PCHIP_CUBIC_SPLINE:
+    elif liborCurve._interpType == TuringInterpTypes.PCHIP_CUBIC_SPLINE:
         liborCurve._splineFunction = PchipInterpolator(times, values)
 
     cost = 0.0
@@ -146,7 +146,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
                  iborDeposits: list,
                  iborFRAs: list,
                  iborSwaps: list,
-                 interpType: FinInterpTypes = FinInterpTypes.FLAT_FWD_RATES,
+                 interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES,
                  checkRefit: bool = False):  # Set to True to test it works
         ''' Create an instance of a FinIbor curve given a valuation date and
         a set of ibor deposits, ibor FRAs and iborSwaps. Some of these may
@@ -237,8 +237,8 @@ class TuringIborSingleCurve(TuringDiscountCurve):
 
         if numFRAs > 0:
             for fra in iborFRAs:
-                if isinstance(fra, FinIborFRA) is False:
-                    raise TuringError("FRA is not of type FinIborFRA")
+                if isinstance(fra, TuringIborFRA) is False:
+                    raise TuringError("FRA is not of type TuringIborFRA")
 
                 startDt = fra._startDate
                 if startDt < self._valuationDate:
@@ -258,8 +258,8 @@ class TuringIborSingleCurve(TuringDiscountCurve):
 
             for swap in iborSwaps:
 
-                if isinstance(swap, FinIborSwap) is False: # is False and isinstance(swap, FinIborSwap) is False:
-                    raise TuringError("Swap is not of type FinIborSwap")
+                if isinstance(swap, TuringIborSwap) is False: # is False and isinstance(swap, TuringIborSwap) is False:
+                    raise TuringError("Swap is not of type TuringIborSwap")
 
                 startDt = swap._effectiveDate
                 if startDt < self._valuationDate:
@@ -358,7 +358,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
         of interpolation approaches between the swap rates and other rates. It
         involves the use of a solver. '''
 
-        self._interpolator = FinInterpolator(self._interpType)
+        self._interpolator = TuringInterpolator(self._interpType)
         self._times = np.array([])
         self._dfs = np.array([])
 
@@ -462,7 +462,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
         the linear swap rate method that is fast and exact as it does not
         require the use of a solver. It is also market standard. '''
 
-        self._interpolator = FinInterpolator(self._interpType)
+        self._interpolator = TuringInterpolator(self._interpType)
 
         self._times = np.array([])
         self._dfs = np.array([])

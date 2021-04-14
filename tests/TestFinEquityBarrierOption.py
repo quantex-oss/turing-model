@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.models.turing_process_simulator import FinProcessTypes
-from turingmodel.models.turing_process_simulator import FinGBMNumericalScheme
-from turingmodel.products.equity.turing_equity_barrier_option import FinEquityBarrierTypes
+from turingmodel.models.turing_process_simulator import TuringProcessTypes
+from turingmodel.models.turing_process_simulator import TuringGBMNumericalScheme
+from turingmodel.products.equity.turing_equity_barrier_option import TuringEquityBarrierTypes
 from turingmodel.products.equity.turing_equity_barrier_option import TuringEquityBarrierOption
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_date import TuringDate
 
@@ -26,16 +26,16 @@ def test_FinEquityBarrierOption():
     volatility = 0.20
     interestRate = 0.05
     dividendYield = 0.02
-    optionType = FinEquityBarrierTypes.DOWN_AND_OUT_CALL
+    optionType = TuringEquityBarrierTypes.DOWN_AND_OUT_CALL
 
     drift = interestRate - dividendYield
-    scheme = FinGBMNumericalScheme.NORMAL
-    processType = FinProcessTypes.GBM
+    scheme = TuringGBMNumericalScheme.NORMAL
+    processType = TuringProcessTypes.GBM
 
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     #######################################################################
 
@@ -53,7 +53,7 @@ def test_FinEquityBarrierOption():
         "Diff",
         "TIME")
 
-    for optionType in FinEquityBarrierTypes:
+    for optionType in TuringEquityBarrierTypes:
         for stockPrice in range(80, 120, 10):
 
             B = 110.0
@@ -135,7 +135,7 @@ def test_FinEquityBarrierOption():
 
     testCases.header("Type", "K", "B", "S:", "Value", "Delta", "Vega", "Theta")
 
-    for optionType in FinEquityBarrierTypes:
+    for optionType in TuringEquityBarrierTypes:
 
         for stockPrice in stockPrices:
 

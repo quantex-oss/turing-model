@@ -10,8 +10,8 @@ from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes, Tur
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_error import TuringError
-from turingmodel.products.credit.turing_cds import FinCDS
-from turingmodel.products.credit.turing_cds_curve import FinCDSCurve
+from turingmodel.products.credit.turing_cds import TuringCDS
+from turingmodel.products.credit.turing_cds_curve import TuringCDSCurve
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes
 from turingmodel.turingutils.turing_helper_functions import labelToString
 
@@ -54,9 +54,9 @@ class TuringCDSIndexPortfolio():
 
         numCredits = len(issuerCurves)
 
-        cdsContract = FinCDS(stepInDate,
-                             maturityDate,
-                             0.0)
+        cdsContract = TuringCDS(stepInDate,
+                                maturityDate,
+                                0.0)
 
         intrinsicRPV01 = 0.0
 
@@ -87,10 +87,10 @@ class TuringCDSIndexPortfolio():
         intrinsicProtPV = 0.0
 
         # All contracts have same flows so only need one object
-        cdsContract = FinCDS(stepInDate,
-                             maturityDate,
-                             0.0,
-                             1.0)
+        cdsContract = TuringCDS(stepInDate,
+                                maturityDate,
+                                0.0,
+                                1.0)
 
         for m in range(0, numCredits):
 
@@ -138,9 +138,9 @@ class TuringCDSIndexPortfolio():
 
         numCredits = len(issuerCurves)
 
-        cdsContract = FinCDS(stepInDate,
-                             maturityDate,
-                             0.0)
+        cdsContract = TuringCDS(stepInDate,
+                                maturityDate,
+                                0.0)
 
         averageSpread = 0.0
 
@@ -163,9 +163,9 @@ class TuringCDSIndexPortfolio():
 
         numCredits = len(issuerCurves)
 
-        cdsContract = FinCDS(stepInDate,
-                             maturityDate,
-                             0.0)
+        cdsContract = TuringCDS(stepInDate,
+                                maturityDate,
+                                0.0)
 
         totalSpread = 0.0
 
@@ -190,9 +190,9 @@ class TuringCDSIndexPortfolio():
         if numCredits < 1:
             raise TuringError("Number of credits in index must be > 1 and not" + str(numCredits))
 
-        cdsContract = FinCDS(stepInDate,
-                             maturityDate,
-                             0.0)
+        cdsContract = TuringCDS(stepInDate,
+                                maturityDate,
+                                0.0)
 
         minSpread = cdsContract.parSpread(valuationDate, issuerCurves[0])
 
@@ -218,9 +218,9 @@ class TuringCDSIndexPortfolio():
         if numCredits < 1:
             raise TuringError("Number of credits in index must be > 1 and not " + str(numCredits))
 
-        cdsContract = FinCDS(stepInDate,
-                             maturityDate,
-                             0.0)
+        cdsContract = TuringCDS(stepInDate,
+                                maturityDate,
+                                0.0)
 
         maxSpread = cdsContract.parSpread(valuationDate, issuerCurves[0])
 
@@ -283,9 +283,9 @@ class TuringCDSIndexPortfolio():
 
             cdsCoupon = 1.0
 
-            cdsContract = FinCDS(valuationDate,
-                                 cdsMaturityDates[j],
-                                 cdsCoupon)
+            cdsContract = TuringCDS(valuationDate,
+                                    cdsMaturityDates[j],
+                                    cdsCoupon)
 
             curveCDSContracts.append(cdsContract)
 
@@ -311,7 +311,7 @@ class TuringCDSIndexPortfolio():
 
                 # This is for the specific index maturity date
                 indexMaturityDate = indexMaturityDates[iMaturity]
-                cdsIndex = FinCDS(valuationDate, indexMaturityDate, 0.0, 1.0)
+                cdsIndex = TuringCDS(valuationDate, indexMaturityDate, 0.0, 1.0)
 
                 for iCredit in range(0, numCredits):
 
@@ -326,10 +326,10 @@ class TuringCDSIndexPortfolio():
                             cdsSpreadMultipliers[j]
                         curveCDSContracts[j]._runningCoupon = adjustedCDSSpreads[j]
 
-                    adjustedIssuerCurve = FinCDSCurve(valuationDate,
-                                                      curveCDSContracts,
-                                                      liborCurve,
-                                                      recoveryRate)
+                    adjustedIssuerCurve = TuringCDSCurve(valuationDate,
+                                                         curveCDSContracts,
+                                                         liborCurve,
+                                                         recoveryRate)
 
                     indexProtectionPV = cdsIndex.protectionLegPV(valuationDate,
                                                                  adjustedIssuerCurve,
@@ -368,17 +368,17 @@ class TuringCDSIndexPortfolio():
 
                 adjustedSpread = unadjustedSpread * cdsSpreadMultipliers[j]
 
-                adjustedcdsContract = FinCDS(valuationDate,
-                                             cdsMaturityDates[j],
-                                             adjustedSpread)
+                adjustedcdsContract = TuringCDS(valuationDate,
+                                                cdsMaturityDates[j],
+                                                adjustedSpread)
 
                 adjustedCDSContracts.append(adjustedcdsContract)
                 adjustedSpreads.append(adjustedSpread)
 
-                adjustedIssuerCurve = FinCDSCurve(valuationDate,
-                                                  adjustedCDSContracts,
-                                                  liborCurve,
-                                                  recoveryRate)
+                adjustedIssuerCurve = TuringCDSCurve(valuationDate,
+                                                     adjustedCDSContracts,
+                                                     liborCurve,
+                                                     recoveryRate)
 
             adjustedIssuerCurves.append(adjustedIssuerCurve)
 
@@ -411,9 +411,9 @@ class TuringCDSIndexPortfolio():
         # making a copy of the issuer curves
         for issuerCurve in issuerCurves:
 
-            adjustedIssuerCurve = FinCDSCurve(valuationDate,
-                                              [],
-                                              liborCurve)
+            adjustedIssuerCurve = TuringCDSCurve(valuationDate,
+                                                 [],
+                                                 liborCurve)
 
             adjustedIssuerCurve._times = issuerCurve._times.copy()
             adjustedIssuerCurve._values = issuerCurve._values.copy()
@@ -450,7 +450,7 @@ class TuringCDSIndexPortfolio():
 
                     # the CDS spreads we extract here should be the index
                     # maturity dates
-                    cdsIndex = FinCDS(valuationDate, indexMaturityDate, 0, 1.0)
+                    cdsIndex = TuringCDS(valuationDate, indexMaturityDate, 0, 1.0)
 
                     indexProtPV = cdsIndex.protectionLegPV(valuationDate,
                                                            adjustedIssuerCurves[iCredit],

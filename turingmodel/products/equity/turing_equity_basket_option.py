@@ -10,7 +10,7 @@
 import numpy as np
 
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.models.turing_gbm_process import FinGBMProcess
+from turingmodel.models.turing_gbm_process import TuringGBMProcess
 
 from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
@@ -224,7 +224,7 @@ class TuringEquityBasketOption():
 
         numTimeSteps = 2
 
-        model = FinGBMProcess()
+        model = TuringGBMProcess()
         np.random.seed(seed)
 
         Sall = model.getPathsAssets(numAssets,

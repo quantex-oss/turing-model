@@ -17,7 +17,7 @@ from turingmodel.turingutils.turing_frequency import TuringFrequency, TuringFreq
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_helper_functions import labelToString, tableToString
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes, _uinterpolate
 
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes
 
@@ -47,7 +47,7 @@ def _riskyPV01_NUMBA(teff,
     ''' Fast calculation of the risky PV01 of a CDS using NUMBA.
     The output is a numpy array of the full and clean risky PV01.'''
 
-    method = FinInterpTypes.FLAT_FWD_RATES.value
+    method = TuringInterpTypes.FLAT_FWD_RATES.value
 
     couponAccruedIndicator = 1
 
@@ -136,7 +136,7 @@ def _protectionLegPV_NUMBA(teff,
     ''' Fast calculation of the CDS protection leg PV using NUMBA to speed up
     the numerical integration over time. '''
 
-    method = FinInterpTypes.FLAT_FWD_RATES.value
+    method = TuringInterpTypes.FLAT_FWD_RATES.value
     dt = (tmat - teff) / numStepsPerYear
     t = teff
     z1 = _uinterpolate(t, npIborTimes, npIborValues, method)
@@ -183,7 +183,7 @@ def _protectionLegPV_NUMBA(teff,
 ###############################################################################
 
 
-class FinCDS(object):
+class TuringCDS(object):
     ''' A class which manages a Credit Default Swap. It performs schedule
     generation and the valuation and risk management of CDS. '''
 

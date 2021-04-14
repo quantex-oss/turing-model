@@ -18,12 +18,12 @@ from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
 from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
 
-from turingmodel.products.credit.turing_cds import FinCDS
-from turingmodel.products.credit.turing_cds_curve import FinCDSCurve
+from turingmodel.products.credit.turing_cds import TuringCDS
+from turingmodel.products.credit.turing_cds_curve import TuringCDSCurve
 
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_math import ONE_MILLION
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes, interpolate
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes, interpolate
 from turingmodel.turingutils.turing_error import TuringError
 
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes
@@ -34,7 +34,7 @@ from turingmodel.turingutils.turing_date import TuringDate
 from enum import Enum
 
 
-class FinLossDistributionBuilder(Enum):
+class TuringLossDistributionBuilder(Enum):
     RECURSION = 1
     ADJUSTED_BINOMIAL = 2
     GAUSSIAN = 3
@@ -43,7 +43,7 @@ class FinLossDistributionBuilder(Enum):
 ###############################################################################
 
 
-class FinCDSTranche(object):
+class TuringCDSTranche(object):
 
     def __init__(self,
                  stepInDate: TuringDate,
@@ -80,16 +80,16 @@ class FinCDSTranche(object):
 
         notional = 1.0
 
-        self._cdsContract = FinCDS(self._stepInDate,
-                                   self._maturityDate,
-                                   self._runningCoupon,
-                                   notional,
-                                   self._longProtection,
-                                   self._freqType,
-                                   self._dayCountType,
-                                   self._calendarType,
-                                   self._busDayAdjustType,
-                                   self._dateGenRuleType)
+        self._cdsContract = TuringCDS(self._stepInDate,
+                                      self._maturityDate,
+                                      self._runningCoupon,
+                                      notional,
+                                      self._longProtection,
+                                      self._freqType,
+                                      self._dayCountType,
+                                      self._calendarType,
+                                      self._busDayAdjustType,
+                                      self._dateGenRuleType)
 
 ###############################################################################
 
@@ -101,7 +101,7 @@ class FinCDSTranche(object):
                 corr1,
                 corr2,
                 numPoints=50,
-                model=FinLossDistributionBuilder.RECURSION):
+                model=TuringLossDistributionBuilder.RECURSION):
 
         numCredits = len(issuerCurves)
         k1 = self._k1
@@ -161,23 +161,23 @@ class FinCDSTranche(object):
                 qRow = issuerCurve._values
                 recoveryRates[j] = issuerCurve._recoveryRate
                 qVector[j] = interpolate(
-                    t, vTimes, qRow, FinInterpTypes.FLAT_FWD_RATES.value)
+                    t, vTimes, qRow, TuringInterpTypes.FLAT_FWD_RATES.value)
 
-            if model == FinLossDistributionBuilder.RECURSION:
+            if model == TuringLossDistributionBuilder.RECURSION:
                 qt1[i] = trSurvProbRecursion(
                     0.0, k1, numCredits, qVector, recoveryRates,
                     betaVector1, numPoints)
                 qt2[i] = trSurvProbRecursion(
                     0.0, k2, numCredits, qVector, recoveryRates,
                     betaVector2, numPoints)
-            elif model == FinLossDistributionBuilder.ADJUSTED_BINOMIAL:
+            elif model == TuringLossDistributionBuilder.ADJUSTED_BINOMIAL:
                 qt1[i] = trSurvProbAdjBinomial(
                     0.0, k1, numCredits, qVector, recoveryRates,
                     betaVector1, numPoints)
                 qt2[i] = trSurvProbAdjBinomial(
                     0.0, k2, numCredits, qVector, recoveryRates,
                     betaVector2, numPoints)
-            elif model == FinLossDistributionBuilder.GAUSSIAN:
+            elif model == TuringLossDistributionBuilder.GAUSSIAN:
                 qt1[i] = trSurvProbGaussian(
                     0.0,
                     k1,
@@ -194,7 +194,7 @@ class FinCDSTranche(object):
                     recoveryRates,
                     betaVector2,
                     numPoints)
-            elif model == FinLossDistributionBuilder.LHP:
+            elif model == TuringLossDistributionBuilder.LHP:
                 qt1[i] = trSurvProbLHP(
                     0.0, k1, numCredits, qVector, recoveryRates, beta1)
                 qt2[i] = trSurvProbLHP(
@@ -216,7 +216,7 @@ class FinCDSTranche(object):
 
         curveRecovery = 0.0  # For tranches only
         liborCurve = issuerCurves[0]._liborCurve
-        trancheCurve = FinCDSCurve(
+        trancheCurve = TuringCDSCurve(
             valuationDate, [], liborCurve, curveRecovery)
         trancheCurve._times = trancheTimes
         trancheCurve._values = trancheSurvivalCurve

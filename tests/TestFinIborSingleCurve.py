@@ -14,12 +14,12 @@ from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
 from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from turingmodel.products.rates.turing_ibor_fra import FinIborFRA
-from turingmodel.products.rates.turing_ibor_future import FinIborFuture
+from turingmodel.products.rates.turing_ibor_fra import TuringIborFRA
+from turingmodel.products.rates.turing_ibor_future import TuringIborFuture
 from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
 from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 
@@ -112,16 +112,16 @@ def test_FinIborFRAsOnly():
     fraRate = 0.04
     fraSettlementDate = settlementDate.addMonths(1)
     fraMaturityDate = settlementDate.addMonths(4)
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate,
-                      depoDCCType, notional, payFixed, calendarType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate,
+                        depoDCCType, notional, payFixed, calendarType)
     fras.append(fra)
 
     # 4 x 7 FRA
     fraRate = 0.08
     fraSettlementDate = settlementDate.addMonths(4)
     fraMaturityDate = settlementDate.addMonths(7)
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate,
-                      depoDCCType, notional, payFixed, calendarType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate,
+                        depoDCCType, notional, payFixed, calendarType)
     fras.append(fra)
 
     depos = []
@@ -182,21 +182,21 @@ def test_FinIborDepositsFRAsSwaps():
     fraRate = 0.04
     fraSettlementDate = settlementDate.addMonths(9)
     fraMaturityDate = settlementDate.addMonths(13)
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate, dccType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate, dccType)
     fras.append(fra)
 
     # 4 x 7 FRA
     fraRate = 0.03
     fraSettlementDate = settlementDate.addMonths(13)
     fraMaturityDate = settlementDate.addMonths(17)
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate, dccType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate, dccType)
     fras.append(fra)
 
     # 4 x 7 FRA
     fraRate = 0.07
     fraSettlementDate = settlementDate.addMonths(17)
     fraMaturityDate = settlementDate.addMonths(21)
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate, dccType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate, dccType)
     fras.append(fra)
 
     swaps = []
@@ -205,93 +205,93 @@ def test_FinIborDepositsFRAsSwaps():
 
     swapRate = 0.05
 #    maturityDate = settlementDate.addMonths(24)
-#    swap = FinIborSwap(settlementDate, maturityDate, swapRate, fixedFreqType,
+#    swap = TuringIborSwap(settlementDate, maturityDate, swapRate, fixedFreqType,
 #                        fixedDCCType)
 #    swaps.append(swap)
 
     fixedLegType = TuringSwapTypes.PAY
     maturityDate = settlementDate.addMonths(36)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate, 
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(48)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate, 
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(60)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate, 
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(72)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate, 
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(84)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate, 
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(96)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate, 
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(108)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate, 
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(120)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(132)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(144)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(180)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(240)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(300)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     maturityDate = settlementDate.addMonths(360)
-    swap = FinIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
-                        fixedFreqType,
-                        fixedDCCType)
+    swap = TuringIborSwap(settlementDate, maturityDate, fixedLegType, swapRate,
+                          fixedFreqType,
+                          fixedDCCType)
     swaps.append(swap)
 
     liborCurve = TuringIborSingleCurve(valuationDate,
@@ -362,37 +362,37 @@ def test_FinIborDepositsFuturesSwaps():
     fraRate = futureToFRARate(97.6675, -0.00005)
     fraSettlementDate = spotDate.nextIMMDate()
     fraMaturityDate = fraSettlementDate.nextIMMDate()
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
     fras.append(fra)
 
     fraRate = futureToFRARate(97.5200, -0.00060)
     fraSettlementDate = fraMaturityDate
     fraMaturityDate = fraSettlementDate.nextIMMDate()
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
     fras.append(fra)
 
     fraRate = futureToFRARate(97.3550, -0.00146)
     fraSettlementDate = fraMaturityDate
     fraMaturityDate = fraSettlementDate.nextIMMDate()
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
     fras.append(fra)
 
     fraRate = futureToFRARate(97.2450, -0.00263)
     fraSettlementDate = fraMaturityDate
     fraMaturityDate = fraSettlementDate.nextIMMDate()
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
     fras.append(fra)
 
     fraRate = futureToFRARate(97.1450, -0.00411)
     fraSettlementDate = fraMaturityDate
     fraMaturityDate = fraSettlementDate.nextIMMDate()
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
     fras.append(fra)
 
     fraRate = futureToFRARate(97.0750, -0.00589)
     fraSettlementDate = fraSettlementDate.nextIMMDate()
     fraMaturityDate = fraSettlementDate.nextIMMDate()
-    fra = FinIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
+    fra = TuringIborFRA(fraSettlementDate, fraMaturityDate, fraRate, depoDCCType)
     fras.append(fra)
 
     ###########################################################################
@@ -414,10 +414,10 @@ def test_FinIborDepositsFuturesSwaps():
 
     swapRate = 0.02776305
 
-    swap = FinIborSwap(startDate, "2Y", fixedLegType, swapRate,
-                        fixedFreqType, fixedDCCType, notional,
-                        floatSpread, floatFreqType, floatDCCType,
-                        calendarType, busDayAdjustRule)
+    swap = TuringIborSwap(startDate, "2Y", fixedLegType, swapRate,
+                          fixedFreqType, fixedDCCType, notional,
+                          floatSpread, floatFreqType, floatDCCType,
+                          calendarType, busDayAdjustRule)
 
     swaps.append(swap)
 
@@ -562,35 +562,35 @@ def test_derivativePricingExample():
     fixedLegType = TuringSwapTypes.PAY
     
     swapRate = 0.0058
-    swap = FinIborSwap(settlementDate, "1Y", fixedLegType, swapRate, freqType, dayCountType)
+    swap = TuringIborSwap(settlementDate, "1Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
 
     swapRate = 0.0060
-    swap = FinIborSwap(settlementDate, "2Y", fixedLegType, swapRate, freqType, dayCountType)
+    swap = TuringIborSwap(settlementDate, "2Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
 
     swapRate = 0.0072
-    swap = FinIborSwap(settlementDate, "3Y", fixedLegType, swapRate, freqType, dayCountType)
+    swap = TuringIborSwap(settlementDate, "3Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
 
     swapRate = 0.0096
-    swap = FinIborSwap(settlementDate, "4Y", fixedLegType, swapRate, freqType, dayCountType)
+    swap = TuringIborSwap(settlementDate, "4Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
 
     swapRate = 0.0124
-    swap = FinIborSwap(settlementDate, "5Y", fixedLegType, swapRate, freqType, dayCountType)
+    swap = TuringIborSwap(settlementDate, "5Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
 
     swapRate = 0.0173
-    swap = FinIborSwap(settlementDate, "7Y", fixedLegType, swapRate, freqType, dayCountType)
+    swap = TuringIborSwap(settlementDate, "7Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
 
     swapRate = 0.0219
-    swap = FinIborSwap(settlementDate, "10Y", fixedLegType, swapRate, freqType, dayCountType)
+    swap = TuringIborSwap(settlementDate, "10Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
 
     swapRate = 0.0283
-    swap = FinIborSwap(settlementDate, "30Y", fixedLegType, swapRate, freqType, dayCountType)
+    swap = TuringIborSwap(settlementDate, "30Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
 
     numRepeats = 10
@@ -598,7 +598,7 @@ def test_derivativePricingExample():
 
     for _ in range(0, numRepeats):
         _ = TuringIborSingleCurve(valuationDate, depos, fras, swaps,
-                                  FinInterpTypes.FLAT_FWD_RATES)
+                                  TuringInterpTypes.FLAT_FWD_RATES)
 
     end = time.time()
     elapsed1 = end - start
@@ -607,7 +607,7 @@ def test_derivativePricingExample():
 
     for _ in range(0, numRepeats):
         _ = TuringIborSingleCurve(valuationDate, depos, fras, swaps,
-                                  FinInterpTypes.FLAT_FWD_RATES)
+                                  TuringInterpTypes.FLAT_FWD_RATES)
 
     end = time.time()
     elapsed2 = end - start
@@ -639,12 +639,12 @@ def test_bloombergPricingExample(interpType):
     depos.append(depo)
 
     futs = []
-    fut = FinIborFuture(valuationDate, 1); futs.append(fut)
-    fut = FinIborFuture(valuationDate, 2); futs.append(fut)
-    fut = FinIborFuture(valuationDate, 3); futs.append(fut)
-    fut = FinIborFuture(valuationDate, 4); futs.append(fut)
-    fut = FinIborFuture(valuationDate, 5); futs.append(fut)
-    fut = FinIborFuture(valuationDate, 6); futs.append(fut)
+    fut = TuringIborFuture(valuationDate, 1); futs.append(fut)
+    fut = TuringIborFuture(valuationDate, 2); futs.append(fut)
+    fut = TuringIborFuture(valuationDate, 3); futs.append(fut)
+    fut = TuringIborFuture(valuationDate, 4); futs.append(fut)
+    fut = TuringIborFuture(valuationDate, 5); futs.append(fut)
+    fut = TuringIborFuture(valuationDate, 6); futs.append(fut)
 
     fras = [None]*6
     fras[0] = futs[0].toFRA(97.6675, -0.00005)
@@ -663,23 +663,23 @@ def test_bloombergPricingExample(interpType):
     fixedLegType = TuringSwapTypes.PAY
 
     swaps = []
-    swap = FinIborSwap(settlementDate, "2Y", fixedLegType, (2.77417+2.77844)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "3Y", fixedLegType, (2.86098+2.86582)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "4Y", fixedLegType, (2.90240+2.90620)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "5Y", fixedLegType, (2.92944+2.92906)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "6Y", fixedLegType, (2.94001+2.94499)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "7Y", fixedLegType, (2.95352+2.95998)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "8Y", fixedLegType, (2.96830+2.97400)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "9Y", fixedLegType, (2.98403+2.98817)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "10Y", fixedLegType, (2.99716+3.00394)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "11Y", fixedLegType, (3.01344+3.01596)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "12Y", fixedLegType, (3.02276+3.02684)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "15Y", fixedLegType, (3.04092+3.04508)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "20Y", fixedLegType, (3.04417+3.05183)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "25Y", fixedLegType, (3.03219+3.03621)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "30Y", fixedLegType, (3.01030+3.01370)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "40Y", fixedLegType, (2.96946+2.97354)/200, freq, accrual); swaps.append(swap)
-    swap = FinIborSwap(settlementDate, "50Y", fixedLegType, (2.91552+2.93748)/200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "2Y", fixedLegType, (2.77417 + 2.77844) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "3Y", fixedLegType, (2.86098 + 2.86582) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "4Y", fixedLegType, (2.90240 + 2.90620) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "5Y", fixedLegType, (2.92944 + 2.92906) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "6Y", fixedLegType, (2.94001 + 2.94499) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "7Y", fixedLegType, (2.95352 + 2.95998) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "8Y", fixedLegType, (2.96830 + 2.97400) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "9Y", fixedLegType, (2.98403 + 2.98817) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "10Y", fixedLegType, (2.99716 + 3.00394) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "11Y", fixedLegType, (3.01344 + 3.01596) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "12Y", fixedLegType, (3.02276 + 3.02684) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "15Y", fixedLegType, (3.04092 + 3.04508) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "20Y", fixedLegType, (3.04417 + 3.05183) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "25Y", fixedLegType, (3.03219 + 3.03621) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "30Y", fixedLegType, (3.01030 + 3.01370) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "40Y", fixedLegType, (2.96946 + 2.97354) / 200, freq, accrual); swaps.append(swap)
+    swap = TuringIborSwap(settlementDate, "50Y", fixedLegType, (2.91552 + 2.93748) / 200, freq, accrual); swaps.append(swap)
 
     liborCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps, interpType)
 
@@ -730,7 +730,7 @@ if 1==0:
         end = time.time()
         print(interpType, end - start)
 
-test_bloombergPricingExample(FinInterpTypes.FLAT_FWD_RATES)
+test_bloombergPricingExample(TuringInterpTypes.FLAT_FWD_RATES)
 test_derivativePricingExample()
 test_FinIborDepositsOnly()
 test_FinIborFRAsOnly()

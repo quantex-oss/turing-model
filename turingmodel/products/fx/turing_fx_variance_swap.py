@@ -10,7 +10,7 @@ from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 from .turing_fx_vanilla_option import TuringFXVanillaOption
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes
 
@@ -198,7 +198,7 @@ class TuringFXVarianceSwap(object):
             k = putK[n]
             vol = volatilityCurve.volatility(k)
             opt = TuringFXVanillaOption(self._maturityDate, k, putType)
-            model = FinModelBlackScholes(vol)
+            model = TuringModelBlackScholes(vol)
             v = opt.value(valuationDate, s0, discountCurve,
                           dividendCurve, model)
             piPut += v * self._putWts[n]
@@ -208,7 +208,7 @@ class TuringFXVarianceSwap(object):
             k = callK[n]
             vol = volatilityCurve.volatility(k)
             opt = TuringFXVanillaOption(self._maturityDate, k, callType)
-            model = FinModelBlackScholes(vol)
+            model = TuringModelBlackScholes(vol)
             v = opt.value(valuationDate, s0, discountCurve,
                           dividendCurve, model)
             piCall += v * self._callWts[n]

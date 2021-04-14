@@ -5,11 +5,11 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.products.credit.turing_cds import FinCDS
+from turingmodel.products.credit.turing_cds import TuringCDS
 from turingmodel.turingutils.turing_math import ONE_MILLION
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from turingmodel.products.credit.turing_cds_curve import FinCDSCurve
+from turingmodel.products.credit.turing_cds_curve import TuringCDSCurve
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_date import TuringDate
@@ -40,7 +40,7 @@ def buildIborCurve(tradeDate):
     settlementDate = valuationDate
 
     maturityDate = settlementDate.addMonths(12)
-    swap1 = FinIborSwap(
+    swap1 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -50,7 +50,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap1)
 
     maturityDate = settlementDate.addMonths(24)
-    swap2 = FinIborSwap(
+    swap2 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -60,7 +60,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap2)
 
     maturityDate = settlementDate.addMonths(36)
-    swap3 = FinIborSwap(
+    swap3 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -70,7 +70,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap3)
 
     maturityDate = settlementDate.addMonths(48)
-    swap4 = FinIborSwap(
+    swap4 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -80,7 +80,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap4)
 
     maturityDate = settlementDate.addMonths(60)
-    swap5 = FinIborSwap(
+    swap5 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -104,15 +104,15 @@ def buildIssuerCurve(tradeDate, liborCurve):
 
     cdsCoupon = 0.0048375
     maturityDate = TuringDate(20, 6, 2010)
-    cds = FinCDS(valuationDate, maturityDate, cdsCoupon)
+    cds = TuringCDS(valuationDate, maturityDate, cdsCoupon)
     cdsMarketContracts.append(cds)
 
     recoveryRate = 0.40
 
-    issuerCurve = FinCDSCurve(valuationDate,
-                              cdsMarketContracts,
-                              liborCurve,
-                              recoveryRate)
+    issuerCurve = TuringCDSCurve(valuationDate,
+                                 cdsMarketContracts,
+                                 liborCurve,
+                                 recoveryRate)
     return issuerCurve
 
 ##########################################################################
@@ -133,11 +133,11 @@ def test_valueCDSIndex():
     longProtection = True
     indexCoupon = 0.004
 
-    cdsIndexContract = FinCDS(stepInDate,
-                              maturityDate,
-                              indexCoupon,
-                              notional,
-                              longProtection)
+    cdsIndexContract = TuringCDS(stepInDate,
+                                 maturityDate,
+                                 indexCoupon,
+                                 notional,
+                                 longProtection)
 
 #    cdsIndexContract.print(valuationDate)
 

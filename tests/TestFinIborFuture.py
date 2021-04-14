@@ -5,7 +5,7 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.products.rates.turing_ibor_future import FinIborFuture
+from turingmodel.products.rates.turing_ibor_future import TuringIborFuture
 from turingmodel.turingutils.turing_date import *
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -23,7 +23,7 @@ def test_FinIborFuture():
     testCases.header("VALUES")
 
     for i in range(1, 12):
-        fut = FinIborFuture(todayDate, i, "3M")
+        fut = TuringIborFuture(todayDate, i, "3M")
         testCases.print(fut)
 
         fra = fut.toFRA(0.020, 0.0)

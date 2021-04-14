@@ -8,7 +8,7 @@ sys.path.append("..")
 import numpy as np
 
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.market.volatility.turing_fx_vol_surface import FinFXVolSurface
+from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXVolSurface
 from turingmodel.market.volatility.turing_fx_vol_surface_plus import TuringFXVolSurfacePlus
 from turingmodel.market.volatility.turing_fx_vol_surface_plus import TuringFXATMMethod
 from turingmodel.market.volatility.turing_fx_vol_surface_plus import TuringFXDeltaMethod

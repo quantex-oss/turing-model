@@ -7,10 +7,10 @@ from numba import njit
 
 from ..turingutils.turing_error import TuringError
 from ..turingutils.turing_math import N
-from ..market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
+from ..market.curves.turing_interpolator import TuringInterpTypes, _uinterpolate
 from ..turingutils.turing_helper_functions import labelToString
 
-interp = FinInterpTypes.FLAT_FWD_RATES.value
+interp = TuringInterpTypes.FLAT_FWD_RATES.value
 
 ###############################################################################
 # dr = theta(t) dt + sigma * dW

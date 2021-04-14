@@ -7,7 +7,7 @@ import sys
 import numpy as np
 sys.path.append("..")
 
-from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.models.turing_model_black import TuringModelBlack
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -28,7 +28,7 @@ def test_Black():
     putOptionType = TuringOptionTypes.EUROPEAN_PUT
 
     df = np.exp(-riskFreeIR * timeToExpiry)
-    model = FinModelBlack(volatility)
+    model = TuringModelBlack(volatility)
 
     dp = 12 # Precision
     

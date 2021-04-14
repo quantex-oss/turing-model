@@ -16,7 +16,7 @@ from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
 ##########################################################################
 
-class FinFloatLeg(object):
+class TuringFloatLeg(object):
     ''' Class for managing the floating leg of a swap. A float leg consists of
     a sequence of flows calculated according to an ISDA schedule and with a 
     coupon determined by an index curve which changes over life of the swap.'''

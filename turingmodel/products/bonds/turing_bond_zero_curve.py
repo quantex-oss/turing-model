@@ -13,7 +13,7 @@ from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_day_count import TuringDayCount, TuringDayCountTypes
 from turingmodel.turingutils.turing_helper_functions import inputTime
 from turingmodel.turingutils.turing_helper_functions import tableToString
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes, interpolate
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes, interpolate
 from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
@@ -43,7 +43,7 @@ class TuringBondZeroCurve(TuringDiscountCurve):
                  valuationDate: TuringDate,
                  bonds: list,
                  cleanPrices: list,
-                 interpType: FinInterpTypes = FinInterpTypes.FLAT_FWD_RATES):
+                 interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES):
         ''' Fit a discount curve to a set of bond yields using the type of
         curve specified. '''
 

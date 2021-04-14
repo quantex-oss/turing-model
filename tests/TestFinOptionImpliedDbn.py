@@ -14,10 +14,10 @@ from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.models.turing_model_volatility_fns import TuringVolFunctionTypes
 from turingmodel.models.turing_model_volatility_fns import volFunctionClark
 
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.models.turing_model_option_implied_dbn import optionImpliedDbn
 
-from turingmodel.market.volatility.turing_fx_vol_surface import FinFXVolSurface
+from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXVolSurface
 from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
 from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
 
@@ -58,18 +58,18 @@ def test_FinOptionImpliedDbn():
         atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
         deltaMethod = TuringFXDeltaMethod.SPOT_DELTA
 
-        fxMarket = FinFXVolSurface(valueDate,
-                                   spotFXRate,
-                                   currencyPair,
-                                   notionalCurrency,
-                                   domDiscountCurve,
-                                   forDiscountCurve,
-                                   tenors,
-                                   atmVols,
-                                   marketStrangle25DeltaVols,
-                                   riskReversal25DeltaVols,
-                                   atmMethod,
-                                   deltaMethod)
+        fxMarket = TuringFXVolSurface(valueDate,
+                                      spotFXRate,
+                                      currencyPair,
+                                      notionalCurrency,
+                                      domDiscountCurve,
+                                      forDiscountCurve,
+                                      tenors,
+                                      atmVols,
+                                      marketStrangle25DeltaVols,
+                                      riskReversal25DeltaVols,
+                                      atmMethod,
+                                      deltaMethod)
 
 #        fxMarket.checkCalibration(True)
 

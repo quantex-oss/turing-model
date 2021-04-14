@@ -12,9 +12,9 @@ from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
 
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.products.bonds.turing_bond import TuringBond
@@ -43,9 +43,9 @@ def test_FinBondEmbeddedOptionMATLAB():
     dcType = TuringDayCountTypes.THIRTY_E_360
     fixedFreq = TuringFrequencyTypes.ANNUAL
     fixedLegType = TuringSwapTypes.PAY
-    swap1 = FinIborSwap(settlementDate, "1Y", fixedLegType, 0.0350, fixedFreq, dcType)
-    swap2 = FinIborSwap(settlementDate, "2Y", fixedLegType, 0.0400, fixedFreq, dcType)
-    swap3 = FinIborSwap(settlementDate, "3Y", fixedLegType, 0.0450, fixedFreq, dcType)
+    swap1 = TuringIborSwap(settlementDate, "1Y", fixedLegType, 0.0350, fixedFreq, dcType)
+    swap2 = TuringIborSwap(settlementDate, "2Y", fixedLegType, 0.0400, fixedFreq, dcType)
+    swap3 = TuringIborSwap(settlementDate, "3Y", fixedLegType, 0.0450, fixedFreq, dcType)
     swaps = [swap1, swap2, swap3]
     discountCurve = TuringIborSingleCurve(valuationDate, [], [], swaps)
 
@@ -88,7 +88,7 @@ def test_FinBondEmbeddedOptionMATLAB():
     timeSteps = range(50, 1000, 10)
     values = []
     for numTimeSteps in timeSteps:
-        model = FinModelRatesHW(sigma, a, numTimeSteps)
+        model = TuringModelRatesHW(sigma, a, numTimeSteps)
         start = time.time()
         v = puttableBond.value(settlementDate, discountCurve, model)
         end = time.time()
@@ -163,7 +163,7 @@ def test_FinBondEmbeddedOptionQUANTLIB():
     timeSteps = range(100, 1000, 100)
     values = []
     for numTimeSteps in timeSteps:
-        model = FinModelRatesHW(sigma, a, numTimeSteps)
+        model = TuringModelRatesHW(sigma, a, numTimeSteps)
         start = time.time()
         v = puttableBond.value(settlementDate, discountCurve, model)
         end = time.time()

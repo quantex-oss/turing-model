@@ -9,7 +9,7 @@ import sys
 sys.path.append("..")
 
 from turingmodel.models.turing_model_rates_cir import zeroPrice_MC, zeroPrice
-from turingmodel.models.turing_model_rates_cir import FinCIRNumericalScheme
+from turingmodel.models.turing_model_rates_cir import TuringCIRNumericalScheme
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)
@@ -52,7 +52,7 @@ def test_FinModelRatesCIR():
             dt,
             numPaths,
             seed,
-            FinCIRNumericalScheme.EULER.value)
+            TuringCIRNumericalScheme.EULER.value)
         p_MC2 = zeroPrice_MC(
             r0,
             a,
@@ -62,7 +62,7 @@ def test_FinModelRatesCIR():
             dt,
             numPaths,
             seed,
-            FinCIRNumericalScheme.LOGNORMAL.value)
+            TuringCIRNumericalScheme.LOGNORMAL.value)
         p_MC3 = zeroPrice_MC(
             r0,
             a,
@@ -72,7 +72,7 @@ def test_FinModelRatesCIR():
             dt,
             numPaths,
             seed,
-            FinCIRNumericalScheme.MILSTEIN.value)
+            TuringCIRNumericalScheme.MILSTEIN.value)
         p_MC4 = zeroPrice_MC(
             r0,
             a,
@@ -82,7 +82,7 @@ def test_FinModelRatesCIR():
             dt,
             numPaths,
             seed,
-            FinCIRNumericalScheme.KAHLJACKEL.value)
+            TuringCIRNumericalScheme.KAHLJACKEL.value)
         p_MC5 = zeroPrice_MC(
             r0,
             a,
@@ -92,7 +92,7 @@ def test_FinModelRatesCIR():
             dt,
             numPaths,
             seed,
-            FinCIRNumericalScheme.EXACT.value)
+            TuringCIRNumericalScheme.EXACT.value)
         end = time.time()
         elapsed = end - start
         testCases.print(t, elapsed, p, p_MC1, p_MC2, p_MC3, p_MC4, p_MC5)

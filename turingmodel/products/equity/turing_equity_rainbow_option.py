@@ -10,7 +10,7 @@ from typing import List
 from turingmodel.turingutils.turing_math import N, M
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_error import TuringError
-from turingmodel.models.turing_gbm_process import FinGBMProcess
+from turingmodel.models.turing_gbm_process import TuringGBMProcess
 from turingmodel.products.equity.turing_equity_option import TuringEquityOption
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
@@ -19,7 +19,7 @@ from turingmodel.turingutils.turing_date import TuringDate
 from enum import Enum
 
 
-class FinEquityRainbowOptionTypes(Enum):
+class TuringEquityRainbowOptionTypes(Enum):
     CALL_ON_MAXIMUM = 1
     PUT_ON_MAXIMUM = 2
     CALL_ON_MINIMUM = 3
@@ -32,25 +32,25 @@ class FinEquityRainbowOptionTypes(Enum):
 
 def payoffValue(s, payoffTypeValue, payoffParams):
 
-    if payoffTypeValue == FinEquityRainbowOptionTypes.CALL_ON_MINIMUM.value:
+    if payoffTypeValue == TuringEquityRainbowOptionTypes.CALL_ON_MINIMUM.value:
         k = payoffParams[0]
         payoff = np.maximum(np.min(s, axis=1) - k, 0.0)
-    elif payoffTypeValue == FinEquityRainbowOptionTypes.CALL_ON_MAXIMUM.value:
+    elif payoffTypeValue == TuringEquityRainbowOptionTypes.CALL_ON_MAXIMUM.value:
         k = payoffParams[0]
         payoff = np.maximum(np.max(s, axis=1) - k, 0.0)
-    elif payoffTypeValue == FinEquityRainbowOptionTypes.PUT_ON_MINIMUM.value:
+    elif payoffTypeValue == TuringEquityRainbowOptionTypes.PUT_ON_MINIMUM.value:
         k = payoffParams[0]
         payoff = np.maximum(k - np.min(s, axis=1), 0.0)
-    elif payoffTypeValue == FinEquityRainbowOptionTypes.PUT_ON_MAXIMUM.value:
+    elif payoffTypeValue == TuringEquityRainbowOptionTypes.PUT_ON_MAXIMUM.value:
         k = payoffParams[0]
         payoff = np.maximum(k - np.max(s, axis=1), 0.0)
-    elif payoffTypeValue == FinEquityRainbowOptionTypes.CALL_ON_NTH.value:
+    elif payoffTypeValue == TuringEquityRainbowOptionTypes.CALL_ON_NTH.value:
         n = payoffParams[0]
         k = payoffParams[1]
         ssorted = np.sort(s)
         assetn = ssorted[:, -n]
         payoff = np.maximum(assetn - k, 0.0)
-    elif payoffTypeValue == FinEquityRainbowOptionTypes.PUT_ON_NTH.value:
+    elif payoffTypeValue == TuringEquityRainbowOptionTypes.PUT_ON_NTH.value:
         n = payoffParams[0]
         k = payoffParams[1]
         ssorted = np.sort(s)
@@ -91,7 +91,7 @@ def valueMCFast(t,
     
     mus = r - qs
 
-    model = FinGBMProcess()
+    model = TuringGBMProcess()
 
     numTimeSteps = 2
     Sall = model.getPathsAssets(numAssets, numPaths, numTimeSteps,
@@ -109,7 +109,7 @@ class TuringEquityRainbowOption(TuringEquityOption):
 
     def __init__(self,
                  expiryDate: TuringDate,
-                 payoffType: FinEquityRainbowOptionTypes,
+                 payoffType: TuringEquityRainbowOptionTypes,
                  payoffParams: List[float],
                  numAssets: int):
 
@@ -155,17 +155,17 @@ class TuringEquityRainbowOption(TuringEquityOption):
 
         numParams = 0
 
-        if payoffType == FinEquityRainbowOptionTypes.CALL_ON_MINIMUM:
+        if payoffType == TuringEquityRainbowOptionTypes.CALL_ON_MINIMUM:
             numParams = 1
-        elif payoffType == FinEquityRainbowOptionTypes.CALL_ON_MAXIMUM:
+        elif payoffType == TuringEquityRainbowOptionTypes.CALL_ON_MAXIMUM:
             numParams = 1
-        elif payoffType == FinEquityRainbowOptionTypes.PUT_ON_MINIMUM:
+        elif payoffType == TuringEquityRainbowOptionTypes.PUT_ON_MINIMUM:
             numParams = 1
-        elif payoffType == FinEquityRainbowOptionTypes.PUT_ON_MAXIMUM:
+        elif payoffType == TuringEquityRainbowOptionTypes.PUT_ON_MAXIMUM:
             numParams = 1
-        elif payoffType == FinEquityRainbowOptionTypes.CALL_ON_NTH:
+        elif payoffType == TuringEquityRainbowOptionTypes.CALL_ON_NTH:
             numParams = 2
-        elif payoffType == FinEquityRainbowOptionTypes.PUT_ON_NTH:
+        elif payoffType == TuringEquityRainbowOptionTypes.PUT_ON_NTH:
             numParams = 2
         else:
             raise TuringError("Unknown payoff type")
@@ -177,8 +177,8 @@ class TuringEquityRainbowOption(TuringEquityOption):
                 " must be " +
                 str(numParams))
 
-        if payoffType == FinEquityRainbowOptionTypes.CALL_ON_NTH \
-           or payoffType == FinEquityRainbowOptionTypes.PUT_ON_NTH:
+        if payoffType == TuringEquityRainbowOptionTypes.CALL_ON_NTH \
+           or payoffType == TuringEquityRainbowOptionTypes.PUT_ON_NTH:
             n = payoffParams[0]
             if n < 1 or n > numAssets:
                 raise TuringError("Nth parameter must be 1 to " + str(numAssets))
@@ -245,18 +245,18 @@ class TuringEquityRainbowOption(TuringEquityOption):
         dq2 = exp(-q2 * t)
         df = exp(-r * t)
 
-        if self._payoffType == FinEquityRainbowOptionTypes.CALL_ON_MAXIMUM:
+        if self._payoffType == TuringEquityRainbowOptionTypes.CALL_ON_MAXIMUM:
             v = s1 * dq1 * M(y1, d, rho1) + s2 * dq2 * M(y2, -d + v * sqrt(t), rho2) \
                 - k * df * (1.0 - M(-y1 + v1 * sqrt(t), -y2 + v2 * sqrt(t), rho))
-        elif self._payoffType == FinEquityRainbowOptionTypes.CALL_ON_MINIMUM:
+        elif self._payoffType == TuringEquityRainbowOptionTypes.CALL_ON_MINIMUM:
             v = s1 * dq1 * M(y1, -d, -rho1) + s2 * dq2 * M(y2, d - v * sqrt(t), -rho2) \
                 - k * df * M(y1 - v1 * sqrt(t), y2 - v2 * sqrt(t), rho)
-        elif self._payoffType == FinEquityRainbowOptionTypes.PUT_ON_MAXIMUM:
+        elif self._payoffType == TuringEquityRainbowOptionTypes.PUT_ON_MAXIMUM:
             cmax1 = s2 * dq2 + s1 * dq1 * N(d) - s2 * dq2 * N(d - v * sqrt(t))
             cmax2 = s1 * dq1 * M(y1, d, rho1) + s2 * dq2 * M(y2, -d + v * sqrt(t), rho2) \
                 - k * df * (1.0 - M(-y1 + v1 * sqrt(t), -y2 + v2 * sqrt(t), rho))
             v = k * df - cmax1 + cmax2
-        elif self._payoffType == FinEquityRainbowOptionTypes.PUT_ON_MINIMUM:
+        elif self._payoffType == TuringEquityRainbowOptionTypes.PUT_ON_MINIMUM:
             cmin1 = s1 * dq1 - s1 * dq1 * N(d) + s2 * dq2 * N(d - v * sqrt(t))
             cmin2 = s1 * dq1 * M(y1, -d, -rho1) + s2 * dq2 * M(y2, d - v * sqrt(
                 t), -rho2) - k * df * M(y1 - v1 * sqrt(t), y2 - v2 * sqrt(t), rho)

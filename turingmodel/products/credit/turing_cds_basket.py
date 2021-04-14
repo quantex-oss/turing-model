@@ -14,17 +14,17 @@ from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
 from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
 
-from turingmodel.products.credit.turing_cds import FinCDS
+from turingmodel.products.credit.turing_cds import TuringCDS
 
 from turingmodel.models.turing_model_gaussian_copula_1f import homogeneousBasketLossDbn
 from turingmodel.models.turing_model_gaussian_copula import defaultTimesGC
 from turingmodel.models.turing_model_student_t_copula import TuringModelStudentTCopula
 
-from turingmodel.products.credit.turing_cds_curve import FinCDSCurve
+from turingmodel.products.credit.turing_cds_curve import TuringCDSCurve
 
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_math import ONE_MILLION
-from turingmodel.market.curves.turing_interpolator import interpolate, FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import interpolate, TuringInterpTypes
 
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes
 from turingmodel.turingutils.turing_date import TuringDate
@@ -35,7 +35,7 @@ from turingmodel.turingutils.turing_helper_functions import labelToString
 ###############################################################################
 
 
-class FinCDSBasket(object):
+class TuringCDSBasket(object):
 
     ''' Class to deal with n-to-default CDS baskets. '''
 
@@ -64,16 +64,16 @@ class FinCDSBasket(object):
         self._freqType = freqType
         self._busDayAdjustType = busDayAdjustType
 
-        self._cdsContract = FinCDS(self._stepInDate,
-                                   self._maturityDate,
-                                   self._runningCoupon,
-                                   1.0,
-                                   self._longProtection,
-                                   self._freqType,
-                                   self._dayCountType,
-                                   self._calendarType,
-                                   self._busDayAdjustType,
-                                   self._dateGenRuleType)
+        self._cdsContract = TuringCDS(self._stepInDate,
+                                      self._maturityDate,
+                                      self._runningCoupon,
+                                      1.0,
+                                      self._longProtection,
+                                      self._freqType,
+                                      self._dayCountType,
+                                      self._calendarType,
+                                      self._busDayAdjustType,
+                                      self._dateGenRuleType)
 
 ###############################################################################
 
@@ -275,7 +275,7 @@ class FinCDSBasket(object):
                 recoveryRates[iCredit] = issuerCurve._recoveryRate
                 issuerSurvivalProbabilities[iCredit] = interpolate(
                     t, issuerCurve._times, issuerCurve._values,
-                    FinInterpTypes.FLAT_FWD_RATES.value)
+                    TuringInterpTypes.FLAT_FWD_RATES.value)
 
             lossDbn = homogeneousBasketLossDbn(issuerSurvivalProbabilities,
                                                recoveryRates,
@@ -290,7 +290,7 @@ class FinCDSBasket(object):
 
         curveRecovery = recoveryRates[0]
         liborCurve = issuerCurves[0]._liborCurve
-        basketCurve = FinCDSCurve(valuationDate, [], liborCurve, curveRecovery)
+        basketCurve = TuringCDSCurve(valuationDate, [], liborCurve, curveRecovery)
         basketCurve._times = basketTimes
         basketCurve._values = basketSurvivalCurve
 

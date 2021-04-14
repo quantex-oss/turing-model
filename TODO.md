@@ -4,7 +4,7 @@
 * Inflation - TIPS bonds with correct yield measures
 * Perpetual - Perpetual bonds with correct yield measures
 * Equities - Convertible bond model  - check accrued interest on tree
-* Credit - Finish testing FinCDSTranche and add repr method
+* Credit - Finish testing TuringCDSTranche and add repr method
 * Equities - Convertible bond model  - check credit modelling - testing
 
 ## MEDIUM PRIORITY

@@ -8,7 +8,7 @@ import scipy.optimize as optimize
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.market.curves.turing_interpolator import _uinterpolate, FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import _uinterpolate, TuringInterpTypes
 from turingmodel.turingutils.turing_helper_functions import inputTime, tableToString
 from turingmodel.turingutils.turing_day_count import TuringDayCount
 from turingmodel.turingutils.turing_frequency import TuringFrequency, TuringFrequencyTypes
@@ -36,7 +36,7 @@ def f(q, *args):
 ###############################################################################
 
 
-class FinCDSCurve():
+class TuringCDSCurve():
     ''' Generate a survival probability curve implied by the value of CDS
     contracts given a Ibor curve and an assumed recovery rate. A scheme for
     the interpolation of the survival probabilities is also required. '''
@@ -47,7 +47,7 @@ class FinCDSCurve():
                  liborCurve,
                  recoveryRate: float = 0.40,
                  useCache: bool = False,
-                 interpolationMethod: FinInterpTypes = FinInterpTypes.FLAT_FWD_RATES):
+                 interpolationMethod: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES):
         ''' Construct a credit curve from a sequence of maturity-ordered CDS
         contracts and a Ibor curve using the same recovery rate and the
         same interpolation method. '''

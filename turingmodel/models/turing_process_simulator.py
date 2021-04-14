@@ -15,7 +15,7 @@ from ..turingutils.turing_helper_functions import labelToString
 ###############################################################################
 
 
-class FinProcessTypes(Enum):
+class TuringProcessTypes(Enum):
     GBM = 1
     CIR = 2
     HESTON = 3
@@ -26,7 +26,7 @@ class FinProcessTypes(Enum):
 ###############################################################################
 
 
-class FinProcessSimulator():
+class TuringProcessSimulator():
 
     def __init__(self):
         pass
@@ -40,13 +40,13 @@ class FinProcessSimulator():
             numPaths,
             seed):
 
-        if processType == FinProcessTypes.GBM:
+        if processType == TuringProcessTypes.GBM:
             (stockPrice, drift, volatility, scheme) = modelParams
             paths = getGBMPaths(numPaths, numAnnSteps, t, drift,
                                 stockPrice, volatility, scheme.value, seed)
             return paths
 
-        elif processType == FinProcessTypes.HESTON:
+        elif processType == TuringProcessTypes.HESTON:
             (stockPrice, drift, v0, kappa, theta, sigma, rho, scheme) = modelParams
             paths = getHestonPaths(numPaths,
                                    numAnnSteps,
@@ -62,7 +62,7 @@ class FinProcessSimulator():
                                    seed)
             return paths
 
-        elif processType == FinProcessTypes.VASICEK:
+        elif processType == TuringProcessTypes.VASICEK:
             (r0, kappa, theta, sigma, scheme) = modelParams
             paths = getVasicekPaths(
                 numPaths,
@@ -76,7 +76,7 @@ class FinProcessSimulator():
                 seed)
             return paths
 
-        elif processType == FinProcessTypes.CIR:
+        elif processType == TuringProcessTypes.CIR:
             (r0, kappa, theta, sigma, scheme) = modelParams
             paths = getCIRPaths(numPaths, numAnnSteps, t,
                                 r0, kappa, theta, sigma, scheme.value, seed)
@@ -88,7 +88,7 @@ class FinProcessSimulator():
 ###############################################################################
 
 
-class FinHestonNumericalScheme(Enum):
+class TuringHestonNumericalScheme(Enum):
     EULER = 1
     EULERLOG = 2
     QUADEXP = 3
@@ -121,7 +121,7 @@ def getHestonPaths(numPaths,
     rhohat = sqrt(1.0 - rho * rho)
     sigma2 = sigma * sigma
 
-    if scheme == FinHestonNumericalScheme.EULER.value:
+    if scheme == TuringHestonNumericalScheme.EULER.value:
         # Basic scheme to first order with truncation on variance
         for iPath in range(0, numPaths):
             s = s0
@@ -139,7 +139,7 @@ def getHestonPaths(numPaths,
                     zS + 0.5 * s * vplus * (zV * zV - dt)
                 sPaths[iPath, iStep] = s
 
-    elif scheme == FinHestonNumericalScheme.EULERLOG.value:
+    elif scheme == TuringHestonNumericalScheme.EULERLOG.value:
         # Basic scheme to first order with truncation on variance
         for iPath in range(0, numPaths):
             x = log(s0)
@@ -154,7 +154,7 @@ def getHestonPaths(numPaths,
                     rtvplus * zV + sigma2 * (zV * zV - dt) / 4.0
                 sPaths[iPath, iStep] = exp(x)
 
-    elif scheme == FinHestonNumericalScheme.QUADEXP.value:
+    elif scheme == TuringHestonNumericalScheme.QUADEXP.value:
         # Due to Leif Andersen(2006)
         Q = exp(-kappa * dt)
         psic = 1.50
@@ -216,7 +216,7 @@ def getHestonPaths(numPaths,
 ###############################################################################
 
 
-class FinGBMNumericalScheme(Enum):
+class TuringGBMNumericalScheme(Enum):
     NORMAL = 1
     ANTITHETIC = 2
 
@@ -232,7 +232,7 @@ def getGBMPaths(numPaths, numAnnSteps, t, mu, stockPrice, sigma, scheme, seed):
     vsqrtdt = sigma * sqrt(dt)
     m = exp((mu - sigma * sigma / 2.0) * dt)
 
-    if scheme == FinGBMNumericalScheme.NORMAL.value:
+    if scheme == TuringGBMNumericalScheme.NORMAL.value:
 
         Sall = np.empty((numPaths, numTimeSteps + 1))
         Sall[:, 0] = stockPrice
@@ -242,7 +242,7 @@ def getGBMPaths(numPaths, numAnnSteps, t, mu, stockPrice, sigma, scheme, seed):
                 w = np.exp(g1D[ip] * vsqrtdt)
                 Sall[ip, it] = Sall[ip, it - 1] * m * w
 
-    elif scheme == FinGBMNumericalScheme.ANTITHETIC.value:
+    elif scheme == TuringGBMNumericalScheme.ANTITHETIC.value:
 
         Sall = np.empty((2 * numPaths, numTimeSteps + 1))
         Sall[:, 0] = stockPrice
@@ -255,7 +255,7 @@ def getGBMPaths(numPaths, numAnnSteps, t, mu, stockPrice, sigma, scheme, seed):
 
     else:
 
-        raise TuringError("Unknown FinGBMNumericalScheme")
+        raise TuringError("Unknown TuringGBMNumericalScheme")
 
 #    m = np.mean(Sall[:, -1])
 #    v = np.var(Sall[:, -1]/Sall[:, 0])
@@ -266,7 +266,7 @@ def getGBMPaths(numPaths, numAnnSteps, t, mu, stockPrice, sigma, scheme, seed):
 ###############################################################################
 
 
-class FinVasicekNumericalScheme(Enum):
+class TuringVasicekNumericalScheme(Enum):
     NORMAL = 1
     ANTITHETIC = 2
 
@@ -289,7 +289,7 @@ def getVasicekPaths(numPaths,
     numSteps = int(t / dt)
     sigmasqrtdt = sigma * sqrt(dt)
 
-    if scheme == FinVasicekNumericalScheme.NORMAL.value:
+    if scheme == TuringVasicekNumericalScheme.NORMAL.value:
         ratePath = np.empty((numPaths, numSteps + 1))
         ratePath[:, 0] = r0
         for iPath in range(0, numPaths):
@@ -298,7 +298,7 @@ def getVasicekPaths(numPaths,
             for iStep in range(1, numSteps + 1):
                 r += kappa * (theta - r) * dt + z[iStep - 1] * sigmasqrtdt
                 ratePath[iPath, iStep] = r
-    elif scheme == FinVasicekNumericalScheme.ANTITHETIC.value:
+    elif scheme == TuringVasicekNumericalScheme.ANTITHETIC.value:
         ratePath = np.empty((2 * numPaths, numSteps + 1))
         ratePath[:, 0] = r0
         for iPath in range(0, numPaths):
@@ -317,7 +317,7 @@ def getVasicekPaths(numPaths,
 ###############################################################################
 
 
-class FinCIRNumericalScheme(Enum):
+class TuringCIRNumericalScheme(Enum):
     EULER = 1
     LOGNORMAL = 2
     MILSTEIN = 3
@@ -344,7 +344,7 @@ def getCIRPaths(numPaths,
     ratePath = np.empty(shape=(numPaths, numSteps + 1))
     ratePath[:, 0] = r0
 
-    if scheme == FinCIRNumericalScheme.EULER.value:
+    if scheme == TuringCIRNumericalScheme.EULER.value:
         sigmasqrtdt = sigma * sqrt(dt)
         for iPath in range(0, numPaths):
             r = r0
@@ -356,7 +356,7 @@ def getCIRPaths(numPaths,
                     sigmasqrtdt * z[iStep - 1] * sqrtrplus
                 ratePath[iPath, iStep] = r
 
-    elif scheme == FinCIRNumericalScheme.LOGNORMAL.value:
+    elif scheme == TuringCIRNumericalScheme.LOGNORMAL.value:
         x = exp(-kappa * dt)
         y = 1.0 - x
         for iPath in range(0, numPaths):
@@ -369,7 +369,7 @@ def getCIRPaths(numPaths,
                 r = mean * exp(-0.5 * sig * sig + sig * z[iStep - 1])
                 ratePath[iPath, iStep] = r
 
-    elif scheme == FinCIRNumericalScheme.MILSTEIN.value:
+    elif scheme == TuringCIRNumericalScheme.MILSTEIN.value:
         sigmasqrtdt = sigma * sqrt(dt)
         sigma2dt = sigma * sigma * dt / 4.0
         for iPath in range(0, numPaths):
@@ -382,7 +382,7 @@ def getCIRPaths(numPaths,
                 r = r + sigma2dt * (z[iStep - 1]**2 - 1.0)
                 ratePath[iPath, iStep] = r
 
-    elif scheme == FinCIRNumericalScheme.KAHLJACKEL.value:
+    elif scheme == TuringCIRNumericalScheme.KAHLJACKEL.value:
         bhat = theta - sigma * sigma / 4.0 / kappa
         sqrtdt = sqrt(dt)
         for iPath in range(0, numPaths):

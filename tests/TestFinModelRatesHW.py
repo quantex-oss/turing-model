@@ -10,7 +10,7 @@ import sys
 sys.path.append("..")
 
 from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.models.turing_model_rates_hw import FinModelRatesHW, FinHWEuropeanCalcType
+from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW, TuringHWEuropeanCalcType
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.products.bonds.turing_bond import TuringBond
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
@@ -39,7 +39,7 @@ def test_HullWhiteExampleOne():
     sigma = 0.01
     a = 0.1
     numTimeSteps = 3
-    model = FinModelRatesHW(sigma, a, numTimeSteps)
+    model = TuringModelRatesHW(sigma, a, numTimeSteps)
     treeMat = (endDate - startDate)/gDaysInYear
     model.buildTree(treeMat, times, dfs)
 #   printTree(model._Q)
@@ -78,7 +78,7 @@ def test_HullWhiteExampleTwo():
     tmat = (maturityDate - startDate)/gDaysInYear
 
     numTimeSteps = None
-    model = FinModelRatesHW(sigma, a, numTimeSteps)
+    model = TuringModelRatesHW(sigma, a, numTimeSteps)
     vAnal = model.optionOnZCB(texp, tmat, strike, face, times, dfs)
 
     # Test convergence
@@ -95,11 +95,11 @@ def test_HullWhiteExampleTwo():
 
         start = time.time()
 
-        model = FinModelRatesHW(sigma, a, numTimeSteps)
+        model = TuringModelRatesHW(sigma, a, numTimeSteps)
         model.buildTree(texp, times, dfs)
         vTree1 = model.optionOnZeroCouponBond_Tree(texp, tmat, strike, face)
 
-        model = FinModelRatesHW(sigma, a, numTimeSteps+1)
+        model = TuringModelRatesHW(sigma, a, numTimeSteps + 1)
         model.buildTree(texp, times, dfs)
         vTree2 = model.optionOnZeroCouponBond_Tree(texp, tmat, strike, face)
  
@@ -165,7 +165,7 @@ def test_HullWhiteBondOption():
 
     sigma = 0.0000001
     a = 0.1
-    model = FinModelRatesHW(sigma, a, None)
+    model = TuringModelRatesHW(sigma, a, None)
 
     #  Test convergence
     numStepsList = range(50, 500, 50)
@@ -182,7 +182,7 @@ def test_HullWhiteBondOption():
     for numTimeSteps in numStepsList:
 
         start = time.time()
-        model = FinModelRatesHW(sigma, a, numTimeSteps, FinHWEuropeanCalcType.EXPIRY_ONLY)
+        model = TuringModelRatesHW(sigma, a, numTimeSteps, TuringHWEuropeanCalcType.EXPIRY_ONLY)
         model.buildTree(texp, times, dfs)
 
         exerciseType = TuringExerciseTypes.EUROPEAN
@@ -190,7 +190,7 @@ def test_HullWhiteBondOption():
         v1 = model.bondOption(texp, strikePrice, face,
                               couponTimes, couponFlows, exerciseType)
 
-        model = FinModelRatesHW(sigma, a, numTimeSteps, FinHWEuropeanCalcType.EXPIRY_TREE)
+        model = TuringModelRatesHW(sigma, a, numTimeSteps, TuringHWEuropeanCalcType.EXPIRY_TREE)
         model.buildTree(texp, times, dfs)
 
         v2 = model.bondOption(texp, strikePrice, face,
@@ -310,7 +310,7 @@ def test_HullWhiteCallableBond():
     for numTimeSteps in numStepsList:
 
         start = time.time()
-        model = FinModelRatesHW(sigma, a, numTimeSteps)
+        model = TuringModelRatesHW(sigma, a, numTimeSteps)
         model.buildTree(tmat, times, dfs)
 
         v2 = model.callablePuttableBond_Tree(couponTimes, couponFlows,

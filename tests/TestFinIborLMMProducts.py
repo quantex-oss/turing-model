@@ -10,14 +10,14 @@ sys.path.append("..")
 from turingmodel.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.models.turing_model_black import TuringModelBlack
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.products.rates.turing_ibor_swaption import TuringSwapTypes
-from turingmodel.products.rates.turing_ibor_swaption import FinIborSwaption
+from turingmodel.products.rates.turing_ibor_swaption import TuringIborSwaption
 from turingmodel.turingutils.turing_global_types import TuringCapFloorTypes
-from turingmodel.products.rates.turing_ibor_lmm_products import FinIborLMMProducts
-from turingmodel.products.rates.turing_ibor_cap_floor import FinIborCapFloor
+from turingmodel.products.rates.turing_ibor_lmm_products import TuringIborLMMProducts
+from turingmodel.products.rates.turing_ibor_cap_floor import TuringIborCapFloor
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)
@@ -45,7 +45,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 #     swaptionVol = 15.54
 
-#     liborSwaption = FinIborSwaption(settlementDate,
+#     liborSwaption = TuringIborSwaption(settlementDate,
 #                                      exerciseDate,
 #                                      maturityDate,
 #                                      FinIborSwaptionTypes.PAY,
@@ -53,7 +53,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 #                                      TuringFrequencyTypes.ANNUAL,
 #                                      TuringDayCountTypes.ACT_360)
 
-#     model = FinModelBlack(swaptionVol/100.0)
+#     model = TuringModelBlack(swaptionVol/100.0)
 #     v_BLK = liborSwaption.value(valuationDate, discountCurve, model)
 
 #     dt = 0.5
@@ -116,7 +116,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 #         # Pricing a PAY
 #         swaptionType = FinIborSwaptionTypes.PAY
-#         swaption = FinIborSwaption(settlementDate,
+#         swaption = TuringIborSwaption(settlementDate,
 #                                     exerciseDate,
 #                                     maturityDate,
 #                                     swaptionType,
@@ -127,7 +127,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 #                                     floatFrequencyType,
 #                                     floatDayCountType)
 
-#         model = FinModelBlack(swaptionVol)
+#         model = TuringModelBlack(swaptionVol)
 #         blackSwaptionPrice = swaption.value(valuationDate, liborCurve, model)
 
 #         testCases.print("K:%6.5f texp:%8.2f FwdVol:%9.5f SimVol1F:%9.5f " +
@@ -160,7 +160,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 #     capVol = 15.54
 
-#     liborCap = FinIborCapFloor(settlementDate,
+#     liborCap = TuringIborCapFloor(settlementDate,
 #                                 capMaturityDate,
 #                                 FinIborCapFloorTypes.CAP,
 #                                 capFloorRate,
@@ -168,14 +168,14 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 #                                 TuringFrequencyTypes.ANNUAL,
 #                                 TuringDayCountTypes.ACT_360)
 
-#     model = FinModelBlack(capVol/100.0)
+#     model = TuringModelBlack(capVol/100.0)
 #     v_BLK = liborCap.value(valuationDate, discountCurve, model)
 
 #     ###########################################################################
 #     # LMM VALUATION
 #     ###########################################################################
 
-#     lmmProducts = FinIborLMMProducts(settlementDate,
+#     lmmProducts = TuringIborLMMProducts(settlementDate,
 #                                       capMaturityDate,
 #                                       freqType,
 #                                       dayCountType)

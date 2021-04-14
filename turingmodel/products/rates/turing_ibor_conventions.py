@@ -16,7 +16,7 @@ from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
 ##########################################################################
 
 
-class FinIborConventions():
+class TuringIborConventions():
 
     def __init__(self,
                  currencyName: str,

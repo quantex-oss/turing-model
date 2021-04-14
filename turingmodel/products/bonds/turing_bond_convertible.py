@@ -23,7 +23,7 @@ from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
 from turingmodel.turingutils.turing_calendar import TuringDateGenRuleTypes
 
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes, _uinterpolate
 
 ###############################################################################
 
@@ -51,7 +51,7 @@ def _valueConvertible(tmat,
                       # Tree details
                       numStepsPerYear):
 
-    interp = FinInterpTypes.FLAT_FWD_RATES.value
+    interp = TuringInterpTypes.FLAT_FWD_RATES.value
 
     if len(couponTimes) > 0:
         if couponTimes[-1] > tmat:

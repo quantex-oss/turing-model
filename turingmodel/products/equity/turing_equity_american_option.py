@@ -13,7 +13,7 @@ from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes, 
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.products.equity.turing_equity_option import TuringEquityOption
 
-from turingmodel.models.turing_model import FinModel
+from turingmodel.models.turing_model import TuringModel
 
 ###############################################################################
 # TODO: Implement some analytical approximations
@@ -55,7 +55,7 @@ class TuringEquityAmericanOption(TuringEquityOption):
               stockPrice: (np.ndarray, float),
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
-              model: FinModel):
+              model: TuringModel):
         ''' Valuation of an American option using a CRR tree to take into
         account the value of early exercise. '''
 
@@ -67,8 +67,8 @@ class TuringEquityAmericanOption(TuringEquityOption):
         if np.any(stockPrice <= 0.0):
             raise TuringError("Stock price must be greater than zero.")
 
-        if isinstance(model, FinModel) is False:
-            raise TuringError("Model is not inherited off type FinModel.")
+        if isinstance(model, TuringModel) is False:
+            raise TuringError("Model is not inherited off type TuringModel.")
 
         if np.any(texp < 0.0):
             raise TuringError("Time to expiry must be positive.")

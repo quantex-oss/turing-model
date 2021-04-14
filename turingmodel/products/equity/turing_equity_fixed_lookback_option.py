@@ -10,7 +10,7 @@ from turingmodel.turingutils.turing_global_variables import gDaysInYear, gSmall
 from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_date import TuringDate
 
-from turingmodel.models.turing_gbm_process import FinGBMProcess
+from turingmodel.models.turing_gbm_process import TuringGBMProcess
 from turingmodel.products.equity.turing_equity_option import TuringEquityOption
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
@@ -212,7 +212,7 @@ class TuringEquityFixedLookbackOption(TuringEquityOption):
                 raise TuringError(
                     "Smin must be less than or equal to the stock price.")
 
-        model = FinGBMProcess()
+        model = TuringGBMProcess()
         Sall = model.getPaths(numPaths, numTimeSteps, t, mu, stockPrice,
                               volatility, seed)
 

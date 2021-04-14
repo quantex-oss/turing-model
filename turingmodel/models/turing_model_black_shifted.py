@@ -24,7 +24,7 @@ class TuringModelBlackShifted():
     negative interest rates. '''
 
     def __init__(self, volatility, shift, implementation=0):
-        ''' Create FinModel black using parameters. '''
+        ''' Create TuringModel black using parameters. '''
         self._volatility = volatility
         self._shift = shift
         self._implementation = 0

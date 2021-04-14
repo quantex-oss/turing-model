@@ -10,7 +10,7 @@ from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_helper_functions import labelToString
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes, _funcName
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
 swaptol = 1e-8
@@ -82,7 +82,7 @@ class TuringInflationSwapCurve(TuringDiscountCurve):
                  iborDeposits: list,
                  iborFRAs: list,
                  iborSwaps: list,
-                 interpType: FinInterpTypes = FinInterpTypes.FLAT_FWD_RATES,
+                 interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES,
                  checkRefit: bool = False):  # Set to True to test it works
         ''' Create an instance of a FinIbor curve given a valuation date and
         a set of ibor deposits, ibor FRAs and iborSwaps. Some of these may

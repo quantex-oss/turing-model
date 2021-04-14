@@ -17,7 +17,7 @@ from scipy.interpolate import CubicSpline
 from enum import Enum
 
 
-class FinInterpTypes(Enum):
+class TuringInterpTypes(Enum):
                 FLAT_FWD_RATES = 1
                 LINEAR_FWD_RATES = 2
                 LINEAR_ZERO_RATES = 4
@@ -38,7 +38,7 @@ def interpolate(t: (float, np.ndarray),  # time or array of times
                 dfs: np.ndarray,  # Vector of discount factors
                 method: int):  # Interpolation method which is value of enum
     ''' Fast interpolation of discount factors at time x given discount factors
-    at times provided using one of the methods in the enum FinInterpTypes. The
+    at times provided using one of the methods in the enum TuringInterpTypes. The
     value of x can be an array so that the function is vectorised. '''
 
     if type(t) is float or type(t) is np.float64:
@@ -91,7 +91,7 @@ def _uinterpolate(t, times, dfs, method):
     # linear interpolation of y(x)
     ###########################################################################
 
-    if method == FinInterpTypes.LINEAR_ZERO_RATES.value:
+    if method == TuringInterpTypes.LINEAR_ZERO_RATES.value:
 
         if i == 1:
             r1 = -np.log(dfs[i])/times[i]
@@ -120,7 +120,7 @@ def _uinterpolate(t, times, dfs, method):
     # This is also FLAT FORWARDS
     ###########################################################################
 
-    elif method == FinInterpTypes.FLAT_FWD_RATES.value:
+    elif method == TuringInterpTypes.FLAT_FWD_RATES.value:
 
         if i == 1:
             rt1 = -np.log(dfs[i-1])
@@ -143,7 +143,7 @@ def _uinterpolate(t, times, dfs, method):
 
         return yvalue
 
-    elif method == FinInterpTypes.LINEAR_FWD_RATES.value:
+    elif method == TuringInterpTypes.LINEAR_FWD_RATES.value:
 
         if i == 1:
             y2 = -np.log(dfs[i] + small)
@@ -189,10 +189,10 @@ def _vinterpolate(xValues,
 ###############################################################################
 
 
-class FinInterpolator():
+class TuringInterpolator():
 
     def __init__(self,
-                 interpolatorType: FinInterpTypes):
+                 interpolatorType: TuringInterpTypes):
         
         self._interpType = interpolatorType
         self._interpFn = None
@@ -212,12 +212,12 @@ class FinInterpolator():
         if len(times) == 1:
             return
 
-        if self._interpType == FinInterpTypes.PCHIP_LOG_DISCOUNT:
+        if self._interpType == TuringInterpTypes.PCHIP_LOG_DISCOUNT:
 
              logDfs = np.log(self._dfs)
              self._interpFn = PchipInterpolator(self._times, logDfs)
 
-        elif self._interpType  == FinInterpTypes.PCHIP_ZERO_RATES:
+        elif self._interpType  == TuringInterpTypes.PCHIP_ZERO_RATES:
 
              gSmallVector = np.ones(len(self._times)) * gSmall
              zeroRates = -np.log(self._dfs)/(self._times + gSmallVector)
@@ -227,7 +227,7 @@ class FinInterpolator():
 
              self._interpFn = PchipInterpolator(self._times, zeroRates)
 
-        # if self._interpType == FinInterpTypes.FINCUBIC_LOG_DISCOUNT:
+        # if self._interpType == TuringInterpTypes.FINCUBIC_LOG_DISCOUNT:
 
         #     ''' Second derivatives at left is zero and first derivative at
         #     right is clamped to zero. '''
@@ -235,7 +235,7 @@ class FinInterpolator():
         #     self._interpFn = CubicSpline(self._times, logDfs,
         #                                  bc_type=((2, 0.0), (1, 0.0)))
 
-        elif self._interpType == FinInterpTypes.FINCUBIC_ZERO_RATES:
+        elif self._interpType == TuringInterpTypes.FINCUBIC_ZERO_RATES:
 
             ''' Second derivatives at left is zero and first derivative at
             right is clamped to zero. '''
@@ -248,14 +248,14 @@ class FinInterpolator():
             self._interpFn = CubicSpline(self._times, zeroRates,
                                          bc_type=((2, 0.0), (1, 0.0)))
 
-        elif self._interpType == FinInterpTypes.NATCUBIC_LOG_DISCOUNT:
+        elif self._interpType == TuringInterpTypes.NATCUBIC_LOG_DISCOUNT:
 
             ''' Second derivatives are clamped to zero at end points '''
             logDfs = np.log(self._dfs)
             self._interpFn = CubicSpline(self._times, logDfs,
                                          bc_type = 'natural')
     
-        elif self._interpType == FinInterpTypes.NATCUBIC_ZERO_RATES:
+        elif self._interpType == TuringInterpTypes.NATCUBIC_ZERO_RATES:
 
             ''' Second derivatives are clamped to zero at end points '''
             gSmallVector = np.ones(len(self._times)) * gSmall
@@ -267,7 +267,7 @@ class FinInterpolator():
             self._interpFn = CubicSpline(self._times, zeroRates,
                                          bc_type = 'natural')
 
-#        elif self._interpType  == FinInterpTypes.LINEAR_LOG_DISCOUNT:
+#        elif self._interpType  == TuringInterpTypes.LINEAR_LOG_DISCOUNT:
 #
 #            logDfs = np.log(self._dfs)
 #            self._interpFn = interp1d(self._times, logDfs, 
@@ -279,7 +279,7 @@ class FinInterpolator():
     def interpolate(self,
                     t: float):
         ''' Interpolation of discount factors at time x given discount factors
-        at times provided using one of the methods in the enum FinInterpTypes.
+        at times provided using one of the methods in the enum TuringInterpTypes.
         The value of x can be an array so that the function is vectorised. '''
 
         if self._dfs is None:
@@ -307,31 +307,31 @@ class FinInterpolator():
         else:
             raise TuringError("t is not a recognized type")
         
-        if self._interpType == FinInterpTypes.PCHIP_LOG_DISCOUNT:
+        if self._interpType == TuringInterpTypes.PCHIP_LOG_DISCOUNT:
         
             out = np.exp(self._interpFn(tvec))
 
-        elif self._interpType == FinInterpTypes.PCHIP_ZERO_RATES:
+        elif self._interpType == TuringInterpTypes.PCHIP_ZERO_RATES:
     
             out = np.exp(-tvec * self._interpFn(tvec))
 
-        # if self._interpType == FinInterpTypes.FINCUBIC_LOG_DISCOUNT:
+        # if self._interpType == TuringInterpTypes.FINCUBIC_LOG_DISCOUNT:
         
         #     out = np.exp(self._interpFn(tvec))
 
-        elif self._interpType == FinInterpTypes.FINCUBIC_ZERO_RATES:
+        elif self._interpType == TuringInterpTypes.FINCUBIC_ZERO_RATES:
         
             out = np.exp(-tvec * self._interpFn(tvec))
 
-        elif self._interpType == FinInterpTypes.NATCUBIC_LOG_DISCOUNT:
+        elif self._interpType == TuringInterpTypes.NATCUBIC_LOG_DISCOUNT:
         
             out = np.exp(self._interpFn(tvec))
 
-        elif self._interpType == FinInterpTypes.NATCUBIC_ZERO_RATES:
+        elif self._interpType == TuringInterpTypes.NATCUBIC_ZERO_RATES:
         
             out = np.exp(-tvec * self._interpFn(tvec))
     
-#        elif self._interpType == FinInterpTypes.LINEAR_LOG_DISCOUNT:
+#        elif self._interpType == TuringInterpTypes.LINEAR_LOG_DISCOUNT:
 #    
 #            out = np.exp(self._interpFn(tvec))
 

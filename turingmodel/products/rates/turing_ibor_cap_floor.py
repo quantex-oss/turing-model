@@ -20,19 +20,19 @@ from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_schedule import TuringSchedule
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
-from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.models.turing_model_black import TuringModelBlack
 from turingmodel.models.turing_model_black_shifted import TuringModelBlackShifted
-from turingmodel.models.turing_model_bachelier import FinModelBachelier
-from turingmodel.models.turing_model_sabr import FinModelSABR
+from turingmodel.models.turing_model_bachelier import TuringModelBachelier
+from turingmodel.models.turing_model_sabr import TuringModelSABR
 from turingmodel.models.turing_model_sabr_shifted import TuringModelSABRShifted
-from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
 from turingmodel.turingutils.turing_global_types import TuringCapFloorTypes, TuringOptionTypes
 
 ##########################################################################
 
 from enum import Enum
 
-class FinIborCapFloorModelTypes(Enum):
+class TuringIborCapFloorModelTypes(Enum):
     BLACK = 1
     SHIFTED_BLACK = 2
     SABR = 3
@@ -40,7 +40,7 @@ class FinIborCapFloorModelTypes(Enum):
 ##########################################################################
 
 
-class FinIborCapFloor():
+class TuringIborCapFloor():
     ''' Class for Caps and Floors. These are contracts which observe a Ibor
     reset L on a future start date and then make a payoff at the end of the
     Ibor period which is Max[L-K,0] for a cap and Max[K-L,0] for a floor.
@@ -60,7 +60,7 @@ class FinIborCapFloor():
                  calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
                  busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
                  dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
-        ''' Initialise FinIborCapFloor object. '''
+        ''' Initialise TuringIborCapFloor object. '''
 
         checkArgumentTypes(self.__init__, locals())
 
@@ -225,7 +225,7 @@ class FinIborCapFloor():
         if k == 0.0:
             k = 1e-10
 
-        if isinstance(model, FinModelBlack):
+        if isinstance(model, TuringModelBlack):
 
             if self._optionType == TuringCapFloorTypes.CAP:
                 capFloorLetValue = model.value(f, k, texp, df,
@@ -243,7 +243,7 @@ class FinIborCapFloor():
                 capFloorLetValue = model.value(f, k, texp, df,
                                                TuringOptionTypes.EUROPEAN_PUT)
 
-        elif isinstance(model, FinModelBachelier):
+        elif isinstance(model, TuringModelBachelier):
 
             if self._optionType == TuringCapFloorTypes.CAP:
                 capFloorLetValue = model.value(f, k, texp, df,
@@ -252,7 +252,7 @@ class FinIborCapFloor():
                 capFloorLetValue = model.value(f, k, texp, df,
                                                TuringOptionTypes.EUROPEAN_PUT)
 
-        elif isinstance(model, FinModelSABR):
+        elif isinstance(model, TuringModelSABR):
 
             if self._optionType == TuringCapFloorTypes.CAP:
                 capFloorLetValue = model.value(f, k, texp, df,
@@ -270,7 +270,7 @@ class FinIborCapFloor():
                 capFloorLetValue = model.value(f, k, texp, df,
                                                TuringOptionTypes.EUROPEAN_PUT)
 
-        elif isinstance(model, FinModelRatesHW):
+        elif isinstance(model, TuringModelRatesHW):
 
             tmat = (capletEndDate - valuationDate) / gDaysInYear
             alpha = self._dayCounter.yearFrac(capletStartDate,

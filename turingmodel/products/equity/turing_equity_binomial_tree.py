@@ -17,7 +17,7 @@ from turingmodel.turingutils.turing_helper_functions import labelToString
 ###############################################################################
 
 
-class FinEquityTreePayoffTypes(Enum):
+class TuringEquityTreePayoffTypes(Enum):
     FWD_CONTRACT = 1
     VANILLA_OPTION = 2
     DIGITAL_OPTION = 3
@@ -27,7 +27,7 @@ class FinEquityTreePayoffTypes(Enum):
     LOG_OPTION = 7
 
 
-class FinEquityTreeExerciseTypes(Enum):
+class TuringEquityTreeExerciseTypes(Enum):
     EUROPEAN = 1
     AMERICAN = 2
 
@@ -39,19 +39,19 @@ def _validatePayoff(payoffType, payoffParams):
 
     numParams = 0
 
-    if payoffType == FinEquityTreePayoffTypes.FWD_CONTRACT.value:
+    if payoffType == TuringEquityTreePayoffTypes.FWD_CONTRACT.value:
         numParams = 1
-    elif payoffType == FinEquityTreePayoffTypes.VANILLA_OPTION.value:
+    elif payoffType == TuringEquityTreePayoffTypes.VANILLA_OPTION.value:
         numParams = 2
-    elif payoffType == FinEquityTreePayoffTypes.DIGITAL_OPTION.value:
+    elif payoffType == TuringEquityTreePayoffTypes.DIGITAL_OPTION.value:
         numParams = 2
-    elif payoffType == FinEquityTreePayoffTypes.POWER_CONTRACT.value:
+    elif payoffType == TuringEquityTreePayoffTypes.POWER_CONTRACT.value:
         numParams = 2
-    elif payoffType == FinEquityTreePayoffTypes.POWER_OPTION.value:
+    elif payoffType == TuringEquityTreePayoffTypes.POWER_OPTION.value:
         numParams = 3
-    elif payoffType == FinEquityTreePayoffTypes.LOG_CONTRACT.value:
+    elif payoffType == TuringEquityTreePayoffTypes.LOG_CONTRACT.value:
         numParams = 0
-    elif payoffType == FinEquityTreePayoffTypes.LOG_OPTION.value:
+    elif payoffType == TuringEquityTreePayoffTypes.LOG_OPTION.value:
         numParams = 1
     else:
         raise TuringError("Unknown payoff type")
@@ -71,21 +71,21 @@ def _validatePayoff(payoffType, payoffParams):
 @njit(float64(float64, int64, float64[:]), fastmath=True, cache=True)
 def _payoffValue(s, payoffType, payoffParams):
 
-    if payoffType == FinEquityTreePayoffTypes.FWD_CONTRACT.value:
+    if payoffType == TuringEquityTreePayoffTypes.FWD_CONTRACT.value:
         payoff = payoffParams[0] * s
-    elif payoffType == FinEquityTreePayoffTypes.VANILLA_OPTION.value:
+    elif payoffType == TuringEquityTreePayoffTypes.VANILLA_OPTION.value:
         payoff = max(payoffParams[0] * (s - payoffParams[1]), 0.0)
-    elif payoffType == FinEquityTreePayoffTypes.DIGITAL_OPTION.value:
+    elif payoffType == TuringEquityTreePayoffTypes.DIGITAL_OPTION.value:
         payoff = heaviside(payoffParams[0] * (s - payoffParams[1]))
-    elif payoffType == FinEquityTreePayoffTypes.POWER_CONTRACT.value:
+    elif payoffType == TuringEquityTreePayoffTypes.POWER_CONTRACT.value:
         payoff = payoffParams[0] * (s**payoffParams[1])
-    elif payoffType == FinEquityTreePayoffTypes.POWER_OPTION.value:
+    elif payoffType == TuringEquityTreePayoffTypes.POWER_OPTION.value:
         payoff = max(payoffParams[0] *
                      ((s**payoffParams[2]) -
                       payoffParams[1]), 0.0)
-    elif payoffType == FinEquityTreePayoffTypes.LOG_CONTRACT.value:
+    elif payoffType == TuringEquityTreePayoffTypes.LOG_CONTRACT.value:
         payoff = log(s)
-    elif payoffType == FinEquityTreePayoffTypes.LOG_OPTION.value:
+    elif payoffType == TuringEquityTreePayoffTypes.LOG_OPTION.value:
         payoff = max(log(s) - payoffParams[0], 0.0)
     else:
         raise TuringError("Unknown payoff type")
@@ -167,9 +167,9 @@ def _valueOnce(stockPrice,
             futureExpectedValue += (1.0 - probs[iTime]) * vDn
             holdValue = periodDiscountFactors[iTime] * futureExpectedValue
 
-            if exerciseType == FinEquityTreeExerciseTypes.EUROPEAN:
+            if exerciseType == TuringEquityTreeExerciseTypes.EUROPEAN:
                 optionValues[index + iNode] = holdValue
-            elif exerciseType == FinEquityTreeExerciseTypes.AMERICAN:
+            elif exerciseType == TuringEquityTreeExerciseTypes.AMERICAN:
                 s = stockValues[index + iNode]
                 exerciseValue = _payoffValue(s, payoffTypeValue, payoffParams)
                 optionValues[index + iNode] = max(exerciseValue, holdValue)
@@ -189,7 +189,7 @@ def _valueOnce(stockPrice,
 ###############################################################################
 
 
-class FinEquityBinomialTree():
+class TuringEquityBinomialTree():
 
     def __init__(self):
         pass

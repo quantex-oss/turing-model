@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from turingmodel.market.curves.turing_interpolator import FinInterpolator, FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import TuringInterpolator, TuringInterpTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)
@@ -38,12 +38,12 @@ def test_FinInterpolate():
 
     testCases.header("METHOD", "X", "Y_INTERPOLATED")
 
-    for interpType in FinInterpTypes:
+    for interpType in TuringInterpTypes:
 
         yInterpValues = []
         start = time.time()
 
-        interpolator = FinInterpolator(interpType)
+        interpolator = TuringInterpolator(interpType)
         interpolator.fit(xValues, yValues)
 
         for x in xInterpolateValues:
@@ -65,7 +65,7 @@ def test_FinInterpolate():
     n = 10000
 
     testCases.header("LABEL", "TIME")
-    interpolator = FinInterpolator(interpType)
+    interpolator = TuringInterpolator(interpType)
     interpolator.fit(xp, yp)
     
     start = time.time()

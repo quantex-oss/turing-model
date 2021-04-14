@@ -10,7 +10,7 @@ sys.path.append("..")
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 from turingmodel.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -43,7 +43,7 @@ def test_FinFXOptionSABR():
     domDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy2CCRate)
     forDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy1CCRate)
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     # Two examples to show that changing the notional currency and notional
     # keeps the value unchanged

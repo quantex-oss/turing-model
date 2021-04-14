@@ -6,7 +6,7 @@
 from enum import Enum
 
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.turingutils.turing_date import TuringDate
 
@@ -16,7 +16,7 @@ bump = 1e-4
 
 ###############################################################################
 
-class FinEquityOptionModelTypes(Enum):
+class TuringEquityOptionModelTypes(Enum):
     BLACKSCHOLES = 1
     ANOTHER = 2
 
@@ -94,7 +94,7 @@ class TuringEquityOption(object):
         v = self.value(valueDate, stockPrice, discountCurve,
                        dividendCurve, model)
 
-        model = FinModelBlackScholes(model._volatility + bump)
+        model = TuringModelBlackScholes(model._volatility + bump)
 
         vBumped = self.value(valueDate, stockPrice, discountCurve,
                              dividendCurve, model)

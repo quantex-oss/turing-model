@@ -11,11 +11,11 @@ sys.path.append("..")
 from turingmodel.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.models.turing_model_black import TuringModelBlack
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.products.rates.turing_ibor_swaption import TuringSwapTypes
-from turingmodel.products.rates.turing_ibor_swaption import FinIborSwaption
+from turingmodel.products.rates.turing_ibor_swaption import TuringIborSwaption
 from turingmodel.turingutils.turing_helper_functions import checkVectorDifferences
 from turingmodel.models.turing_model_rates_lmm import LMMSimulateFwdsNF
 from turingmodel.models.turing_model_rates_lmm import LMMSimulateFwds1F
@@ -165,7 +165,7 @@ def getForwardCurve(numFwds, r):
 
 #         # Pricing a PAY
 #         swaptionType = FinIborSwaptionTypes.PAY
-#         swaption = FinIborSwaption(settlementDate,
+#         swaption = TuringIborSwaption(settlementDate,
 #                                     exerciseDate,
 #                                     maturityDate,
 #                                     swaptionType,
@@ -176,7 +176,7 @@ def getForwardCurve(numFwds, r):
 #                                     floatFrequencyType,
 #                                     floatDayCountType)
 
-#         model = FinModelBlack(swaptionVol)
+#         model = TuringModelBlack(swaptionVol)
 #         blackSwaptionPrice = swaption.value(valuationDate, liborCurve, model)
 
 #         print("K:%6.5f texp:%8.2f FwdVol:%9.5f SimVol1F:%9.5f SimVolNF:%9.5f RebVol:%9.5f SimPx1F:%9.5f SimPxNF:%9.5f Black Px:%9.5f" 

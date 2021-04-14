@@ -12,9 +12,9 @@ from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.products.bonds.turing_bond import TuringBond
-from turingmodel.products.rates.turing_ibor_swaption import FinIborSwaption
+from turingmodel.products.rates.turing_ibor_swaption import TuringIborSwaption
 from turingmodel.products.rates.turing_ibor_swaption import TuringSwapTypes
-from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.models.turing_model_black import TuringModelBlack
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
@@ -51,16 +51,16 @@ def testBlackModelCheck():
 
     # Pricing a PAY
     swaptionType = TuringSwapTypes.PAY
-    swaption = FinIborSwaption(settlementDate,
-                                exerciseDate,
-                                maturityDate,
-                                swaptionType,
-                                fixedCoupon,
-                                fixedFrequencyType,
-                                fixedDayCountType,
-                                notional)
+    swaption = TuringIborSwaption(settlementDate,
+                                  exerciseDate,
+                                  maturityDate,
+                                  swaptionType,
+                                  fixedCoupon,
+                                  fixedFrequencyType,
+                                  fixedDayCountType,
+                                  notional)
 
-    model = FinModelBlack(0.20)
+    model = TuringModelBlack(0.20)
     v = swaption.value(valuationDate, liborCurve, model)
     testCases.header("LABEL", "VALUE")
     testCases.print("BLACK'S MODEL PRICE:", v*100)

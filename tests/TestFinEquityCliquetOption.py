@@ -6,7 +6,7 @@ import sys
 sys.path.append("..")
 
 from turingmodel.products.equity.turing_equity_cliquet_option import TuringEquityCliquetOption
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_date import TuringDate
@@ -35,7 +35,7 @@ def test_FinEquityCliquetOption():
     volatility = 0.20
     interestRate = 0.05
     dividendYield = 0.02
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 

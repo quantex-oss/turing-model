@@ -10,7 +10,7 @@ import sys
 sys.path.append("..")
 
 from turingmodel.products.equity.turing_equity_rainbow_option import TuringEquityRainbowOption
-from turingmodel.products.equity.turing_equity_rainbow_option import FinEquityRainbowOptionTypes
+from turingmodel.products.equity.turing_equity_rainbow_option import TuringEquityRainbowOptionTypes
 from turingmodel.turingutils.turing_helper_functions import betaVectorToCorrMatrix
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_date import TuringDate
@@ -52,7 +52,7 @@ def test_FinEquityRainbowOption():
     testCases.banner(
         "===================================================================")
 
-    payoffType = FinEquityRainbowOptionTypes.CALL_ON_MAXIMUM
+    payoffType = TuringEquityRainbowOptionTypes.CALL_ON_MAXIMUM
     payoffParams = [strike]
     rainbowOption = TuringEquityRainbowOption(
         expiryDate, payoffType, payoffParams, numAssets)
@@ -107,7 +107,7 @@ def test_FinEquityRainbowOption():
     testCases.banner("                       CALL ON MINIMUM")
     testCases.banner(
         "===================================================================")
-    payoffType = FinEquityRainbowOptionTypes.CALL_ON_MINIMUM
+    payoffType = TuringEquityRainbowOptionTypes.CALL_ON_MINIMUM
     payoffParams = [strike]
     rainbowOption = TuringEquityRainbowOption(
         expiryDate, payoffType, payoffParams, numAssets)
@@ -164,7 +164,7 @@ def test_FinEquityRainbowOption():
     testCases.banner(
         "===================================================================")
 
-    payoffType = FinEquityRainbowOptionTypes.PUT_ON_MAXIMUM
+    payoffType = TuringEquityRainbowOptionTypes.PUT_ON_MAXIMUM
     payoffParams = [strike]
     rainbowOption = TuringEquityRainbowOption(
         expiryDate, payoffType, payoffParams, numAssets)
@@ -220,7 +220,7 @@ def test_FinEquityRainbowOption():
     testCases.banner("                       PUT ON MINIMUM")
     testCases.banner(
         "===================================================================")
-    payoffType = FinEquityRainbowOptionTypes.PUT_ON_MINIMUM
+    payoffType = TuringEquityRainbowOptionTypes.PUT_ON_MINIMUM
     payoffParams = [strike]
     rainbowOption = TuringEquityRainbowOption(
         expiryDate, payoffType, payoffParams, numAssets)
@@ -293,12 +293,12 @@ def test_FinEquityRainbowOption():
 
         for numPaths in numPathsList:
 
-            payoffType1 = FinEquityRainbowOptionTypes.CALL_ON_MAXIMUM
+            payoffType1 = TuringEquityRainbowOptionTypes.CALL_ON_MAXIMUM
             payoffParams1 = [strike]
             rainbowOption1 = TuringEquityRainbowOption(
                 expiryDate, payoffType1, payoffParams1, numAssets)
 
-            payoffType2 = FinEquityRainbowOptionTypes.CALL_ON_NTH
+            payoffType2 = TuringEquityRainbowOptionTypes.CALL_ON_NTH
             payoffParams2 = [1, strike]
             rainbowOption2 = TuringEquityRainbowOption(
                 expiryDate, payoffType2, payoffParams2, numAssets)
@@ -353,12 +353,12 @@ def test_FinEquityRainbowOption():
 
         for numPaths in numPathsList:
 
-            payoffType1 = FinEquityRainbowOptionTypes.CALL_ON_MINIMUM
+            payoffType1 = TuringEquityRainbowOptionTypes.CALL_ON_MINIMUM
             payoffParams1 = [strike]
             rainbowOption1 = TuringEquityRainbowOption(
                 expiryDate, payoffType1, payoffParams1, numAssets)
 
-            payoffType2 = FinEquityRainbowOptionTypes.CALL_ON_NTH
+            payoffType2 = TuringEquityRainbowOptionTypes.CALL_ON_NTH
             payoffParams2 = [2, strike]
             rainbowOption2 = TuringEquityRainbowOption(
                 expiryDate, payoffType2, payoffParams2, numAssets)
@@ -429,7 +429,7 @@ def test_FinEquityRainbowOption():
         rainboxOptionValues = []
         rainbowOptionValuesMC = []
 
-        payoffType2 = FinEquityRainbowOptionTypes.CALL_ON_NTH
+        payoffType2 = TuringEquityRainbowOptionTypes.CALL_ON_NTH
         payoffParams2 = [n, strike]
         rainbowOption2 = TuringEquityRainbowOption(
             expiryDate, payoffType2, payoffParams2, numAssets)
@@ -489,7 +489,7 @@ def test_FinEquityRainbowOption():
         rainboxOptionValues = []
         rainbowOptionValuesMC = []
 
-        payoffType2 = FinEquityRainbowOptionTypes.PUT_ON_NTH
+        payoffType2 = TuringEquityRainbowOptionTypes.PUT_ON_NTH
         payoffParams2 = [n, strike]
         rainbowOption2 = TuringEquityRainbowOption(
             expiryDate, payoffType2, payoffParams2, numAssets)

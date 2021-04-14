@@ -19,7 +19,7 @@ from ..turingutils.turing_helper_functions import labelToString
 from enum import Enum
 
 
-class FinCIRNumericalScheme(Enum):
+class TuringCIRNumericalScheme(Enum):
     EULER = 1
     LOGNORMAL = 2
     MILSTEIN = 3
@@ -31,7 +31,7 @@ class FinCIRNumericalScheme(Enum):
 # THIS CLASS IS NOT USED BUT MAY BE USED IF WE CREATE AN OO FRAMEWORK
 
 
-class FinModelRatesCIR():
+class TuringModelRatesCIR():
 
     def __init__(self, a, b, sigma):
         self._a = a
@@ -142,7 +142,7 @@ def ratePath_MC(r0, a, b, sigma, t, dt, seed, scheme):
     ratePath[0] = r0
     numPaths = 1
 
-    if scheme == FinCIRNumericalScheme.EULER.value:
+    if scheme == TuringCIRNumericalScheme.EULER.value:
 
         sigmasqrtdt = sigma * np.sqrt(dt)
 
@@ -156,7 +156,7 @@ def ratePath_MC(r0, a, b, sigma, t, dt, seed, scheme):
                     z[iStep - 1] * sigmasqrtdt * np.sqrt(max(r, 0.0))
                 ratePath[iStep] = r
 
-    elif scheme == FinCIRNumericalScheme.LOGNORMAL.value:
+    elif scheme == TuringCIRNumericalScheme.LOGNORMAL.value:
 
         x = np.exp(-a * dt)
         y = 1.0 - x
@@ -173,7 +173,7 @@ def ratePath_MC(r0, a, b, sigma, t, dt, seed, scheme):
                 r = mean * np.exp(-0.5 * sig * sig + sig * z[iStep - 1])
                 ratePath[iStep] = r
 
-    elif scheme == FinCIRNumericalScheme.MILSTEIN.value:
+    elif scheme == TuringCIRNumericalScheme.MILSTEIN.value:
 
         sigmasqrtdt = sigma * np.sqrt(dt)
         sigma2dt = sigma * sigma * dt / 4.0
@@ -189,7 +189,7 @@ def ratePath_MC(r0, a, b, sigma, t, dt, seed, scheme):
                 r = r + sigma2dt * (z[iStep - 1]**2 - 1.0)
                 ratePath[iStep] = r
 
-    elif scheme == FinCIRNumericalScheme.KAHLJACKEL.value:
+    elif scheme == TuringCIRNumericalScheme.KAHLJACKEL.value:
 
         bhat = b - sigma * sigma / 4.0 / a
         sqrtdt = np.sqrt(dt)
@@ -206,7 +206,7 @@ def ratePath_MC(r0, a, b, sigma, t, dt, seed, scheme):
                 r = r + (a * (bhat - r) + sigma * beta * rootr) * c * dt
                 ratePath[iStep] = r
 
-    elif scheme == FinCIRNumericalScheme.EXACT.value:
+    elif scheme == TuringCIRNumericalScheme.EXACT.value:
 
         for iPath in range(0, numPaths):
 
@@ -243,7 +243,7 @@ def zeroPrice_MC(r0, a, b, sigma, t, dt, numPaths, seed, scheme):
     numSteps = int(t / dt)
     zcb = 0.0
 
-    if scheme == FinCIRNumericalScheme.EULER.value:
+    if scheme == TuringCIRNumericalScheme.EULER.value:
 
         sigmasqrtdt = sigma * np.sqrt(dt)
 
@@ -261,7 +261,7 @@ def zeroPrice_MC(r0, a, b, sigma, t, dt, numPaths, seed, scheme):
 
             zcb += np.exp(-0.50 * rsum * dt)
 
-    elif scheme == FinCIRNumericalScheme.LOGNORMAL.value:
+    elif scheme == TuringCIRNumericalScheme.LOGNORMAL.value:
 
         x = np.exp(-a * dt)
         y = 1.0 - x
@@ -284,7 +284,7 @@ def zeroPrice_MC(r0, a, b, sigma, t, dt, numPaths, seed, scheme):
 
             zcb += np.exp(-0.5 * rsum * dt)
 
-    elif scheme == FinCIRNumericalScheme.MILSTEIN.value:
+    elif scheme == TuringCIRNumericalScheme.MILSTEIN.value:
 
         sigmasqrtdt = sigma * np.sqrt(dt)
         sigma2dt = sigma * sigma * dt / 4.0
@@ -304,7 +304,7 @@ def zeroPrice_MC(r0, a, b, sigma, t, dt, numPaths, seed, scheme):
 
             zcb += np.exp(-0.50 * rsum * dt)
 
-    elif scheme == FinCIRNumericalScheme.KAHLJACKEL.value:
+    elif scheme == TuringCIRNumericalScheme.KAHLJACKEL.value:
 
         bhat = b - sigma * sigma / 4.0 / a
         sqrtdt = np.sqrt(dt)
@@ -325,7 +325,7 @@ def zeroPrice_MC(r0, a, b, sigma, t, dt, numPaths, seed, scheme):
 
             zcb += np.exp(-0.50 * rsum * dt)
 
-    elif scheme == FinCIRNumericalScheme.EXACT.value:
+    elif scheme == TuringCIRNumericalScheme.EXACT.value:
 
         for iPath in range(0, numPaths):
 

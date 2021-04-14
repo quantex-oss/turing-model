@@ -23,13 +23,13 @@ from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from turingmodel.turingutils.turing_date import TuringDate
 
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 
-from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.models.turing_model_black import TuringModelBlack
 from turingmodel.models.turing_model_black_shifted import TuringModelBlackShifted
-from turingmodel.models.turing_model_sabr import FinModelSABR
+from turingmodel.models.turing_model_sabr import TuringModelSABR
 from turingmodel.models.turing_model_sabr_shifted import TuringModelSABRShifted
-from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
 from turingmodel.models.turing_model_rates_bk import TuringModelRatesBK
 from turingmodel.models.turing_model_rates_bdt import TuringModelRatesBDT
 
@@ -40,7 +40,7 @@ from turingmodel.turingutils.turing_global_types import TuringExerciseTypes
 ###############################################################################
 
 
-class FinIborSwaption():
+class TuringIborSwaption():
     ''' This is the class for the European-style swaption, an option to enter
     into a swap (payer or receiver of the fixed coupon), that starts in the
     future and with a fixed maturity, at a swap rate fixed today. '''
@@ -63,7 +63,7 @@ class FinIborSwaption():
         the swaption, and all of the details of the underlying interest rate
         swap including the fixed coupon and the details of the fixed and the
         floating leg payment schedules. Bermudan style swaption should be
-        priced using the FinIborBermudanSwaption class. '''
+        priced using the TuringIborBermudanSwaption class. '''
 
         checkArgumentTypes(self.__init__, locals())
 
@@ -102,27 +102,27 @@ class FinIborSwaption():
               discountCurve,
               model):
         ''' Valuation of a Ibor European-style swaption using a choice of
-        models on a specified valuation date. Models include FinModelBlack,
-        TuringModelBlackShifted, FinModelSABR, TuringModelSABRShifted, FinModelHW,
+        models on a specified valuation date. Models include TuringModelBlack,
+        TuringModelBlackShifted, TuringModelSABR, TuringModelSABRShifted, FinModelHW,
         FinModelBK and FinModelBDT. The last two involved a tree-based
         valuation. '''
 
         floatSpread = 0.0
 
         # We create a swap that starts on the exercise date.
-        swap = FinIborSwap(self._exerciseDate,
-                           self._maturityDate,
-                           self._fixedLegType,
-                           self._fixedCoupon,
-                           self._fixedFrequencyType,
-                           self._fixedDayCountType,
-                           self._notional,
-                           floatSpread,
-                           self._floatFrequencyType,
-                           self._floatDayCountType,
-                           self._calendarType,
-                           self._busDayAdjustType,
-                           self._dateGenRuleType)
+        swap = TuringIborSwap(self._exerciseDate,
+                              self._maturityDate,
+                              self._fixedLegType,
+                              self._fixedCoupon,
+                              self._fixedFrequencyType,
+                              self._fixedDayCountType,
+                              self._notional,
+                              floatSpread,
+                              self._floatFrequencyType,
+                              self._floatDayCountType,
+                              self._calendarType,
+                              self._busDayAdjustType,
+                              self._dateGenRuleType)
 
         k = self._fixedCoupon
 
@@ -175,7 +175,7 @@ class FinIborSwaption():
 
         #######################################################################
 
-        if isinstance(model, FinModelBlack):
+        if isinstance(model, TuringModelBlack):
 
             if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = model.value(s, k, texp, df,
@@ -193,7 +193,7 @@ class FinIborSwaption():
                 swaptionPrice = model.value(s, k, texp, df,
                                             TuringOptionTypes.EUROPEAN_PUT)
 
-        elif isinstance(model, FinModelSABR):
+        elif isinstance(model, TuringModelSABR):
 
             if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = model.value(s, k, texp, df,
@@ -211,7 +211,7 @@ class FinIborSwaption():
                 swaptionPrice = model.value(s, k, texp, df,
                                             TuringOptionTypes.EUROPEAN_PUT)
 
-        elif isinstance(model, FinModelRatesHW):
+        elif isinstance(model, TuringModelRatesHW):
 
             swaptionPx = model.europeanBondOptionJamshidian(texp,
                                                   strikePrice,
@@ -297,19 +297,19 @@ class FinIborSwaption():
 
         floatSpread = 0.0
 
-        swap = FinIborSwap(self._exerciseDate,
-                            self._maturityDate,
-                            self._fixedLegType,
-                            self._fixedCoupon,
-                            self._fixedFrequencyType,
-                            self._fixedDayCountType,
-                            self._notional,
-                            floatSpread,
-                            self._floatFrequencyType,
-                            self._floatDayCountType,
-                            self._calendarType,
-                            self._busDayAdjustType,
-                            self._dateGenRuleType)
+        swap = TuringIborSwap(self._exerciseDate,
+                              self._maturityDate,
+                              self._fixedLegType,
+                              self._fixedCoupon,
+                              self._fixedFrequencyType,
+                              self._fixedDayCountType,
+                              self._notional,
+                              floatSpread,
+                              self._floatFrequencyType,
+                              self._floatDayCountType,
+                              self._calendarType,
+                              self._busDayAdjustType,
+                              self._dateGenRuleType)
 
         k = self._fixedCoupon
         s = swapRate
@@ -323,7 +323,7 @@ class FinIborSwaption():
         # Discounting is done via the PV01 annuity so no discounting in Black
         df = 1.0
 
-        if isinstance(model, FinModelBlack):
+        if isinstance(model, TuringModelBlack):
 
             if self._fixedLegType == TuringSwapTypes.PAY:
                 swaptionPrice = model.value(s, k, texp, df,

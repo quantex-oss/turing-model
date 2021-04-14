@@ -10,15 +10,15 @@ from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from .turing_equity_vanilla_option import FinEquityVanillaOption
+from .turing_equity_vanilla_option import TuringEquityVanillaOption
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 
 ###############################################################################
 
 
-class FinEquityVarianceSwap(object):
+class TuringEquityVarianceSwap(object):
     ''' Class for managing an equity variance swap contract. '''
 
     def __init__(self,
@@ -198,8 +198,8 @@ class FinEquityVarianceSwap(object):
         for n in range(0, numPutOptions):
             k = putK[n]
             vol = volatilityCurve.volatility(k)
-            opt = FinEquityVanillaOption(self._maturityDate, k, putType)
-            model = FinModelBlackScholes(vol)
+            opt = TuringEquityVanillaOption(self._maturityDate, k, putType)
+            model = TuringModelBlackScholes(vol)
             v = opt.value(valuationDate, s0, discountCurve,
                           dividendCurve, model)
             piPut += v * self._putWts[n]
@@ -208,8 +208,8 @@ class FinEquityVarianceSwap(object):
         for n in range(0, numCallOptions):
             k = callK[n]
             vol = volatilityCurve.volatility(k)
-            opt = FinEquityVanillaOption(self._maturityDate, k, callType)
-            model = FinModelBlackScholes(vol)
+            opt = TuringEquityVanillaOption(self._maturityDate, k, callType)
+            model = TuringModelBlackScholes(vol)
             v = opt.value(valuationDate, s0, discountCurve,
                           dividendCurve, model)
             piCall += v * self._callWts[n]

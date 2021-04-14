@@ -13,12 +13,12 @@ from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from .turing_float_leg import FinFloatLeg
+from .turing_float_leg import TuringFloatLeg
 
 ###############################################################################
 
 
-class FinIborBasisSwap(object):
+class TuringIborBasisSwap(object):
     ''' Class for managing an Ibor-Ibor basis swap contract. This is a
     contract in which a floating leg with one LIBOR tenor is exchanged for a 
     floating leg payment in a different LIBOR tenor. There is no exchange of
@@ -73,31 +73,31 @@ class FinIborBasisSwap(object):
         paymentLag = 0
         principal = 0.0
 
-        self._floatLeg1 = FinFloatLeg(effectiveDate,
-                                     self._terminationDate,
-                                     leg1Type,
-                                     leg1Spread,
-                                     leg1FreqType,
-                                     leg1DayCountType,
-                                     notional,
-                                     principal,
-                                     paymentLag,
-                                     calendarType,
-                                     busDayAdjustType,
-                                     dateGenRuleType)
+        self._floatLeg1 = TuringFloatLeg(effectiveDate,
+                                         self._terminationDate,
+                                         leg1Type,
+                                         leg1Spread,
+                                         leg1FreqType,
+                                         leg1DayCountType,
+                                         notional,
+                                         principal,
+                                         paymentLag,
+                                         calendarType,
+                                         busDayAdjustType,
+                                         dateGenRuleType)
 
-        self._floatLeg2 = FinFloatLeg(effectiveDate,
-                                     self._terminationDate,
-                                     leg2Type,
-                                     leg2Spread,
-                                     leg2FreqType,
-                                     leg2DayCountType,
-                                     notional,
-                                     principal,
-                                     paymentLag,
-                                     calendarType,
-                                     busDayAdjustType,
-                                     dateGenRuleType)
+        self._floatLeg2 = TuringFloatLeg(effectiveDate,
+                                         self._terminationDate,
+                                         leg2Type,
+                                         leg2Spread,
+                                         leg2FreqType,
+                                         leg2DayCountType,
+                                         notional,
+                                         principal,
+                                         paymentLag,
+                                         calendarType,
+                                         busDayAdjustType,
+                                         dateGenRuleType)
 
 ###############################################################################
 

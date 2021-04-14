@@ -15,7 +15,7 @@ from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 ###############################################################################
 
 
-class FinIborFRA(object):
+class TuringIborFRA(object):
     ''' Class for managing LIBOR forward rate agreements. A forward rate
     agreement is an agreement to exchange a fixed pre-agreed rate for a
     floating rate linked to LIBOR that is not known until some specified

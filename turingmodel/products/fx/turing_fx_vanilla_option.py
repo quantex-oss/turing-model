@@ -18,8 +18,8 @@ from turingmodel.products.fx.turing_fx_mkt_conventions import TuringFXDeltaMetho
 
 from turingmodel.models.turing_model_crr_tree import crrTreeValAvg
 from turingmodel.models.turing_model_sabr import volFunctionSABR
-from turingmodel.models.turing_model_sabr import FinModelSABR
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_sabr import TuringModelSABR
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 
 from turingmodel.models.turing_model_black_scholes_analytical import bsValue, bsDelta
 
@@ -43,7 +43,7 @@ def f(volatility, *args):
     forDiscountCurve = args[4]
     price = args[5]
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     vdf = self.value(valueDate,
                      spotFXRate,
@@ -69,7 +69,7 @@ def fvega(volatility, *args):
     domDiscountCurve = args[3]
     forDiscountCurve = args[4]
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     fprime = self.vega(valueDate,
                        spotFXRate,
@@ -276,12 +276,12 @@ class TuringFXVanillaOption():
         K = self._strikeFXRate
         F0T = S0 * np.exp((rd-rf)*tdel)
 
-        if type(model) == FinModelBlackScholes or \
-           type(model) == FinModelSABR:
+        if type(model) == TuringModelBlackScholes or \
+           type(model) == TuringModelSABR:
 
-            if type(model) == FinModelBlackScholes:
+            if type(model) == TuringModelBlackScholes:
                 volatility = model._volatility
-            elif type(model) == FinModelSABR:
+            elif type(model) == TuringModelSABR:
                 volatility = volFunctionSABR(model.alpha,
                                              model.beta,
                                              model.rho,
@@ -422,7 +422,7 @@ class TuringFXVanillaOption():
         S0 = spotFXRate
         K = self._strikeFXRate
 
-        if type(model) == FinModelBlackScholes:
+        if type(model) == TuringModelBlackScholes:
 
             v = model._volatility
 
@@ -511,7 +511,7 @@ class TuringFXVanillaOption():
         K = self._strikeFXRate
         S0 = spotFXRate
 
-        if type(model) == FinModelBlackScholes:
+        if type(model) == TuringModelBlackScholes:
 
             volatility = model._volatility
 
@@ -566,7 +566,7 @@ class TuringFXVanillaOption():
         K = self._strikeFXRate
         S0 = spotFXRate
 
-        if type(model) == FinModelBlackScholes:
+        if type(model) == TuringModelBlackScholes:
 
             volatility = model._volatility
 
@@ -619,7 +619,7 @@ class TuringFXVanillaOption():
         K = self._strikeFXRate
         S0 = spotFXRate
 
-        if type(model) == FinModelBlackScholes:
+        if type(model) == TuringModelBlackScholes:
 
             vol = model._volatility
 
@@ -687,7 +687,7 @@ class TuringFXVanillaOption():
         cannot be priced analytically. This function uses Numpy vectorisation
         for speed of execution.'''
 
-        if isinstance(model, FinModelBlackScholes):
+        if isinstance(model, TuringModelBlackScholes):
             volatility = model._volatility
         else:
             raise TuringError("Model Type invalid")

@@ -9,7 +9,7 @@ sys.path.append("..")
 
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.market.volatility.turing_equity_vol_curve import TuringEquityVolCurve
-from turingmodel.products.equity.turing_equity_variance_swap import FinEquityVarianceSwap
+from turingmodel.products.equity.turing_equity_variance_swap import TuringEquityVarianceSwap
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -31,7 +31,7 @@ def test_FinEquityVarianceSwap():
     tenor = "3M"
     strike = 0.3*0.3
 
-    volSwap = FinEquityVarianceSwap(startDate, tenor, strike)
+    volSwap = TuringEquityVarianceSwap(startDate, tenor, strike)
 
     valuationDate = TuringDate(20, 3, 2018)
     stockPrice = 100.0

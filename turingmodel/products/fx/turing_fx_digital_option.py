@@ -12,7 +12,7 @@ from turingmodel.turingutils.turing_error import TuringError
 # from turingmodel.products.equity.turing_equity_option import FinOption
 from turingmodel.turingutils.turing_date import TuringDate
 #from turingmodel.products.fx.FinFXModelTypes import FinFXModel
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 
@@ -89,7 +89,7 @@ class TuringFXDigitalOption():
         S0 = spotFXRate
         K = self._strikeFXRate
 
-        if type(model) == FinModelBlackScholes:
+        if type(model) == TuringModelBlackScholes:
 
             volatility = model._volatility
             lnS0k = log(S0 / K)

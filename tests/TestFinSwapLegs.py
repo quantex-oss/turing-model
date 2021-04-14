@@ -14,8 +14,8 @@ from turingmodel.turingutils.turing_amount import TuringAmount
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
 from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.products.rates.turing_fixed_leg import FinFixedLeg
-from turingmodel.products.rates.turing_float_leg import FinFloatLeg
+from turingmodel.products.rates.turing_fixed_leg import TuringFixedLeg
+from turingmodel.products.rates.turing_float_leg import TuringFloatLeg
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -40,18 +40,18 @@ def test_FinFixedIborSwapLeg():
     paymentLag = 0
     principal = 0.0
 
-    swapFixedLeg = FinFixedLeg(effectiveDate,
-                               maturityDate,
-                               legPayRecType,
-                               coupon,
-                               freqType,
-                               dayCountType,
-                               notional,
-                               principal,
-                               paymentLag,
-                               calendarType,
-                               busDayAdjustType,
-                               dateGenRuleType)
+    swapFixedLeg = TuringFixedLeg(effectiveDate,
+                                  maturityDate,
+                                  legPayRecType,
+                                  coupon,
+                                  freqType,
+                                  dayCountType,
+                                  notional,
+                                  principal,
+                                  paymentLag,
+                                  calendarType,
+                                  busDayAdjustType,
+                                  dateGenRuleType)
 
 ###############################################################################
 
@@ -71,7 +71,7 @@ def test_FinFixedOISSwapLeg():
     paymentLag = 1
     principal = 0.0
 
-    swapFixedLeg = FinFixedLeg(effectiveDate,
+    swapFixedLeg = TuringFixedLeg(effectiveDate,
                                   maturityDate,
                                   legPayRecType,
                                   coupon,
@@ -102,18 +102,18 @@ def test_FinFloatIborLeg():
     paymentLag = 0
     principal = 0.0
 
-    swapFloatLeg = FinFloatLeg(effectiveDate,
-                               maturityDate,
-                               legPayRecType,
-                               spread,
-                               freqType,
-                               dayCountType,
-                               notional,
-                               principal,
-                               paymentLag,
-                               calendarType,
-                               busDayAdjustType,
-                               dateGenRuleType)
+    swapFloatLeg = TuringFloatLeg(effectiveDate,
+                                  maturityDate,
+                                  legPayRecType,
+                                  spread,
+                                  freqType,
+                                  dayCountType,
+                                  notional,
+                                  principal,
+                                  paymentLag,
+                                  calendarType,
+                                  busDayAdjustType,
+                                  dateGenRuleType)
 
     liborCurve = TuringDiscountCurveFlat(effectiveDate, 0.05)
 
@@ -141,7 +141,7 @@ def test_FinFloatOISLeg():
     paymentLag = 1
     principal = 0.0
 
-    swapFloatLeg = FinFloatLeg(effectiveDate,
+    swapFloatLeg = TuringFloatLeg(effectiveDate,
                                   maturityDate,
                                   legPayRecType,
                                   spread,

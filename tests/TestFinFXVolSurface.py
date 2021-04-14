@@ -6,7 +6,7 @@ import sys
 sys.path.append("..")
 
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.market.volatility.turing_fx_vol_surface import FinFXVolSurface
+from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXVolSurface
 from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
 from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
 from turingmodel.turingutils.turing_date import TuringDate
@@ -57,19 +57,19 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         deltaMethod = TuringFXDeltaMethod.SPOT_DELTA
         volFunctionType = TuringVolFunctionTypes.CLARK
 
-        fxMarket = FinFXVolSurface(valueDate,
-                                   spotFXRate,
-                                   currencyPair,
-                                   notionalCurrency,
-                                   domDiscountCurve,
-                                   forDiscountCurve,
-                                   tenors,
-                                   atmVols,
-                                   marketStrangle25DeltaVols,
-                                   riskReversal25DeltaVols,
-                                   atmMethod,
-                                   deltaMethod, 
-                                   volFunctionType)
+        fxMarket = TuringFXVolSurface(valueDate,
+                                      spotFXRate,
+                                      currencyPair,
+                                      notionalCurrency,
+                                      domDiscountCurve,
+                                      forDiscountCurve,
+                                      tenors,
+                                      atmVols,
+                                      marketStrangle25DeltaVols,
+                                      riskReversal25DeltaVols,
+                                      atmMethod,
+                                      deltaMethod,
+                                      volFunctionType)
 
         fxMarket.checkCalibration(verboseCalibration)
 
@@ -78,7 +78,7 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         #     for deltaMethod in TuringFXDeltaMethod:
         #         for volFunctionType in TuringVolFunctionTypes:
     
-        #             fxMarket = FinFXVolSurface(valueDate,
+        #             fxMarket = TuringFXVolSurface(valueDate,
         #                                        spotFXRate,
         #                                        currencyPair,
         #                                        notionalCurrency,
@@ -137,18 +137,18 @@ def test_FinFXMktVolSurface2(verboseCalibration):
         atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL_PREM_ADJ
         deltaMethod = TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ
 
-        fxMarket = FinFXVolSurface(valueDate,
-                                   spotFXRate,
-                                   currencyPair,
-                                   notionalCurrency,
-                                   domDiscountCurve,
-                                   forDiscountCurve,
-                                   tenors,
-                                   atmVols,
-                                   marketStrangle25DeltaVols,
-                                   riskReversal25DeltaVols,
-                                   atmMethod,
-                                   deltaMethod)
+        fxMarket = TuringFXVolSurface(valueDate,
+                                      spotFXRate,
+                                      currencyPair,
+                                      notionalCurrency,
+                                      domDiscountCurve,
+                                      forDiscountCurve,
+                                      tenors,
+                                      atmVols,
+                                      marketStrangle25DeltaVols,
+                                      riskReversal25DeltaVols,
+                                      atmMethod,
+                                      deltaMethod)
 
         fxMarket.checkCalibration(verboseCalibration)
 
@@ -187,18 +187,18 @@ def test_FinFXMktVolSurface3(verboseCalibration):
         atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
         deltaMethod = TuringFXDeltaMethod.SPOT_DELTA
 
-        fxMarket = FinFXVolSurface(valueDate,
-                                   spotFXRate,
-                                   currencyPair,
-                                   notionalCurrency,
-                                   domDiscountCurve,
-                                   forDiscountCurve,
-                                   tenors,
-                                   atmVols,
-                                   marketStrangle25DeltaVols,
-                                   riskReversal25DeltaVols,
-                                   atmMethod,
-                                   deltaMethod)
+        fxMarket = TuringFXVolSurface(valueDate,
+                                      spotFXRate,
+                                      currencyPair,
+                                      notionalCurrency,
+                                      domDiscountCurve,
+                                      forDiscountCurve,
+                                      tenors,
+                                      atmVols,
+                                      marketStrangle25DeltaVols,
+                                      riskReversal25DeltaVols,
+                                      atmMethod,
+                                      deltaMethod)
 
         fxMarket.checkCalibration(verboseCalibration)
 
@@ -235,18 +235,18 @@ def test_FinFXMktVolSurface4(verboseCalibration):
         atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
         deltaMethod = TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ
 
-        fxMarket = FinFXVolSurface(valueDate,
-                                   spotFXRate,
-                                   currencyPair,
-                                   notionalCurrency,
-                                   domDiscountCurve,
-                                   forDiscountCurve,
-                                   tenors,
-                                   atmVols,
-                                   marketStrangle25DeltaVols,
-                                   riskReversal25DeltaVols,
-                                   atmMethod,
-                                   deltaMethod)
+        fxMarket = TuringFXVolSurface(valueDate,
+                                      spotFXRate,
+                                      currencyPair,
+                                      notionalCurrency,
+                                      domDiscountCurve,
+                                      forDiscountCurve,
+                                      tenors,
+                                      atmVols,
+                                      marketStrangle25DeltaVols,
+                                      riskReversal25DeltaVols,
+                                      atmMethod,
+                                      deltaMethod)
 
         fxMarket.checkCalibration(verboseCalibration)
 

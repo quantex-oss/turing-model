@@ -39,12 +39,12 @@ def calculateD1D2(f, t, k, v):
 
 ###############################################################################
 
-class FinModelBlack():
+class TuringModelBlack():
     ''' Black's Model which prices call and put options in the forward
     measure according to the Black-Scholes equation. '''
 
     def __init__(self, volatility, implementation=0):
-        ''' Create FinModel black using parameters. '''
+        ''' Create TuringModel black using parameters. '''
         self._volatility = volatility
         self._implementation = 0
         self._numSteps = 0

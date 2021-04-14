@@ -8,7 +8,7 @@ from ..turingutils.turing_math import cholesky
 
 ###############################################################################
 
-class FinModel():
+class TuringModel():
     
     def __init__(implementationType,
                  parameterDict: dict):

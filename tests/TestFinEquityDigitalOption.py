@@ -6,8 +6,8 @@ import sys
 sys.path.append("..")
 
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.products.equity.turing_equity_digital_option import TuringEquityDigitalOption, FinDigitalOptionTypes
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.products.equity.turing_equity_digital_option import TuringEquityDigitalOption, TuringDigitalOptionTypes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_date import TuringDate
 
@@ -19,7 +19,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinEquityDigitalOption():
 
-    underlyingType = FinDigitalOptionTypes.CASH_OR_NOTHING
+    underlyingType = TuringDigitalOptionTypes.CASH_OR_NOTHING
 
     valueDate = TuringDate(1, 1, 2015)
     expiryDate = TuringDate(1, 1, 2016)
@@ -30,7 +30,7 @@ def test_FinEquityDigitalOption():
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
     
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     import time
 
     callOptionValues = []

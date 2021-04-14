@@ -8,7 +8,7 @@ import sys
 sys.path.append("..")
 
 from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -33,7 +33,7 @@ def test_FinInterpolatedForwards():
     tDates = curveDate.addYears(tValues)
     tInterpDates = curveDate.addYears(tInterpValues)
 
-    for interpType in FinInterpTypes:
+    for interpType in TuringInterpTypes:
 
         discountCurve = TuringDiscountCurve(curveDate, tDates, dfValues, interpType)
         dfInterpValues = discountCurve.df(tInterpDates)

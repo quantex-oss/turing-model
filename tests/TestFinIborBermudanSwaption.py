@@ -10,13 +10,13 @@ from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 from turingmodel.turingutils.turing_global_types import TuringExerciseTypes
-from turingmodel.products.rates.turing_ibor_swaption import FinIborSwaption
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swaption import TuringIborSwaption
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 
-from turingmodel.products.rates.turing_ibor_bermudan_swaption import FinIborBermudanSwaption
-from turingmodel.models.turing_model_black import FinModelBlack
+from turingmodel.products.rates.turing_ibor_bermudan_swaption import TuringIborBermudanSwaption
+from turingmodel.models.turing_model_black import TuringModelBlack
 from turingmodel.models.turing_model_rates_bk import TuringModelRatesBK
-from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
 from turingmodel.models.turing_model_rates_bdt import TuringModelRatesBDT
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
@@ -44,12 +44,12 @@ def test_FinIborBermudanSwaptionBKModel():
                                          TuringFrequencyTypes.SEMI_ANNUAL,
                                          TuringDayCountTypes.ACT_365F)
 
-    fwdPAYSwap = FinIborSwap(exerciseDate,
-                             swapMaturityDate,
-                             TuringSwapTypes.PAY,
-                             swapFixedCoupon,
-                             swapFixedFrequencyType,
-                             swapFixedDayCountType)
+    fwdPAYSwap = TuringIborSwap(exerciseDate,
+                                swapMaturityDate,
+                                TuringSwapTypes.PAY,
+                                swapFixedCoupon,
+                                swapFixedFrequencyType,
+                                swapFixedDayCountType)
 
     fwdSwapValue = fwdPAYSwap.value(settlementDate, liborCurve, liborCurve)
 
@@ -60,22 +60,22 @@ def test_FinIborBermudanSwaptionBKModel():
 
     # Now we create the European swaptions
     fixedLegType = TuringSwapTypes.PAY
-    europeanSwaptionPay = FinIborSwaption(settlementDate,
-                                           exerciseDate,
-                                           swapMaturityDate,
-                                           fixedLegType,
-                                           swapFixedCoupon,
-                                           swapFixedFrequencyType,
-                                           swapFixedDayCountType)
+    europeanSwaptionPay = TuringIborSwaption(settlementDate,
+                                             exerciseDate,
+                                             swapMaturityDate,
+                                             fixedLegType,
+                                             swapFixedCoupon,
+                                             swapFixedFrequencyType,
+                                             swapFixedDayCountType)
 
     fixedLegType = TuringSwapTypes.RECEIVE
-    europeanSwaptionRec = FinIborSwaption(settlementDate,
-                                           exerciseDate,
-                                           swapMaturityDate,
-                                           fixedLegType,
-                                           swapFixedCoupon,
-                                           swapFixedFrequencyType,
-                                           swapFixedDayCountType)
+    europeanSwaptionRec = TuringIborSwaption(settlementDate,
+                                             exerciseDate,
+                                             swapMaturityDate,
+                                             fixedLegType,
+                                             swapFixedCoupon,
+                                             swapFixedFrequencyType,
+                                             swapFixedDayCountType)
     
     ###########################################################################
     ###########################################################################
@@ -86,7 +86,7 @@ def test_FinIborBermudanSwaptionBKModel():
     ###########################################################################
 
     testCases.banner("======= ZERO VOLATILITY ========")
-    model = FinModelBlack(0.0000001)
+    model = TuringModelBlack(0.0000001)
     testCases.print("Black Model", model._volatility)
 
     valuePay = europeanSwaptionPay.value(settlementDate, liborCurve, model)
@@ -100,7 +100,7 @@ def test_FinIborBermudanSwaptionBKModel():
 
     testCases.banner("======= 20%% BLACK VOLATILITY ========")
 
-    model = FinModelBlack(0.20)
+    model = TuringModelBlack(0.20)
     testCases.print("Black Model", model._volatility)
 
     valuePay = europeanSwaptionPay.value(settlementDate, liborCurve, model)
@@ -168,26 +168,26 @@ def test_FinIborBermudanSwaptionBKModel():
     fixedLegType = TuringSwapTypes.PAY
     exerciseType = TuringExerciseTypes.EUROPEAN
 
-    bermudanSwaptionPay = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionPay = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
 
     fixedLegType = TuringSwapTypes.RECEIVE
     exerciseType = TuringExerciseTypes.EUROPEAN
 
-    bermudanSwaptionRec = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionRec = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
    
     testCases.banner("======= 0% VOLATILITY BERMUDAN SWAPTION EUROPEAN EXERCISE BK MODEL ========")
 
@@ -230,26 +230,26 @@ def test_FinIborBermudanSwaptionBKModel():
     fixedLegType = TuringSwapTypes.PAY
     exerciseType = TuringExerciseTypes.BERMUDAN
 
-    bermudanSwaptionPay = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionPay = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
 
     fixedLegType = TuringSwapTypes.RECEIVE
     exerciseType = TuringExerciseTypes.BERMUDAN
 
-    bermudanSwaptionRec = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionRec = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
 
     testCases.banner("======= ZERO VOLATILITY BERMUDAN SWAPTION BERMUDAN EXERCISE BK MODEL ========")
 
@@ -339,24 +339,24 @@ def test_FinIborBermudanSwaptionBKModel():
     fixedLegType = TuringSwapTypes.PAY
     exerciseType = TuringExerciseTypes.EUROPEAN
 
-    bermudanSwaptionPay = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionPay = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
 
     fixedLegType = TuringSwapTypes.RECEIVE
-    bermudanSwaptionRec = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionRec = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
    
     testCases.banner("======= 0% VOLATILITY BERMUDAN SWAPTION EUROPEAN EXERCISE BDT MODEL ========")
 
@@ -397,24 +397,24 @@ def test_FinIborBermudanSwaptionBKModel():
     fixedLegType = TuringSwapTypes.PAY
     exerciseType = TuringExerciseTypes.BERMUDAN
 
-    bermudanSwaptionPay = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionPay = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
 
     fixedLegType = TuringSwapTypes.RECEIVE
-    bermudanSwaptionRec = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionRec = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
 
     testCases.banner("======= ZERO VOLATILITY BERMUDAN SWAPTION BERMUDAN EXERCISE BDT MODEL ========")
 
@@ -469,7 +469,7 @@ def test_FinIborBermudanSwaptionBKModel():
     sigma = 0.0000001
     a = 0.1
     numTimeSteps = 200
-    model = FinModelRatesHW(sigma, a, numTimeSteps)
+    model = TuringModelRatesHW(sigma, a, numTimeSteps)
 
     valuePay = europeanSwaptionPay.value(valuationDate, liborCurve, model)
     testCases.print("EUROPEAN HW PAY VALUE:", valuePay)
@@ -485,7 +485,7 @@ def test_FinIborBermudanSwaptionBKModel():
     # Used BK with constant short-rate volatility
     sigma = 0.01
     a = 0.01
-    model = FinModelRatesHW(sigma, a, numTimeSteps)
+    model = TuringModelRatesHW(sigma, a, numTimeSteps)
 
     testCases.banner("HW MODEL SWAPTION CLASS EUROPEAN EXERCISE")
 
@@ -504,29 +504,29 @@ def test_FinIborBermudanSwaptionBKModel():
     fixedLegType = TuringSwapTypes.PAY
     exerciseType = TuringExerciseTypes.EUROPEAN
 
-    bermudanSwaptionPay = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionPay = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
 
     fixedLegType = TuringSwapTypes.RECEIVE
-    bermudanSwaptionRec = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionRec = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
    
     testCases.banner("======= 0% VOLATILITY BERMUDAN SWAPTION EUROPEAN EXERCISE HW MODEL ========")
 
     sigma = 0.000001
-    model = FinModelRatesHW(sigma, a, numTimeSteps)
+    model = TuringModelRatesHW(sigma, a, numTimeSteps)
 
     testCases.banner("BK MODEL BERMUDAN SWAPTION CLASS EUROPEAN EXERCISE")
     valuePay = bermudanSwaptionPay.value(valuationDate, liborCurve, model)
@@ -542,7 +542,7 @@ def test_FinIborBermudanSwaptionBKModel():
 
     # Used BK with constant short-rate volatility
     sigma = 0.01
-    model = FinModelRatesHW(sigma, a, numTimeSteps)
+    model = TuringModelRatesHW(sigma, a, numTimeSteps)
 
     testCases.banner("BDT MODEL BERMUDAN SWAPTION CLASS EUROPEAN EXERCISE")
     valuePay = bermudanSwaptionPay.value(valuationDate, liborCurve, model)
@@ -561,31 +561,31 @@ def test_FinIborBermudanSwaptionBKModel():
     fixedLegType = TuringSwapTypes.PAY
     exerciseType = TuringExerciseTypes.BERMUDAN
 
-    bermudanSwaptionPay = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionPay = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
 
     fixedLegType = TuringSwapTypes.RECEIVE
-    bermudanSwaptionRec = FinIborBermudanSwaption(settlementDate,
-                                                   exerciseDate,
-                                                   swapMaturityDate,
-                                                   fixedLegType,
-                                                   exerciseType,
-                                                   swapFixedCoupon,
-                                                   swapFixedFrequencyType,
-                                                   swapFixedDayCountType)
+    bermudanSwaptionRec = TuringIborBermudanSwaption(settlementDate,
+                                                     exerciseDate,
+                                                     swapMaturityDate,
+                                                     fixedLegType,
+                                                     exerciseType,
+                                                     swapFixedCoupon,
+                                                     swapFixedFrequencyType,
+                                                     swapFixedDayCountType)
 
     testCases.banner("======= ZERO VOLATILITY BERMUDAN SWAPTION BERMUDAN EXERCISE HW MODEL ========")
 
     # Used BK with constant short-rate volatility
     sigma = 0.000001
     a = 0.01
-    model = FinModelRatesHW(sigma, a, numTimeSteps)
+    model = TuringModelRatesHW(sigma, a, numTimeSteps)
 
     testCases.banner("HW MODEL BERMUDAN SWAPTION CLASS BERMUDAN EXERCISE")
     valuePay = bermudanSwaptionPay.value(valuationDate, liborCurve, model)
@@ -602,7 +602,7 @@ def test_FinIborBermudanSwaptionBKModel():
     # Used BK with constant short-rate volatility
     sigma = 0.01
     a = 0.01
-    model = FinModelRatesHW(sigma, a, numTimeSteps)
+    model = TuringModelRatesHW(sigma, a, numTimeSteps)
 
     testCases.banner("HW MODEL BERMUDAN SWAPTION CLASS BERMUDAN EXERCISE")
     valuePay = bermudanSwaptionPay.value(valuationDate, liborCurve, model)

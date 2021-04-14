@@ -19,7 +19,7 @@ from turingmodel.products.fx.turing_fx_mkt_conventions import TuringFXDeltaMetho
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes, labelToString
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 
 from turingmodel.models.turing_model_volatility_fns import volFunctionClark
 from turingmodel.models.turing_model_volatility_fns import volFunctionBloomberg
@@ -374,7 +374,7 @@ def solveForStrike(spotFXRate,
 ###############################################################################
 
 
-class FinFXVolSurface():
+class TuringFXVolSurface():
     ''' Class to perform a calibration of a chosen parametrised surface to the
     prices of FX options at different strikes and expiry tenors. The 
     calibration inputs are the ATM and 25 Delta volatilities given in terms of
@@ -395,7 +395,7 @@ class FinFXVolSurface():
                  atmMethod:TuringFXATMMethod=TuringFXATMMethod.FWD_DELTA_NEUTRAL,
                  deltaMethod:TuringFXDeltaMethod=TuringFXDeltaMethod.SPOT_DELTA,
                  volatilityFunctionType:TuringVolFunctionTypes=TuringVolFunctionTypes.CLARK):
-        ''' Create the FinFXVolSurface object by passing in market vol data
+        ''' Create the TuringFXVolSurface object by passing in market vol data
         for ATM and 25 Delta Market Strangles and Risk Reversals. '''
 
         checkArgumentTypes(self.__init__, locals())
@@ -798,7 +798,7 @@ class FinFXVolSurface():
             call._strikeFXRate = self._K_ATM[i]
             put._strikeFXRate = self._K_ATM[i]
 
-            model = FinModelBlackScholes(sigma_ATM_out)
+            model = TuringModelBlackScholes(sigma_ATM_out)
 
             delta_call = call.delta(self._valueDate,
                                     self._spotFXRate,
@@ -833,7 +833,7 @@ class FinFXVolSurface():
             call._strikeFXRate = self._K_25D_C_MS[i]
             put._strikeFXRate = self._K_25D_P_MS[i]
 
-            model = FinModelBlackScholes(msVol)
+            model = TuringModelBlackScholes(msVol)
 
             delta_call = call.delta(self._valueDate,
                                     self._spotFXRate,
@@ -884,7 +884,7 @@ class FinFXVolSurface():
                                             self._K_25D_C_MS[i],
                                             self._texp[i])
  
-            model = FinModelBlackScholes(sigma_K_25D_C_MS)
+            model = TuringModelBlackScholes(sigma_K_25D_C_MS)
             call_value = call.value(self._valueDate,
                                     self._spotFXRate,
                                     self._domDiscountCurve,
@@ -906,7 +906,7 @@ class FinFXVolSurface():
                                             self._texp[i])
 
         
-            model = FinModelBlackScholes(sigma_K_25D_P_MS)
+            model = TuringModelBlackScholes(sigma_K_25D_P_MS)
             put_value = put.value(self._valueDate,
                                   self._spotFXRate,
                                   self._domDiscountCurve,
@@ -950,7 +950,7 @@ class FinFXVolSurface():
                                             self._K_25D_C[i],
                                             self._texp[i])
  
-            model = FinModelBlackScholes(sigma_K_25D_C)
+            model = TuringModelBlackScholes(sigma_K_25D_C)
 
             # THIS DELTA SHOULD BE +0.25
             delta_call = call.delta(self._valueDate,
@@ -965,7 +965,7 @@ class FinFXVolSurface():
                                             self._K_25D_P[i],
                                             self._texp[i])
 
-            model = FinModelBlackScholes(sigma_K_25D_P)
+            model = TuringModelBlackScholes(sigma_K_25D_P)
 
             # THIS DELTA SHOULD BE -0.25
             delta_put = put.delta(self._valueDate,

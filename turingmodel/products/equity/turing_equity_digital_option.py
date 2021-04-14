@@ -21,7 +21,7 @@ from turingmodel.turingutils.turing_math import NVect
 ###############################################################################
 
 
-class FinDigitalOptionTypes(Enum):
+class TuringDigitalOptionTypes(Enum):
     CASH_OR_NOTHING = 1,
     ASSET_OR_NOTHING = 2
 
@@ -40,7 +40,7 @@ class TuringEquityDigitalOption(TuringEquityOption):
                  expiryDate: TuringDate,
                  barrierPrice: float,
                  optionType: TuringOptionTypes,
-                 underlyingType: FinDigitalOptionTypes):
+                 underlyingType: TuringDigitalOptionTypes):
         ''' Create the digital option by specifying the expiry date, the
         barrier price and the type of option which is either a EUROPEAN_CALL
         or a EUROPEAN_PUT or an AMERICAN_CALL or AMERICAN_PUT. There are two
@@ -95,12 +95,12 @@ class TuringEquityDigitalOption(TuringEquityOption):
         d1 = d1 / volatility / sqrtT
         d2 = d1 - volatility * sqrtT
 
-        if self._underlyingType == FinDigitalOptionTypes.CASH_OR_NOTHING:
+        if self._underlyingType == TuringDigitalOptionTypes.CASH_OR_NOTHING:
             if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
                 v = np.exp(-r * t) * NVect(d2)
             elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
                 v = np.exp(-r * t) * NVect(-d2)
-        elif self._underlyingType == FinDigitalOptionTypes.ASSET_OR_NOTHING:
+        elif self._underlyingType == TuringDigitalOptionTypes.ASSET_OR_NOTHING:
             if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
                 v = S0 * np.exp(-q * t) * NVect(d1)
             elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
@@ -144,14 +144,14 @@ class TuringEquityDigitalOption(TuringEquityOption):
         s_1 = s * m
         s_2 = s / m
 
-        if self._underlyingType == FinDigitalOptionTypes.CASH_OR_NOTHING:
+        if self._underlyingType == TuringDigitalOptionTypes.CASH_OR_NOTHING:
             if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
                 payoff_a_1 = np.heaviside(s_1 - K, 0.0)
                 payoff_a_2 = np.heaviside(s_2 - K, 0.0)
             elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
                 payoff_a_1 = np.heaviside(K - s_1, 0.0)
                 payoff_a_2 = np.heaviside(K - s_2, 0.0)
-        elif self._underlyingType == FinDigitalOptionTypes.ASSET_OR_NOTHING:
+        elif self._underlyingType == TuringDigitalOptionTypes.ASSET_OR_NOTHING:
             if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
                 payoff_a_1 = s_1 * np.heaviside(s_1 - K, 0.0)
                 payoff_a_2 = s_2 * np.heaviside(s_2 - K, 0.0)

@@ -10,7 +10,7 @@ sys.path.append("..")
 
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.turingutils.turing_math import scale
 
@@ -33,7 +33,7 @@ def test_FinDiscountCurve():
     dfs = np.exp(-rate * years)
     dates = startDate.addYears(years)
 
-    curve = TuringDiscountCurve(startDate, dates, dfs, FinInterpTypes.FLAT_FWD_RATES)
+    curve = TuringDiscountCurve(startDate, dates, dfs, TuringInterpTypes.FLAT_FWD_RATES)
 
     testCases.header("T", "DF", "ZERORATE", "CC_FWD", "MM_FWD", "SURVPROB")
 
@@ -63,7 +63,7 @@ def test_FinDiscountCurve():
 
     # Examine dependency of fwd curve on the interpolation scheme
 
-    for interp in FinInterpTypes:
+    for interp in TuringInterpTypes:
 
         curve = TuringDiscountCurve(startDate, dates, dfs, interp)
         fwdRates = curve.fwd(plotDates)

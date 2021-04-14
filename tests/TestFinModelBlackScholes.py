@@ -12,10 +12,10 @@ from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholesTypes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholesTypes
 
-from turingmodel.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
+from turingmodel.products.equity.turing_equity_vanilla_option import TuringEquityVanillaOption
 from turingmodel.products.equity.turing_equity_american_option import TuringEquityAmericanOption
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -45,8 +45,8 @@ def testFinModelBlackScholes():
     ameuOption = TuringEquityAmericanOption(expiryDate, strikePrice,
                                             euOptionType)
     
-    euOption = FinEquityVanillaOption(expiryDate, strikePrice,
-                                      euOptionType)
+    euOption = TuringEquityVanillaOption(expiryDate, strikePrice,
+                                         euOptionType)
     
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate,
                                             TuringFrequencyTypes.CONTINUOUS,
@@ -58,16 +58,16 @@ def testFinModelBlackScholes():
     
     numStepsPerYear = 400
     
-    modelTree = FinModelBlackScholes(volatility, 
-                                     FinModelBlackScholesTypes.CRR_TREE, 
-                                     numStepsPerYear)
+    modelTree = TuringModelBlackScholes(volatility,
+                                        TuringModelBlackScholesTypes.CRR_TREE,
+                                        numStepsPerYear)
     
     v = amOption.value(valueDate, stockPrice, discountCurve, 
                            dividendCurve, modelTree)
 #    print(v)
 
-    modelApprox = FinModelBlackScholes(volatility, 
-                                       FinModelBlackScholesTypes.BARONE_ADESI)
+    modelApprox = TuringModelBlackScholes(volatility,
+                                          TuringModelBlackScholesTypes.BARONE_ADESI)
 
     v = amOption.value(valueDate, stockPrice, discountCurve, 
                        dividendCurve, modelApprox)
@@ -94,15 +94,15 @@ def testFinModelBlackScholes():
     
     # for numSteps in numStepsPerYear:
 
-    #     modelTree = FinModelBlackScholes(volatility,
-    #                                      FinModelBlackScholesTypes.CRR_TREE,
+    #     modelTree = TuringModelBlackScholes(volatility,
+    #                                      TuringModelBlackScholesTypes.CRR_TREE,
     #                                      {'numStepsPerYear':numSteps})
 
-    #     modelAnal = FinModelBlackScholes(volatility, 
-    #                                      FinModelBlackScholesTypes.ANALYTICAL)
+    #     modelAnal = TuringModelBlackScholes(volatility,
+    #                                      TuringModelBlackScholesTypes.ANALYTICAL)
 
-    #     modelBAW = FinModelBlackScholes(volatility, 
-    #                                     FinModelBlackScholesTypes.BARONE_ADESI)
+    #     modelBAW = TuringModelBlackScholes(volatility,
+    #                                     TuringModelBlackScholesTypes.BARONE_ADESI)
 
 
     #     v_am = amOption.value(valueDate, stockPrice, discountCurve, 

@@ -8,12 +8,12 @@ from math import ceil
 
 from ..turingutils.turing_error import TuringError
 from ..turingutils.turing_math import accruedInterpolator
-from ..market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
+from ..market.curves.turing_interpolator import TuringInterpTypes, _uinterpolate
 from ..turingutils.turing_helper_functions import labelToString
 from ..turingutils.turing_global_types import TuringExerciseTypes
 from ..turingutils.turing_global_variables import gSmall
 
-interp = FinInterpTypes.FLAT_FWD_RATES.value
+interp = TuringInterpTypes.FLAT_FWD_RATES.value
 
 ###############################################################################
 # TODO : Calculate accrued in bond option according to accrual convention
@@ -906,7 +906,7 @@ class TuringModelRatesBK():
         if isinstance(dfValues, np.ndarray) is False:
             raise TuringError("DF VALUES must be a numpy vector")
 
-        interp = FinInterpTypes.FLAT_FWD_RATES.value
+        interp = TuringInterpTypes.FLAT_FWD_RATES.value
 
         treeMaturity = tmat * (self._numTimeSteps+1)/self._numTimeSteps
         treeTimes = np.linspace(0.0, treeMaturity, self._numTimeSteps + 2)

@@ -152,7 +152,7 @@ def volFunctionSABR_BETA_HALF(params, f, k, t):
 
 ###############################################################################
 
-class FinModelSABR():
+class TuringModelSABR():
     ''' SABR - Stochastic alpha beta rho model by Hagan et al. which is a 
     stochastic volatility model where alpha controls the implied volatility,
     beta is the exponent on the the underlying asset's process so beta = 0
@@ -160,7 +160,7 @@ class FinModelSABR():
     underlying and the volatility process. '''
 
     def __init__(self, alpha, beta, rho, nu):
-        ''' Create FinModelSABR with all of the model parameters. We will 
+        ''' Create TuringModelSABR with all of the model parameters. We will
         also provide functions below to assist with the calibration of the 
         value of alpha. '''
 

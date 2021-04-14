@@ -8,7 +8,7 @@ sys.path.append("..")
 import numpy as np
 
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.market.volatility.turing_swaption_vol_surface import FinSwaptionVolSurface
+from turingmodel.market.volatility.turing_swaption_vol_surface import TuringSwaptionVolSurface
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
@@ -74,12 +74,12 @@ def test_FinSwaptionVolSurface1(verboseCalibration):
 
         volFunctionType = TuringVolFunctionTypes.SABR_BETA_HALF
 
-        swaptionSurface = FinSwaptionVolSurface(valueDate,
-                                                exerciseDates,
-                                                fwdSwapRates,
-                                                marketStrikes,
-                                                marketVolatilities,
-                                                volFunctionType)
+        swaptionSurface = TuringSwaptionVolSurface(valueDate,
+                                                   exerciseDates,
+                                                   fwdSwapRates,
+                                                   marketStrikes,
+                                                   marketVolatilities,
+                                                   volFunctionType)
 
         tol = 1e-4
         swaptionSurface.checkCalibration(False, tol)

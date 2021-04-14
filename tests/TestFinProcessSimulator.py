@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.models.turing_process_simulator import FinVasicekNumericalScheme
-from turingmodel.models.turing_process_simulator import FinCIRNumericalScheme
-from turingmodel.models.turing_process_simulator import FinHestonNumericalScheme
-from turingmodel.models.turing_process_simulator import FinGBMNumericalScheme
-from turingmodel.models.turing_process_simulator import FinProcessTypes
-from turingmodel.models.turing_process_simulator import FinProcessSimulator
+from turingmodel.models.turing_process_simulator import TuringVasicekNumericalScheme
+from turingmodel.models.turing_process_simulator import TuringCIRNumericalScheme
+from turingmodel.models.turing_process_simulator import TuringHestonNumericalScheme
+from turingmodel.models.turing_process_simulator import TuringGBMNumericalScheme
+from turingmodel.models.turing_process_simulator import TuringProcessTypes
+from turingmodel.models.turing_process_simulator import TuringProcessSimulator
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)
@@ -26,7 +26,7 @@ def test_FinProcessSimulator():
     numAnnSteps = 100
     seed = 1919
     t = 1.0
-    modelSim = FinProcessSimulator()
+    modelSim = TuringProcessSimulator()
     printPaths = False
 
     testCases.banner(
@@ -34,11 +34,11 @@ def test_FinProcessSimulator():
     sigma = 0.10
     stockPrice = 100.0
     drift = 0.04
-    scheme = FinGBMNumericalScheme.NORMAL
+    scheme = TuringGBMNumericalScheme.NORMAL
     modelParams = (stockPrice, drift, sigma, scheme)
     start = time.time()
     paths = modelSim.getProcess(
-        FinProcessTypes.GBM,
+        TuringProcessTypes.GBM,
         t,
         modelParams,
         numAnnSteps,
@@ -56,11 +56,11 @@ def test_FinProcessSimulator():
     sigma = 0.10
     stockPrice = 100.0
     drift = 0.04
-    scheme = FinGBMNumericalScheme.ANTITHETIC
+    scheme = TuringGBMNumericalScheme.ANTITHETIC
     modelParams = (stockPrice, drift, sigma, scheme)
     start = time.time()
     paths = modelSim.getProcess(
-        FinProcessTypes.GBM,
+        TuringProcessTypes.GBM,
         t,
         modelParams,
         numAnnSteps,
@@ -80,11 +80,11 @@ def test_FinProcessSimulator():
     theta = 0.05
     sigma = 0.90
     rho = -0.9
-    scheme = FinHestonNumericalScheme.EULER
+    scheme = TuringHestonNumericalScheme.EULER
     modelParams = (stockPrice, drift, v0, kappa, theta, sigma, rho, scheme)
     start = time.time()
     paths = modelSim.getProcess(
-        FinProcessTypes.HESTON,
+        TuringProcessTypes.HESTON,
         t,
         modelParams,
         numAnnSteps,
@@ -104,11 +104,11 @@ def test_FinProcessSimulator():
     theta = 0.05
     sigma = 0.90
     rho = -0.9
-    scheme = FinHestonNumericalScheme.EULERLOG
+    scheme = TuringHestonNumericalScheme.EULERLOG
     modelParams = (stockPrice, drift, v0, kappa, theta, sigma, rho, scheme)
     start = time.time()
     paths = modelSim.getProcess(
-        FinProcessTypes.HESTON,
+        TuringProcessTypes.HESTON,
         t,
         modelParams,
         numAnnSteps,
@@ -128,11 +128,11 @@ def test_FinProcessSimulator():
     theta = 0.05
     sigma = 0.90
     rho = -0.9
-    scheme = FinHestonNumericalScheme.QUADEXP
+    scheme = TuringHestonNumericalScheme.QUADEXP
     modelParams = (stockPrice, drift, v0, kappa, theta, sigma, rho, scheme)
     start = time.time()
     paths = modelSim.getProcess(
-        FinProcessTypes.HESTON,
+        TuringProcessTypes.HESTON,
         t,
         modelParams,
         numAnnSteps,
@@ -150,11 +150,11 @@ def test_FinProcessSimulator():
     kappa = 0.50
     theta = 0.05
     sigma = 0.90
-    scheme = FinVasicekNumericalScheme.NORMAL
+    scheme = TuringVasicekNumericalScheme.NORMAL
     modelParams = (r0, kappa, theta, sigma, scheme)
     start = time.time()
     paths = modelSim.getProcess(
-        FinProcessTypes.VASICEK,
+        TuringProcessTypes.VASICEK,
         t,
         modelParams,
         numAnnSteps,
@@ -172,11 +172,11 @@ def test_FinProcessSimulator():
     kappa = 0.50
     theta = 0.05
     sigma = 0.90
-    scheme = FinVasicekNumericalScheme.ANTITHETIC
+    scheme = TuringVasicekNumericalScheme.ANTITHETIC
     modelParams = (r0, kappa, theta, sigma, scheme)
     start = time.time()
     paths = modelSim.getProcess(
-        FinProcessTypes.VASICEK,
+        TuringProcessTypes.VASICEK,
         t,
         modelParams,
         numAnnSteps,
@@ -194,11 +194,11 @@ def test_FinProcessSimulator():
     kappa = 0.50
     theta = 0.05
     sigma = 0.90
-    scheme = FinCIRNumericalScheme.MILSTEIN
+    scheme = TuringCIRNumericalScheme.MILSTEIN
     modelParams = (r0, kappa, theta, sigma, scheme)
     start = time.time()
     paths = modelSim.getProcess(
-        FinProcessTypes.CIR,
+        TuringProcessTypes.CIR,
         t,
         modelParams,
         numAnnSteps,

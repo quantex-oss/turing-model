@@ -8,13 +8,13 @@ import time
 import sys
 sys.path.append("..")
 
-from turingmodel.products.credit.turing_cds_tranche import FinLossDistributionBuilder
+from turingmodel.products.credit.turing_cds_tranche import TuringLossDistributionBuilder
 from turingmodel.products.credit.turing_cds_index_portfolio import TuringCDSIndexPortfolio
-from turingmodel.products.credit.turing_cds_tranche import FinCDSTranche
-from turingmodel.products.credit.turing_cds import FinCDS
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.credit.turing_cds_tranche import TuringCDSTranche
+from turingmodel.products.credit.turing_cds import TuringCDS
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from turingmodel.products.credit.turing_cds_curve import FinCDSCurve
+from turingmodel.products.credit.turing_cds_curve import TuringCDSCurve
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_date import TuringDate
@@ -44,7 +44,7 @@ def buildIborCurve(tradeDate):
     settlementDate = valuationDate
 
     maturityDate = settlementDate.addMonths(12)
-    swap1 = FinIborSwap(
+    swap1 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -54,7 +54,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap1)
 
     maturityDate = settlementDate.addMonths(24)
-    swap2 = FinIborSwap(
+    swap2 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -64,7 +64,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap2)
 
     maturityDate = settlementDate.addMonths(36)
-    swap3 = FinIborSwap(
+    swap3 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -74,7 +74,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap3)
 
     maturityDate = settlementDate.addMonths(48)
-    swap4 = FinIborSwap(
+    swap4 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -84,7 +84,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap4)
 
     maturityDate = settlementDate.addMonths(60)
-    swap5 = FinIborSwap(
+    swap5 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -113,17 +113,17 @@ def loadHomogeneousCDSCurves(valuationDate,
 
     recoveryRate = 0.40
 
-    cds3Y = FinCDS(valuationDate, maturity3Y, cdsSpread3Y)
-    cds5Y = FinCDS(valuationDate, maturity5Y, cdsSpread5Y)
-    cds7Y = FinCDS(valuationDate, maturity7Y, cdsSpread7Y)
-    cds10Y = FinCDS(valuationDate, maturity10Y, cdsSpread10Y)
+    cds3Y = TuringCDS(valuationDate, maturity3Y, cdsSpread3Y)
+    cds5Y = TuringCDS(valuationDate, maturity5Y, cdsSpread5Y)
+    cds7Y = TuringCDS(valuationDate, maturity7Y, cdsSpread7Y)
+    cds10Y = TuringCDS(valuationDate, maturity10Y, cdsSpread10Y)
 
     contracts = [cds3Y, cds5Y, cds7Y, cds10Y]
 
-    issuerCurve = FinCDSCurve(valuationDate,
-                              contracts,
-                              liborCurve,
-                              recoveryRate)
+    issuerCurve = TuringCDSCurve(valuationDate,
+                                 contracts,
+                                 liborCurve,
+                                 recoveryRate)
 
     issuerCurves = []
     for _ in range(0, numCredits):
@@ -155,16 +155,16 @@ def loadHeterogeneousSpreadCurves(valuationDate, liborCurve):
         spd10Y = float(splitRow[4]) / 10000.0
         recoveryRate = float(splitRow[5])
 
-        cds3Y = FinCDS(valuationDate, maturity3Y, spd3Y)
-        cds5Y = FinCDS(valuationDate, maturity5Y, spd5Y)
-        cds7Y = FinCDS(valuationDate, maturity7Y, spd7Y)
-        cds10Y = FinCDS(valuationDate, maturity10Y, spd10Y)
+        cds3Y = TuringCDS(valuationDate, maturity3Y, spd3Y)
+        cds5Y = TuringCDS(valuationDate, maturity5Y, spd5Y)
+        cds7Y = TuringCDS(valuationDate, maturity7Y, spd7Y)
+        cds10Y = TuringCDS(valuationDate, maturity10Y, spd10Y)
         cdsContracts = [cds3Y, cds5Y, cds7Y, cds10Y]
 
-        issuerCurve = FinCDSCurve(valuationDate,
-                                  cdsContracts,
-                                  liborCurve,
-                                  recoveryRate)
+        issuerCurve = TuringCDSCurve(valuationDate,
+                                     cdsContracts,
+                                     liborCurve,
+                                     recoveryRate)
 
         issuerCurves.append(issuerCurve)
 
@@ -187,13 +187,13 @@ def test_FinCDSTranche():
     liborCurve = buildIborCurve(tradeDate)
 
     trancheMaturity = TuringDate(20, 12, 2011)
-    tranche1 = FinCDSTranche(valuationDate, trancheMaturity, 0.00, 0.03)
-    tranche2 = FinCDSTranche(valuationDate, trancheMaturity, 0.03, 0.06)
-    tranche3 = FinCDSTranche(valuationDate, trancheMaturity, 0.06, 0.09)
-    tranche4 = FinCDSTranche(valuationDate, trancheMaturity, 0.09, 0.12)
-    tranche5 = FinCDSTranche(valuationDate, trancheMaturity, 0.12, 0.22)
-    tranche6 = FinCDSTranche(valuationDate, trancheMaturity, 0.22, 0.60)
-    tranche7 = FinCDSTranche(valuationDate, trancheMaturity, 0.00, 0.60)
+    tranche1 = TuringCDSTranche(valuationDate, trancheMaturity, 0.00, 0.03)
+    tranche2 = TuringCDSTranche(valuationDate, trancheMaturity, 0.03, 0.06)
+    tranche3 = TuringCDSTranche(valuationDate, trancheMaturity, 0.06, 0.09)
+    tranche4 = TuringCDSTranche(valuationDate, trancheMaturity, 0.09, 0.12)
+    tranche5 = TuringCDSTranche(valuationDate, trancheMaturity, 0.12, 0.22)
+    tranche6 = TuringCDSTranche(valuationDate, trancheMaturity, 0.22, 0.60)
+    tranche7 = TuringCDSTranche(valuationDate, trancheMaturity, 0.00, 0.60)
     tranches = [
         tranche1,
         tranche2,
@@ -244,7 +244,7 @@ def test_FinCDSTranche():
 
     testCases.header("METHOD", "TIME", "NumPoints", "K1", "K2", "Sprd")
 
-    for method in FinLossDistributionBuilder:
+    for method in TuringLossDistributionBuilder:
         for tranche in tranches:
             for numPoints in [40]:
                 start = time.time()
@@ -291,7 +291,7 @@ def test_FinCDSTranche():
 
     testCases.header("METHOD", "TIME", "NumPoints", "K1", "K2", "Sprd")
 
-    for method in FinLossDistributionBuilder:
+    for method in TuringLossDistributionBuilder:
         for tranche in tranches:
             for numPoints in [40]:
                 start = time.time()

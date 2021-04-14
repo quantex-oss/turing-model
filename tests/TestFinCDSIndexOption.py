@@ -11,10 +11,10 @@ sys.path.append("..")
 
 from turingmodel.products.credit.turing_cds_index_portfolio import TuringCDSIndexPortfolio
 from turingmodel.products.credit.turing_cds_index_option import TuringCDSIndexOption
-from turingmodel.products.credit.turing_cds import FinCDS
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.credit.turing_cds import TuringCDS
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from turingmodel.products.credit.turing_cds_curve import FinCDSCurve
+from turingmodel.products.credit.turing_cds_curve import TuringCDSCurve
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_date import TuringDate
@@ -46,7 +46,7 @@ def buildIborCurve(tradeDate):
     settlementDate = valuationDate
 
     maturityDate = settlementDate.addMonths(12)
-    swap1 = FinIborSwap(
+    swap1 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -56,7 +56,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap1)
 
     maturityDate = settlementDate.addMonths(24)
-    swap2 = FinIborSwap(
+    swap2 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -66,7 +66,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap2)
 
     maturityDate = settlementDate.addMonths(36)
-    swap3 = FinIborSwap(
+    swap3 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -76,7 +76,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap3)
 
     maturityDate = settlementDate.addMonths(48)
-    swap4 = FinIborSwap(
+    swap4 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -86,7 +86,7 @@ def buildIborCurve(tradeDate):
     swaps.append(swap4)
 
     maturityDate = settlementDate.addMonths(60)
-    swap5 = FinIborSwap(
+    swap5 = TuringIborSwap(
         settlementDate,
         maturityDate,
         TuringSwapTypes.PAY,
@@ -109,13 +109,13 @@ def buildFlatIssuerCurve(tradeDate, liborCurve, spread, recoveryRate):
     cdsMarketContracts = []
 
     maturityDate = TuringDate(29, 6, 2010)
-    cds = FinCDS(valuationDate, maturityDate, spread)
+    cds = TuringCDS(valuationDate, maturityDate, spread)
     cdsMarketContracts.append(cds)
 
-    issuerCurve = FinCDSCurve(valuationDate,
-                              cdsMarketContracts,
-                              liborCurve,
-                              recoveryRate)
+    issuerCurve = TuringCDSCurve(valuationDate,
+                                 cdsMarketContracts,
+                                 liborCurve,
+                                 recoveryRate)
 
     return issuerCurve
 
@@ -151,16 +151,16 @@ def test_fullPriceCDSIndexOption():
         spd10Y = float(splitRow[4]) / 10000.0
         recoveryRate = float(splitRow[5])
 
-        cds3Y = FinCDS(stepInDate, maturity3Y, spd3Y)
-        cds5Y = FinCDS(stepInDate, maturity5Y, spd5Y)
-        cds7Y = FinCDS(stepInDate, maturity7Y, spd7Y)
-        cds10Y = FinCDS(stepInDate, maturity10Y, spd10Y)
+        cds3Y = TuringCDS(stepInDate, maturity3Y, spd3Y)
+        cds5Y = TuringCDS(stepInDate, maturity5Y, spd5Y)
+        cds7Y = TuringCDS(stepInDate, maturity7Y, spd7Y)
+        cds10Y = TuringCDS(stepInDate, maturity10Y, spd10Y)
         cdsContracts = [cds3Y, cds5Y, cds7Y, cds10Y]
 
-        issuerCurve = FinCDSCurve(valuationDate,
-                                  cdsContracts,
-                                  liborCurve,
-                                  recoveryRate)
+        issuerCurve = TuringCDSCurve(valuationDate,
+                                     cdsContracts,
+                                     liborCurve,
+                                     recoveryRate)
 
         issuerCurves.append(issuerCurve)
 
@@ -202,11 +202,11 @@ def test_fullPriceCDSIndexOption():
 
         cdsContracts = []
         for dt in indexMaturityDates:
-            cds = FinCDS(valuationDate, dt, index / 10000.0)
+            cds = TuringCDS(valuationDate, dt, index / 10000.0)
             cdsContracts.append(cds)
 
-        indexCurve = FinCDSCurve(valuationDate, cdsContracts,
-                                 liborCurve, indexRecovery)
+        indexCurve = TuringCDSCurve(valuationDate, cdsContracts,
+                                    liborCurve, indexRecovery)
 
         if 1 == 1:
 

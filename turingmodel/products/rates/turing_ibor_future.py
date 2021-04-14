@@ -15,12 +15,12 @@ from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_date import TuringDate
 
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
-from turingmodel.products.rates.turing_ibor_fra import FinIborFRA
+from turingmodel.products.rates.turing_ibor_fra import TuringIborFRA
 
 ###############################################################################
 
 
-class FinIborFuture(object):
+class TuringIborFuture(object):
     ''' Class for managing short term interest rate futures contracts. '''
 
     # Reference
@@ -59,18 +59,18 @@ class FinIborFuture(object):
 ###############################################################################
 
     def toFRA(self, futuresPrice, convexity):
-        ''' Convert the futures contract to a FinIborFRA object so it can be
+        ''' Convert the futures contract to a TuringIborFRA object so it can be
         used to boostrap a Ibor curve. For this we need to adjust the futures
         rate using the convexity correction. '''
 
         fraRate = self.FRARate(futuresPrice, convexity)
 
-        fra = FinIborFRA(self._deliveryDate,
-                          self._endOfInterestPeriod,
-                          fraRate,
-                          self._accrualType,
-                          notional=self._contractSize,
-                          payFixedRate=False)
+        fra = TuringIborFRA(self._deliveryDate,
+                            self._endOfInterestPeriod,
+                            fraRate,
+                            self._accrualType,
+                            notional=self._contractSize,
+                            payFixedRate=False)
 
         return fra
 

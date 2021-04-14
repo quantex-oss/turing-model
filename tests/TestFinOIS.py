@@ -6,7 +6,7 @@ import sys
 sys.path.append("..")
 
 from turingmodel.turingutils.turing_math import ONE_MILLION
-from turingmodel.products.rates.turing_ois import FinOIS
+from turingmodel.products.rates.turing_ois import TuringOIS
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
@@ -37,17 +37,17 @@ def test_FinFixedOIS():
     notional = ONE_MILLION
     paymentLag = 1
     
-    ois = FinOIS(effectiveDate,
-                 endDate,
-                 fixedLegType,
-                 oisRate,
-                 fixedFreqType,
-                 fixedDayCount,
-                 notional,
-                 paymentLag,
-                 floatSpread,
-                 floatFreqType,
-                 floatDayCount)
+    ois = TuringOIS(effectiveDate,
+                    endDate,
+                    fixedLegType,
+                    oisRate,
+                    fixedFreqType,
+                    fixedDayCount,
+                    notional,
+                    paymentLag,
+                    floatSpread,
+                    floatFreqType,
+                    floatDayCount)
 
 #    print(ois)
 

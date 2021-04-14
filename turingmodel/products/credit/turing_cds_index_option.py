@@ -13,8 +13,8 @@ from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_math import ONE_MILLION, INVROOT2PI, N
 from turingmodel.turingutils.turing_error import TuringError
-from turingmodel.products.credit.turing_cds_curve import FinCDSCurve
-from turingmodel.products.credit.turing_cds import FinCDS
+from turingmodel.products.credit.turing_cds_curve import TuringCDSCurve
+from turingmodel.products.credit.turing_cds import TuringCDS
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_helper_functions import labelToString
@@ -68,16 +68,16 @@ class TuringCDSIndexOption(object):
         self._freqType = freqType
         self._busDayAdjustType = busDayAdjustType
 
-        self._cdsContract = FinCDS(self._expiryDate,
-                                   self._maturityDate,
-                                   self._indexCoupon,
-                                   1.0,
-                                   self._longProtection,
-                                   self._freqType,
-                                   self._dayCountType,
-                                   self._calendarType,
-                                   self._busDayAdjustType,
-                                   self._dateGenRuleType)
+        self._cdsContract = TuringCDS(self._expiryDate,
+                                      self._maturityDate,
+                                      self._indexCoupon,
+                                      1.0,
+                                      self._longProtection,
+                                      self._freqType,
+                                      self._dayCountType,
+                                      self._calendarType,
+                                      self._busDayAdjustType,
+                                      self._dateGenRuleType)
 
 ###############################################################################
 
@@ -96,8 +96,8 @@ class TuringCDSIndexOption(object):
         df = liborCurve.df(self._expiryDate)
         qExpiryIndex = indexCurve.survProb(timeToExpiry)
 
-        cds = FinCDS(valuationDate, self._maturityDate, k)
-        strikeCurve = FinCDSCurve(
+        cds = TuringCDS(valuationDate, self._maturityDate, k)
+        strikeCurve = TuringCDSCurve(
             valuationDate, [cds], liborCurve, indexRecovery)
 #        qExpiryStrike = strikeCurve.survivalProbability(timeToExpiry)
 
@@ -148,12 +148,12 @@ class TuringCDSIndexOption(object):
         k = self._strikeCoupon
         c = self._indexCoupon
 
-        strikeCDS = FinCDS(
+        strikeCDS = TuringCDS(
             self._expiryDate,
             self._maturityDate,
             self._strikeCoupon,
             1.0)
-        strikeCurve = FinCDSCurve(valuationDate, [strikeCDS], liborCurve)
+        strikeCurve = TuringCDSCurve(valuationDate, [strikeCDS], liborCurve)
         strikeRPV01s = strikeCDS.riskyPV01(valuationDate, strikeCurve)
         qToExpiry = strikeCurve.survProb(timeToExpiry)
         strikeValue = (k - c) * strikeRPV01s['clean_rpv01']

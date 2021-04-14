@@ -19,7 +19,7 @@ from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.products.bonds.turing_bond_option import TuringBondOption
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.models.turing_model_rates_hw import FinModelRatesHW, FinHWEuropeanCalcType
+from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW, TuringHWEuropeanCalcType
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)
@@ -72,7 +72,7 @@ def test_FinBondOption():
         bondOption = TuringBondOption(bond, expiryDate, strikePrice, face,
                                       optionType)
 
-        model = FinModelRatesHW(sigma, a, numTimeSteps)
+        model = TuringModelRatesHW(sigma, a, numTimeSteps)
         v = bondOption.value(settlementDate, discountCurve, model)
         testCases.print(strikePrice, v)
 
@@ -95,7 +95,7 @@ def test_FinBondOption():
         bondOption = TuringBondOption(bond, expiryDate, strikePrice, face,
                                       optionType)
 
-        model = FinModelRatesHW(sigma, a)
+        model = TuringModelRatesHW(sigma, a)
         v = bondOption.value(settlementDate, discountCurve, model)
         testCases.print(strikePrice, v)
 
@@ -115,7 +115,7 @@ def test_FinBondOption():
         bondOption = TuringBondOption(bond, expiryDate, strikePrice, face,
                                       optionType)
 
-        model = FinModelRatesHW(sigma, a)
+        model = TuringModelRatesHW(sigma, a)
         v = bondOption.value(settlementDate, discountCurve, model)
         testCases.print(strikePrice, v)
 
@@ -135,7 +135,7 @@ def test_FinBondOption():
         bondOption = TuringBondOption(bond, expiryDate, strikePrice, face,
                                       optionType)
 
-        model = FinModelRatesHW(sigma, a)
+        model = TuringModelRatesHW(sigma, a)
         v = bondOption.value(settlementDate, discountCurve, model)
         testCases.print(strikePrice, v)
 
@@ -181,13 +181,13 @@ def test_FinBondOptionEuropeanConvergence():
 
         bondOption1 = TuringBondOption(bond, expiryDate, strikePrice, face,
                                        optionType)
-        model1 = FinModelRatesHW(sigma, a, numTimeSteps)
+        model1 = TuringModelRatesHW(sigma, a, numTimeSteps)
         v1put = bondOption1.value(settlementDate, discountCurve, model1)
 
         bondOption2 = TuringBondOption(bond, expiryDate, strikePrice, face,
                                        optionType)
 
-        model2 = FinModelRatesHW(sigma, a, numTimeSteps, FinHWEuropeanCalcType.EXPIRY_ONLY)
+        model2 = TuringModelRatesHW(sigma, a, numTimeSteps, TuringHWEuropeanCalcType.EXPIRY_ONLY)
         v2put = bondOption2.value(settlementDate, discountCurve, model2)
 
         optionType = TuringOptionTypes.EUROPEAN_CALL
@@ -195,13 +195,13 @@ def test_FinBondOptionEuropeanConvergence():
         bondOption1 = TuringBondOption(bond, expiryDate, strikePrice, face,
                                        optionType)
 
-        model1 = FinModelRatesHW(sigma, a, numTimeSteps)
+        model1 = TuringModelRatesHW(sigma, a, numTimeSteps)
         v1call = bondOption1.value(settlementDate, discountCurve, model1)
 
         bondOption2 = TuringBondOption(bond, expiryDate, strikePrice, face,
                                        optionType)
 
-        model2 = FinModelRatesHW(sigma, a, numTimeSteps,  FinHWEuropeanCalcType.EXPIRY_TREE)
+        model2 = TuringModelRatesHW(sigma, a, numTimeSteps, TuringHWEuropeanCalcType.EXPIRY_TREE)
         v2call = bondOption2.value(settlementDate, discountCurve, model2)
 
         end = time.time()
@@ -246,28 +246,28 @@ def test_FinBondOptionAmericanConvergenceONE():
         bondOption1 = TuringBondOption(bond, expiryDate, strikePrice, face,
                                        optionType)
 
-        model1 = FinModelRatesHW(sigma, a, numTimeSteps)
+        model1 = TuringModelRatesHW(sigma, a, numTimeSteps)
         v1put = bondOption1.value(settlementDate, discountCurve, model1)
 
         optionType = TuringOptionTypes.EUROPEAN_PUT
         bondOption2 = TuringBondOption(bond, expiryDate, strikePrice, face,
                                        optionType)
 
-        model2 = FinModelRatesHW(sigma, a, numTimeSteps, FinHWEuropeanCalcType.EXPIRY_ONLY)
+        model2 = TuringModelRatesHW(sigma, a, numTimeSteps, TuringHWEuropeanCalcType.EXPIRY_ONLY)
         v2put = bondOption2.value(settlementDate, discountCurve, model2)
 
         optionType = TuringOptionTypes.AMERICAN_CALL
         bondOption1 = TuringBondOption(bond, expiryDate, strikePrice, face,
                                        optionType)
 
-        model1 = FinModelRatesHW(sigma, a, numTimeSteps)
+        model1 = TuringModelRatesHW(sigma, a, numTimeSteps)
         v1call = bondOption1.value(settlementDate, discountCurve, model1)
 
         optionType = TuringOptionTypes.EUROPEAN_CALL
         bondOption2 = TuringBondOption(bond, expiryDate, strikePrice, face,
                                        optionType)
 
-        model2 = FinModelRatesHW(sigma, a, numTimeSteps, FinHWEuropeanCalcType.EXPIRY_TREE)
+        model2 = TuringModelRatesHW(sigma, a, numTimeSteps, TuringHWEuropeanCalcType.EXPIRY_TREE)
         v2call = bondOption2.value(settlementDate, discountCurve, model2)
 
         end = time.time()
@@ -304,7 +304,7 @@ def test_FinBondOptionAmericanConvergenceTWO():
 
     sigma = 0.01
     a = 0.1
-    hwModel = FinModelRatesHW(sigma, a)
+    hwModel = TuringModelRatesHW(sigma, a)
     K = 102.0
 
     vec_ec = []
@@ -315,7 +315,7 @@ def test_FinBondOptionAmericanConvergenceTWO():
     numStepsVector = range(100, 500, 100)
 
     for numSteps in numStepsVector:
-        hwModel = FinModelRatesHW(sigma, a, numSteps)
+        hwModel = TuringModelRatesHW(sigma, a, numSteps)
 
         start = time.time()
 
@@ -411,7 +411,7 @@ def test_FinBondOptionZEROVOLConvergence():
 
             sigma = 0.0000001
             a = 0.1
-            model = FinModelRatesHW(sigma, a, numSteps)
+            model = TuringModelRatesHW(sigma, a, numSteps)
         
             optionType = TuringOptionTypes.EUROPEAN_CALL
             bondOption1 = TuringBondOption(bond, expiryDate, strikePrice, face, optionType)

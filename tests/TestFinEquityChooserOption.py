@@ -6,7 +6,7 @@ import sys
 sys.path.append("..")
 
 from turingmodel.products.equity.turing_equity_chooser_option import TuringEquityChooserOption
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_date import TuringDate
 
@@ -30,7 +30,7 @@ def test_FinEquityChooserOptionHaug():
     interestRate = 0.10
     dividendYield = 0.05
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
@@ -73,7 +73,7 @@ def test_FinEquityChooserOptionMatlab():
     interestRate = 0.10
     dividendYield = 0.05
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
@@ -117,7 +117,7 @@ def test_FinEquityChooserOptionDerivicom():
     interestRate = 0.08
     dividendYield = 0.0625
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 

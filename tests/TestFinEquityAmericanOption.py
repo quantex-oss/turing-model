@@ -10,7 +10,7 @@ sys.path.append("..")
 from turingmodel.products.equity.turing_equity_american_option import TuringEquityAmericanOption
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes, FinModelBlackScholesTypes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes, TuringModelBlackScholesTypes
 from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -35,9 +35,9 @@ def testFinEquityAmericanOption():
 
     putOption = TuringEquityAmericanOption(expiryDate, strikePrice, TuringOptionTypes.EUROPEAN_PUT)
 
-    model = FinModelBlackScholes(volatility, 
-                                 FinModelBlackScholesTypes.CRR_TREE,
-                                 100)
+    model = TuringModelBlackScholes(volatility,
+                                    TuringModelBlackScholesTypes.CRR_TREE,
+                                    100)
 
     value = putOption.value(valueDate, stockPrice, discountCurve, dividendCurve, model)
     delta = putOption.delta(valueDate, stockPrice, discountCurve, dividendCurve, model)
@@ -55,9 +55,9 @@ def testFinEquityAmericanOption():
 
     for numSteps in numStepsList:
 
-        model = FinModelBlackScholes(volatility,
-                                     FinModelBlackScholesTypes.CRR_TREE,
-                                     numSteps)
+        model = TuringModelBlackScholes(volatility,
+                                        TuringModelBlackScholesTypes.CRR_TREE,
+                                        numSteps)
 
         start = time.time()
         results = option.value(valueDate, stockPrice, discountCurve, dividendCurve, model)
@@ -80,9 +80,9 @@ def testFinEquityAmericanOption():
 
     for numSteps in numStepsList:
 
-        model = FinModelBlackScholes(volatility,
-                                     FinModelBlackScholesTypes.CRR_TREE,
-                                     numSteps)
+        model = TuringModelBlackScholes(volatility,
+                                        TuringModelBlackScholesTypes.CRR_TREE,
+                                        numSteps)
 
         start = time.time()
         results = option.value(valueDate, stockPrice, discountCurve, dividendCurve, model)
@@ -118,9 +118,9 @@ def testFinEquityAmericanOption():
 
     for numSteps in numStepsList:
 
-        model = FinModelBlackScholes(volatility,
-                                     FinModelBlackScholesTypes.CRR_TREE,
-                                     numSteps)
+        model = TuringModelBlackScholes(volatility,
+                                        TuringModelBlackScholesTypes.CRR_TREE,
+                                        numSteps)
         start = time.time()
         results = option.value(valueDate, stockPrice, discountCurve, 
                                dividendCurve, model)
@@ -141,9 +141,9 @@ def testFinEquityAmericanOption():
 
     for numSteps in numStepsList:
 
-        model = FinModelBlackScholes(volatility,
-                                     FinModelBlackScholesTypes.CRR_TREE,
-                                     numSteps)
+        model = TuringModelBlackScholes(volatility,
+                                        TuringModelBlackScholesTypes.CRR_TREE,
+                                        numSteps)
 
         start = time.time()
 

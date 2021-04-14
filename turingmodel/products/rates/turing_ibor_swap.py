@@ -16,13 +16,13 @@ from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from .turing_fixed_leg import FinFixedLeg
-from .turing_float_leg import FinFloatLeg
+from .turing_fixed_leg import TuringFixedLeg
+from .turing_float_leg import TuringFloatLeg
 
 ##########################################################################
 
 
-class FinIborSwap(object):
+class TuringIborSwap(object):
     ''' Class for managing a standard Fixed vs IBOR swap. This is a contract
     in which a fixed payment leg is exchanged for a series of floating rates
     payments linked to some IBOR index rate. There is no exchange of principal.
@@ -82,31 +82,31 @@ class FinIborSwap(object):
         paymentLag = 0
         principal = 0.0
 
-        self._fixedLeg = FinFixedLeg(effectiveDate,
-                                     self._terminationDate,
-                                     fixedLegType,
-                                     fixedCoupon,
-                                     fixedFreqType,
-                                     fixedDayCountType,
-                                     notional,
-                                     principal,
-                                     paymentLag,
-                                     calendarType,
-                                     busDayAdjustType,
-                                     dateGenRuleType)
+        self._fixedLeg = TuringFixedLeg(effectiveDate,
+                                        self._terminationDate,
+                                        fixedLegType,
+                                        fixedCoupon,
+                                        fixedFreqType,
+                                        fixedDayCountType,
+                                        notional,
+                                        principal,
+                                        paymentLag,
+                                        calendarType,
+                                        busDayAdjustType,
+                                        dateGenRuleType)
 
-        self._floatLeg = FinFloatLeg(effectiveDate,
-                                     self._terminationDate,
-                                     floatLegType,
-                                     floatSpread,
-                                     floatFreqType,
-                                     floatDayCountType,
-                                     notional,
-                                     principal,
-                                     paymentLag,
-                                     calendarType,
-                                     busDayAdjustType,
-                                     dateGenRuleType)
+        self._floatLeg = TuringFloatLeg(effectiveDate,
+                                        self._terminationDate,
+                                        floatLegType,
+                                        floatSpread,
+                                        floatFreqType,
+                                        floatDayCountType,
+                                        notional,
+                                        principal,
+                                        paymentLag,
+                                        calendarType,
+                                        busDayAdjustType,
+                                        dateGenRuleType)
             
 ###############################################################################
 
@@ -194,7 +194,7 @@ class FinIborSwap(object):
                         frequencyType):
         ''' Calculate the forward value of an annuity of a forward starting
         swap using a single flat discount rate equal to the swap rate. This is
-        used in the pricing of a cash-settled swaption in the FinIborSwaption
+        used in the pricing of a cash-settled swaption in the TuringIborSwaption
         class. This method does not affect the standard valuation methods.'''
 
         m = TuringFrequency(frequencyType)

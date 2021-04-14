@@ -12,7 +12,7 @@ from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 
-from turingmodel.products.rates.turing_ibor_swap import FinIborSwap
+from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
 from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
 
 from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
@@ -45,9 +45,9 @@ def test_FinBondEmbeddedOptionMATLAB():
     fixedLegType = TuringSwapTypes.PAY
     dcType = TuringDayCountTypes.THIRTY_E_360
     fixedFreq = TuringFrequencyTypes.ANNUAL
-    swap1 = FinIborSwap(settlementDate, "1Y", fixedLegType, 0.0350, fixedFreq, dcType)
-    swap2 = FinIborSwap(settlementDate, "2Y", fixedLegType, 0.0400, fixedFreq, dcType)
-    swap3 = FinIborSwap(settlementDate, "3Y", fixedLegType, 0.0450, fixedFreq, dcType)
+    swap1 = TuringIborSwap(settlementDate, "1Y", fixedLegType, 0.0350, fixedFreq, dcType)
+    swap2 = TuringIborSwap(settlementDate, "2Y", fixedLegType, 0.0400, fixedFreq, dcType)
+    swap3 = TuringIborSwap(settlementDate, "3Y", fixedLegType, 0.0450, fixedFreq, dcType)
     swaps = [swap1, swap2, swap3]
     discountCurve = TuringIborSingleCurve(valuationDate, [], [], swaps)
 

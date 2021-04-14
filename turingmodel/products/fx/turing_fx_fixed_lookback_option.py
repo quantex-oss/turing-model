@@ -9,7 +9,7 @@ import numpy as np
 from turingmodel.turingutils.turing_math import N
 from turingmodel.turingutils.turing_global_variables import gDaysInYear, gSmall
 from turingmodel.turingutils.turing_error import TuringError
-from turingmodel.models.turing_gbm_process import FinGBMProcess
+from turingmodel.models.turing_gbm_process import TuringGBMProcess
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
@@ -205,7 +205,7 @@ class TuringFXFixedLookbackOption():
                 raise TuringError(
                     "Smin must be less than or equal to the stock price.")
 
-        model = FinGBMProcess()
+        model = TuringGBMProcess()
         Sall = model.getPaths(
             numPaths,
             numTimeSteps,

@@ -5,9 +5,9 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.models.turing_process_simulator import FinProcessTypes
-from turingmodel.models.turing_process_simulator import FinGBMNumericalScheme
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_process_simulator import TuringProcessTypes
+from turingmodel.models.turing_process_simulator import TuringGBMNumericalScheme
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.products.fx.turing_fx_barrier_option import TuringFXBarrierTypes
 from turingmodel.products.fx.turing_fx_barrier_option import TuringFXBarrierOption
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
@@ -32,11 +32,11 @@ def test_FinFXBarrierOption():
     notionalCurrency = "USD"
 
     drift = domInterestRate - forInterestRate
-    scheme = FinGBMNumericalScheme.ANTITHETIC
-    processType = FinProcessTypes.GBM
+    scheme = TuringGBMNumericalScheme.ANTITHETIC
+    processType = TuringProcessTypes.GBM
     domDiscountCurve = TuringDiscountCurveFlat(valueDate, domInterestRate)
     forDiscountCurve = TuringDiscountCurveFlat(valueDate, forInterestRate)
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     ###########################################################################
 

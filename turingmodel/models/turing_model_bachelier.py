@@ -16,12 +16,12 @@ from ..turingutils.turing_global_types import TuringOptionTypes
 ###############################################################################
 
 
-class FinModelBachelier():
+class TuringModelBachelier():
     ''' Bachelier's Model which prices call and put options in the forward
     measure assuming the underlying rate follows a normal process. '''
 
     def __init__(self, volatility):
-        ''' Create FinModel black using parameters. '''
+        ''' Create TuringModel black using parameters. '''
         self._volatility = volatility
 
 ###############################################################################

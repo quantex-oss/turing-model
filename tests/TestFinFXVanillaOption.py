@@ -9,7 +9,7 @@ sys.path.append("..")
 
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 from turingmodel.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
@@ -51,7 +51,7 @@ def test_FinFXVanillaOptionWystupExample1():
     domDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy2CCRate)
     forDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy1CCRate)
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     # Two examples to show that changing the notional currency and notional
     # keeps the value unchanged
@@ -123,7 +123,7 @@ def test_FinFXVanillaOptionWystupExample2():
     domDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy2CCRate)
     forDiscountCurve = TuringDiscountCurveFlat(valueDate, ccy1CCRate)
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     # Two examples to show that changing the notional currency and notional
     # keeps the value unchanged
@@ -198,7 +198,7 @@ def test_FinFXVanillaOptionBloombergExample():
     depos.append(depo)
     forDiscountCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
 
     callOption = TuringFXVanillaOption(expiryDate,
                                        strikeFXRate,
@@ -236,7 +236,7 @@ def test_FinFXVanillaOptionHullExample():
     volatility = 0.1411
     domInterestRate = 0.08
     forInterestRate = 0.11
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     domDiscountCurve = TuringDiscountCurveFlat(valuationDate, domInterestRate)
     forDiscountCurve = TuringDiscountCurveFlat(valuationDate, forInterestRate)
 

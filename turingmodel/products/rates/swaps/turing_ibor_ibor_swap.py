@@ -17,7 +17,7 @@ from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 ##########################################################################
 
 
-class FinIborIborSwap(object):
+class TuringIborIborSwap(object):
     ''' Class for managing an interest rate basis swap contract. This is a
     contract in which a floating leg with one LIBOR tenor is exchanged for a 
     floating leg payment in a different LIBOR tenor. There is no exchange of

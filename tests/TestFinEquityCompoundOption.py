@@ -7,7 +7,7 @@ sys.path.append("..")
 
 from turingmodel.products.equity.turing_equity_compound_option import TuringEquityCompoundOption
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.turingutils.turing_date import TuringDate
 
@@ -29,7 +29,7 @@ def test_FinEquityCompoundOption():
     interestRate = 0.035
     dividendYield = 0.01
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 

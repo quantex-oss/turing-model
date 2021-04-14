@@ -11,7 +11,7 @@ This is the basic Ibor instrument in which a party borrows an amount for a speci
 This is a class to handle interest rate futures contracts. This is an exchange-traded contract
 to receive or pay Ibor on a specified future date. It can be used to build the Liboir term structure.
 
-### FinIborFRA
+### TuringIborFRA
 
 This is a class to manage Forward Rate Agreements (FRAs) in which one party agrees to lock in a forward Ibor rate.
 
@@ -25,7 +25,7 @@ This is a contract to exchange fixed rate coupons for floating Ibor rates. This 
 
 This is a contract to exchange fixed rate coupons for floating Ibor rates. This class has functionality to value the swap contract and to calculate its risk.
 
-### FinIborIborSwap - IN PROGRESS
+### TuringIborIborSwap - IN PROGRESS
 
 This is a contract to exchange IBOR rates with different terms, also known as a basis swap. This class has functionality to value the swap contract and to calculate its risk.
 
@@ -47,7 +47,7 @@ This is a contract to exchange fixed rate coupons in two different currencies. T
 
 This is a contract to exchange IBOR coupons in two different currencies. This class has functionality to value the swap contract and to calculate its risk.
 
-### FinOIS
+### TuringOIS
 
 This is a contract to exchange the daily compounded Overnight index swap rate for a fixed rate agreed at contract initiation.
 
@@ -61,9 +61,9 @@ This is a discount curve that is extracted by bootstrapping a set of Ibor deposi
 
 ## Options
 
-### FinIborCapFloor
+### TuringIborCapFloor
 
-### FinIborSwaption
+### TuringIborSwaption
 
 This is a contract to buy or sell an option to enter into a swap to either pay or receive a fixed swap rate at a specific future expiry date. The model includes code that prices a payer or receiver swaption with the following models:
 
@@ -75,7 +75,7 @@ This is a contract to buy or sell an option to enter into a swap to either pay o
 - Black-Karasinski Tree Model
 - Black-Derman-Toy Tree Model
 
-### FinIborBermudanSwaption
+### TuringIborBermudanSwaption
 
 This is a contract to buy or sell an option to enter into a swap to either pay or receive a fixed swap rate at a specific future expiry date on specific coupon dates starting on a designated expiry date. The model includes code that prices a payer or receiver swaption with the following models:
 

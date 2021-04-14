@@ -10,9 +10,9 @@ import sys
 sys.path.append("..")
 
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
+from turingmodel.products.equity.turing_equity_vanilla_option import TuringEquityVanillaOption
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -31,15 +31,15 @@ def test_FinNumbaNumpySpeed(useSobol):
     dividendYield = 0.01
     seed = 1999
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
 
     useSobolInt = int(useSobol)
     
     testCases.header("NUMPATHS", "VALUE_BS", "VALUE_MC", "TIME")
 
-    callOption = FinEquityVanillaOption(expiryDate, 100.0,
-                                        TuringOptionTypes.EUROPEAN_CALL)
+    callOption = TuringEquityVanillaOption(expiryDate, 100.0,
+                                           TuringOptionTypes.EUROPEAN_CALL)
 
     value = callOption.value(valueDate, stockPrice, discountCurve,
                              dividendYield,model)
@@ -261,15 +261,15 @@ def test_FinNumbaNumbaParallel(useSobol):
     dividendYield = 0.01
     seed = 2021
 
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
 
     useSobolInt = int(useSobol)
     
     testCases.header("NUMPATHS", "VALUE_BS", "VALUE_MC", "TIME")
 
-    callOption = FinEquityVanillaOption(expiryDate, 100.0,
-                                        TuringOptionTypes.EUROPEAN_CALL)
+    callOption = TuringEquityVanillaOption(expiryDate, 100.0,
+                                           TuringOptionTypes.EUROPEAN_CALL)
 
     value = callOption.value(valueDate, stockPrice, discountCurve,
                              dividendYield,model)

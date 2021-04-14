@@ -9,7 +9,7 @@ import sys
 sys.path.append("..")
 
 from turingmodel.turingutils.turing_date import *
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 from turingmodel.market.curves.turing_discount_curve_ns import TuringDiscountCurveNS
@@ -49,7 +49,7 @@ def test_FinDiscountCurves():
     curvesList = []
 
     finDiscountCurve = TuringDiscountCurve(valuationDate, dates, discountFactors,
-                                           FinInterpTypes.FLAT_FWD_RATES)
+                                           TuringInterpTypes.FLAT_FWD_RATES)
     curvesList.append(finDiscountCurve)
 
     finDiscountCurveFlat = TuringDiscountCurveFlat(valuationDate, 0.05)

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from turingmodel.models.turing_model_sabr import FinModelSABR
+from turingmodel.models.turing_model_sabr import TuringModelSABR
 from turingmodel.models.turing_model_sabr_shifted import TuringModelSABRShifted
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -27,13 +27,13 @@ def test_FinSABR():
     beta = 0.5
     rho = 0.2097
     nu = 0.75091
-    model1 = FinModelSABR(alpha, beta, rho, nu)
+    model1 = TuringModelSABR(alpha, beta, rho, nu)
 
     alpha = 0.058484
     beta = 0.5
     rho = 0.20568
     nu = 0.79647
-    model2 = FinModelSABR(alpha, beta, rho, nu)
+    model2 = TuringModelSABR(alpha, beta, rho, nu)
 
     f = 0.0350
     T = 1.0

@@ -42,7 +42,7 @@ from turingmodel.market.volatility.turing_ibor_cap_vol_curve import TuringIborCa
 ###############################################################################
 
 
-class FinIborLMMProducts():
+class TuringIborLMMProducts():
     ''' This is the class for pricing Ibor products using the LMM. '''
 
     def __init__(self,

@@ -11,7 +11,7 @@ sys.path.append("..")
 from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.market.curves.turing_interpolator import FinInterpTypes
+from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
 from turingmodel.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -33,7 +33,7 @@ def test_FinDiscountCurveZeros():
                                      zeroRates,
                                      freqType,
                                      dayCountType,
-                                     FinInterpTypes.FLAT_FWD_RATES)
+                                     TuringInterpTypes.FLAT_FWD_RATES)
 
     testCases.header("T", "DF")
 
@@ -72,7 +72,7 @@ def test_FinDiscountCurveZeros():
                                          zeroRates,
                                          freqType,
                                          dayCountType,
-                                         FinInterpTypes.FLAT_FWD_RATES)
+                                         TuringInterpTypes.FLAT_FWD_RATES)
 
     end = time.time()
     period = end - start

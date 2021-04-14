@@ -3,7 +3,7 @@
 ##############################################################################
 
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
+from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
 from turingmodel.models.turing_model_rates_bk import TuringModelRatesBK
 from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
@@ -170,7 +170,7 @@ class TuringBondEmbeddedOption(object):
 
         faceAmount = self._bond._faceAmount
 
-        if isinstance(model, FinModelRatesHW):
+        if isinstance(model, TuringModelRatesHW):
 
             ''' We need to build the tree out to the bond maturity date. To be
             more precise we only need to go out the the last option date but

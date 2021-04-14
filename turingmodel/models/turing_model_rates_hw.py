@@ -9,12 +9,12 @@ from math import ceil
 
 from ..turingutils.turing_error import TuringError
 from ..turingutils.turing_math import N, accruedInterpolator
-from ..market.curves.turing_interpolator import FinInterpTypes, _uinterpolate
+from ..market.curves.turing_interpolator import TuringInterpTypes, _uinterpolate
 from ..turingutils.turing_helper_functions import labelToString
 from ..turingutils.turing_global_types import TuringExerciseTypes
 from ..turingutils.turing_global_variables import gSmall
 
-interp = FinInterpTypes.FLAT_FWD_RATES.value
+interp = TuringInterpTypes.FLAT_FWD_RATES.value
 
 small = 1e-10
 
@@ -32,7 +32,7 @@ small = 1e-10
 from enum import Enum
 
 
-class FinHWEuropeanCalcType(Enum):
+class TuringHWEuropeanCalcType(Enum):
     JAMSHIDIAN = 1,
     EXPIRY_ONLY = 2,
     EXPIRY_TREE = 3
@@ -840,13 +840,13 @@ def fwdFullBondPrice(rt, *args):
 ###############################################################################
 
 
-class FinModelRatesHW():
+class TuringModelRatesHW():
 
     def __init__(self,
                  sigma,
                  a,
                  numTimeSteps=100,
-                 europeanCalcType=FinHWEuropeanCalcType.EXPIRY_TREE):
+                 europeanCalcType=TuringHWEuropeanCalcType.EXPIRY_TREE):
         ''' Constructs the Hull-White rate model. The speed of mean reversion
         a and volatility are passed in. The short rate process is given by
         dr = (theta(t) - ar) * dt  + sigma * dW. The model will switch to use
@@ -1140,7 +1140,7 @@ class FinModelRatesHW():
 
         if exerciseTypeInt == 1:
             
-            if self._europeanCalcType == FinHWEuropeanCalcType.JAMSHIDIAN:
+            if self._europeanCalcType == TuringHWEuropeanCalcType.JAMSHIDIAN:
 
                 v = self.europeanBondOptionJamshidian(texp,
                                               strikePrice,
@@ -1153,7 +1153,7 @@ class FinModelRatesHW():
                 callValue = v['call']
                 putValue = v['put']
 
-            elif self._europeanCalcType == FinHWEuropeanCalcType.EXPIRY_ONLY:
+            elif self._europeanCalcType == TuringHWEuropeanCalcType.EXPIRY_ONLY:
 
                 v = self.europeanBondOptionExpiryOnly(texp,
                                                 strikePrice,
@@ -1164,7 +1164,7 @@ class FinModelRatesHW():
                 callValue = v['call']
                 putValue = v['put']
 
-            elif self._europeanCalcType == FinHWEuropeanCalcType.EXPIRY_TREE:
+            elif self._europeanCalcType == TuringHWEuropeanCalcType.EXPIRY_TREE:
 
                 callValue, putValue \
                     = americanBondOption_Tree_Fast(texp,

@@ -10,9 +10,9 @@ sys.path.append("..")
 import numpy as np
 
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
+from turingmodel.products.equity.turing_equity_vanilla_option import TuringEquityVanillaOption
 from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_error import TuringError
 
@@ -30,7 +30,7 @@ def test_FinEquityVanillaOption():
     volatility = 0.30
     interestRate = 0.05
     dividendYield = 0.01
-    model = FinModelBlackScholes(volatility)
+    model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
 
@@ -40,7 +40,7 @@ def test_FinEquityVanillaOption():
 
     for numPaths in numPathsList:
 
-        callOption = FinEquityVanillaOption(
+        callOption = TuringEquityVanillaOption(
             expiryDate, 100.0, TuringOptionTypes.EUROPEAN_CALL)
         value = callOption.value(valueDate, stockPrice, discountCurve,
                                  dividendCurve, model)
@@ -62,8 +62,8 @@ def test_FinEquityVanillaOption():
 
     for stockPrice in stockPrices:
 
-        callOption = FinEquityVanillaOption(expiryDate, 100.0,
-                                            TuringOptionTypes.EUROPEAN_CALL)
+        callOption = TuringEquityVanillaOption(expiryDate, 100.0,
+                                               TuringOptionTypes.EUROPEAN_CALL)
 
         value = callOption.value(valueDate, stockPrice, discountCurve,
                                  dividendCurve, model)
@@ -92,8 +92,8 @@ def test_FinEquityVanillaOption():
 
     for stockPrice in stockPrices:
 
-        putOption = FinEquityVanillaOption(expiryDate, 100.0,
-                                           TuringOptionTypes.EUROPEAN_PUT)
+        putOption = TuringEquityVanillaOption(expiryDate, 100.0,
+                                              TuringOptionTypes.EUROPEAN_PUT)
 
         value = putOption.value(valueDate, stockPrice, discountCurve,
                                 dividendCurve, model)
@@ -121,8 +121,8 @@ def test_FinEquityVanillaOption():
 
     for stockPrice in stockPrices:
 
-        callOption = FinEquityVanillaOption(expiryDate, 100.0,
-                                            TuringOptionTypes.EUROPEAN_CALL)
+        callOption = TuringEquityVanillaOption(expiryDate, 100.0,
+                                               TuringOptionTypes.EUROPEAN_CALL)
         value = callOption.value(valueDate, stockPrice, discountCurve,
                                  dividendCurve, model)
         delta = callOption.delta(valueDate, stockPrice, discountCurve,
@@ -142,8 +142,8 @@ def test_FinEquityVanillaOption():
 
     for stockPrice in stockPrices:
         
-        putOption = FinEquityVanillaOption(expiryDate, 100.0,
-                                           TuringOptionTypes.EUROPEAN_PUT)
+        putOption = TuringEquityVanillaOption(expiryDate, 100.0,
+                                              TuringOptionTypes.EUROPEAN_PUT)
 
         value = putOption.value(valueDate, stockPrice, discountCurve,
                                  dividendCurve, model)
@@ -182,7 +182,7 @@ def testImpliedVolatility_NEW():
     
     for vol in sigmas:
 
-        model = FinModelBlackScholes(vol)
+        model = TuringModelBlackScholes(vol)
 
         for timeToExpiry in timesToExpiry:     
 
@@ -192,8 +192,8 @@ def testImpliedVolatility_NEW():
 
                 for optionType in optionTypes:
 
-                    option = FinEquityVanillaOption(expiryDate, strike, 
-                                                    optionType)
+                    option = TuringEquityVanillaOption(expiryDate, strike,
+                                                       optionType)
                 
                     value = option.value(valueDate, stockPrice, discountCurve, 
                                          dividendCurve, model)

@@ -15,14 +15,14 @@ from turingmodel.turingutils.turing_math import ONE_MILLION
 from turingmodel.turingutils.turing_global_types import TuringSwapTypes
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from .turing_fixed_leg import FinFixedLeg
-from .turing_float_leg import FinFloatLeg
+from .turing_fixed_leg import TuringFixedLeg
+from .turing_float_leg import TuringFloatLeg
 
 ###############################################################################
 
 from enum import Enum
 
-class FinCompoundingTypes(Enum):
+class TuringCompoundingTypes(Enum):
      COMPOUNDED = 1
      OVERNIGHT_COMPOUNDED_ANNUAL_RATE = 2
      AVERAGED = 3
@@ -31,13 +31,13 @@ class FinCompoundingTypes(Enum):
 
 ###############################################################################
 
-class FinOIS(object):
+class TuringOIS(object):
     ''' Class for managing overnight index rate swaps (OIS) and Fed Fund swaps. 
     This is a contract in which a fixed payment leg is exchanged for a payment
     which pays the rolled-up overnight index rate (OIR). There is no exchange
     of par. The contract is entered into at zero initial cost.
 
-    NOTE: This class is almost identical to FinIborSwap but will possibly
+    NOTE: This class is almost identical to TuringIborSwap but will possibly
     deviate as distinctions between the two become clear to me. If not they 
     will be converged (or inherited) to avoid duplication.
     
@@ -106,31 +106,31 @@ class FinOIS(object):
 
         principal = 0.0
 
-        self._fixedLeg = FinFixedLeg(effectiveDate,
-                                     self._terminationDate,
-                                     fixedLegType,
-                                     fixedCoupon,
-                                     fixedFreqType,
-                                     fixedDayCountType,
-                                     notional,
-                                     principal,
-                                     paymentLag,
-                                     calendarType,
-                                     busDayAdjustType,
-                                     dateGenRuleType)
+        self._fixedLeg = TuringFixedLeg(effectiveDate,
+                                        self._terminationDate,
+                                        fixedLegType,
+                                        fixedCoupon,
+                                        fixedFreqType,
+                                        fixedDayCountType,
+                                        notional,
+                                        principal,
+                                        paymentLag,
+                                        calendarType,
+                                        busDayAdjustType,
+                                        dateGenRuleType)
 
-        self._floatLeg = FinFloatLeg(effectiveDate,
-                                     self._terminationDate,
-                                     floatLegType,
-                                     floatSpread,
-                                     floatFreqType,
-                                     floatDayCountType,
-                                     notional,
-                                     principal,
-                                     paymentLag,
-                                     calendarType,
-                                     busDayAdjustType,
-                                     dateGenRuleType)
+        self._floatLeg = TuringFloatLeg(effectiveDate,
+                                        self._terminationDate,
+                                        floatLegType,
+                                        floatSpread,
+                                        floatFreqType,
+                                        floatDayCountType,
+                                        notional,
+                                        principal,
+                                        paymentLag,
+                                        calendarType,
+                                        busDayAdjustType,
+                                        dateGenRuleType)
 
 ###############################################################################
 

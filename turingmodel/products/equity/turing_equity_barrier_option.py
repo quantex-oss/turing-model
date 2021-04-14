@@ -8,7 +8,7 @@ from enum import Enum
 from turingmodel.turingutils.turing_error import TuringError
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.products.equity.turing_equity_option import TuringEquityOption
-from turingmodel.models.turing_process_simulator import FinProcessSimulator
+from turingmodel.models.turing_process_simulator import TuringProcessSimulator
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 from turingmodel.turingutils.turing_helper_functions import labelToString, checkArgumentTypes
 from turingmodel.turingutils.turing_date import TuringDate
@@ -21,7 +21,7 @@ from turingmodel.turingutils.turing_math import N
 ###############################################################################
 
 
-class FinEquityBarrierTypes(Enum):
+class TuringEquityBarrierTypes(Enum):
     DOWN_AND_OUT_CALL = 1
     DOWN_AND_IN_CALL = 2
     UP_AND_OUT_CALL = 3
@@ -37,12 +37,12 @@ class FinEquityBarrierTypes(Enum):
 class TuringEquityBarrierOption(TuringEquityOption):
     ''' Class to hold details of an Equity Barrier Option. It also
     calculates the option price using Black Scholes for 8 different
-    variants on the Barrier structure in enum FinEquityBarrierTypes. '''
+    variants on the Barrier structure in enum TuringEquityBarrierTypes. '''
 
     def __init__(self,
                  expiryDate: TuringDate,
                  strikePrice: float,
-                 optionType: FinEquityBarrierTypes,
+                 optionType: TuringEquityBarrierTypes,
                  barrierLevel: float,
                  numObservationsPerYear: (int, float) = 252,
                  notional: float = 1.0):
@@ -57,7 +57,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
         self._barrierLevel = float(barrierLevel)
         self._numObservationsPerYear = int(numObservationsPerYear)
 
-        if optionType not in FinEquityBarrierTypes:
+        if optionType not in TuringEquityBarrierTypes:
             raise TuringError("Option Type " + str(optionType) + " unknown.")
 
         self._optionType = optionType
@@ -138,21 +138,21 @@ class TuringEquityBarrierOption(TuringEquityOption):
         p = k * df * N(-d2) - s * dq * N(-d1)
 #        print("CALL:",c,"PUT:",p)
 
-        if self._optionType == FinEquityBarrierTypes.DOWN_AND_OUT_CALL and s <= h:
+        if self._optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_CALL and s <= h:
             return 0.0
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_OUT_CALL and s >= h:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_OUT_CALL and s >= h:
             return 0.0
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_OUT_PUT and s >= h:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_OUT_PUT and s >= h:
             return 0.0
-        elif self._optionType == FinEquityBarrierTypes.DOWN_AND_OUT_PUT and s <= h:
+        elif self._optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_PUT and s <= h:
             return 0.0
-        elif self._optionType == FinEquityBarrierTypes.DOWN_AND_IN_CALL and s <= h:
+        elif self._optionType == TuringEquityBarrierTypes.DOWN_AND_IN_CALL and s <= h:
             return c
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_IN_CALL and s >= h:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_IN_CALL and s >= h:
             return c
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_IN_PUT and s >= h:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_IN_PUT and s >= h:
             return p
-        elif self._optionType == FinEquityBarrierTypes.DOWN_AND_IN_PUT and s <= h:
+        elif self._optionType == TuringEquityBarrierTypes.DOWN_AND_IN_PUT and s <= h:
             return p
 
         numObservations = 1 + texp * self._numObservationsPerYear
@@ -162,21 +162,21 @@ class TuringEquityBarrierOption(TuringEquityOption):
         h_adj = h
         t = texp / numObservations
 
-        if self._optionType == FinEquityBarrierTypes.DOWN_AND_OUT_CALL:
+        if self._optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_CALL:
             h_adj = h * np.exp(-0.5826 * volatility * np.sqrt(t))
-        elif self._optionType == FinEquityBarrierTypes.DOWN_AND_IN_CALL:
+        elif self._optionType == TuringEquityBarrierTypes.DOWN_AND_IN_CALL:
             h_adj = h * np.exp(-0.5826 * volatility * np.sqrt(t))
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_IN_CALL:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_IN_CALL:
             h_adj = h * np.exp(0.5826 * volatility * np.sqrt(t))
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_OUT_CALL:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_OUT_CALL:
             h_adj = h * np.exp(0.5826 * volatility * np.sqrt(t))
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_IN_PUT:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_IN_PUT:
             h_adj = h * np.exp(0.5826 * volatility * np.sqrt(t))
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_OUT_PUT:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_OUT_PUT:
             h_adj = h * np.exp(0.5826 * volatility * np.sqrt(t))
-        elif self._optionType == FinEquityBarrierTypes.DOWN_AND_OUT_PUT:
+        elif self._optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_PUT:
             h_adj = h * np.exp(-0.5826 * volatility * np.sqrt(t))
-        elif self._optionType == FinEquityBarrierTypes.DOWN_AND_IN_PUT:
+        elif self._optionType == TuringEquityBarrierTypes.DOWN_AND_IN_PUT:
             h_adj = h * np.exp(-0.5826 * volatility * np.sqrt(t))
         else:
             raise TuringError("Unknown barrier option type." +
@@ -193,7 +193,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
         y1 = np.log(h / s) / sigmaRootT + l * sigmaRootT
         hOverS = h / s
 
-        if self._optionType == FinEquityBarrierTypes.DOWN_AND_OUT_CALL:
+        if self._optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_CALL:
             if h >= k:
                 c_do = s * dq * N(x1) - k * df * N(x1 - sigmaRootT) \
                     - s * dq * pow(hOverS, 2.0 * l) * N(y1) \
@@ -203,7 +203,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
                 c_di = s * dq * pow(hOverS, 2.0 * l) * N(y) \
                     - k * df * pow(hOverS, 2.0 * l - 2.0) * N(y - sigmaRootT)
                 price = c - c_di
-        elif self._optionType == FinEquityBarrierTypes.DOWN_AND_IN_CALL:
+        elif self._optionType == TuringEquityBarrierTypes.DOWN_AND_IN_CALL:
             if h <= k:
                 c_di = s * dq * pow(hOverS, 2.0 * l) * N(y) \
                     - k * df * pow(hOverS, 2.0 * l - 2.0) * N(y - sigmaRootT)
@@ -214,7 +214,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
                     - s * dq * pow(hOverS, 2.0 * l) * N(y1) \
                     + k * df * pow(hOverS, 2.0 * l - 2.0) * N(y1 - sigmaRootT)
                 price = c - c_do
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_IN_CALL:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_IN_CALL:
             if h >= k:
                 c_ui = s * dq * N(x1) - k * df * N(x1 - sigmaRootT) \
                     - s * dq * pow(hOverS, 2.0 * l) * (N(-y) - N(-y1)) \
@@ -222,7 +222,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
                 price = c_ui
             else:
                 price = c
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_OUT_CALL:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_OUT_CALL:
             if h > k:
                 c_ui = s * dq * N(x1) - k * df * N(x1 - sigmaRootT) \
                      - s * dq * pow(hOverS, 2.0 * l) * (N(-y) - N(-y1)) \
@@ -230,7 +230,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
                 price = c - c_ui
             else:
                 price = 0.0
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_IN_PUT:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_IN_PUT:
             if h > k:
                 p_ui = -s * dq * pow(hOverS, 2.0 * l) * N(-y) \
                     + k * df * pow(hOverS, 2.0 * l - 2.0) * N(-y + sigmaRootT)
@@ -241,7 +241,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
                     + s * dq * pow(hOverS, 2.0 * l) * N(-y1) \
                     - k * df * pow(hOverS, 2.0 * l - 2.0) * N(-y1 + sigmaRootT)
                 price = p - p_uo
-        elif self._optionType == FinEquityBarrierTypes.UP_AND_OUT_PUT:
+        elif self._optionType == TuringEquityBarrierTypes.UP_AND_OUT_PUT:
             if h >= k:
                 p_ui = -s * dq * pow(hOverS, 2.0 * l) * N(-y) \
                     + k * df * pow(hOverS, 2.0 * l - 2.0) * N(-y + sigmaRootT)
@@ -252,7 +252,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
                     + s * dq * pow(hOverS, 2.0 * l) * N(-y1) \
                     - k * df * pow(hOverS, 2.0 * l - 2.0) * N(-y1 + sigmaRootT)
                 price = p_uo
-        elif self._optionType == FinEquityBarrierTypes.DOWN_AND_OUT_PUT:
+        elif self._optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_PUT:
             if h >= k:
                 price = 0.0
             else:
@@ -261,7 +261,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
                     + s * dq * pow(hOverS, 2.0 * l) * (N(y) - N(y1)) \
                     - k * df * pow(hOverS, 2.0 * l - 2.0) * (N(y - sigmaRootT) - N(y1 - sigmaRootT))
                 price = p - p_di
-        elif self._optionType == FinEquityBarrierTypes.DOWN_AND_IN_PUT:
+        elif self._optionType == TuringEquityBarrierTypes.DOWN_AND_IN_PUT:
             if h >= k:
                 price = p
             else:
@@ -301,7 +301,7 @@ class TuringEquityBarrierOption(TuringEquityOption):
         B = self._barrierLevel
         optionType = self._optionType
 
-        process = FinProcessSimulator()
+        process = TuringProcessSimulator()
 
         r = discountCurve.zeroRate(self._expiryDate)
         
@@ -312,13 +312,13 @@ class TuringEquityBarrierOption(TuringEquityOption):
         
         #######################################################################
 
-        if optionType == FinEquityBarrierTypes.DOWN_AND_OUT_CALL and stockPrice <= B:
+        if optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_CALL and stockPrice <= B:
             return 0.0
-        elif optionType == FinEquityBarrierTypes.UP_AND_OUT_CALL and stockPrice >= B:
+        elif optionType == TuringEquityBarrierTypes.UP_AND_OUT_CALL and stockPrice >= B:
             return 0.0
-        elif optionType == FinEquityBarrierTypes.DOWN_AND_OUT_PUT and stockPrice <= B:
+        elif optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_PUT and stockPrice <= B:
             return 0.0
-        elif optionType == FinEquityBarrierTypes.UP_AND_OUT_PUT and stockPrice >= B:
+        elif optionType == TuringEquityBarrierTypes.UP_AND_OUT_PUT and stockPrice >= B:
             return 0.0
 
         #######################################################################
@@ -326,13 +326,13 @@ class TuringEquityBarrierOption(TuringEquityOption):
         simpleCall = False
         simplePut = False
 
-        if optionType == FinEquityBarrierTypes.DOWN_AND_IN_CALL and stockPrice <= B:
+        if optionType == TuringEquityBarrierTypes.DOWN_AND_IN_CALL and stockPrice <= B:
             simpleCall = True
-        elif optionType == FinEquityBarrierTypes.UP_AND_IN_CALL and stockPrice >= B:
+        elif optionType == TuringEquityBarrierTypes.UP_AND_IN_CALL and stockPrice >= B:
             simpleCall = True
-        elif optionType == FinEquityBarrierTypes.UP_AND_IN_PUT and stockPrice >= B:
+        elif optionType == TuringEquityBarrierTypes.UP_AND_IN_PUT and stockPrice >= B:
             simplePut = True
-        elif optionType == FinEquityBarrierTypes.DOWN_AND_IN_PUT and stockPrice <= B:
+        elif optionType == TuringEquityBarrierTypes.DOWN_AND_IN_PUT and stockPrice <= B:
             simplePut = True
 
         if simplePut or simpleCall:
@@ -355,20 +355,20 @@ class TuringEquityBarrierOption(TuringEquityOption):
 
         (numPaths, numTimeSteps) = Sall.shape
 
-        if optionType == FinEquityBarrierTypes.DOWN_AND_IN_CALL or \
-           optionType == FinEquityBarrierTypes.DOWN_AND_OUT_CALL or \
-           optionType == FinEquityBarrierTypes.DOWN_AND_IN_PUT or \
-           optionType == FinEquityBarrierTypes.DOWN_AND_OUT_PUT:
+        if optionType == TuringEquityBarrierTypes.DOWN_AND_IN_CALL or \
+           optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_CALL or \
+           optionType == TuringEquityBarrierTypes.DOWN_AND_IN_PUT or \
+           optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_PUT:
 
             barrierCrossedFromAbove = [False] * numPaths
 
             for p in range(0, numPaths):
                 barrierCrossedFromAbove[p] = np.any(Sall[p] <= B)
 
-        if optionType == FinEquityBarrierTypes.UP_AND_IN_CALL or \
-           optionType == FinEquityBarrierTypes.UP_AND_OUT_CALL or \
-           optionType == FinEquityBarrierTypes.UP_AND_IN_PUT or \
-           optionType == FinEquityBarrierTypes.UP_AND_OUT_PUT:
+        if optionType == TuringEquityBarrierTypes.UP_AND_IN_CALL or \
+           optionType == TuringEquityBarrierTypes.UP_AND_OUT_CALL or \
+           optionType == TuringEquityBarrierTypes.UP_AND_IN_PUT or \
+           optionType == TuringEquityBarrierTypes.UP_AND_OUT_PUT:
 
             barrierCrossedFromBelow = [False] * numPaths
             for p in range(0, numPaths):
@@ -377,25 +377,25 @@ class TuringEquityBarrierOption(TuringEquityOption):
         payoff = np.zeros(numPaths)
         ones = np.ones(numPaths)
 
-        if optionType == FinEquityBarrierTypes.DOWN_AND_OUT_CALL:
+        if optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_CALL:
             payoff = np.maximum(Sall[:, -1] - K, 0.0) * \
                 (ones - barrierCrossedFromAbove)
-        elif optionType == FinEquityBarrierTypes.DOWN_AND_IN_CALL:
+        elif optionType == TuringEquityBarrierTypes.DOWN_AND_IN_CALL:
             payoff = np.maximum(Sall[:, -1] - K, 0.0) * barrierCrossedFromAbove
-        elif optionType == FinEquityBarrierTypes.UP_AND_IN_CALL:
+        elif optionType == TuringEquityBarrierTypes.UP_AND_IN_CALL:
             payoff = np.maximum(Sall[:, -1] - K, 0.0) * barrierCrossedFromBelow
-        elif optionType == FinEquityBarrierTypes.UP_AND_OUT_CALL:
+        elif optionType == TuringEquityBarrierTypes.UP_AND_OUT_CALL:
             payoff = np.maximum(Sall[:, -1] - K, 0.0) * \
                 (ones - barrierCrossedFromBelow)
-        elif optionType == FinEquityBarrierTypes.UP_AND_IN_PUT:
+        elif optionType == TuringEquityBarrierTypes.UP_AND_IN_PUT:
             payoff = np.maximum(K - Sall[:, -1], 0.0) * barrierCrossedFromBelow
-        elif optionType == FinEquityBarrierTypes.UP_AND_OUT_PUT:
+        elif optionType == TuringEquityBarrierTypes.UP_AND_OUT_PUT:
             payoff = np.maximum(K - Sall[:, -1], 0.0) * \
                 (ones - barrierCrossedFromBelow)
-        elif optionType == FinEquityBarrierTypes.DOWN_AND_OUT_PUT:
+        elif optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_PUT:
             payoff = np.maximum(K - Sall[:, -1], 0.0) * \
                 (ones - barrierCrossedFromAbove)
-        elif optionType == FinEquityBarrierTypes.DOWN_AND_IN_PUT:
+        elif optionType == TuringEquityBarrierTypes.DOWN_AND_IN_PUT:
             payoff = np.maximum(K - Sall[:, -1], 0.0) * barrierCrossedFromAbove
         else:
             raise TuringError("Unknown barrier option type." +

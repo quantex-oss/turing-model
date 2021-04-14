@@ -3,7 +3,7 @@
 # ##############################################################################
 
 # from turingmodel.turingutils.turing_global_variables import gDaysInYear
-# from turingmodel.models.turing_model_rates_hw import FinModelRatesHW
+# from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
 # from turingmodel.models.turing_model_rates_bk import TuringModelRatesBK
 # from turingmodel.turingutils.turing_error import TuringError
 # from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
@@ -26,7 +26,7 @@
 # ###############################################################################
 
 
-# class FinSwaptionModelTypes(Enum):
+# class TuringSwaptionModelTypes(Enum):
 #     HULL_WHITE = 1
 #     BLACK_KARASINSKI = 2
 
@@ -40,18 +40,18 @@
 #     AMERICAN_PUT = 4
 
 
-# class FinSwaptionTypes(Enum):
+# class TuringSwaptionTypes(Enum):
 #     PAY = 1
 #     RECEIVE = 2
 
-# class FinSwaptionExerciseTypes(Enum):
+# class TuringSwaptionExerciseTypes(Enum):
 #     EUROPEAN = 1
 #     BERMUDAN = 2
 
 # ###############################################################################
 
 
-# class FinIborBermudanSwaption(object):
+# class TuringIborBermudanSwaption(object):
 #     ''' Class for fixed coupon bonds with embedded call or put optionality. '''
 
 #     def __init__(self,
@@ -142,7 +142,7 @@
 #         payFixedFlag = True
 
 #         # The underlying is a swap in which we pay the fixed amount
-#         swap = FinIborSwap(self._exerciseDate,
+#         swap = TuringIborSwap(self._exerciseDate,
 #                             self._maturityDate,
 #                             self._fixedCoupon,
 #                             self._fixedFrequencyType,
@@ -202,7 +202,7 @@
 
 #         face = self._bond._face
 
-#         if type(model) is FinModelRatesHW:
+#         if type(model) is TuringModelRatesHW:
 
 #             ''' We need to build the tree out to the bond maturity date. To be
 #             more precise we only need to go out the the last option date but

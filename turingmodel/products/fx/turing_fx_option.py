@@ -3,7 +3,7 @@
 ##############################################################################
 
 
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_helper_functions import labelToString
 
@@ -71,7 +71,7 @@ class TuringFXOption(object):
                        model)
 
         vp = self.value(valueDate, stockPrice, discountCurve, dividendCurve,
-                        FinModelBlackScholes(model._volatility + bump))
+                        TuringModelBlackScholes(model._volatility + bump))
 
         if type(v) is dict:
             vega = (vp['value'] - v['value']) / bump

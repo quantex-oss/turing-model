@@ -16,8 +16,8 @@ from turingmodel.turingutils.turing_global_types import TuringOptionTypes
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes, labelToString
 from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
 
-from turingmodel.models.turing_model import FinModel
-from turingmodel.models.turing_model_black_scholes import FinModelBlackScholes
+from turingmodel.models.turing_model import TuringModel
+from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
 from turingmodel.models.turing_model_black_scholes_analytical import bsValue
 from turingmodel.models.turing_model_black_scholes_analytical import bsDelta
 from turingmodel.models.turing_model_black_scholes_analytical import bsVega
@@ -71,7 +71,7 @@ def _fvega(v, *args):
 ###############################################################################
 
 
-class FinEquityVanillaOption():
+class TuringEquityVanillaOption():
     ''' Class for managing plain vanilla European calls and puts on equities.
     For American calls and puts see the TuringEquityAmericanOption class. '''
 
@@ -135,7 +135,7 @@ class FinEquityVanillaOption():
               stockPrice: (np.ndarray, float),
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
-              model: FinModel):
+              model: TuringModel):
         ''' Equity Vanilla Option valuation using Black-Scholes model. '''
 
         if type(valueDate) == TuringDate:
@@ -163,7 +163,7 @@ class FinEquityVanillaOption():
 
         k = self._strikePrice
 
-        if isinstance(model, FinModelBlackScholes):
+        if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
             value = bsValue(s0, texp, k, r, q, v, self._optionType.value)
@@ -208,7 +208,7 @@ class FinEquityVanillaOption():
 
         k = self._strikePrice
 
-        if isinstance(model, FinModelBlackScholes):
+        if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
             delta = bsDelta(s0, texp, k, r, q, v, self._optionType.value)
@@ -225,7 +225,7 @@ class FinEquityVanillaOption():
               stockPrice: float,
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
-              model:FinModel):
+              model:TuringModel):
         ''' Calculate the analytical gamma of a European vanilla option. '''
 
         if type(valueDate) == TuringDate:
@@ -251,7 +251,7 @@ class FinEquityVanillaOption():
 
         k = self._strikePrice
 
-        if isinstance(model, FinModelBlackScholes):
+        if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
             gamma = bsGamma(s0, texp, k, r, q, v, self._optionType.value)
@@ -268,7 +268,7 @@ class FinEquityVanillaOption():
              stockPrice: float,
              discountCurve: TuringDiscountCurve,
              dividendCurve: TuringDiscountCurve,
-             model:FinModel):
+             model:TuringModel):
         ''' Calculate the analytical vega of a European vanilla option. '''
 
         if type(valueDate) == TuringDate:
@@ -293,7 +293,7 @@ class FinEquityVanillaOption():
 
         k = self._strikePrice
 
-        if isinstance(model, FinModelBlackScholes):
+        if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
             vega = bsVega(s0, texp, k, r, q, v, self._optionType.value)
@@ -310,7 +310,7 @@ class FinEquityVanillaOption():
               stockPrice: float,
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
-              model:FinModel):
+              model:TuringModel):
         ''' Calculate the analytical theta of a European vanilla option. '''
 
         if type(valueDate) == TuringDate:
@@ -335,7 +335,7 @@ class FinEquityVanillaOption():
 
         k = self._strikePrice
 
-        if isinstance(model, FinModelBlackScholes):
+        if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
             theta = bsTheta(s0, texp, k, r, q, v, self._optionType.value)
@@ -352,7 +352,7 @@ class FinEquityVanillaOption():
             stockPrice: float,
             discountCurve: TuringDiscountCurve,
             dividendCurve: TuringDiscountCurve,
-            model:FinModel):
+            model:TuringModel):
         ''' Calculate the analytical rho of a European vanilla option. '''
 
         if type(valueDate) == TuringDate:
@@ -377,7 +377,7 @@ class FinEquityVanillaOption():
 
         k = self._strikePrice
 
-        if isinstance(model, FinModelBlackScholes):
+        if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
             rho = bsRho(s0, texp, k, r, q, v, self._optionType.value)
@@ -425,7 +425,7 @@ class FinEquityVanillaOption():
                            stockPrice: float,
                            discountCurve: TuringDiscountCurve,
                            dividendCurve: TuringDiscountCurve,
-                           model:FinModel,
+                           model:TuringModel,
                            numPaths: int = 10000,
                            seed: int = 4242,
                            useSobol: int = 0):
@@ -460,7 +460,7 @@ class FinEquityVanillaOption():
                            stockPrice: float,
                            discountCurve: TuringDiscountCurve,
                            dividendCurve: TuringDiscountCurve,
-                           model:FinModel,
+                           model:TuringModel,
                            numPaths: int = 10000,
                            seed: int = 4242,
                            useSobol: int = 0):
@@ -495,7 +495,7 @@ class FinEquityVanillaOption():
                                stockPrice: float,
                                discountCurve: TuringDiscountCurve,
                                dividendCurve: TuringDiscountCurve,
-                               model:FinModel,
+                               model:TuringModel,
                                numPaths: int = 10000,
                                seed: int = 4242,
                                useSobol: int = 0):
@@ -532,7 +532,7 @@ class FinEquityVanillaOption():
                             stockPrice: float,
                             discountCurve: TuringDiscountCurve,
                             dividendCurve: TuringDiscountCurve,
-                            model:FinModel,
+                            model:TuringModel,
                             numPaths: int = 10000,
                             seed: int = 4242,
                             useSobol: int = 0):
@@ -567,7 +567,7 @@ class FinEquityVanillaOption():
                                 stockPrice: float,
                                 discountCurve: TuringDiscountCurve,
                                 dividendCurve: TuringDiscountCurve,
-                                model:FinModel,
+                                model:TuringModel,
                                 numPaths: int = 10000,
                                 seed: int = 4242,
                                 useSobol: int = 0):
@@ -602,7 +602,7 @@ class FinEquityVanillaOption():
                 stockPrice: float,
                 discountCurve: TuringDiscountCurve,
                 dividendCurve: TuringDiscountCurve,
-                model:FinModel,
+                model:TuringModel,
                 numPaths: int = 10000,
                 seed: int = 4242,
                 useSobol: int = 0):

@@ -10,7 +10,7 @@ sys.path.append("..")
 
 from turingmodel.models.turing_model_heston import TuringModelHeston, TuringHestonNumericalScheme
 from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.products.equity.turing_equity_vanilla_option import FinEquityVanillaOption
+from turingmodel.products.equity.turing_equity_vanilla_option import TuringEquityVanillaOption
 from turingmodel.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
@@ -53,7 +53,7 @@ def testAnalyticalModels():
         for rho in [-0.9, -0.5, 0.0]:
             hestonModel = TuringModelHeston(v0, kappa, theta, sigma, rho)
             for strikePrice in np.linspace(95, 105, 3):
-                callOption = FinEquityVanillaOption(
+                callOption = TuringEquityVanillaOption(
                     expiryDate, strikePrice, TuringOptionTypes.EUROPEAN_CALL)
                 valueMC_Heston = hestonModel.value_MC(
                     valueDate,
@@ -124,7 +124,7 @@ def testMonteCarlo():
         for numSteps in [25, 50]:
             for numPaths in [10000, 20000]:
                 hestonModel = TuringModelHeston(v0, kappa, theta, sigma, rho)
-                callOption = FinEquityVanillaOption(
+                callOption = TuringEquityVanillaOption(
                     expiryDate, strikePrice, TuringOptionTypes.EUROPEAN_CALL)
                 valueWeber = hestonModel.value_Weber(
                     valueDate, callOption, stockPrice, interestRate, dividendYield)

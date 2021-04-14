@@ -12,7 +12,7 @@ from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
 from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
 from turingmodel.turingutils.turing_global_variables import gDaysInYear
 from turingmodel.turingutils.turing_math import ONE_MILLION, N
-from turingmodel.products.credit.turing_cds import FinCDS
+from turingmodel.products.credit.turing_cds import TuringCDS
 from turingmodel.turingutils.turing_helper_functions import checkArgumentTypes
 from turingmodel.turingutils.turing_date import TuringDate
 from turingmodel.turingutils.turing_error import TuringError
@@ -102,16 +102,16 @@ class TuringCDSOption():
         # The underlying is a forward starting option that steps in on
         # the expiry date and matures on the expiry date with a coupon
         # set equal to the option spread strike
-        cds = FinCDS(self._expiryDate,
-                     self._maturityDate,
-                     self._strikeCoupon,
-                     self._notional,
-                     self._longProtection,
-                     self._freqType,
-                     self._dayCountType,
-                     self._calendarType,
-                     self._businessDateAdjustType,
-                     self._dateGenRuleType)
+        cds = TuringCDS(self._expiryDate,
+                        self._maturityDate,
+                        self._strikeCoupon,
+                        self._notional,
+                        self._longProtection,
+                        self._freqType,
+                        self._dayCountType,
+                        self._calendarType,
+                        self._businessDateAdjustType,
+                        self._dateGenRuleType)
 
         strike = self._strikeCoupon
         forwardSpread = cds.parSpread(valuationDate, issuerCurve)
