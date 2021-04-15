@@ -8,8 +8,8 @@ import time
 import sys
 sys.path.append("..")
 
-from turingmodel.models.turing_model_rates_cir import zeroPrice_MC, zeroPrice
-from turingmodel.models.turing_model_rates_cir import TuringCIRNumericalScheme
+from turing_models.models.turing_model_rates_cir import zeroPrice_MC, zeroPrice
+from turing_models.models.turing_model_rates_cir import TuringCIRNumericalScheme
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from turingmodel.turingutils.turing_calendar import TuringDateGenRuleTypes
-from turingmodel.turingutils.turing_schedule import TuringSchedule
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
-from turingmodel.turingutils.turing_calendar import TuringCalendarTypes, TuringCalendar
-from turingmodel.turingutils.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
+from turing_models.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from turing_models.turingutils.turing_calendar import TuringDateGenRuleTypes
+from turing_models.turingutils.turing_schedule import TuringSchedule
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_calendar import TuringCalendarTypes, TuringCalendar
+from turing_models.turingutils.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

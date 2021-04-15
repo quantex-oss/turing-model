@@ -7,27 +7,27 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_day_count import TuringDayCountTypes
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
 
-from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
-from turingmodel.products.rates.turing_ibor_swaption import TuringIborSwaption
-from turingmodel.products.rates.turing_ibor_swaption import TuringSwapTypes
+from turing_models.products.rates.turing_ibor_deposit import TuringIborDeposit
+from turing_models.products.rates.turing_ibor_swap import TuringIborSwap
+from turing_models.products.rates.turing_ibor_swaption import TuringIborSwaption
+from turing_models.products.rates.turing_ibor_swaption import TuringSwapTypes
 
-from turingmodel.models.turing_model_black import TuringModelBlack
-from turingmodel.models.turing_model_black_shifted import TuringModelBlackShifted
-from turingmodel.models.turing_model_sabr import TuringModelSABR
-from turingmodel.models.turing_model_sabr_shifted import TuringModelSABRShifted
-from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
-from turingmodel.models.turing_model_rates_bk import TuringModelRatesBK
-from turingmodel.models.turing_model_rates_bdt import TuringModelRatesBDT
+from turing_models.models.turing_model_black import TuringModelBlack
+from turing_models.models.turing_model_black_shifted import TuringModelBlackShifted
+from turing_models.models.turing_model_sabr import TuringModelSABR
+from turing_models.models.turing_model_sabr_shifted import TuringModelSABRShifted
+from turing_models.models.turing_model_rates_hw import TuringModelRatesHW
+from turing_models.models.turing_model_rates_bk import TuringModelRatesBK
+from turing_models.models.turing_model_rates_bdt import TuringModelRatesBDT
 
-from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
-from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
+from turing_models.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.market.curves.turing_interpolator import TuringInterpTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

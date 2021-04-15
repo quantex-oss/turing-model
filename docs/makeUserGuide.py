@@ -823,19 +823,19 @@ buildHead()
 buildIntro("..//README.md")
 
 if 1 == 1:
-    buildChapter("..//turingmodel//turingutils")
-    buildChapter("..//turingmodel//market//curves")
-    buildChapter("..//turingmodel//market//volatility")
-    buildChapter("..//turingmodel//products//equity")
-    buildChapter("..//turingmodel//products//credit")
-    buildChapter("..//turingmodel//products//bonds")
-    buildChapter("..//turingmodel//products//rates")
-    buildChapter("..//turingmodel//products//fx")
-    buildChapter("..//turingmodel//models")
-#    buildChapter("..//turingmodel//portfolio")
-#    buildChapter("..//turingmodel//risk")
-#    buildChapter(".//turingmodel//tests")
-#    buildChapter(".//turingmodel//docs")
+    buildChapter("..//turing_models//turingutils")
+    buildChapter("..//turing_models//market//curves")
+    buildChapter("..//turing_models//market//volatility")
+    buildChapter("..//turing_models//products//equity")
+    buildChapter("..//turing_models//products//credit")
+    buildChapter("..//turing_models//products//bonds")
+    buildChapter("..//turing_models//products//rates")
+    buildChapter("..//turing_models//products//fx")
+    buildChapter("..//turing_models//models")
+#    buildChapter("..//turing_models//portfolio")
+#    buildChapter("..//turing_models//risk")
+#    buildChapter(".//turing_models//tests")
+#    buildChapter(".//turing_models//docs")
 
 buildTail()
 
@@ -851,8 +851,8 @@ if 1 == 1:
     pdfFileName1 = fileName + ".pdf"
     pdfFileName2 = '..\\' + pdfFileName1
 
-    # TODO: Only works if you have turingmodel-examples-git
-    # Maybe add `turingmodel-examples-git` as a submodule?
+    # TODO: Only works if you have turing_models-examples-git
+    # Maybe add `turing_models-examples-git` as a submodule?
 
     print("Removing unneeded files.")
     os.remove(fileName + ".out")

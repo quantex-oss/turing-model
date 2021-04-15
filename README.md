@@ -1,40 +1,14 @@
 # Quick Start Guide
 
-FinancePy can be installed from pip using the following command:
-
-`pip install financepy`
-
-To upgrade an existing installation type:
-
-`pip install --upgrade financepy`
-
-I have encountered problems using Anaconda3-2020.07 due to some Numba and LLVMLite problems. However Anaconda3-2020.02 works.
-
-## Using FinancePy in a Jupyter Notebook
-
-Once financepy has been installed, it is easy to get started.
-
-Just download the project and examine the set of Jupyter Notebooks in the notebooks folder.
-
 A pdf manual describing all of the functions can be found in the project directory.
 
 ## Overview
 
-FinancePy is a python-based library that is currently in beta version. It covers the following functionality:
+Turing_models is a python-based library that is currently in beta version. It covers the following functionality:
 
 * Valuation and risk models for a wide range of equity, FX, interest rate and credit derivatives.
 
 Although it is written entirely in Python, it can achieve speeds comparable to C++ by using Numba. As a result the user has both the ability to examine the underlying code and the ability to perform pricing and risk at speeds which compare to a library written in C++.
-
-The target audience for this library includes:
-
-* Students of finance and students of python
-* Academics teaching finance or conducting research into finance
-* Traders wishing to price or risk-manage a derivative.
-* Quantitative analysts seeking to price or reverse engineer a price.
-* Risk managers wishing to replicate and understand price sensitivity.
-* Portfolio managers wishing to check prices or calculate risk measures.
-* Fund managers wanting to value a portfolio or examine a trading strategy.
 
 Users should have a good, but not advanced, understanding of Python. In terms of Python, the style of the library has been determined subject to the following criteria:
 
@@ -49,13 +23,6 @@ Users should have a good, but not advanced, understanding of Python. In terms of
 
 In many cases the valuations should be close to if not identical to those produced by financial systems such as Bloomberg. However for some products, larger value differences may arise due to differences in date generation and interpolation schemes. Over time it is hoped to reduce the size of such differences.
 
-Important Note:
-
-* IF YOU HAVE ANY PRICING OR RISK EXAMPLES YOU WOULD LIKE REPLICATED, SEND SCREENSHOTS OF ALL THE UNDERLYING DATA, MODEL DETAILS AND VALUATION.
-* IF THERE IS A PRODUCT YOU WOULD LIKE TO HAVE ADDED, SEND ME THE REQUEST.
-* IF THERE IS FUNCTIONALITY YOU WOULD LIKE ADDED, SEND ME A REQUEST.
-
-Contact me at quant@financepy.com.
 
 ## The Library Design
 
@@ -72,26 +39,19 @@ Any product valuation is the result of the following data design:
 
 The interface to each product has a value() function that will take a model and market to produce a price.
 
-## Author
-
-Dominic O'Kane. I am a Professor of Finance at the EDHEC Business School in Nice, France. I have 12 years of industry experience and 10 years of academic experience.
-
 ## Dependencies
 
-FinancePy depends on Numpy, Numba, Scipy and basic python libraries such as os, sys and datetime.
+Turing_models depends on Numpy, Numba, Scipy and basic python libraries such as os, sys and datetime.
 
 ## Changelog
 
 See the changelog for a detailed history of changes.
 
-## Contributions
+## Thanks
 
-Contributions are very welcome. There are a number of requirements:
+Thanks for Dominic O'Kane's financepy library.
+The address of the project is https://github.com/domokane/FinancePy.git.
 
-* You can use either camel case or snail case. At some point I will try to make the code Pep8 compliant. But not yet.
-* Comments are required for every class and function and they should be a clear description.
-* At least one test case must be provided for every function.
-* Avoid very pythonic constructions. For example a loop is as good as a list comprehension. And with numba it can be faster. Readability is the priority.
 
 ## License
 

@@ -5,10 +5,10 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.products.equity.turing_equity_forward import TuringEquityForward
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.turingutils.turing_global_types import TuringLongShort
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.products.equity.turing_equity_forward import TuringEquityForward
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_global_types import TuringLongShort
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

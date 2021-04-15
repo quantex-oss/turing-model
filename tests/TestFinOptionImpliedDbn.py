@@ -8,18 +8,18 @@ sys.path.append("..")
 import numpy as np
 import matplotlib.pyplot as plt
 
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.turingutils.turing_date import TuringDate
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.turingutils.turing_date import TuringDate
 
-from turingmodel.models.turing_model_volatility_fns import TuringVolFunctionTypes
-from turingmodel.models.turing_model_volatility_fns import volFunctionClark
+from turing_models.models.turing_model_volatility_fns import TuringVolFunctionTypes
+from turing_models.models.turing_model_volatility_fns import volFunctionClark
 
-from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
-from turingmodel.models.turing_model_option_implied_dbn import optionImpliedDbn
+from turing_models.models.turing_model_black_scholes import TuringModelBlackScholes
+from turing_models.models.turing_model_option_implied_dbn import optionImpliedDbn
 
-from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXVolSurface
-from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
-from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
+from turing_models.market.volatility.turing_fx_vol_surface import TuringFXVolSurface
+from turing_models.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
+from turing_models.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
 
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

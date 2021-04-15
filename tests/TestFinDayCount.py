@@ -5,9 +5,9 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.turingutils.turing_day_count import TuringDayCount, TuringDayCountTypes
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_day_count import TuringDayCount, TuringDayCountTypes
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

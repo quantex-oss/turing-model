@@ -8,22 +8,22 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turingmodel.products.credit.turing_cds import TuringCDS
-from turingmodel.turingutils.turing_math import ONE_MILLION
-from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
-from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
-from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
-from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from turingmodel.products.credit.turing_cds_curve import TuringCDSCurve
-from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from turingmodel.turingutils.turing_calendar import TuringDateGenRuleTypes
-from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
-from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.turingutils.turing_global_types import TuringSwapTypes
+from turing_models.products.credit.turing_cds import TuringCDS
+from turing_models.turingutils.turing_math import ONE_MILLION
+from turing_models.market.curves.turing_interpolator import TuringInterpTypes
+from turing_models.products.rates.turing_ibor_swap import TuringIborSwap
+from turing_models.products.rates.turing_ibor_deposit import TuringIborDeposit
+from turing_models.market.curves.turing_discount_curve import TuringDiscountCurve
+from turing_models.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turing_models.products.credit.turing_cds_curve import TuringCDSCurve
+from turing_models.turingutils.turing_global_variables import gDaysInYear
+from turing_models.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from turing_models.turingutils.turing_calendar import TuringDateGenRuleTypes
+from turing_models.turingutils.turing_calendar import TuringCalendarTypes
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_day_count import TuringDayCountTypes
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_global_types import TuringSwapTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

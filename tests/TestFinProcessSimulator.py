@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.models.turing_process_simulator import TuringVasicekNumericalScheme
-from turingmodel.models.turing_process_simulator import TuringCIRNumericalScheme
-from turingmodel.models.turing_process_simulator import TuringHestonNumericalScheme
-from turingmodel.models.turing_process_simulator import TuringGBMNumericalScheme
-from turingmodel.models.turing_process_simulator import TuringProcessTypes
-from turingmodel.models.turing_process_simulator import TuringProcessSimulator
+from turing_models.models.turing_process_simulator import TuringVasicekNumericalScheme
+from turing_models.models.turing_process_simulator import TuringCIRNumericalScheme
+from turing_models.models.turing_process_simulator import TuringHestonNumericalScheme
+from turing_models.models.turing_process_simulator import TuringGBMNumericalScheme
+from turing_models.models.turing_process_simulator import TuringProcessTypes
+from turing_models.models.turing_process_simulator import TuringProcessSimulator
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

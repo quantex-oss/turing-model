@@ -7,12 +7,12 @@ import time
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.products.equity.turing_equity_asian_option import TuringEquityAsianOption
-from turingmodel.products.equity.turing_equity_asian_option import TuringAsianOptionValuationMethods
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
-from turingmodel.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_global_types import TuringOptionTypes
+from turing_models.products.equity.turing_equity_asian_option import TuringEquityAsianOption
+from turing_models.products.equity.turing_equity_asian_option import TuringAsianOptionValuationMethods
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.models.turing_model_black_scholes import TuringModelBlackScholes
+from turing_models.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -7,11 +7,11 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
-from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_global_types import TuringOptionTypes
+from turing_models.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
+from turing_models.models.turing_model_black_scholes import TuringModelBlackScholes
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

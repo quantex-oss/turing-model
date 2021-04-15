@@ -5,18 +5,18 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
-from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_day_count import TuringDayCountTypes
 
-from turingmodel.turingutils.turing_global_types import TuringOptionTypes
+from turing_models.turingutils.turing_global_types import TuringOptionTypes
 
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
-from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholesTypes
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.models.turing_model_black_scholes import TuringModelBlackScholes
+from turing_models.models.turing_model_black_scholes import TuringModelBlackScholesTypes
 
-from turingmodel.products.equity.turing_equity_vanilla_option import TuringEquityVanillaOption
-from turingmodel.products.equity.turing_equity_american_option import TuringEquityAmericanOption
+from turing_models.products.equity.turing_equity_vanilla_option import TuringEquityVanillaOption
+from turing_models.products.equity.turing_equity_american_option import TuringEquityAmericanOption
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

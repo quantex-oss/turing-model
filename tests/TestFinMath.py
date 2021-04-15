@@ -8,12 +8,12 @@ import time
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_math import normcdf_integrate
-from turingmodel.turingutils.turing_math import N
-from turingmodel.turingutils.turing_math import normcdf_slow
+from turing_models.turingutils.turing_math import normcdf_integrate
+from turing_models.turingutils.turing_math import N
+from turing_models.turingutils.turing_math import normcdf_slow
 
 
-from turingmodel.turingutils.turing_math import norminvcdf
+from turing_models.turingutils.turing_math import norminvcdf
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

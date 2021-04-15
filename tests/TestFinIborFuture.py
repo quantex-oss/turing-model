@@ -5,8 +5,8 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.products.rates.turing_ibor_future import TuringIborFuture
-from turingmodel.turingutils.turing_date import *
+from turing_models.products.rates.turing_ibor_future import TuringIborFuture
+from turing_models.turingutils.turing_date import *
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

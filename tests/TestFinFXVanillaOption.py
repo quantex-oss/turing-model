@@ -7,15 +7,15 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
-from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
-from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turingmodel.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_global_types import TuringOptionTypes
+from turing_models.products.fx.turing_fx_vanilla_option import TuringFXVanillaOption
+from turing_models.models.turing_model_black_scholes import TuringModelBlackScholes
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.turingutils.turing_day_count import TuringDayCountTypes
+from turing_models.turingutils.turing_calendar import TuringCalendarTypes
+from turing_models.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turing_models.products.rates.turing_ibor_deposit import TuringIborDeposit
+from turing_models.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

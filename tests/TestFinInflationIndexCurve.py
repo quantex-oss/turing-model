@@ -5,8 +5,8 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.products.inflation.turing_inflation_index_curve import TuringInflationIndexCurve
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.products.inflation.turing_inflation_index_curve import TuringInflationIndexCurve
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

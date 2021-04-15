@@ -9,8 +9,8 @@ sys.path.append("..")
 import glob
 from os.path import dirname, basename, join
 
-from turingmodel.turingutils.turing_error import TuringError
-from turingmodel.turingutils.turing_date import setDateFormatType, TuringDateFormatTypes
+from turing_models.turingutils.turing_error import TuringError
+from turing_models.turingutils.turing_date import setDateFormatType, TuringDateFormatTypes
 setDateFormatType(TuringDateFormatTypes.UK_LONG)
 
 # I put this here to get the library loaded and header printed before loop

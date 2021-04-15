@@ -5,12 +5,12 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXVolSurface
-from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
-from turingmodel.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.models.turing_model_volatility_fns import TuringVolFunctionTypes
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.volatility.turing_fx_vol_surface import TuringFXVolSurface
+from turing_models.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
+from turing_models.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.models.turing_model_volatility_fns import TuringVolFunctionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

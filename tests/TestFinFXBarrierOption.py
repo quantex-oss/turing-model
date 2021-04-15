@@ -5,13 +5,13 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.models.turing_process_simulator import TuringProcessTypes
-from turingmodel.models.turing_process_simulator import TuringGBMNumericalScheme
-from turingmodel.models.turing_model_black_scholes import TuringModelBlackScholes
-from turingmodel.products.fx.turing_fx_barrier_option import TuringFXBarrierTypes
-from turingmodel.products.fx.turing_fx_barrier_option import TuringFXBarrierOption
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turingmodel.turingutils.turing_date import TuringDate
+from turing_models.models.turing_process_simulator import TuringProcessTypes
+from turing_models.models.turing_process_simulator import TuringGBMNumericalScheme
+from turing_models.models.turing_model_black_scholes import TuringModelBlackScholes
+from turing_models.products.fx.turing_fx_barrier_option import TuringFXBarrierTypes
+from turing_models.products.fx.turing_fx_barrier_option import TuringFXBarrierOption
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.turingutils.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

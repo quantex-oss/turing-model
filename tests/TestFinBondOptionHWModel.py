@@ -9,17 +9,17 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.market.curves.turing_discount_curve import TuringDiscountCurve
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.market.curves.turing_discount_curve import TuringDiscountCurve
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from turingmodel.products.bonds.turing_bond import TuringBond
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
-from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.turingutils.turing_global_variables import gDaysInYear
-from turingmodel.products.bonds.turing_bond_option import TuringBondOption
-from turingmodel.turingutils.turing_global_types import TuringOptionTypes
-from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW, TuringHWEuropeanCalcType
+from turing_models.products.bonds.turing_bond import TuringBond
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_day_count import TuringDayCountTypes
+from turing_models.turingutils.turing_global_variables import gDaysInYear
+from turing_models.products.bonds.turing_bond_option import TuringBondOption
+from turing_models.turingutils.turing_global_types import TuringOptionTypes
+from turing_models.models.turing_model_rates_hw import TuringModelRatesHW, TuringHWEuropeanCalcType
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

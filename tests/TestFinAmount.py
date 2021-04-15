@@ -5,8 +5,8 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_amount import TuringAmount
-from turingmodel.turingutils.turing_currency import TuringCurrencyTypes
+from turing_models.turingutils.turing_amount import TuringAmount
+from turing_models.turingutils.turing_currency import TuringCurrencyTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

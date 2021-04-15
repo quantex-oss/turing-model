@@ -7,8 +7,8 @@ import sys
 import numpy as np
 sys.path.append("..")
 
-from turingmodel.models.turing_model_black import TuringModelBlack
-from turingmodel.turingutils.turing_global_types import TuringOptionTypes
+from turing_models.models.turing_model_black import TuringModelBlack
+from turing_models.turingutils.turing_global_types import TuringOptionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

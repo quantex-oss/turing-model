@@ -8,11 +8,11 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
-from turingmodel.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.turingutils.turing_day_count import TuringDayCountTypes
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.market.curves.turing_interpolator import TuringInterpTypes
+from turing_models.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

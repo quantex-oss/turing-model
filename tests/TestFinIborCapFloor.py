@@ -9,38 +9,38 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_global_types import TuringCapFloorTypes
-from turingmodel.products.rates.turing_ibor_cap_floor import TuringIborCapFloor
-from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
-from turingmodel.products.rates.turing_ibor_swap import TuringSwapTypes
-from turingmodel.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turingmodel.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turing_models.turingutils.turing_global_types import TuringCapFloorTypes
+from turing_models.products.rates.turing_ibor_cap_floor import TuringIborCapFloor
+from turing_models.products.rates.turing_ibor_swap import TuringIborSwap
+from turing_models.products.rates.turing_ibor_swap import TuringSwapTypes
+from turing_models.products.rates.turing_ibor_deposit import TuringIborDeposit
+from turing_models.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
 
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
-from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_day_count import TuringDayCountTypes
+from turing_models.turingutils.turing_date import TuringDate
 
-from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
-from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from turingmodel.turingutils.turing_calendar import TuringDateGenRuleTypes
+from turing_models.turingutils.turing_calendar import TuringCalendarTypes
+from turing_models.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from turing_models.turingutils.turing_calendar import TuringDateGenRuleTypes
 
-from turingmodel.turingutils.turing_global_types import TuringSwapTypes
+from turing_models.turingutils.turing_global_types import TuringSwapTypes
 
-from turingmodel.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
-from turingmodel.market.curves.turing_interpolator import TuringInterpTypes
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.market.curves.turing_interpolator import TuringInterpTypes
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
-from turingmodel.models.turing_model_black import TuringModelBlack
-from turingmodel.models.turing_model_bachelier import TuringModelBachelier
-from turingmodel.models.turing_model_black_shifted import TuringModelBlackShifted
-from turingmodel.models.turing_model_sabr import TuringModelSABR
-from turingmodel.models.turing_model_sabr_shifted import TuringModelSABRShifted
-from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
+from turing_models.models.turing_model_black import TuringModelBlack
+from turing_models.models.turing_model_bachelier import TuringModelBachelier
+from turing_models.models.turing_model_black_shifted import TuringModelBlackShifted
+from turing_models.models.turing_model_sabr import TuringModelSABR
+from turing_models.models.turing_model_sabr_shifted import TuringModelSABRShifted
+from turing_models.models.turing_model_rates_hw import TuringModelRatesHW
 
-from turingmodel.turingutils.turing_global_variables import gDaysInYear
+from turing_models.turingutils.turing_global_variables import gDaysInYear
 
-from turingmodel.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
-from turingmodel.turingutils.turing_schedule import TuringSchedule
+from turing_models.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
+from turing_models.turingutils.turing_schedule import TuringSchedule
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

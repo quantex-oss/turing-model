@@ -43,7 +43,7 @@ TestFin*_COMPARE.testLog
 
 # MYPY
 .mypy_cache
-turingmodel/__init__.py
+turing_models/__init__.py
 
 # bytecode
 *.py[cod]

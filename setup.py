@@ -17,7 +17,7 @@ print(">>>" + version_number_str + "<<<")
 ###############################################################################
 cr = "\n"
 
-with open('turingmodel//__init__.template', 'r') as file:
+with open('turing_models//__init__.template', 'r') as file:
     filedata = file.read()
 
 # Replace the target string
@@ -30,16 +30,16 @@ dt_string = now.strftime("%d %b %Y at %H:%M")
 filedata = filedata.replace('__dateandtime__', dt_string)
 
 # Write the file out again
-with open('turingmodel//__init__.py', 'w') as file:
+with open('turing_models//__init__.py', 'w') as file:
     file.write(filedata)
 
 ###############################################################################
 
 setuptools.setup(
-    name="turingmodel",
+    name="turing_models",
     version=version_number_str,
-    author="Dominic O'Kane",
-    author_email="turingmodel@iquantex.com",
+    author="Turing",
+    author_email="turing_models@iquantex.com",
     description="A Finance Library",
     long_description=long_description,
     long_description_content_type="text/markdown",

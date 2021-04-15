@@ -6,9 +6,9 @@ import sys
 sys.path.append("..")
 
 import numpy as np
-from turingmodel.models.turing_model_sabr import volFunctionSABR
-from turingmodel.models.turing_model_sabr import TuringModelSABR
-from turingmodel.turingutils.turing_global_types import TuringOptionTypes
+from turing_models.models.turing_model_sabr import volFunctionSABR
+from turing_models.models.turing_model_sabr import TuringModelSABR
+from turing_models.turingutils.turing_global_types import TuringOptionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -8,9 +8,9 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.market.curves.turing_discount_curve_ns import TuringDiscountCurveNS
-from turingmodel.turingutils.turing_math import scale
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.market.curves.turing_discount_curve_ns import TuringDiscountCurveNS
+from turing_models.turingutils.turing_math import scale
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

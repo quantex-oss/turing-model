@@ -5,20 +5,20 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_date import TuringDate
-from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
-from turingmodel.turingutils.turing_global_types import TuringSwapTypes
-from turingmodel.turingutils.turing_global_types import TuringExerciseTypes
-from turingmodel.products.rates.turing_ibor_swaption import TuringIborSwaption
-from turingmodel.products.rates.turing_ibor_swap import TuringIborSwap
+from turing_models.turingutils.turing_date import TuringDate
+from turing_models.turingutils.turing_day_count import TuringDayCountTypes
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_global_types import TuringSwapTypes
+from turing_models.turingutils.turing_global_types import TuringExerciseTypes
+from turing_models.products.rates.turing_ibor_swaption import TuringIborSwaption
+from turing_models.products.rates.turing_ibor_swap import TuringIborSwap
 
-from turingmodel.products.rates.turing_ibor_bermudan_swaption import TuringIborBermudanSwaption
-from turingmodel.models.turing_model_black import TuringModelBlack
-from turingmodel.models.turing_model_rates_bk import TuringModelRatesBK
-from turingmodel.models.turing_model_rates_hw import TuringModelRatesHW
-from turingmodel.models.turing_model_rates_bdt import TuringModelRatesBDT
-from turingmodel.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.products.rates.turing_ibor_bermudan_swaption import TuringIborBermudanSwaption
+from turing_models.models.turing_model_black import TuringModelBlack
+from turing_models.models.turing_model_rates_bk import TuringModelRatesBK
+from turing_models.models.turing_model_rates_hw import TuringModelRatesHW
+from turing_models.models.turing_model_rates_bdt import TuringModelRatesBDT
+from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

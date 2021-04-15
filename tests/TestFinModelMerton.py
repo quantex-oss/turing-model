@@ -5,8 +5,8 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.models.turing_model_merton_credit import TuringModelMertonCredit
-from turingmodel.models.turing_model_merton_credit_mkt import TuringModelMertonCreditMkt
+from turing_models.models.turing_model_merton_credit import TuringModelMertonCredit
+from turing_models.models.turing_model_merton_credit_mkt import TuringModelMertonCreditMkt
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

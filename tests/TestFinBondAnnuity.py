@@ -7,13 +7,13 @@
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_calendar import TuringDateGenRuleTypes
-from turingmodel.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from turingmodel.turingutils.turing_day_count import TuringDayCountTypes
-from turingmodel.turingutils.turing_calendar import TuringCalendarTypes
-from turingmodel.turingutils.turing_frequency import TuringFrequencyTypes
-from turingmodel.turingutils.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
-from turingmodel.products.bonds.turing_bond_annuity import TuringBondAnnuity
+from turing_models.turingutils.turing_calendar import TuringDateGenRuleTypes
+from turing_models.turingutils.turing_calendar import TuringBusDayAdjustTypes
+from turing_models.turingutils.turing_day_count import TuringDayCountTypes
+from turing_models.turingutils.turing_calendar import TuringCalendarTypes
+from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
+from turing_models.turingutils.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
+from turing_models.products.bonds.turing_bond_annuity import TuringBondAnnuity
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

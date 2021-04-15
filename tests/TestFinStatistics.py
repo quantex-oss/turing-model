@@ -7,7 +7,7 @@ import time
 import sys
 sys.path.append("..")
 
-from turingmodel.turingutils.turing_statistics import mean, stdev, correlation
+from turing_models.turingutils.turing_statistics import mean, stdev, correlation
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)
