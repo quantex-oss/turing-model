@@ -1,7 +1,3 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import numpy as np
 import time
 import matplotlib.pyplot as plt
@@ -9,17 +5,17 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_date import TuringDate
-from turing_models.market.curves.turing_discount_curve import TuringDiscountCurve
-from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.utilities.date import TuringDate
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
-from turing_models.products.bonds.turing_bond import TuringBond
-from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
-from turing_models.turingutils.turing_day_count import TuringDayCountTypes
-from turing_models.turingutils.turing_global_variables import gDaysInYear
-from turing_models.products.bonds.turing_bond_option import TuringBondOption
-from turing_models.turingutils.turing_global_types import TuringOptionTypes
-from turing_models.models.turing_model_rates_bk import TuringModelRatesBK
+from turing_models.products.bonds.bond import TuringBond
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.global_variables import gDaysInYear
+from turing_models.products.bonds.bond_option import TuringBondOption
+from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.models.model_rates_bk import TuringModelRatesBK
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

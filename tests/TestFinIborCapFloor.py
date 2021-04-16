@@ -1,46 +1,41 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
-
 import time
 import numpy as np
 
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_global_types import TuringCapFloorTypes
-from turing_models.products.rates.turing_ibor_cap_floor import TuringIborCapFloor
-from turing_models.products.rates.turing_ibor_swap import TuringIborSwap
-from turing_models.products.rates.turing_ibor_swap import TuringSwapTypes
-from turing_models.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turing_models.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
+from turing_models.utilities.global_types import TuringCapFloorTypes
+from turing_models.products.rates.ibor_cap_floor import TuringIborCapFloor
+from turing_models.products.rates.ibor_swap import TuringIborSwap
+from turing_models.products.rates.ibor_swap import TuringSwapTypes
+from turing_models.products.rates.ibor_deposit import TuringIborDeposit
+from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 
-from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
-from turing_models.turingutils.turing_day_count import TuringDayCountTypes
-from turing_models.turingutils.turing_date import TuringDate
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.date import TuringDate
 
-from turing_models.turingutils.turing_calendar import TuringCalendarTypes
-from turing_models.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from turing_models.turingutils.turing_calendar import TuringDateGenRuleTypes
+from turing_models.utilities.calendar import TuringCalendarTypes
+from turing_models.utilities.calendar import TuringBusDayAdjustTypes
+from turing_models.utilities.calendar import TuringDateGenRuleTypes
 
-from turing_models.turingutils.turing_global_types import TuringSwapTypes
+from turing_models.utilities.global_types import TuringSwapTypes
 
-from turing_models.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.market.curves.turing_interpolator import TuringInterpTypes
-from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.market.curves.interpolator import TuringInterpTypes
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
-from turing_models.models.turing_model_black import TuringModelBlack
-from turing_models.models.turing_model_bachelier import TuringModelBachelier
-from turing_models.models.turing_model_black_shifted import TuringModelBlackShifted
-from turing_models.models.turing_model_sabr import TuringModelSABR
-from turing_models.models.turing_model_sabr_shifted import TuringModelSABRShifted
-from turing_models.models.turing_model_rates_hw import TuringModelRatesHW
+from turing_models.models.model_black import TuringModelBlack
+from turing_models.models.model_bachelier import TuringModelBachelier
+from turing_models.models.model_black_shifted import TuringModelBlackShifted
+from turing_models.models.model_sabr import TuringModelSABR
+from turing_models.models.model_sabr_shifted import TuringModelSABRShifted
+from turing_models.models.model_rates_hw import TuringModelRatesHW
 
-from turing_models.turingutils.turing_global_variables import gDaysInYear
+from turing_models.utilities.global_variables import gDaysInYear
 
-from turing_models.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
-from turing_models.turingutils.turing_schedule import TuringSchedule
+from turing_models.market.volatility.ibor_cap_vol_curve import TuringIborCapVolCurve
+from turing_models.utilities.schedule import TuringSchedule
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

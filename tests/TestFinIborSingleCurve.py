@@ -1,7 +1,3 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import matplotlib.pyplot as plt
 import numpy as np
 import time as time
@@ -9,19 +5,19 @@ import time as time
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_date import TuringDate
-from turing_models.turingutils.turing_day_count import TuringDayCountTypes
-from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
-from turing_models.turingutils.turing_calendar import TuringCalendarTypes
-from turing_models.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from turing_models.products.rates.turing_ibor_fra import TuringIborFRA
-from turing_models.products.rates.turing_ibor_future import TuringIborFuture
-from turing_models.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turing_models.products.rates.turing_ibor_swap import TuringIborSwap
-from turing_models.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from turing_models.market.curves.turing_interpolator import TuringInterpTypes
-from turing_models.turingutils.turing_math import ONE_MILLION
-from turing_models.turingutils.turing_global_types import TuringSwapTypes
+from turing_models.utilities.date import TuringDate
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.calendar import TuringCalendarTypes
+from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.products.rates.ibor_fra import TuringIborFRA
+from turing_models.products.rates.ibor_future import TuringIborFuture
+from turing_models.products.rates.ibor_deposit import TuringIborDeposit
+from turing_models.products.rates.ibor_swap import TuringIborSwap
+from turing_models.utilities.calendar import TuringBusDayAdjustTypes
+from turing_models.market.curves.interpolator import TuringInterpTypes
+from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.global_types import TuringSwapTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

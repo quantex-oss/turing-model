@@ -1,18 +1,14 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import sys
 sys.path.append("..")
 
-from turing_models.products.rates.turing_ibor_single_curve import TuringIborSingleCurve
-from turing_models.products.bonds.turing_bond_frn import TuringBondFRN
-from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
-from turing_models.turingutils.turing_day_count import TuringDayCountTypes
-from turing_models.turingutils.turing_date import *
-from turing_models.products.rates.turing_ibor_swap import TuringIborSwap
-from turing_models.products.rates.turing_ibor_deposit import TuringIborDeposit
-from turing_models.turingutils.turing_global_types import TuringSwapTypes
+from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.products.bonds.bond_frn import TuringBondFRN
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.date import *
+from turing_models.products.rates.ibor_swap import TuringIborSwap
+from turing_models.products.rates.ibor_deposit import TuringIborDeposit
+from turing_models.utilities.global_types import TuringSwapTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

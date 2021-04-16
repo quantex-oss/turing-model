@@ -1,15 +1,11 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import numpy as np
 import time
 
 import sys
 sys.path.append("..")
 
-from turing_models.models.turing_model_rates_cir import zeroPrice_MC, zeroPrice
-from turing_models.models.turing_model_rates_cir import TuringCIRNumericalScheme
+from turing_models.models.model_rates_cir import zeroPrice_MC, zeroPrice
+from turing_models.models.model_rates_cir import TuringCIRNumericalScheme
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

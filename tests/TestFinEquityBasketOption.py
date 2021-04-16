@@ -1,17 +1,13 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import numpy as np
 
 import sys
 sys.path.append("..")
 
-from turing_models.products.equity.turing_equity_basket_option import TuringEquityBasketOption
-from turing_models.turingutils.turing_global_types import TuringOptionTypes
-from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.turingutils.turing_helper_functions import betaVectorToCorrMatrix
-from turing_models.turingutils.turing_date import TuringDate
+from turing_models.products.equity.equity_basket_option import TuringEquityBasketOption
+from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
+from turing_models.utilities.date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

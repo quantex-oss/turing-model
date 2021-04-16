@@ -1,18 +1,14 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import time
 import numpy as np
 
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_day_count import TuringDayCountTypes
-from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
-from turing_models.turingutils.turing_date import TuringDate
-from turing_models.market.curves.turing_interpolator import TuringInterpTypes
-from turing_models.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.date import TuringDate
+from turing_models.market.curves.interpolator import TuringInterpTypes
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

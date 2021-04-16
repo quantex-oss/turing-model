@@ -1,15 +1,11 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import sys
 sys.path.append("..")
 
-from turing_models.products.bonds.turing_bond_future import TuringBondFuture
-from turing_models.products.bonds.turing_bond import TuringBond
-from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
-from turing_models.turingutils.turing_day_count import TuringDayCountTypes
-from turing_models.turingutils.turing_date import TuringDate
+from turing_models.products.bonds.bond_future import TuringBondFuture
+from turing_models.products.bonds.bond import TuringBond
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

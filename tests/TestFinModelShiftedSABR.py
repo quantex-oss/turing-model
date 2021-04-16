@@ -1,13 +1,9 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import sys
 sys.path.append("..")
 
 import numpy as np
-from turing_models.models.turing_model_sabr_shifted import TuringModelSABRShifted
-from turing_models.turingutils.turing_global_types import TuringOptionTypes
+from turing_models.models.model_sabr_shifted import TuringModelSABRShifted
+from turing_models.utilities.global_types import TuringOptionTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

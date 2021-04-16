@@ -1,8 +1,3 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
-
 import glob
 import os
 import sys
@@ -823,7 +818,7 @@ buildHead()
 buildIntro("..//README.md")
 
 if 1 == 1:
-    buildChapter("..//turing_models//turingutils")
+    buildChapter("..//turing_models//utilities")
     buildChapter("..//turing_models//market//curves")
     buildChapter("..//turing_models//market//volatility")
     buildChapter("..//turing_models//products//equity")

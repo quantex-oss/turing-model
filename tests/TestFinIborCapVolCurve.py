@@ -1,15 +1,11 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import numpy as np
 
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_day_count import TuringDayCountTypes
-from turing_models.turingutils.turing_date import TuringDate
-from turing_models.market.volatility.turing_ibor_cap_vol_curve import TuringIborCapVolCurve
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.date import TuringDate
+from turing_models.market.volatility.ibor_cap_vol_curve import TuringIborCapVolCurve
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

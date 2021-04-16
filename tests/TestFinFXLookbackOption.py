@@ -1,17 +1,13 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import time
 
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_global_types import TuringOptionTypes
-from turing_models.products.fx.turing_fx_float_lookback_option import TuringFXFloatLookbackOption
-from turing_models.products.fx.turing_fx_fixed_lookback_option import TuringFXFixedLookbackOption
-from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.turingutils.turing_date import TuringDate
+from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.products.fx.fx_float_lookback_option import TuringFXFloatLookbackOption
+from turing_models.products.fx.fx_fixed_lookback_option import TuringFXFixedLookbackOption
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.utilities.date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

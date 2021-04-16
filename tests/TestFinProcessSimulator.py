@@ -1,16 +1,12 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import sys
 sys.path.append("..")
 
-from turing_models.models.turing_process_simulator import TuringVasicekNumericalScheme
-from turing_models.models.turing_process_simulator import TuringCIRNumericalScheme
-from turing_models.models.turing_process_simulator import TuringHestonNumericalScheme
-from turing_models.models.turing_process_simulator import TuringGBMNumericalScheme
-from turing_models.models.turing_process_simulator import TuringProcessTypes
-from turing_models.models.turing_process_simulator import TuringProcessSimulator
+from turing_models.models.process_simulator import TuringVasicekNumericalScheme
+from turing_models.models.process_simulator import TuringCIRNumericalScheme
+from turing_models.models.process_simulator import TuringHestonNumericalScheme
+from turing_models.models.process_simulator import TuringGBMNumericalScheme
+from turing_models.models.process_simulator import TuringProcessTypes
+from turing_models.models.process_simulator import TuringProcessSimulator
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

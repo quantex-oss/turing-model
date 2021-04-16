@@ -1,20 +1,16 @@
-##############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-##############################################################################
-
 import numpy as np
 
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
-from turing_models.turingutils.turing_day_count import TuringDayCountTypes
-from turing_models.turingutils.turing_date import TuringDate
-from turing_models.products.inflation.turing_inflation_bond import TuringInflationBond
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.date import TuringDate
+from turing_models.products.inflation.inflation_bond import TuringInflationBond
 from turing_models.products.bonds import TuringYTMCalcType
-from turing_models.products.inflation.turing_inflation_index_curve import TuringInflationIndexCurve
-from turing_models.market.curves.turing_discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.products.inflation.inflation_index_curve import TuringInflationIndexCurve
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

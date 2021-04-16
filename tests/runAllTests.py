@@ -1,16 +1,11 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
-
 import sys
 sys.path.append("..")
 
 import glob
 from os.path import dirname, basename, join
 
-from turing_models.turingutils.turing_error import TuringError
-from turing_models.turingutils.turing_date import setDateFormatType, TuringDateFormatTypes
+from turing_models.utilities.error import TuringError
+from turing_models.utilities.date import setDateFormatType, TuringDateFormatTypes
 setDateFormatType(TuringDateFormatTypes.UK_LONG)
 
 # I put this here to get the library loaded and header printed before loop

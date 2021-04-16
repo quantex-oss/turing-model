@@ -1,14 +1,10 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import numpy as np
 import time
 
 import sys
 sys.path.append("..")
 
-from turing_models.models.turing_model_rates_vasicek import zeroPrice, zeroPrice_MC
+from turing_models.models.model_rates_vasicek import zeroPrice, zeroPrice_MC
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

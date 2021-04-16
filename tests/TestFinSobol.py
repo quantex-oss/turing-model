@@ -1,11 +1,10 @@
-
 import time
 from numba import jit
 
 import sys
 sys.path.append("..")
 
-from turing_models.models.turing_sobol import getUniformSobol, getGaussianSobol
+from turing_models.models.sobol import getUniformSobol, getGaussianSobol
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

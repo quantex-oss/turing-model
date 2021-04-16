@@ -1,7 +1,3 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -9,7 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from turing_models.market.curves.turing_interpolator import TuringInterpolator, TuringInterpTypes
+from turing_models.market.curves.interpolator import TuringInterpolator, TuringInterpTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -1,12 +1,8 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import sys
 sys.path.append("..")
 
-from turing_models.models.turing_model_merton_credit import TuringModelMertonCredit
-from turing_models.models.turing_model_merton_credit_mkt import TuringModelMertonCreditMkt
+from turing_models.models.model_merton_credit import TuringModelMertonCredit
+from turing_models.models.model_merton_credit_mkt import TuringModelMertonCreditMkt
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -1,22 +1,18 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_math import ONE_MILLION
-from turing_models.turingutils.turing_global_types import TuringSwapTypes
-from turing_models.turingutils.turing_calendar import TuringBusDayAdjustTypes
-from turing_models.turingutils.turing_calendar import TuringDateGenRuleTypes
-from turing_models.turingutils.turing_day_count import TuringDayCountTypes
-from turing_models.turingutils.turing_amount import TuringAmount
-from turing_models.turingutils.turing_frequency import TuringFrequencyTypes
-from turing_models.turingutils.turing_calendar import TuringCalendarTypes
-from turing_models.turingutils.turing_date import TuringDate
-from turing_models.products.rates.turing_fixed_leg import TuringFixedLeg
-from turing_models.products.rates.turing_float_leg import TuringFloatLeg
-from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.global_types import TuringSwapTypes
+from turing_models.utilities.calendar import TuringBusDayAdjustTypes
+from turing_models.utilities.calendar import TuringDateGenRuleTypes
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.amount import TuringAmount
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.calendar import TuringCalendarTypes
+from turing_models.utilities.date import TuringDate
+from turing_models.products.rates.fixed_leg import TuringFixedLeg
+from turing_models.products.rates.float_leg import TuringFloatLeg
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

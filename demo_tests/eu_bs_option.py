@@ -1,7 +1,7 @@
-from turing_models.turingutils import *
+from turing_models.utilities import *
 from turing_models.products.equity import TuringEquityVanillaOption
 from turing_models.market.curves import TuringDiscountCurveFlat
-from turing_models.models.turing_model_black_scholes import *
+from turing_models.models.model_black_scholes import *
 
 
 class EuBSOption():

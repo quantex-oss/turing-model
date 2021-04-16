@@ -1,13 +1,9 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import numpy as np
 import time
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_statistics import mean, stdev, correlation
+from turing_models.utilities.statistics import mean, stdev, correlation
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

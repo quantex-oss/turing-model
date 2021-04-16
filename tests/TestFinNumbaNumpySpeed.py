@@ -1,7 +1,3 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,11 +5,11 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_global_types import TuringOptionTypes
-from turing_models.products.equity.turing_equity_vanilla_option import TuringEquityVanillaOption
-from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.models.turing_model_black_scholes import TuringModelBlackScholes
-from turing_models.turingutils.turing_date import TuringDate
+from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.products.equity.equity_vanilla_option import TuringEquityVanillaOption
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.models.model_black_scholes import TuringModelBlackScholes
+from turing_models.utilities.date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

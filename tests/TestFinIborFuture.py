@@ -1,12 +1,8 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import sys
 sys.path.append("..")
 
-from turing_models.products.rates.turing_ibor_future import TuringIborFuture
-from turing_models.turingutils.turing_date import *
+from turing_models.products.rates.ibor_future import TuringIborFuture
+from turing_models.utilities.date import *
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -1,19 +1,15 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import numpy as np
 import time
 
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_math import normcdf_integrate
-from turing_models.turingutils.turing_math import N
-from turing_models.turingutils.turing_math import normcdf_slow
+from turing_models.utilities.math import normcdf_integrate
+from turing_models.utilities.math import N
+from turing_models.utilities.math import normcdf_slow
 
 
-from turing_models.turingutils.turing_math import norminvcdf
+from turing_models.utilities.math import norminvcdf
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

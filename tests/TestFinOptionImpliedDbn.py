@@ -1,25 +1,21 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import sys
 sys.path.append("..")
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-from turing_models.market.curves.turing_discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.turingutils.turing_date import TuringDate
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.utilities.date import TuringDate
 
-from turing_models.models.turing_model_volatility_fns import TuringVolFunctionTypes
-from turing_models.models.turing_model_volatility_fns import volFunctionClark
+from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
+from turing_models.models.model_volatility_fns import volFunctionClark
 
-from turing_models.models.turing_model_black_scholes import TuringModelBlackScholes
-from turing_models.models.turing_model_option_implied_dbn import optionImpliedDbn
+from turing_models.models.model_black_scholes import TuringModelBlackScholes
+from turing_models.models.model_option_implied_dbn import optionImpliedDbn
 
-from turing_models.market.volatility.turing_fx_vol_surface import TuringFXVolSurface
-from turing_models.market.volatility.turing_fx_vol_surface import TuringFXATMMethod
-from turing_models.market.volatility.turing_fx_vol_surface import TuringFXDeltaMethod
+from turing_models.market.volatility.fx_vol_surface import TuringFXVolSurface
+from turing_models.market.volatility.fx_vol_surface import TuringFXATMMethod
+from turing_models.market.volatility.fx_vol_surface import TuringFXDeltaMethod
 
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

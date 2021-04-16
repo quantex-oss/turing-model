@@ -1,12 +1,8 @@
-##############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-##############################################################################
-
 import sys
 sys.path.append("..")
 
-from turing_models.turingutils.turing_amount import TuringAmount
-from turing_models.turingutils.turing_currency import TuringCurrencyTypes
+from turing_models.utilities.amount import TuringAmount
+from turing_models.utilities.currency import TuringCurrencyTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

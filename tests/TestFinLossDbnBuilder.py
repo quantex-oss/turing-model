@@ -1,7 +1,3 @@
-###############################################################################
-# Copyright (C) 2018, 2019, 2020 Dominic O'Kane
-###############################################################################
-
 import matplotlib.pyplot as plt
 import numpy as np
 import time
@@ -9,8 +5,8 @@ import time
 import sys
 sys.path.append("..")
 
-from turing_models.models.turing_model_gaussian_copula_1f import lossDbnRecursionGCD
-from turing_models.models.turing_model_gaussian_copula_1f import lossDbnHeterogeneousAdjBinomial
+from turing_models.models.model_gaussian_copula_1f import lossDbnRecursionGCD
+from turing_models.models.model_gaussian_copula_1f import lossDbnHeterogeneousAdjBinomial
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

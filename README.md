@@ -28,7 +28,7 @@ In many cases the valuations should be close to if not identical to those produc
 
 The underlying Python library is split into a number of major modules:
 
-* Turingutils - These are utility functions used to assist you with modelling a security. These include dates (TuringDate), calendars, schedule generation, some finance-related mathematics functions and some helper functions.
+* utilities These are utility functions used to assist you with modelling a security. These include dates (TuringDate), calendars, schedule generation, some finance-related mathematics functions and some helper functions.
 * Market - These are modules that capture the market information used to value a security. These include interest rate and credit curves, volatility surfaces and prices.
 * Models - These are the low-level models used to value derivative securities ranging from Black-Scholes to complex stochastic volatility models.
 * Products - These are the actual securities and range from Government bonds to Bermudan swaptions.
