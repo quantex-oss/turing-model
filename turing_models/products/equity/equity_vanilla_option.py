@@ -77,8 +77,7 @@ class TuringEquityVanillaOption():
     def __init__(self,
                  expiryDate: (TuringDate, list),
                  strikePrice: (float, np.ndarray),
-                 optionType: (TuringOptionTypes, list),
-                 numOptions: float = 1.0):
+                 optionType: (TuringOptionTypes, list)):
         ''' Create the Equity Vanilla option object by specifying the expiry
         date, the option strike, the option type and the number of options. '''
 
@@ -91,7 +90,6 @@ class TuringEquityVanillaOption():
         self._expiryDate = expiryDate
         self._strikePrice = strikePrice
         self._optionType = optionType
-        self._numOptions = numOptions
         self._texp = None
 
 ###############################################################################
@@ -124,7 +122,6 @@ class TuringEquityVanillaOption():
         intrinsicValue = bsIntrinsic(s0, texp, k, r, q,
                                      self._optionType.value)
 
-        intrinsicValue = intrinsicValue * self._numOptions
         return intrinsicValue
 
 ###############################################################################
@@ -170,7 +167,6 @@ class TuringEquityVanillaOption():
         else:
             raise TuringError("Unknown Model Type")
 
-        value = value * self._numOptions
         return value
 
 ###############################################################################
@@ -638,7 +634,6 @@ class TuringEquityVanillaOption():
         s += labelToString("EXPIRY DATE", self._expiryDate)
         s += labelToString("STRIKE PRICE", self._strikePrice)
         s += labelToString("OPTION TYPE", self._optionType)
-        s += labelToString("NUMBER", self._numOptions, "")
         return s
 
 ###############################################################################

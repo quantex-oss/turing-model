@@ -38,7 +38,7 @@ def suppressTraceback():
 
 class TuringError(Exception):
     ''' Simple error class specific to FinPy. Need to decide how to handle
-    FinancePy errors. Work in progress. '''
+    Turing_models errors. Work in progress. '''
 
     def __init__(self,
                  message: str):

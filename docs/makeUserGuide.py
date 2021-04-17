@@ -12,8 +12,8 @@ with open("../version.py", "r") as fh:
     VERSION = str(version_number[start+1:start+end+1])
     VERSION = VERSION.replace('\n', '')
 
-# fileName = "FinancePyManualV_" + str(VERSION)
-fileName = "FinancePyManual"
+# fileName = "Turing_modelsManualV_" + str(VERSION)
+fileName = "Turing_modelsManual"
 userGuideFileName = "./" + fileName + ".tex"
 headFile = "./head.tex"
 tailFile = "./tail.tex"
@@ -188,7 +188,7 @@ def buildIntro(introfile):
 
     f = open(userGuideFileName, 'a')
 
-    f.write("\\chapter{Introduction to FinancePy}")
+    f.write("\\chapter{Introduction to Turing_models}")
     f.writelines(parsedLines)
     f.close()
 

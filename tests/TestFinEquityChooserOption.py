@@ -50,7 +50,7 @@ def test_FinEquityChooserOptionHaug():
 
     v_haug = 6.0508
     testCases.header("", "", "", "", "", "")
-    testCases.print("FINANCEPY", v, "HAUG", v_haug, "MC", v_mc)
+    testCases.print("Turing_models", v, "HAUG", v_haug, "MC", v_mc)
 
 ##########################################################################
 
@@ -94,7 +94,7 @@ def test_FinEquityChooserOptionMatlab():
 
     v_matlab = 8.9308
     testCases.header("", "", "", "", "", "")
-    testCases.print("FINANCEPY", v, "MATLAB", v_matlab, "MC", v_mc)
+    testCases.print("Turing_models", v, "MATLAB", v_matlab, "MC", v_mc)
 
 ##########################################################################
 
@@ -137,7 +137,7 @@ def test_FinEquityChooserOptionDerivicom():
 
     v_derivicom = 1.0989
     testCases.header("", "", "", "", "", "")
-    testCases.print("FINANCEPY", v, "DERIVICOM", v_derivicom, "MC", v_mc)
+    testCases.print("Turing_models", v, "DERIVICOM", v_derivicom, "MC", v_mc)
 
 ##########################################################################
 

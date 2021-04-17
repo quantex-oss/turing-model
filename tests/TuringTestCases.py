@@ -35,7 +35,7 @@ tolerance = 1e-8
 
 
 class TuringTestCases():
-    ''' Test case framework for FinancePy.
+    ''' Test case framework for Turing_models.
     - The basic step is that we generate a GOLDEN folder that creates an output
     file for each testcase which is assumed to be correct. This can be done by
     running the test cases Python file with the globalTestCaseMode flag set to

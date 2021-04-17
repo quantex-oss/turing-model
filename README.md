@@ -1,7 +1,3 @@
-# Quick Start Guide
-
-A pdf manual describing all of the functions can be found in the project directory.
-
 ## Overview
 
 Turing_models is a python-based library that is currently in beta version. It covers the following functionality:

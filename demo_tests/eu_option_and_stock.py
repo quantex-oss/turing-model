@@ -2,14 +2,15 @@ from turing_models.utilities import *
 from turing_models.products.equity import TuringEquityVanillaOption
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import *
-# from dgc import observables, computed
+# from model import model
+# from compute import compute
 # from loguru import logger
 # import sys
 # logger.remove()
 # handler_id = logger.add(sys.stderr, level="INFO")
 
 
-# @observables
+# @model
 class EuBSOption:
     """
     采用bs模型对普通欧式期权定价，并计算希腊值delta
@@ -42,8 +43,7 @@ class EuBSOption:
         self.eu_call_option = TuringEquityVanillaOption(
             self.expiry_date,
             self.strike_price,
-            self.option_type,
-            self.num_options)
+            self.option_type)
         # 股票价格
         self.stock_price = stock_price
         # 波动率
@@ -55,7 +55,7 @@ class EuBSOption:
         # 实例化bs模型对象
         self.bs_model = TuringModelBlackScholes(self.volatility)
 
-    # @computed
+    # @compute
     def value(self):
         """估值计算"""
         print("Calculate the value of the option")
@@ -72,9 +72,9 @@ class EuBSOption:
                                                 dividend_curve,
                                                 self.bs_model)
 
-        return value_exact
+        return value_exact * self.num_options
 
-    # @computed
+    # @compute
     def delta(self):
         """delta计算"""
         print("Calculate the delta of the option")
@@ -91,22 +91,22 @@ class EuBSOption:
                                                 dividend_curve,
                                                 self.bs_model)
 
-        return delta_exact
+        return delta_exact * self.num_options
 
 
-# @observables
-class StockObject:
+# @model
+class StockPosition:
     """
     返回股票的value和delta
     """
     def __init__(self,
                  stock_price: float,
                  num_shares: int):
-        """根据初始化变量建立股票对象"""
+        """根据初始化变量建立股票持仓对象"""
         self.stock_price = stock_price
         self.num_shares = num_shares
 
-    # @computed
+    # @compute
     def value(self):
         """value计算"""
         print("Calculate the value of the stock")
@@ -114,7 +114,7 @@ class StockObject:
 
         return value_exact
 
-    # @computed
+    # @compute
     def delta(self):
         """delta计算"""
         print("Calculate the delta of the stock")
@@ -124,36 +124,37 @@ class StockObject:
 
 
 if __name__ == "__main__":
-    # 定义期权1相关变量
-    value_date1 = "2021-1-1"                              # 估值日期："%Y-%m-%d"格式
-    num_years1 = 0.5                                      # 到期日期据估值日期的年数
-    strike_price1 = 50                                    # 行权价
-    option_type1 = "call"                                 # 欧式期权类型："call" or "put"
-    stock_prices1 = [50.1, 50.2, 50.3, 50.4, 50.5, 50.6]  # 股票价格
-    volatility1 = 0.20                                    # 波动率
-    interest_rate1 = 0.05                                 # 无风险利率
-    dividend_yield1 = 0.0                                 # 股息收益率
+    # 定义期权相关变量
+    value_date = "2021-1-1"                              # 估值日期："%Y-%m-%d"格式
+    num_years = 0.5                                      # 到期日期据估值日期的年数
+    strike_price = 50                                    # 行权价
+    option_type = "call"                                 # 欧式期权类型："call" or "put"
+    stock_prices = [50.1, 50.2, 50.3, 50.4, 50.5, 50.6]  # 股票价格
+    volatility = 0.20                                    # 波动率
+    interest_rate = 0.05                                 # 无风险利率
+    dividend_yield = 0.0                                 # 股息收益率
+    num_options = 2000                                   # 期权数量
+
     # 实例化EuBSOption对象
-    eu_bs_option1 = EuBSOption(value_date1,
-                               num_years1,
-                               strike_price1,
-                               option_type1,
-                               stock_price=50.0,
-                               volatility=volatility1,
-                               interest_rate=interest_rate1,
-                               dividend_yield=dividend_yield1,
-                               num_options=1)
+    eu_bs_option = EuBSOption(value_date,
+                              num_years,
+                              strike_price,
+                              option_type,
+                              stock_price=50.0,
+                              volatility=volatility,
+                              interest_rate=interest_rate,
+                              dividend_yield=dividend_yield,
+                              num_options=num_options)
 
-    # 定义股票1相关变量
-    stock_price2 = 10.0                                   # 股票价格
-    num_shares = 1000                                     # 股票数量：股
-    # 实例化StockObject对象
-    stock_one = StockObject(stock_price2, num_shares)
+    # 定义股票相关变量
+    stock_price = 10.0                                   # 股票价格
+    num_shares = -1200                                   # 股票数量：股
 
-    for stock_price in stock_prices1:
-    #     eu_bs_option1.stock_price = stock_price
-    #     # for _ in range(100):
-    #     print('value: ', eu_bs_option1.value() + stock_one.value())
-    #     print('delta: ', eu_bs_option1.delta() + stock_one.delta())
+    # 实例化StockPosition对象
+    stock_one = StockPosition(stock_price, num_shares)
 
-        print(eu_bs_option1.delta())
+    for stock_price in stock_prices:
+        eu_bs_option.stock_price = stock_price
+        for _ in range(3):
+            print('value: ', eu_bs_option.value() + stock_one.value())
+            print('delta: ', eu_bs_option.delta() + stock_one.delta())

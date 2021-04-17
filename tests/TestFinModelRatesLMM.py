@@ -291,7 +291,7 @@ def test_HullBookExamples():
 
     if verbose:
         testCases.banner("Ratchet ONE FACTOR IMPLEMENTATION")
-        testCases.print("FINANCEPY GETS:", vRatchetCaplets)
+        testCases.print("Turing_models GETS:", vRatchetCaplets)
         testCases.print("HULL GETS:", hullRatchetCaplets1F)
 
     checkVectorDifferences(vRatchetCaplets, hullRatchetCaplets1F, 1e-2)
@@ -304,7 +304,7 @@ def test_HullBookExamples():
 
     if verbose:
         testCases.banner("STICKY CAPLETS ONE FACTOR IMPLEMENTATION")
-        testCases.print("FINANCEPY GETS:", vStickyCaplets)
+        testCases.print("Turing_models GETS:", vStickyCaplets)
         testCases.print("HULL GETS:", hullStickyCaplets1F)
 
     checkVectorDifferences(vStickyCaplets, hullStickyCaplets1F, 1e-2)
@@ -326,7 +326,7 @@ def test_HullBookExamples():
 
     if verbose:
         testCases.banner("RATCHET - NUM FACTORS 1F")
-        testCases.print("FINANCEPY GETS:", vRatchetCaplets)
+        testCases.print("Turing_models GETS:", vRatchetCaplets)
         testCases.print("HULL GETS:", hullRatchetCaplets1F)
 
     checkVectorDifferences(vRatchetCaplets, hullRatchetCaplets1F, 1e-2)
@@ -341,7 +341,7 @@ def test_HullBookExamples():
 
     if verbose:
         testCases.banner("STICKY RATCHET - NUM FACTORS 1")
-        testCases.print("FINANCEPY GETS:", vStickyCaplets)
+        testCases.print("Turing_models GETS:", vStickyCaplets)
         testCases.print("HULL GETS:", hullStickyCaplets1F)
 
     numFactors = 2
@@ -362,7 +362,7 @@ def test_HullBookExamples():
 
     if verbose:
         testCases.banner("RATCHET - NUM FACTORS:2")
-        testCases.print("FINANCEPY GETS:", vRatchetCaplets)
+        testCases.print("Turing_models GETS:", vRatchetCaplets)
         testCases.print("HULL GETS:", hullRatchetCaplets2F)
 
     checkVectorDifferences(vRatchetCaplets, hullRatchetCaplets2F, 1e-2)
@@ -375,7 +375,7 @@ def test_HullBookExamples():
 
     if verbose:
         testCases.banner("STICKY RATCHET - NUM FACTORS:2")
-        testCases.print("FINANCEPY GETS:", vStickyCaplets)
+        testCases.print("Turing_models GETS:", vStickyCaplets)
         testCases.print("HULL GETS:", hullStickyCaplets2F)
 
     checkVectorDifferences(vStickyCaplets, hullStickyCaplets2F, 1e-2)
@@ -401,7 +401,7 @@ def test_HullBookExamples():
 
     if verbose:
         testCases.banner("RATCHET - NUM FACTORS:3")
-        testCases.print("FINANCEPY GETS:", vRatchetCaplets)
+        testCases.print("Turing_models GETS:", vRatchetCaplets)
         testCases.print("HULL GETS:", hullRatchetCaplets3F)
 
     checkVectorDifferences(vRatchetCaplets, hullRatchetCaplets3F, 1e-2)
@@ -414,7 +414,7 @@ def test_HullBookExamples():
 
     if verbose:
         testCases.banner("STICKY RATCHET - NUM FACTORS:3")
-        testCases.print("FINANCEPY GETS:", vStickyCaplets)
+        testCases.print("Turing_models GETS:", vStickyCaplets)
         testCases.print("HULL GETS:", hullStickyCaplets3F)
 
     checkVectorDifferences(vStickyCaplets, hullStickyCaplets3F, 1e-2)

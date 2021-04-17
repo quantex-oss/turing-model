@@ -42,7 +42,7 @@ def test_FinEquityCliquetOption():
                             model)
 
     testCases.header("LABEL", "VALUE")
-    testCases.print("FINANCEPY", v)
+    testCases.print("Turing_models", v)
 
 ###############################################################################
 
