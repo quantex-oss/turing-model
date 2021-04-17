@@ -1,4 +1,4 @@
-from ..utilities.error import TuringError
+from .error import TuringError
 
 ###############################################################################
 
