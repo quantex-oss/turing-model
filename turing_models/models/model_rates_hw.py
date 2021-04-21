@@ -3,12 +3,12 @@ from scipy import optimize
 from numba import njit
 from math import ceil
 
-from ..utilities.error import TuringError
-from ..utilities.math import N, accruedInterpolator
-from ..market.curves.interpolator import TuringInterpTypes, _uinterpolate
-from ..utilities.helper_functions import labelToString
-from ..utilities.global_types import TuringExerciseTypes
-from ..utilities.global_variables import gSmall
+from turing_models.utilities.error import TuringError
+from turing_models.utilities.math import N, accruedInterpolator
+from turing_models.market.curves.interpolator import TuringInterpTypes, _uinterpolate
+from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.global_types import TuringExerciseTypes
+from turing_models.utilities.global_variables import gSmall
 
 interp = TuringInterpTypes.FLAT_FWD_RATES.value
 

@@ -1,7 +1,7 @@
 from numba import njit, float64, int64
 import numpy as np
 
-from ..utilities.math import pairGCD
+from turing_models.utilities.math import pairGCD
 
 ###############################################################################
 

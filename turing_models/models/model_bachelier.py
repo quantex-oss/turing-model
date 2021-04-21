@@ -3,8 +3,8 @@
 import numpy as np
 from scipy.stats import norm
 
-from ..utilities.helper_functions import labelToString
-from ..utilities.global_types import TuringOptionTypes
+from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.global_types import TuringOptionTypes
 
 ###############################################################################
 # NOTE: Need to convert option types to use enums.

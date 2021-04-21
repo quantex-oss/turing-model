@@ -1,6 +1,6 @@
 from numba import njit, float64, int64
 import numpy as np
-from ..utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import labelToString
 
 ###############################################################################
 # CIR Process

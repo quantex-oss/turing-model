@@ -2,10 +2,10 @@
 
 import numpy as np
 
-from ..utilities.global_types import TuringOptionTypes
-from ..utilities.error import TuringError
+from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.error import TuringError
 
-from ..utilities.helper_functions import checkArgumentTypes
+from turing_models.utilities.helper_functions import checkArgumentTypes
 
 from .model import TuringModel
 from .model_crr_tree import crrTreeValAvg

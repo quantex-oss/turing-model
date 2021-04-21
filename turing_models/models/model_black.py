@@ -3,11 +3,11 @@
 import numpy as np
 from numba import njit, float64, float64
 
-from ..utilities.math import NVect, NPrimeVect
-from ..utilities.global_variables import gSmall
-from ..utilities.helper_functions import labelToString
-from ..utilities.global_types import TuringOptionTypes
-from ..utilities.error import TuringError
+from turing_models.utilities.math import NVect, NPrimeVect
+from turing_models.utilities.global_variables import gSmall
+from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.error import TuringError
 
 ###############################################################################
 # TODO: Use Numba ?

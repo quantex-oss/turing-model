@@ -1,8 +1,8 @@
 import numpy as np
 from numba import njit, float64
 
-from ..utilities.math import N
-from ..utilities.error import TuringError
+from turing_models.utilities.math import N
+from turing_models.utilities.error import TuringError
 
 ###############################################################################
 # Parametric functions for option volatility to use in a Black-Scholes model

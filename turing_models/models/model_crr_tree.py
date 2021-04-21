@@ -1,4 +1,4 @@
-from ..utilities.global_types import TuringOptionTypes
+from turing_models.utilities.global_types import TuringOptionTypes
 
 import numpy as np
 from numba import njit, float64, int64

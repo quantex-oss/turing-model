@@ -3,10 +3,10 @@
 import numpy as np
 from scipy.stats import norm
 
-from ..utilities.helper_functions import labelToString
-from ..utilities.global_types import TuringOptionTypes
+from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.global_types import TuringOptionTypes
 
-from ..utilities.math import N
+from turing_models.utilities.math import N
 
 ###############################################################################
 # NOTE: Keeping this separate from SABR for the moment.

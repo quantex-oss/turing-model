@@ -2,10 +2,10 @@ import numpy as np
 from numba import njit, float64
 from scipy.optimize import minimize
 
-from ..utilities.global_types import TuringOptionTypes
-from ..utilities.math import N
-from ..utilities.error import TuringError
-from ..utilities.helper_functions import labelToString
+from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.math import N
+from turing_models.utilities.error import TuringError
+from turing_models.utilities.helper_functions import labelToString
 
 ###############################################################################
 ###############################################################################

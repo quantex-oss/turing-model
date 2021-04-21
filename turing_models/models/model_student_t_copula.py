@@ -2,7 +2,7 @@ from math import sqrt
 import numpy as np
 from scipy.stats import t as student
 
-from ..utilities.helper_functions import uniformToDefaultTime
+from turing_models.utilities.helper_functions import uniformToDefaultTime
 
 ###############################################################################
 

@@ -2,7 +2,7 @@ from math import sqrt, exp
 from numba import njit, float64, int64
 import numpy as np
 
-from ..utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import labelToString
 
 ##########################################################################
 # dr = a(b-r) + sigma dW

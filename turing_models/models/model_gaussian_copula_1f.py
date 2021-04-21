@@ -3,8 +3,8 @@ import numpy as np
 
 ##########################################################################
 
-from ..utilities.math import norminvcdf, N, INVROOT2PI
-from ..utilities.error import TuringError
+from turing_models.utilities.math import norminvcdf, N, INVROOT2PI
+from turing_models.utilities.error import TuringError
 from .model_loss_dbn_builder import indepLossDbnRecursionGCD
 from .model_loss_dbn_builder import indepLossDbnHeterogeneousAdjBinomial
 from .model_loss_dbn_builder import portfolioGCD

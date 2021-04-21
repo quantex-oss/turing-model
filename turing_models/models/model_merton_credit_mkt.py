@@ -1,11 +1,11 @@
 import numpy as np
 
-from ..utilities.math import N
+from turing_models.utilities.math import N
 
 from scipy import optimize
 
-from ..utilities.helper_functions import labelToString, checkArgumentTypes
-from ..utilities.error import TuringError
+from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.error import TuringError
 from .model_merton_credit import TuringModelMertonCredit
 
 ###############################################################################

@@ -1,10 +1,10 @@
 import numpy as np
 from numba import jit, njit, float64, int64 # , prange DOES NOT WORK ON GITHUB
 
-from ..utilities.error import TuringError
-from ..utilities.math import N
-from ..utilities.math import norminvcdf
-from ..models.sobol import getUniformSobol
+from turing_models.utilities.error import TuringError
+from turing_models.utilities.math import N
+from turing_models.utilities.math import norminvcdf
+from turing_models.models.sobol import getUniformSobol
 
 # TO DO: SHIFTED LOGNORMAL
 # TO DO: TERMINAL MEASURE

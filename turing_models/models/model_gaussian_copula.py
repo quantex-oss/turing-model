@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from ..utilities.math import N
-from ..utilities.helper_functions import uniformToDefaultTime
+from turing_models.utilities.math import N
+from turing_models.utilities.helper_functions import uniformToDefaultTime
 
 ###############################################################################
 # TODO:

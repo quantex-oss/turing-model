@@ -1,10 +1,10 @@
 import numpy as np
 from numba import njit
 
-from ..utilities.error import TuringError
-from ..utilities.math import N
-from ..market.curves.interpolator import TuringInterpTypes, _uinterpolate
-from ..utilities.helper_functions import labelToString
+from turing_models.utilities.error import TuringError
+from turing_models.utilities.math import N
+from turing_models.market.curves.interpolator import TuringInterpTypes, _uinterpolate
+from turing_models.utilities.helper_functions import labelToString
 
 interp = TuringInterpTypes.FLAT_FWD_RATES.value
 

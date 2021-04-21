@@ -2,11 +2,11 @@ import numpy as np
 from numba import float64, int64, vectorize, njit
 from scipy import optimize
 
-from ..utilities.global_types import TuringOptionTypes
-from ..utilities.global_variables import gSmall
-from ..utilities.math import NVect, NPrimeVect
-from ..utilities.error import TuringError
-from ..utilities.solvers_1d import bisection, newton, newton_secant
+from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.global_variables import gSmall
+from turing_models.utilities.math import NVect, NPrimeVect
+from turing_models.utilities.error import TuringError
+from turing_models.utilities.solvers_1d import bisection, newton, newton_secant
 
 ###############################################################################
 # Analytical Black Scholes model implementation and approximations

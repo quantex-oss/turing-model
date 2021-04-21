@@ -1,8 +1,8 @@
 import numpy as np
 
-from ..utilities.math import N, M, phi3
-from ..utilities.math import norminvcdf as NormSInv
-from ..utilities.error import TuringError
+from turing_models.utilities.math import N, M, phi3
+from turing_models.utilities.math import norminvcdf as NormSInv
+from turing_models.utilities.error import TuringError
 
 ###############################################################################
 
