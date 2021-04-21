@@ -8,7 +8,7 @@ from numba import njit
 # from scipy import optimize
 from turing_models.utilities.solvers_1d import newton_secant, bisection, newton
 
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes

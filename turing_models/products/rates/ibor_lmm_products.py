@@ -19,7 +19,7 @@ from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import checkArgumentTypes
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 
 from turing_models.models.model_rates_lmm import LMMSimulateFwds1F
 from turing_models.models.model_rates_lmm import LMMSimulateFwdsMF

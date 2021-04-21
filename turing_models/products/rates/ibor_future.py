@@ -8,7 +8,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.mathematics import ONE_MILLION
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
 from turing_models.products.rates.ibor_fra import TuringIborFRA

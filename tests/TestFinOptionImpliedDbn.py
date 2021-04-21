@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.models.model_volatility_fns import volFunctionClark

@@ -9,7 +9,7 @@ from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.amount import TuringAmount
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.products.rates.fixed_leg import TuringFixedLeg
 from turing_models.products.rates.float_leg import TuringFloatLeg
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat

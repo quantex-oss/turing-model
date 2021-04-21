@@ -1,6 +1,6 @@
 import numpy as np
 
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes

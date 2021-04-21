@@ -10,7 +10,7 @@ from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.products.credit.cds_curve import TuringCDSCurve
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_types import TuringSwapTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

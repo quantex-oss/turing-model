@@ -10,7 +10,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.models.gbm_process import TuringGBMProcess
 from turing_models.products.fx.fx_option import TuringFXOption
 from turing_models.utilities.helper_functions import checkArgumentTypes
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 

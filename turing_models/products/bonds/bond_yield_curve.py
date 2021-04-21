@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.mathematics import scale
 from turing_models.utilities.helper_functions import labelToString

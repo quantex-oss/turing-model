@@ -8,7 +8,7 @@ from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.date import TuringDate, setDateFormatType, TuringDateFormatTypes
+from turing_models.utilities.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
 from turing_models.products.bonds.bond_annuity import TuringBondAnnuity
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

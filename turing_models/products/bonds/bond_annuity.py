@@ -1,4 +1,4 @@
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.schedule import TuringSchedule

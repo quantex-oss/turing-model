@@ -4,9 +4,9 @@ import time
 import sys
 sys.path.append("..")
 
-from turing_models.utilities.date import TuringDate, dateRange
-from turing_models.utilities.date import TuringDateFormatTypes
-from turing_models.utilities.date import setDateFormatType
+from turing_models.utilities.turing_date import TuringDate, dateRange
+from turing_models.utilities.turing_date import TuringDateFormatTypes
+from turing_models.utilities.turing_date import setDateFormatType
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

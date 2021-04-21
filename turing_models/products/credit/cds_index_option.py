@@ -11,7 +11,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.products.credit.cds_curve import TuringCDSCurve
 from turing_models.products.credit.cds import TuringCDS
 from turing_models.utilities.helper_functions import checkArgumentTypes
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import labelToString
 
 RPV01_INDEX = 1  # 0 is FULL, 1 is CLEAN

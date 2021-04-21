@@ -23,7 +23,7 @@ from turing_models.market.curves.interpolator import TuringInterpTypes, interpol
 from turing_models.utilities.error import TuringError
 
 from turing_models.utilities.helper_functions import checkArgumentTypes
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 
 ###############################################################################
 

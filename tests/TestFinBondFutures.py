@@ -5,7 +5,7 @@ from turing_models.products.bonds.bond_future import TuringBondFuture
 from turing_models.products.bonds.bond import TuringBond
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

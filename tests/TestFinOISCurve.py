@@ -5,7 +5,7 @@ import time as time
 import sys
 sys.path.append("..")
 
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes

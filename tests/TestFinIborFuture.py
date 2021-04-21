@@ -2,7 +2,7 @@ import sys
 sys.path.append("..")
 
 from turing_models.products.rates.ibor_future import TuringIborFuture
-from turing_models.utilities.date import *
+from turing_models.utilities.turing_date import *
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

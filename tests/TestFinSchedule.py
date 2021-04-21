@@ -6,7 +6,7 @@ from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringCalendar
-from turing_models.utilities.date import TuringDate, setDateFormatType, TuringDateFormatTypes
+from turing_models.utilities.turing_date import TuringDate, setDateFormatType, TuringDateFormatTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

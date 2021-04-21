@@ -19,7 +19,7 @@ from turing_models.products.equity.equity_vanilla_option import TuringEquityVani
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 
 ###############################################################################
 # TODO: Vectorise pricer

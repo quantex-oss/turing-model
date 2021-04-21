@@ -9,7 +9,7 @@ from turing_models.products.equity.equity_rainbow_option import TuringEquityRain
 from turing_models.products.equity.equity_rainbow_option import TuringEquityRainbowOptionTypes
 from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

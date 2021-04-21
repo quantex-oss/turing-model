@@ -4,7 +4,7 @@
 import numpy as np
 
 
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringLongShort
 from turing_models.utilities.error import TuringError

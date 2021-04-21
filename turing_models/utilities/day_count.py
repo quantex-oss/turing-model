@@ -1,5 +1,5 @@
-from .date import TuringDate, monthDaysLeapYear, monthDaysNotLeapYear, datediff
-from .date import isLeapYear
+from .turing_date import TuringDate, monthDaysLeapYear, monthDaysNotLeapYear, datediff
+from .turing_date import isLeapYear
 from .error import TuringError
 from .frequency import TuringFrequencyTypes, TuringFrequency
 from .global_variables import gDaysInYear

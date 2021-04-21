@@ -8,7 +8,7 @@ from turing_models.products.equity.equity_asian_option import TuringEquityAsianO
 from turing_models.products.equity.equity_asian_option import TuringAsianOptionValuationMethods
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

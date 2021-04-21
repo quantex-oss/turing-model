@@ -4,8 +4,8 @@
 
 import datetime
 from enum import Enum
-from .date import TuringDate
-from .error import TuringError
+from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.error import TuringError
 
 # from numba import njit, jit, int64, boolean
 

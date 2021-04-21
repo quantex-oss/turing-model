@@ -1,5 +1,5 @@
 import datetime
-from .error import TuringError
+from turing_models.utilities.error import TuringError
 from numba import njit, boolean, int64
 import numpy as np
 

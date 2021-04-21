@@ -4,7 +4,7 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.market.curves.interpolator import TuringInterpTypes
 from turing_models.market.curves.discount_curve import TuringDiscountCurve

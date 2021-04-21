@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from numba import njit, float64, int64
 
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.products.fx.fx_vanilla_option import TuringFXVanillaOption

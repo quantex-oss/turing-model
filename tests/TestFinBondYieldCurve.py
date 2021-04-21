@@ -6,7 +6,7 @@ sys.path.append("..")
 
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.date import TuringDate, fromDatetime
+from turing_models.utilities.turing_date import TuringDate, fromDatetime
 from turing_models.products.bonds.bond import TuringBond
 from turing_models.products.bonds.bond_yield_curve import TuringBondYieldCurve
 from turing_models.products.bonds.bond_yield_curve_model import *

@@ -1,5 +1,5 @@
 from .error import TuringError
-from .date import TuringDate
+from .turing_date import TuringDate
 from .calendar import (TuringCalendar, TuringCalendarTypes)
 from .calendar import (TuringBusDayAdjustTypes, TuringDateGenRuleTypes)
 from .frequency import (TuringFrequency, TuringFrequencyTypes)

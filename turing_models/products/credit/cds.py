@@ -3,7 +3,7 @@ from numba import njit, float64, int64
 from math import exp, log
 from copy import deepcopy
 
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.calendar import TuringCalendar, TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes

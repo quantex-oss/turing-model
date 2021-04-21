@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 

@@ -1,7 +1,7 @@
 from scipy import optimize
 
 
-from turing_models.utilities.date import TuringDate
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes

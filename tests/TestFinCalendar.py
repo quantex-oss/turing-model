@@ -1,8 +1,8 @@
 import sys
 sys.path.append("..")
 
-from turing_models.utilities.date import TuringDate
-from turing_models.utilities.date import setDateFormatType, TuringDateFormatTypes
+from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.turing_date import setDateFormatType, TuringDateFormatTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringCalendarTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
