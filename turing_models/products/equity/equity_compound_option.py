@@ -9,7 +9,7 @@ from scipy import optimize
 from numba import njit
 
 
-from turing_models.utilities.math import N, phi2
+from turing_models.utilities.mathematics import N, phi2
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes

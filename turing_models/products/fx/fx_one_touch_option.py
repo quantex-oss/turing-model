@@ -16,7 +16,7 @@ from turing_models.models.gbm_process import getPaths
 
 from numba import njit
 
-from turing_models.utilities.math import NVect
+from turing_models.utilities.mathematics import NVect
 
 ###############################################################################
 # TODO: Implement Sobol random numbers

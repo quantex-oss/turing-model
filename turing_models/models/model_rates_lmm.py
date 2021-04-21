@@ -2,8 +2,8 @@ import numpy as np
 from numba import jit, njit, float64, int64 # , prange DOES NOT WORK ON GITHUB
 
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.math import N
-from turing_models.utilities.math import norminvcdf
+from turing_models.utilities.mathematics import N
+from turing_models.utilities.mathematics import norminvcdf
 from turing_models.models.sobol import getUniformSobol
 
 # TO DO: SHIFTED LOGNORMAL

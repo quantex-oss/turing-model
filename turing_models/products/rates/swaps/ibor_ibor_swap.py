@@ -7,7 +7,7 @@ from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGen
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
-from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
 
 ##########################################################################

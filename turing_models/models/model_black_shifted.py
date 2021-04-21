@@ -6,7 +6,7 @@ from scipy.stats import norm
 from turing_models.utilities.helper_functions import labelToString
 from turing_models.utilities.global_types import TuringOptionTypes
 
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 
 ###############################################################################
 # NOTE: Keeping this separate from SABR for the moment.

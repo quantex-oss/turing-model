@@ -1,6 +1,6 @@
 from .helper_functions import checkArgumentTypes
 from .currency import TuringCurrencyTypes
-from .math import ONE_MILLION
+from .mathematics import ONE_MILLION
 
 ###############################################################################
 

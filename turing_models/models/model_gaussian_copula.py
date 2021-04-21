@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 from turing_models.utilities.helper_functions import uniformToDefaultTime
 
 ###############################################################################

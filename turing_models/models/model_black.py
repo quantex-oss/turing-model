@@ -3,7 +3,7 @@
 import numpy as np
 from numba import njit, float64, float64
 
-from turing_models.utilities.math import NVect, NPrimeVect
+from turing_models.utilities.mathematics import NVect, NPrimeVect
 from turing_models.utilities.global_variables import gSmall
 from turing_models.utilities.helper_functions import labelToString
 from turing_models.utilities.global_types import TuringOptionTypes

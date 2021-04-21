@@ -1,6 +1,6 @@
 import numpy as np
 from numba import njit, float64, int64
-from turing_models.utilities.math import cholesky
+from turing_models.utilities.mathematics import cholesky
 
 ###############################################################################
 

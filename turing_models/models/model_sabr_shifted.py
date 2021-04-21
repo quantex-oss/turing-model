@@ -4,7 +4,7 @@ from scipy.optimize import minimize
 
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 from turing_models.utilities.helper_functions import labelToString
 
 ###############################################################################

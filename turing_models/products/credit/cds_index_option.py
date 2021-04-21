@@ -6,7 +6,7 @@ from turing_models.utilities.calendar import TuringBusDayAdjustTypes, TuringDate
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.math import ONE_MILLION, INVROOT2PI, N
+from turing_models.utilities.mathematics import ONE_MILLION, INVROOT2PI, N
 from turing_models.utilities.error import TuringError
 from turing_models.products.credit.cds_curve import TuringCDSCurve
 from turing_models.products.credit.cds import TuringCDS

@@ -5,7 +5,7 @@ import numpy as np  # I USE NUMPY FOR EXP, LOG AND SQRT AS THEY HANDLE IMAGINARY
 
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.utilities.math import norminvcdf
+from turing_models.utilities.mathematics import norminvcdf
 from turing_models.utilities.error import TuringError
 
 ##########################################################################

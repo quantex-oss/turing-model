@@ -28,7 +28,7 @@ from turing_models.models.model_rates_lmm import TuringRateModelLMMModelTypes
 from turing_models.models.model_rates_lmm import LMMCapFlrPricer
 
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.mathematics import ONE_MILLION
 
 from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.utilities.global_types import TuringCapFloorTypes

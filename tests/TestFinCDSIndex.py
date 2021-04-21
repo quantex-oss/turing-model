@@ -2,7 +2,7 @@ import sys
 sys.path.append("..")
 
 from turing_models.products.credit.cds import TuringCDS
-from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.products.rates.ibor_swap import TuringIborSwap
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.products.credit.cds_curve import TuringCDSCurve

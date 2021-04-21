@@ -13,7 +13,7 @@ from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
 from turing_models.utilities.date import TuringDate

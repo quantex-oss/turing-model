@@ -1,7 +1,7 @@
 import numpy as np
 
-from turing_models.utilities.math import N, M, phi3
-from turing_models.utilities.math import norminvcdf as NormSInv
+from turing_models.utilities.mathematics import N, M, phi3
+from turing_models.utilities.mathematics import norminvcdf as NormSInv
 from turing_models.utilities.error import TuringError
 
 ###############################################################################

@@ -12,7 +12,7 @@ from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes

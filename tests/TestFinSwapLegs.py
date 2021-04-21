@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")
 
-from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes

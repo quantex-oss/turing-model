@@ -4,12 +4,12 @@ import time
 import sys
 sys.path.append("..")
 
-from turing_models.utilities.math import normcdf_integrate
-from turing_models.utilities.math import N
-from turing_models.utilities.math import normcdf_slow
+from turing_models.utilities.mathematics import normcdf_integrate
+from turing_models.utilities.mathematics import N
+from turing_models.utilities.mathematics import normcdf_slow
 
 
-from turing_models.utilities.math import norminvcdf
+from turing_models.utilities.mathematics import norminvcdf
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

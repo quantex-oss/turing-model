@@ -21,7 +21,7 @@ from turing_models.models.model_sabr import volFunctionSABR
 from turing_models.models.model_sabr import volFunctionSABR_BETA_ONE
 from turing_models.models.model_sabr import volFunctionSABR_BETA_HALF
 
-from turing_models.utilities.math import norminvcdf
+from turing_models.utilities.mathematics import norminvcdf
 
 from turing_models.models.model_black_scholes_analytical import bsDelta
 

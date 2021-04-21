@@ -2,7 +2,7 @@ import numpy as np
 from numba import njit
 
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 from turing_models.market.curves.interpolator import TuringInterpTypes, _uinterpolate
 from turing_models.utilities.helper_functions import labelToString
 

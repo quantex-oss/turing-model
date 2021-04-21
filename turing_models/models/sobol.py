@@ -34,7 +34,7 @@ import os
 import numpy as np
 from numba import njit
 
-from turing_models.utilities.math import norminvcdf
+from turing_models.utilities.mathematics import norminvcdf
 
 ###############################################################################
 # This code loads sobol coefficients from binary numpy file and allocates

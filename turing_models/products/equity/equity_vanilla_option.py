@@ -33,7 +33,7 @@ from turing_models.models.model_black_scholes_mc import _valueMC_NUMBA_ONLY
 from turing_models.models.model_black_scholes_mc import _valueMC_NUMPY_ONLY
 from turing_models.models.model_black_scholes_mc import _valueMC_NUMBA_PARALLEL
 
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 
 ###############################################################################
 

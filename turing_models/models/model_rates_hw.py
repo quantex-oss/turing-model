@@ -4,7 +4,7 @@ from numba import njit
 from math import ceil
 
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.math import N, accruedInterpolator
+from turing_models.utilities.mathematics import N, accruedInterpolator
 from turing_models.market.curves.interpolator import TuringInterpTypes, _uinterpolate
 from turing_models.utilities.helper_functions import labelToString
 from turing_models.utilities.global_types import TuringExerciseTypes

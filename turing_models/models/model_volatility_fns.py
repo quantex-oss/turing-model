@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit, float64
 
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 from turing_models.utilities.error import TuringError
 
 ###############################################################################

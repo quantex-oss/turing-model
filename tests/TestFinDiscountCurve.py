@@ -8,7 +8,7 @@ from turing_models.utilities.date import TuringDate
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.market.curves.interpolator import TuringInterpTypes
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.utilities.math import scale
+from turing_models.utilities.mathematics import scale
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

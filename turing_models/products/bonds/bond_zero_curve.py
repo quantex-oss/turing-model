@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy import optimize
 
 from turing_models.utilities.date import TuringDate
-from turing_models.utilities.math import scale, testMonotonicity
+from turing_models.utilities.mathematics import scale, testMonotonicity
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.helper_functions import inputTime

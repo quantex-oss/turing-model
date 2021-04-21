@@ -3,8 +3,8 @@ import numpy as np
 
 ###############################################################################
 
-from turing_models.utilities.math import N
-from turing_models.utilities.math import normpdf, norminvcdf, M
+from turing_models.utilities.mathematics import N
+from turing_models.utilities.mathematics import normpdf, norminvcdf, M
 from turing_models.utilities.error import TuringError
 
 ###############################################################################

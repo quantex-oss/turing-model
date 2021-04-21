@@ -6,7 +6,7 @@ from .frequency import *
 from .global_variables import *
 from .global_types import *
 from .helper_functions import *
-from .math import *
+from .mathematics import *
 from .statistics import *
 from .schedule import *
 from .error import *

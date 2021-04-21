@@ -5,7 +5,7 @@ from math import exp, log, sqrt
 import numpy as np
 
 
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
 from turing_models.utilities.error import TuringError
 from turing_models.models.gbm_process import TuringGBMProcess

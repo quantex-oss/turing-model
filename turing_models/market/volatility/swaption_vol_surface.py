@@ -28,7 +28,7 @@ from turing_models.models.model_sabr import volFunctionSABR_BETA_ONE
 
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 
-from turing_models.utilities.math import norminvcdf
+from turing_models.utilities.mathematics import norminvcdf
 
 from turing_models.models.model_black_scholes_analytical import bsValue
 from turing_models.products.fx.fx_vanilla_option import fastDelta

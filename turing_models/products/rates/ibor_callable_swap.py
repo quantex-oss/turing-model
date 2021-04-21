@@ -12,7 +12,7 @@
 # from turing_models.utilities.calendar import TuringCalendar, TuringCalendarTypes
 # from turing_models.utilities.calendar import TuringBusDayAdjustTypes, TuringDateGenRuleTypes
 # from turing_models.utilities.schedule import TuringSchedule
-# from turing_models.utilities.math import ONE_MILLION
+# from turing_models.utilities.mathematics import ONE_MILLION
 
 # from turing_models.utilities.helper_functions import labelToString
 

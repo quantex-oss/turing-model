@@ -10,7 +10,7 @@ from numba import jit, njit, float64, int64
 
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.math import heaviside
+from turing_models.utilities.mathematics import heaviside
 from turing_models.utilities.helper_functions import labelToString
 
 ###############################################################################

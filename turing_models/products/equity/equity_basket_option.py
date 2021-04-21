@@ -18,7 +18,7 @@ from turing_models.utilities.helper_functions import _funcName
 from turing_models.utilities.date import TuringDate
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 
 
 ###############################################################################

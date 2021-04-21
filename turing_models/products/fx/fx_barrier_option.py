@@ -4,7 +4,7 @@ from enum import Enum
 
 
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.products.fx.fx_option import TuringFXOption
 from turing_models.models.process_simulator import TuringProcessSimulator

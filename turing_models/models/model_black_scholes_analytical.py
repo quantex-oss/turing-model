@@ -4,7 +4,7 @@ from scipy import optimize
 
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.global_variables import gSmall
-from turing_models.utilities.math import NVect, NPrimeVect
+from turing_models.utilities.mathematics import NVect, NPrimeVect
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.solvers_1d import bisection, newton, newton_secant
 

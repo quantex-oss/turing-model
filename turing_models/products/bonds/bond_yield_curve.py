@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.math import scale
+from turing_models.utilities.mathematics import scale
 from turing_models.utilities.helper_functions import labelToString
 
 from .bond_yield_curve_model import TuringCurveFitPolynomial

@@ -10,7 +10,7 @@ from turing_models.utilities.calendar import TuringBusDayAdjustTypes, TuringDate
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.helper_functions import labelToString, tableToString
 from turing_models.market.curves.interpolator import TuringInterpTypes, _uinterpolate
 

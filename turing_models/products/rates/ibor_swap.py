@@ -8,7 +8,7 @@ from turing_models.utilities.frequency import TuringFrequencyTypes, TuringFreque
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes, labelToString
-from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 

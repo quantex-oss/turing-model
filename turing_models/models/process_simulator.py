@@ -5,7 +5,7 @@ from numba import njit, float64, int64
 import numpy as np
 
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.math import norminvcdf
+from turing_models.utilities.mathematics import norminvcdf
 from turing_models.utilities.helper_functions import labelToString
 
 ###############################################################################

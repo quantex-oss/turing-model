@@ -19,7 +19,7 @@ from turing_models.models.model_student_t_copula import TuringModelStudentTCopul
 from turing_models.products.credit.cds_curve import TuringCDSCurve
 
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.math import ONE_MILLION
+from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.market.curves.interpolator import interpolate, TuringInterpTypes
 
 from turing_models.utilities.helper_functions import checkArgumentTypes

@@ -13,7 +13,7 @@ from turing_models.utilities.helper_functions import labelToString, checkArgumen
 from turing_models.utilities.date import TuringDate
 
 
-from turing_models.utilities.math import N
+from turing_models.utilities.mathematics import N
 
 # TODO: SOME REDESIGN ON THE MONTE CARLO PROCESS IS PROBABLY NEEDED
 

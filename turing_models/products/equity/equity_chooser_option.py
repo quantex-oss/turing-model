@@ -5,7 +5,7 @@
 import numpy as np
 from scipy import optimize
 
-from turing_models.utilities.math import M
+from turing_models.utilities.mathematics import M
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_variables import gSmall
 from turing_models.utilities.error import TuringError

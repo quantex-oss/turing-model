@@ -7,7 +7,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
-from turing_models.utilities.math import testMonotonicity
+from turing_models.utilities.mathematics import testMonotonicity
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.helper_functions import timesFromDates
