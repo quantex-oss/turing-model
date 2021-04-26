@@ -6,9 +6,10 @@ Sync_Latest_Models:
   image: hub.iquantex.com/base/kube-deploy:beta
   script:
     # 在操作前生成git凭证,凭证使用gitlab deploy token定义在项目Settings CI变量中.
-    - cat "${GIT_CREDENT}" > ~/.git-credentials
+    #- cat "${GIT_CREDENT}" > ~/.git-credentials
     # 拉取最新master分支代码.
-    - cd /home/shared/common && git pull
+    #- cd /home/shared/common && git pull
+    - sleep 3000
   after_script:
     # 清除git凭证.
     - rm -f ~/.git-credentials
