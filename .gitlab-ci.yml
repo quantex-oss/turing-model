@@ -1,0 +1,22 @@
+stages:
+  - deploy
+
+Sync_Latest_Models:
+  stage: deploy
+  image: hub.iquantex.com/base/kube-deploy:beta
+  variables:
+    # 无需拉取源代码.
+    GIT_STRATEGY: none
+  before_script:
+    # 在操作前生成git凭证,凭证使用gitlab deploy token定义在项目Settings CI变量中.
+    - cat ${GIT_CREDENT} > ~/.git-credentials
+  script:
+    # 拉取最新master分支代码.
+    - cd /home/shared/common && git pull
+  after_script:
+    # 清除git凭证.
+    - rm -f ~/.git-credentials
+  only:
+    - master
+  tags:
+    - turing-ide
