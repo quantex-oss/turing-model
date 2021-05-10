@@ -121,7 +121,9 @@ class EqOption:
         ##################################################################################
 
     def interest_rate(self) -> float:
-        return self.ctx.path.r() if self.ctx.path and self.ctx.path.r() else self.__interest_rate
+        return self.ctx.path.r() \
+            if self.ctx.path and self.ctx.path.r() \
+            else self.__interest_rate
 
     @property
     def discount_curve(self):
@@ -140,25 +142,37 @@ class EqOption:
 
     @property
     def params(self) -> list:
-        return [self.value_date, self.stock_price, self.discount_curve, self.dividend_curve, self.bs_model]
+        return [
+            self.value_date,
+            self.stock_price,
+            self.discount_curve,
+            self.dividend_curve,
+            self.bs_model
+        ]
 
-    def price(self):
-        return self.option.value(*self.params) * self.number_of_options
+    def price(self) -> float:
+        return self.option.value(*self.params) \
+               * self.number_of_options
 
-    def delta(self):
-        return self.option.delta(*self.params) * self.number_of_options
+    def delta(self) -> float:
+        return self.option.delta(*self.params) \
+               * self.number_of_options
 
-    def gamma(self):
-        return self.option.gamma(*self.params) * self.number_of_options
+    def gamma(self) -> float:
+        return self.option.gamma(*self.params) \
+               * self.number_of_options
 
-    def vega(self):
-        return self.option.vega(*self.params) * self.number_of_options
+    def vega(self) -> float:
+        return self.option.vega(*self.params) \
+               * self.number_of_options
 
-    def theta(self):
-        return self.option.theta(*self.params) * self.number_of_options
+    def theta(self) -> float:
+        return self.option.theta(*self.params) \
+               * self.number_of_options
 
-    def rho(self):
-        return self.option.rho(*self.params) * self.number_of_options
+    def rho(self) -> float:
+        return self.option.rho(*self.params) \
+               * self.number_of_options
 
 
 if __name__ == "__main__":
