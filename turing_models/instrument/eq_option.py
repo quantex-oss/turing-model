@@ -9,7 +9,8 @@ from turing_models.instrument.common import OptionType, OptionStyle, Currency, \
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
-    TuringEquityVanillaOption
+    TuringEquityVanillaOption, TuringEquityAsianOption, \
+        TuringAsianOptionValuationMethods
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 
@@ -45,6 +46,7 @@ class EqOption:
             premium_payment_date: datetime.date = None,  # 期权费支付日期
             method_of_settlement: Union[OptionSettlementMethod, str] = None,  # 结算方式
             premium_currency: Union[Currency, str] = None,  # 期权费币种
+            start_averaging_date: datetime.date = None,  # 观察起始日
             name: str = None,
             value_date: datetime.date = None,
             stock_price: float = None,
@@ -77,6 +79,7 @@ class EqOption:
         self.premium_payment_date = premium_payment_date
         self.method_of_settlement = method_of_settlement
         self.premium_currency = premium_currency
+        self.start_averaging_date = start_averaging_date
         self.name = name
         self.value_date = value_date
         self.stock_price = stock_price
@@ -98,6 +101,12 @@ class EqOption:
         else:
             raise TuringError("Dates must be a 'datetime.date' object")
 
+        if self.start_averaging_date is not None:
+            if isinstance(self.start_averaging_date, datetime.date):
+                self.start_averaging_date = TuringDate(y=self.start_averaging_date.year, m=self.start_averaging_date.month, d=self.start_averaging_date.day)
+            else:
+                raise TuringError("Dates must be a 'datetime.date' object")
+
         # 欧式期权
         if self.option_style == OptionStyle.European or self.option_style == 'European':
             if self.option_type == OptionType.Call or self.option_type == 'Call':
@@ -110,13 +119,27 @@ class EqOption:
                 self.strike_price,
                 self.option_type)
 
-            self.bs_model = TuringModelBlackScholes(self.volatility)
-        self.dividend_curve = TuringDiscountCurveFlat(self.value_date,
-                                                      self.dividend_yield)
+            self.model = TuringModelBlackScholes(self.volatility)
 
         # 美式期权
         # 亚式期权
+        if self.option_style == OptionStyle.Asian or self.option_style == 'Asian':
+            if self.option_type == OptionType.Call or self.option_type == 'Call':
+                self.option_type = TuringOptionTypes.EUROPEAN_CALL
+            elif self.option_type == OptionType.Put or self.option_type == 'Put':
+                self.option_type = TuringOptionTypes.EUROPEAN_PUT
+            self.option = TuringEquityAsianOption(
+                self.start_averaging_date,
+                self.expiration_date,
+                self.strike_price,
+                self.option_type)
+
+            self.model = TuringModelBlackScholes(self.volatility)
+
         # 雪球期权
+
+        self.dividend_curve = TuringDiscountCurveFlat(self.value_date,
+                                                      self.dividend_yield)
         ##################################################################################
 
     def interest_rate(self) -> float:
@@ -147,11 +170,20 @@ class EqOption:
             self.stock_price,
             self.discount_curve,
             self.dividend_curve,
-            self.bs_model
+            self.model
         ]
 
     def price(self) -> float:
-        return self.option.value(*self.params)
+        if self.option_style == OptionStyle.European or self.option_style == 'European':
+            return self.option.value(*self.params)
+        elif self.option_style == OptionStyle.Asian or self.option_style == 'Asian':
+            return self.option.value(self.value_date,
+                                     self.stock_price,
+                                     self.discount_curve,
+                                     self.dividend_curve,
+                                     self.model,
+                                     method=TuringAsianOptionValuationMethods.CURRAN,
+                                     accruedAverage=None)
 
     def delta(self) -> float:
         return self.option.delta(*self.params)

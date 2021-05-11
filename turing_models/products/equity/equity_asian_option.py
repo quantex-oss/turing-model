@@ -16,6 +16,7 @@ from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes, labelToString
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.models.model_black_scholes import TuringModelBlackScholes
 
 from turing_models.utilities.mathematics import N
 
@@ -23,6 +24,9 @@ from turing_models.utilities.mathematics import N
 ###############################################################################
 
 from enum import Enum
+
+
+bump = 1e-4
 
 
 class TuringAsianOptionValuationMethods(Enum):
@@ -350,8 +354,7 @@ class TuringEquityAsianOption():
                  startAveragingDate: TuringDate,
                  expiryDate: TuringDate,
                  strikePrice: float,
-                 optionType: TuringOptionTypes,
-                 numberOfObservations: int = 100):
+                 optionType: TuringOptionTypes):
         ''' Create an FinEquityAsian option object which takes a start date for
         the averaging, an expiry date, a strike price, an option type and a
         number of observations. '''
@@ -365,7 +368,7 @@ class TuringEquityAsianOption():
         self._expiryDate = expiryDate
         self._strikePrice = float(strikePrice)
         self._optionType = optionType
-        self._numObservations = numberOfObservations
+        self._numObservations = int(expiryDate - startAveragingDate)
 
 ###############################################################################
 
@@ -768,6 +771,133 @@ class TuringEquityAsianOption():
                                    v_g_exact)
 
         return v
+
+###############################################################################
+
+    def delta(self,
+              valueDate: TuringDate,
+              stockPrice: float,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
+              model):
+        ''' Calculation of option delta by perturbation of stock price and
+        revaluation. '''
+        v = self.valueMC(valueDate, stockPrice, discountCurve,
+                         dividendCurve, model, numPaths=100000, seed=1219,
+                         accruedAverage=None)
+
+        vBumped = self.valueMC(valueDate, stockPrice + bump, discountCurve,
+                               dividendCurve, model, numPaths=100000, seed=1219,
+                               accruedAverage=None)
+
+        delta = (vBumped - v) / bump
+        return delta
+
+###############################################################################
+
+    def gamma(self,
+              valueDate: TuringDate,
+              stockPrice: float,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
+              model):
+        ''' Calculation of option gamma by perturbation of stock price and
+        revaluation. '''
+
+        v = self.valueMC(valueDate, stockPrice, discountCurve,
+                         dividendCurve, model, numPaths=100000, seed=1219,
+                         accruedAverage=None)
+
+        vBumpedDn = self.valueMC(valueDate, stockPrice - bump, discountCurve,
+                                 dividendCurve, model, numPaths=100000, seed=1219,
+                                 accruedAverage=None)
+
+        vBumpedUp = self.valueMC(valueDate, stockPrice + bump, discountCurve,
+                                 dividendCurve, model, numPaths=100000, seed=1219,
+                                 accruedAverage=None)
+
+        gamma = (vBumpedUp - 2.0 * v + vBumpedDn) / bump / bump
+        return gamma
+
+###############################################################################
+
+    def vega(self,
+             valueDate: TuringDate,
+             stockPrice: float,
+             discountCurve: TuringDiscountCurve,
+             dividendCurve: TuringDiscountCurve,
+             model):
+        ''' Calculation of option vega by perturbing vol and revaluation. '''
+
+        v = self.valueMC(valueDate, stockPrice, discountCurve,
+                         dividendCurve, model, numPaths=100000, seed=1219,
+                         accruedAverage=None)
+
+        model = TuringModelBlackScholes(model._volatility + bump)
+
+        vBumped = self.valueMC(valueDate, stockPrice, discountCurve,
+                               dividendCurve, model, numPaths=100000, seed=1219,
+                               accruedAverage=None)
+
+        vega = (vBumped - v) / bump
+        return vega
+
+###############################################################################
+
+    def theta(self,
+              valueDate: TuringDate,
+              stockPrice: float,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
+              model):
+        ''' Calculation of option theta by perturbing value date by one 
+        calendar date (not a business date) and then doing revaluation and 
+        calculating the difference divided by dt = 1 / gDaysInYear. '''
+
+        v = self.valueMC(valueDate, stockPrice,
+                         discountCurve,
+                         dividendCurve, model,
+                         numPaths=100000, seed=1219,
+                         accruedAverage=None)
+
+        nextDate = valueDate.addDays(1)
+
+        # Need to do this carefully.
+
+        discountCurve._valuationDate = nextDate
+        bump = (nextDate - valueDate) / gDaysInYear
+
+        vBumped = self.valueMC(nextDate, stockPrice,
+                               discountCurve,
+                               dividendCurve, model,
+                               numPaths=100000, seed=1219,
+                               accruedAverage=None)
+
+        discountCurve._valuationDate = valueDate
+        theta = (vBumped - v) / bump
+        return theta
+
+###############################################################################
+
+    def rho(self,
+            valueDate: TuringDate,
+            stockPrice: float,
+            discountCurve: TuringDiscountCurve,
+            dividendCurve: TuringDiscountCurve,
+            model):
+        ''' Calculation of option rho by perturbing interest rate and
+        revaluation. '''
+
+        v = self.valueMC(valueDate, stockPrice, discountCurve,
+                         dividendCurve, model, numPaths=100000, seed=1219,
+                         accruedAverage=None)
+
+        vBumped = self.valueMC(valueDate, stockPrice, discountCurve.bump(bump),
+                               dividendCurve, model, numPaths=100000, seed=1219,
+                               accruedAverage=None)
+
+        rho = (vBumped - v) / bump
+        return rho
 
 ###############################################################################
 
