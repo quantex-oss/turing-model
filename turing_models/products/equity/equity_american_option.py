@@ -80,7 +80,7 @@ class TuringEquityAmericanOption(TuringEquityOption):
                     
         v = v * self._numOptions
 
-        if isinstance(s, float):
+        if isinstance(v, float):
             return v
         else:
             return v[0]

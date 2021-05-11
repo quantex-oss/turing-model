@@ -5,12 +5,13 @@ from tunny.models import model
 
 from fundamental import ctx
 from turing_models.instrument.common import OptionType, OptionStyle, Currency, \
-    OptionSettlementMethod, BuySell, AssetClass, AssetType
+    OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, KnockType
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
     TuringEquityVanillaOption
 from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.error import TuringError
 
 
 @model
@@ -19,46 +20,45 @@ class EqOption:
 
     def __init__(
             self,
-            trade_id: str = None,
-            buy_sell: Union[BuySell, str] = None,
-            counterparty: str = None,
-            option_type: Union[OptionType, str] = None,
-            option_style: Union[OptionStyle, str] = None,
-            type: str = None,
-            underlier: str = None,
-            notional: float = None,
-            initial_spot: float = None,
-            number_of_options: float = None,
-            start_date: Union[datetime.date, str] = None,
-            end_date: Union[datetime.date, str] = None,
-            expiration_date: Union[datetime.date, str] = None,
-            exercise_date: Union[datetime.date, str] = None,
-            participation_rate: float = None,
-            strike_price: float = None,
-            barrier: float = None,
-            rebate: float = None,
-            multiplier: float = None,
-            settlement_date: Union[datetime.date, str] = None,
-            settlement_currency: Union[Currency, str] = None,
-            premium: float = 0,
-            premium_payment_date: Union[datetime.date, str] = None,
-            method_of_settlement: Union[OptionSettlementMethod, str] = None,
-            premium_currency: Union[Currency, str] = None,
-            status: str = None,
+            trade_id: str = None,  # 合约编号
+            underlier: str = None,  # 标的证券
+            buy_sell: Union[BuySell, str] = None,  # 买卖方向
+            counterparty: Union[Exchange, str] = None,  # 交易所名称（场内）/交易对手名称（场外）
+            option_style: Union[OptionStyle, str] = None,  # 欧式/美式等
+            option_type: Union[OptionType, str] = None,  # call/put
+            knock_type: Union[KnockType, str] = None,  # 敲入敲出
+            notional: float = None,  # 名义本金
+            initial_spot: float = None,  # 期初价格
+            number_of_options: float = None,  # 期权数量：名义本金/期初价格
+            start_date: datetime.date = None,  # 开始时间
+            end_date: datetime.date = None,  # 期末观察日
+            expiration_date: datetime.date = None,  # 到期日
+            exercise_date: datetime.date = None,  # 行权日
+            participation_rate: float = None,  # 参与率
+            strike_price: float = None,  # 行权价
+            barrier: float = None,  # 敲出价
+            rebate: float = None,  # 敲出补偿收益率
+            multiplier: float = None,  # 合约乘数
+            settlement_date: datetime.date = None,  # 结算日期
+            settlement_currency: Union[Currency, str] = None,  # 结算货币
+            premium: float = 0,  # 期权费
+            premium_payment_date: datetime.date = None,  # 期权费支付日期
+            method_of_settlement: Union[OptionSettlementMethod, str] = None,  # 结算方式
+            premium_currency: Union[Currency, str] = None,  # 期权费币种
             name: str = None,
-            value_date: Union[datetime.date, str] = None,
+            value_date: datetime.date = None,
             stock_price: float = None,
             volatility: float = None,
             interest_rate: float = None,
             dividend_yield: float = None,
     ):
         self.trade_id = trade_id
+        self.underlier = underlier
         self.buy_sell = buy_sell
         self.counterparty = counterparty
-        self.option_type = option_type
         self.option_style = option_style
-        self.type = type
-        self.underlier = underlier
+        self.option_type = option_type 
+        self.knock_type = knock_type 
         self.notional = notional
         self.initial_spot = initial_spot
         self.number_of_options = number_of_options
@@ -77,7 +77,6 @@ class EqOption:
         self.premium_payment_date = premium_payment_date
         self.method_of_settlement = method_of_settlement
         self.premium_currency = premium_currency
-        self.status = status
         self.name = name
         self.value_date = value_date
         self.stock_price = stock_price
@@ -90,14 +89,14 @@ class EqOption:
         self.ctx = ctx
         if isinstance(self.value_date, datetime.date):
             self.value_date = TuringDate(y=self.value_date.year, m=self.value_date.month, d=self.value_date.day)
-        elif isinstance(self.value_date, str):
-            self.value_date = TuringDate.fromString(self.value_date, "%Y-%m-%d")
+        else:
+            raise TuringError("Dates must be a 'datetime.date' object")
 
         if isinstance(self.expiration_date, datetime.date):
             self.expiration_date = TuringDate(y=self.expiration_date.year, m=self.expiration_date.month,
                                               d=self.expiration_date.day)
-        elif isinstance(self.expiration_date, str):
-            self.expiration_date = TuringDate.fromString(self.expiration_date, "%Y-%m-%d")
+        else:
+            raise TuringError("Dates must be a 'datetime.date' object")
 
         # 欧式期权
         if self.option_style == OptionStyle.European or self.option_style == 'European':
@@ -130,6 +129,7 @@ class EqOption:
         return TuringDiscountCurveFlat(
             self.value_date, self.interest_rate())
 
+    ######################################################################################
     @property
     def asset_class(self) -> AssetClass:
         """Equity"""
@@ -151,28 +151,22 @@ class EqOption:
         ]
 
     def price(self) -> float:
-        return self.option.value(*self.params) \
-               * self.number_of_options
+        return self.option.value(*self.params)
 
     def delta(self) -> float:
-        return self.option.delta(*self.params) \
-               * self.number_of_options
+        return self.option.delta(*self.params)
 
     def gamma(self) -> float:
-        return self.option.gamma(*self.params) \
-               * self.number_of_options
+        return self.option.gamma(*self.params)
 
     def vega(self) -> float:
-        return self.option.vega(*self.params) \
-               * self.number_of_options
+        return self.option.vega(*self.params)
 
     def theta(self) -> float:
-        return self.option.theta(*self.params) \
-               * self.number_of_options
+        return self.option.theta(*self.params)
 
     def rho(self) -> float:
-        return self.option.rho(*self.params) \
-               * self.number_of_options
+        return self.option.rho(*self.params)
 
 
 if __name__ == "__main__":
@@ -187,5 +181,4 @@ if __name__ == "__main__":
                       interest_rate=0.03,
                       dividend_yield=0)
 
-    print(
-        f"Option Price: {option.price()}, Delta: {option.delta()}, Gamma: {option.gamma()}, Vega: {option.vega()}, Theta: {option.theta()}, Rho: {option.rho()}")
+    print(f"Option Price: {option.price()}, Delta: {option.delta()}, Gamma: {option.gamma()}, Vega: {option.vega()}, Theta: {option.theta()}, Rho: {option.rho()}")

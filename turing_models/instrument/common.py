@@ -1,6 +1,30 @@
 from enum import Enum
 
 
+class BuySell(Enum):
+    """Buy or Sell side of contract"""
+
+    Buy = 'Buy'
+    Sell = 'Sell'
+
+    def __repr__(self):
+        return self.value
+
+
+class Exchange(Enum):
+    """Exchange Name"""
+
+    Shanghai_Stock_Exchange = 'Shanghai Stock Exchange'
+    Shenzhen_Stock_Exchange = 'Shenzhen Stock Exchange'
+    Zhengzhou_Commodity_Exchange = 'Zhengzhou Commodity Exchange'
+    Dalian_Commodity_Exchange = 'Dalian Commodity Exchange'
+    Shanghai_Futures_Exchange = 'Shanghai Futures Exchange'
+    China_Financial_Futures_Exchange = 'China Financial Futures Exchange'
+
+    def __repr__(self):
+        return self.value
+
+
 class OptionType(Enum):
     """Option Type"""
 
@@ -18,10 +42,17 @@ class OptionStyle(Enum):
 
     European = 'European'
     American = 'American'
+    Asian = 'Asian'
     Bermudan = 'Bermudan'
 
     def __repr__(self):
         return self.value
+
+
+class KnockType(Enum):
+    """Knock Type"""
+    Knock_In = 'Knock In'
+    Knock_Out = 'Knock Out'
 
 
 class Currency(Enum):
@@ -33,55 +64,11 @@ class Currency(Enum):
         return self.value
 
 
-class ValuationTime(Enum):
-    """The time of valuation, e.g. for an option"""
-
-    MktClose = 'MktClose'
-    MktOpen = 'MktOpen'
-    SQ = 'SQ'
-
-    def __repr__(self):
-        return self.value
-
-
 class OptionSettlementMethod(Enum):
     """How the option is settled (e.g. Cash, Physical)"""
 
     Cash = 'Cash'
     Physical = 'Physical'
-
-    def __repr__(self):
-        return self.value
-
-
-class UnderlierType(Enum):
-    """Type of underlyer"""
-
-    BBID = 'BBID'
-    CUSIP = 'CUSIP'
-    ISIN = 'ISIN'
-    SEDOL = 'SEDOL'
-    RIC = 'RIC'
-    Ticker = 'Ticker'
-
-
-class BuySell(Enum):
-    """Buy or Sell side of contract"""
-
-    Buy = 'Buy'
-    Sell = 'Sell'
-
-    def __repr__(self):
-        return self.value
-
-
-class TradeAs(Enum):
-    """Option trade as (i.e. listed, otc, lookalike etc)"""
-
-    Listed = 'Listed'
-    Listed_Look_alike_OTC = 'Listed Look alike OTC'
-    Flex = 'Flex'
-    OTC = 'OTC'
 
     def __repr__(self):
         return self.value

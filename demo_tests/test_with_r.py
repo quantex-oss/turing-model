@@ -3,14 +3,10 @@ import datetime
 from fundamental import PricingContext
 from turing_models.instrument.common import OptionType, OptionStyle
 from turing_models.instrument.eq_option import EqOption
-from turing_models.utilities.turing_date import TuringDate
 
 # --------------------------------------------------------------------------
 # Section 1: Pricing
 # --------------------------------------------------------------------------
-# Params
-value_date = TuringDate(y=2021, m=4, d=25)
-expiry_date = TuringDate(y=2021, m=7, d=25)
 
 option = EqOption(option_type=OptionType.Call,
                   option_style=OptionStyle.European,
