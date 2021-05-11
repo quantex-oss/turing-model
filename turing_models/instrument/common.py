@@ -54,6 +54,9 @@ class KnockType(Enum):
     Knock_In = 'Knock In'
     Knock_Out = 'Knock Out'
 
+    def __repr__(self):
+        return self.value
+
 
 class Currency(Enum):
     """Currency"""
