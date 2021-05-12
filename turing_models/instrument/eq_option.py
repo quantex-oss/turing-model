@@ -4,7 +4,7 @@ from typing import Union
 from tunny.models import model
 
 from fundamental import ctx
-from option_base import OptionBase
+from turing_models.instrument.option_base import OptionBase
 from turing_models.instrument.common import OptionType, OptionStyle, Currency, \
     OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, KnockType
 from turing_models.market.curves import TuringDiscountCurveFlat
@@ -155,7 +155,7 @@ class EqOption:
                 self.dividend_curve,
                 self.model
             ]
-        if self.option_style == OptionStyle.Asian or self.option_style == 'Asian':
+        elif self.option_style == OptionStyle.Asian or self.option_style == 'Asian':
             params = [self.value_date,
                       self.stock_price,
                       self.discount_curve,
