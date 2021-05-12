@@ -17,7 +17,7 @@ print(">>>" + version_number_str + "<<<")
 ###############################################################################
 cr = "\n"
 
-with open('turing_models//__init__.template', 'r') as file:
+with open('turing_models//__init__.py', 'r') as file:
     filedata = file.read()
 
 # Replace the target string
