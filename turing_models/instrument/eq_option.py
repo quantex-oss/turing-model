@@ -252,7 +252,7 @@ class EqOption:
                       self.dividend_curve,
                       self.model,
                       TuringAsianOptionValuationMethods.CURRAN,
-                      self.accruedAverage]
+                      self.accrued_average]
         return params
 
     def price(self) -> float:
