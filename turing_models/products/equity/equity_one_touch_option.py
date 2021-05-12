@@ -1,10 +1,5 @@
-
-
-
-
 import numpy as np
 from enum import Enum
-
 
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError

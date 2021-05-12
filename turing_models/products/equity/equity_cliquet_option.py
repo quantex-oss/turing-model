@@ -1,7 +1,3 @@
-
-
-
-
 import numpy as np
 
 from turing_models.utilities.frequency import TuringFrequencyTypes

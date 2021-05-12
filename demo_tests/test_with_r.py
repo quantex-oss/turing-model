@@ -1,5 +1,7 @@
 import datetime
 
+import sys
+sys.path.append("..")
 from fundamental import PricingContext
 from turing_models.instrument.common import OptionType, OptionStyle
 from turing_models.instrument.eq_option import EqOption

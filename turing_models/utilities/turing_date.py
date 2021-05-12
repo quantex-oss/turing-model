@@ -179,7 +179,7 @@ def weekDay(dayCount):
 ###############################################################################
 
 
-class TuringDate():
+class  TuringDate():
     ''' A date class to manage dates that is simple to use and includes a
     number of useful date functions used frequently in Finance. '''
 
@@ -899,7 +899,7 @@ def datediff(d1: TuringDate,
 ###############################################################################
 
 
-def fromDatetime(dt: TuringDate):
+def fromDatetime(dt: datetime.date):
     ''' Construct a TuringDate from a datetime as this is often needed if we
     receive inputs from other Python objects such as Pandas dataframes. '''
 

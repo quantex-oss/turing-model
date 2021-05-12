@@ -1,18 +1,62 @@
+# 
 import datetime
+from turing_models.products.equity.equity_asian_option import TuringEquityAsianOption
 from typing import Union
 
 from tunny.models import model
 
 from fundamental import ctx
-from option_base import OptionBase
 from turing_models.instrument.common import OptionType, OptionStyle, Currency, \
-    OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, KnockType
+     OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, KnockType
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
-    TuringAsianOptionValuationMethods
+     TuringEquityVanillaOption, TuringEquityAmericanOption, \
+     TuringAsianOptionValuationMethods
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.turing_date import TuringDate, fromDatetime
+from turing_models.utilities.helper_functions import checkArgumentTypes
+
+
+class OptionBase:
+    """Create an option object"""
+
+    def __init__(
+            self,
+            option_type: TuringOptionTypes,
+            expiration_date: TuringDate,
+            strike_price: float,
+            start_averaging_date: TuringDate,
+    ):
+        self.option_type = option_type
+        self.expiration_date = expiration_date
+        self.strike_price = strike_price
+        self.start_averaging_date = start_averaging_date
+
+    def get_option(self):
+        """返回期权实例化对象"""
+
+        if (self.option_type == TuringOptionTypes.EUROPEAN_CALL or
+                self.option_type == TuringOptionTypes.EUROPEAN_PUT):
+            option = TuringEquityVanillaOption(
+                self.expiration_date,
+                self.strike_price,
+                self.option_type)
+        elif (self.option_type == TuringOptionTypes.AMERICAN_CALL or
+                self.option_type == TuringOptionTypes.AMERICAN_PUT):
+            option = TuringEquityAmericanOption(
+                self.expiration_date,
+                self.strike_price,
+                self.option_type)
+        elif (self.option_type == TuringOptionTypes.ASIAN_CALL or
+                self.option_type == TuringOptionTypes.ASIAN_PUT):
+            option = TuringEquityAsianOption(
+                self.start_averaging_date,
+                self.expiration_date,
+                self.strike_price,
+                self.option_type)
+
+        return option
 
 
 @model
@@ -47,13 +91,16 @@ class EqOption:
             method_of_settlement: Union[OptionSettlementMethod, str] = None,  # 结算方式
             premium_currency: Union[Currency, str] = None,  # 期权费币种
             start_averaging_date: datetime.date = None,  # 观察起始日
-            name: str = None,
-            value_date: datetime.date = None,
-            stock_price: float = None,
-            volatility: float = None,
-            interest_rate: float = None,
-            dividend_yield: float = None,
+            name: str = None,  # 对象标识名
+            value_date: datetime.date = None,  # 估值日期
+            stock_price: float = None,  # 股票价格
+            volatility: float = None,  # 波动率
+            interest_rate: float = None,  # 无风险利率
+            dividend_yield: float = None,  # 股息率
+            accrued_average: float = None  # 应计平均价
     ):
+        checkArgumentTypes(self.__init__, locals())
+
         self.trade_id = trade_id
         self.underlier = underlier
         self.buy_sell = buy_sell
@@ -86,42 +133,81 @@ class EqOption:
         self.volatility = volatility
         self.__interest_rate = interest_rate
         self.dividend_yield = dividend_yield
-        self.accruedAverage = None
+        self.accrued_average = accrued_average
         ##################################################################################
-        # 时间格式转换
         self.ctx = ctx
-        if isinstance(self.value_date, datetime.date):
-            self.value_date = TuringDate(y=self.value_date.year, m=self.value_date.month, d=self.value_date.day)
-        else:
-            raise TuringError("Dates must be a 'datetime.date' object")
 
-        if isinstance(self.expiration_date, datetime.date):
-            self.expiration_date = TuringDate(y=self.expiration_date.year, m=self.expiration_date.month,
-                                              d=self.expiration_date.day)
-        else:
-            raise TuringError("Dates must be a 'datetime.date' object")
+        # 时间格式转换
+        self.time_reformat()
 
-        if self.start_averaging_date is not None:
-            if isinstance(self.start_averaging_date, datetime.date):
-                self.start_averaging_date = TuringDate(y=self.start_averaging_date.year,
-                                                       m=self.start_averaging_date.month,
-                                                       d=self.start_averaging_date.day)
-            else:
-                raise TuringError("Dates must be a 'datetime.date' object")
-
-        if self.option_type == OptionType.Call or self.option_type == 'Call':
-            self.option_type = TuringOptionTypes.EUROPEAN_CALL
-        elif self.option_type == OptionType.Put or self.option_type == 'Put':
-            self.option_type = TuringOptionTypes.EUROPEAN_PUT
+        # 期权类型格式转换
+        self.option_type_reformat()
 
         self.model = TuringModelBlackScholes(self.volatility)
-        self.dividend_curve = TuringDiscountCurveFlat(self.value_date, self.dividend_yield)
-        option_base = OptionBase(self.option_style,
-                                 self.start_averaging_date,
+        self.dividend_curve = TuringDiscountCurveFlat(self.value_date,
+                                                      self.dividend_yield)
+        option_base = OptionBase(self.option_type,
                                  self.expiration_date,
                                  self.strike_price,
-                                 self.option_type)
+                                 self.start_averaging_date)
         self.option = option_base.get_option()
+
+    def time_reformat(self):
+        """将datetime.date转换为TuringDate"""
+
+        if self.start_date is not None:
+            self.start_date = fromDatetime(self.start_date)
+
+        if self.end_date is not None:
+            self.end_date = fromDatetime(self.end_date)
+
+        if self.expiration_date is not None:
+            self.expiration_date = fromDatetime(self.expiration_date)
+
+        if self.exercise_date is not None:
+            self.exercise_date = fromDatetime(self.exercise_date)
+
+        if self.settlement_date is not None:
+            self.settlement_date = fromDatetime(self.settlement_date)
+
+        if self.premium_payment_date is not None:
+            self.premium_payment_date = fromDatetime(self.premium_payment_date)
+
+        if self.start_averaging_date is not None:
+            self.start_averaging_date = fromDatetime(self.start_averaging_date)
+
+        if self.value_date is not None:
+            self.value_date = fromDatetime(self.value_date)
+
+    def option_type_reformat(self):
+        """将OptionStyle+OptionTypt与TuringOptionTypes对应起来"""
+
+        if (self.option_style == OptionStyle.European or
+                self.option_style == 'European'):
+            if (self.option_type == OptionType.Call or
+                    self.option_type == 'Call'):
+                self.option_type = TuringOptionTypes.EUROPEAN_CALL
+            elif (self.option_type == OptionType.Put or
+                    self.option_type == 'Put'):
+                self.option_type = TuringOptionTypes.EUROPEAN_PUT
+        elif (self.option_style == OptionStyle.American or
+                self.option_style == 'American'):
+            if (self.option_type == OptionType.Call or
+                    self.option_type == 'Call'):
+                self.option_type = TuringOptionTypes.AMERICAN_CALL
+            elif (self.option_type == OptionType.Put or
+                    self.option_type == 'Put'):
+                self.option_type = TuringOptionTypes.AMERICAN_PUT
+        elif (self.option_style == OptionStyle.Asian or
+                self.option_style == 'Asian'):
+            if (self.option_type == OptionType.Call or
+                    self.option_type == 'Call'):
+                self.option_type = TuringOptionTypes.ASIAN_CALL
+            elif (self.option_type == OptionType.Put or
+                    self.option_type == 'Put'):
+                self.option_type = TuringOptionTypes.ASIAN_PUT
+        else:
+            raise TuringError("Argument Content Error")
 
     def interest_rate(self) -> float:
         return self.ctx.path.r() \
@@ -147,7 +233,10 @@ class EqOption:
     @property
     def params(self) -> list:
         params = []
-        if self.option_style == OptionStyle.European or self.option_style == 'European':
+        if (self.option_style == OptionStyle.European or
+                self.option_style == 'European' or
+                self.option_style == OptionStyle.American or
+                self.option_style == 'American'):
             params = [
                 self.value_date,
                 self.stock_price,
@@ -155,7 +244,9 @@ class EqOption:
                 self.dividend_curve,
                 self.model
             ]
-        if self.option_style == OptionStyle.Asian or self.option_style == 'Asian':
+        if (self.option_style == OptionStyle.Asian or
+                self.option_style == 'Asian'):
+            # FIXME: 'ModelProxy' object has no attribute 'accruedAverage'
             params = [self.value_date,
                       self.stock_price,
                       self.discount_curve,

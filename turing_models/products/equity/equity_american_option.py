@@ -24,8 +24,7 @@ class TuringEquityAmericanOption(TuringEquityOption):
     def __init__(self,
                  expiryDate: TuringDate,
                  strikePrice: float,
-                 optionType: TuringOptionTypes,
-                 numOptions: float = 1.0):
+                 optionType: TuringOptionTypes):
         ''' Class for American style options on simple vanilla calls and puts.
         Specify the expiry date, strike price, whether the option is a call or
         put and the number of options. '''
@@ -41,7 +40,6 @@ class TuringEquityAmericanOption(TuringEquityOption):
         self._expiryDate = expiryDate
         self._strikePrice = strikePrice
         self._optionType = optionType
-        self._numOptions = numOptions
 
 ###############################################################################
 
@@ -77,8 +75,6 @@ class TuringEquityAmericanOption(TuringEquityOption):
         k = self._strikePrice
 
         v = model.value(s, texp, k, r, q, self._optionType)
-                    
-        v = v * self._numOptions
 
         if isinstance(v, float):
             return v
@@ -92,7 +88,6 @@ class TuringEquityAmericanOption(TuringEquityOption):
         s += labelToString("EXPIRY DATE", self._expiryDate)
         s += labelToString("STRIKE PRICE", self._strikePrice)
         s += labelToString("OPTION TYPE", self._optionType)
-        s += labelToString("NUMBER", self._numOptions, "")
         return s
 
 ###############################################################################

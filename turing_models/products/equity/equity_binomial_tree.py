@@ -1,7 +1,3 @@
-
-
-
-
 from math import exp, log, sqrt
 from enum import Enum
 
