@@ -86,7 +86,7 @@ class EqOption:
         self.volatility = volatility
         self.__interest_rate = interest_rate
         self.dividend_yield = dividend_yield
-
+        self.accruedAverage = None
         ##################################################################################
         # 时间格式转换
         self.ctx = ctx
@@ -164,25 +164,27 @@ class EqOption:
 
     @property
     def params(self) -> list:
-        return [
-            self.value_date,
-            self.stock_price,
-            self.discount_curve,
-            self.dividend_curve,
-            self.model
-        ]
+        params = []
+        if self.option_style == OptionStyle.European or self.option_style == 'European':
+            params = [
+                self.value_date,
+                self.stock_price,
+                self.discount_curve,
+                self.dividend_curve,
+                self.model
+            ]
+        if self.option_style == OptionStyle.Asian or self.option_style == 'Asian':
+            params = [self.value_date,
+                      self.stock_price,
+                      self.discount_curve,
+                      self.dividend_curve,
+                      self.model,
+                      TuringAsianOptionValuationMethods.CURRAN,
+                      self.accruedAverage]
+        return params
 
     def price(self) -> float:
-        if self.option_style == OptionStyle.European or self.option_style == 'European':
-            return self.option.value(*self.params)
-        elif self.option_style == OptionStyle.Asian or self.option_style == 'Asian':
-            return self.option.value(self.value_date,
-                                     self.stock_price,
-                                     self.discount_curve,
-                                     self.dividend_curve,
-                                     self.model,
-                                     method=TuringAsianOptionValuationMethods.CURRAN,
-                                     accruedAverage=None)
+        return self.option.value(*self.params)
 
     def delta(self) -> float:
         return self.option.delta(*self.params)
