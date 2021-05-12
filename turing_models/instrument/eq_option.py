@@ -10,9 +10,9 @@ from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
     TuringEquityVanillaOption, TuringEquityAsianOption, \
-        TuringAsianOptionValuationMethods
-from turing_models.utilities.turing_date import TuringDate
+    TuringAsianOptionValuationMethods
 from turing_models.utilities.error import TuringError
+from turing_models.utilities.turing_date import TuringDate
 
 
 @model
@@ -59,8 +59,8 @@ class EqOption:
         self.buy_sell = buy_sell
         self.counterparty = counterparty
         self.option_style = option_style
-        self.option_type = option_type 
-        self.knock_type = knock_type 
+        self.option_type = option_type
+        self.knock_type = knock_type
         self.notional = notional
         self.initial_spot = initial_spot
         self.number_of_options = number_of_options
@@ -103,44 +103,43 @@ class EqOption:
 
         if self.start_averaging_date is not None:
             if isinstance(self.start_averaging_date, datetime.date):
-                self.start_averaging_date = TuringDate(y=self.start_averaging_date.year, m=self.start_averaging_date.month, d=self.start_averaging_date.day)
+                self.start_averaging_date = TuringDate(y=self.start_averaging_date.year,
+                                                       m=self.start_averaging_date.month,
+                                                       d=self.start_averaging_date.day)
             else:
                 raise TuringError("Dates must be a 'datetime.date' object")
 
+        if self.option_type == OptionType.Call or self.option_type == 'Call':
+            self.option_type = TuringOptionTypes.EUROPEAN_CALL
+        elif self.option_type == OptionType.Put or self.option_type == 'Put':
+            self.option_type = TuringOptionTypes.EUROPEAN_PUT
+
+        self.model = TuringModelBlackScholes(self.volatility)
+        self.dividend_curve = TuringDiscountCurveFlat(self.value_date, self.dividend_yield)
+
+        self.option = self.get_option()
+
+        ##################################################################################
+
+    def get_option(self):
         # 欧式期权
         if self.option_style == OptionStyle.European or self.option_style == 'European':
-            if self.option_type == OptionType.Call or self.option_type == 'Call':
-                self.option_type = TuringOptionTypes.EUROPEAN_CALL
-            elif self.option_type == OptionType.Put or self.option_type == 'Put':
-                self.option_type = TuringOptionTypes.EUROPEAN_PUT
-
-            self.option = TuringEquityVanillaOption(
+            option = TuringEquityVanillaOption(
                 self.expiration_date,
                 self.strike_price,
                 self.option_type)
 
-            self.model = TuringModelBlackScholes(self.volatility)
-
         # 美式期权
         # 亚式期权
         if self.option_style == OptionStyle.Asian or self.option_style == 'Asian':
-            if self.option_type == OptionType.Call or self.option_type == 'Call':
-                self.option_type = TuringOptionTypes.EUROPEAN_CALL
-            elif self.option_type == OptionType.Put or self.option_type == 'Put':
-                self.option_type = TuringOptionTypes.EUROPEAN_PUT
-            self.option = TuringEquityAsianOption(
+            option = TuringEquityAsianOption(
                 self.start_averaging_date,
                 self.expiration_date,
                 self.strike_price,
                 self.option_type)
 
-            self.model = TuringModelBlackScholes(self.volatility)
-
         # 雪球期权
-
-        self.dividend_curve = TuringDiscountCurveFlat(self.value_date,
-                                                      self.dividend_yield)
-        ##################################################################################
+        return option
 
     def interest_rate(self) -> float:
         return self.ctx.path.r() \
@@ -213,4 +212,4 @@ if __name__ == "__main__":
                       interest_rate=0.03,
                       dividend_yield=0)
 
-    print(f"Option Price: {option.price()}, Delta: {option.delta()}, Gamma: {option.gamma()}, Vega: {option.vega()}, Theta: {option.theta()}, Rho: {option.rho()}")
+    print(f"Option Price: {option.price()}")
