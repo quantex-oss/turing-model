@@ -4,12 +4,12 @@ from typing import Union
 from tunny.models import model
 
 from fundamental import ctx
+from option_base import OptionBase
 from turing_models.instrument.common import OptionType, OptionStyle, Currency, \
     OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, KnockType
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
-    TuringEquityVanillaOption, TuringEquityAsianOption, \
     TuringAsianOptionValuationMethods
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
@@ -116,30 +116,12 @@ class EqOption:
 
         self.model = TuringModelBlackScholes(self.volatility)
         self.dividend_curve = TuringDiscountCurveFlat(self.value_date, self.dividend_yield)
-
-        self.option = self.get_option()
-
-        ##################################################################################
-
-    def get_option(self):
-        # 欧式期权
-        if self.option_style == OptionStyle.European or self.option_style == 'European':
-            option = TuringEquityVanillaOption(
-                self.expiration_date,
-                self.strike_price,
-                self.option_type)
-
-        # 美式期权
-        # 亚式期权
-        if self.option_style == OptionStyle.Asian or self.option_style == 'Asian':
-            option = TuringEquityAsianOption(
-                self.start_averaging_date,
-                self.expiration_date,
-                self.strike_price,
-                self.option_type)
-
-        # 雪球期权
-        return option
+        option_base = OptionBase(self.option_style,
+                                 self.start_averaging_date,
+                                 self.expiration_date,
+                                 self.strike_price,
+                                 self.option_type)
+        self.option = option_base.get_option()
 
     def interest_rate(self) -> float:
         return self.ctx.path.r() \
