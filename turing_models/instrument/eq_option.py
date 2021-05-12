@@ -1,6 +1,4 @@
-# 
 import datetime
-from turing_models.products.equity.equity_asian_option import TuringEquityAsianOption
 from typing import Union
 
 from tunny.models import model
@@ -12,7 +10,7 @@ from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
      TuringEquityVanillaOption, TuringEquityAmericanOption, \
-     TuringAsianOptionValuationMethods
+     TuringEquityAsianOption, TuringAsianOptionValuationMethods
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate, fromDatetime
 from turing_models.utilities.helper_functions import checkArgumentTypes
@@ -244,6 +242,7 @@ class EqOption:
                 self.dividend_curve,
                 self.model
             ]
+
         if (self.option_style == OptionStyle.Asian or
                 self.option_style == 'Asian'):
             # FIXME: 'ModelProxy' object has no attribute 'accruedAverage'
