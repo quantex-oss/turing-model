@@ -24,13 +24,38 @@ option = EqOption(option_type=OptionType.Call,
                   dividend_yield=0)
 
 print(option.price())
+print(option.delta())
+print(option.gamma())
+print(option.vega())
+print(option.theta())
+print(option.rho())
 
 print("-" * 100)
 
 with PricingContext(r=0.04):
     print(option.price())
+    print(option.delta())
+    print(option.gamma())
+    print(option.vega())
+    print(option.theta())
+    print(option.rho())
+
+print("-" * 100)
+
+with PricingContext(r=0.04):
+    print(option.price())
+    print(option.delta())
+    print(option.gamma())
+    print(option.vega())
+    print(option.theta())
+    print(option.rho())
 
 print("-" * 100)
 
 with PricingContext(r=0.06):
     print(option.price())
+    print(option.delta())
+    print(option.gamma())
+    print(option.vega())
+    print(option.theta())
+    print(option.rho())

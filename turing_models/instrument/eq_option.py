@@ -1,7 +1,7 @@
 import datetime
 from typing import Union
 
-from tunny.models import model
+from tunny import model, compute
 
 from fundamental import ctx
 from turing_models.instrument.common import OptionType, OptionStyle, Currency, \
@@ -255,21 +255,28 @@ class EqOption:
                       self.accrued_average]
         return params
 
+    @compute
     def price(self) -> float:
+        print(f"real compute... r={self.ctx.path.r() if self.ctx.path else None}")
         return self.option.value(*self.params)
 
+    @compute
     def delta(self) -> float:
         return self.option.delta(*self.params)
 
+    @compute
     def gamma(self) -> float:
         return self.option.gamma(*self.params)
 
+    @compute
     def vega(self) -> float:
         return self.option.vega(*self.params)
 
+    @compute
     def theta(self) -> float:
         return self.option.theta(*self.params)
 
+    @compute
     def rho(self) -> float:
         return self.option.rho(*self.params)
 

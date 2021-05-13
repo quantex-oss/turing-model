@@ -1,5 +1,6 @@
 import numpy as np
 from numba import njit
+from tunny import model, compute
 
 # from scipy import optimize
 from turing_models.utilities.solvers_1d import newton_secant, bisection, newton
@@ -66,6 +67,7 @@ def _fvega(v, *args):
 ###############################################################################
 
 
+@model
 class TuringEquityVanillaOption():
     ''' Class for managing plain vanilla European calls and puts on equities.
     For American calls and puts see the TuringEquityAmericanOption class. '''
@@ -122,6 +124,7 @@ class TuringEquityVanillaOption():
 
 ###############################################################################
 
+    @compute
     def value(self,
               valueDate: (TuringDate, list),
               stockPrice: (np.ndarray, float),
