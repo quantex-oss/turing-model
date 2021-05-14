@@ -443,7 +443,7 @@ class TuringEquityAsianOption():
         q = dividendCurve.ccRate(self._expiryDate)
 
 #        print("r:", r, "q:", q)
-        
+
         volatility = model._volatility
 
         K = self._strikePrice
@@ -504,7 +504,7 @@ class TuringEquityAsianOption():
 
         multiplier = 1.0
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -572,7 +572,7 @@ class TuringEquityAsianOption():
         multiplier = 1.0
         n = self._numObservations
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -657,7 +657,7 @@ class TuringEquityAsianOption():
         texp = (self._expiryDate - valueDate) / gDaysInYear
         tau = (self._expiryDate - self._startAveragingDate) / gDaysInYear
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -698,7 +698,7 @@ class TuringEquityAsianOption():
         K = self._strikePrice
         n = self._numObservations
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -738,7 +738,7 @@ class TuringEquityAsianOption():
         K = self._strikePrice
         n = self._numObservations
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -783,7 +783,7 @@ class TuringEquityAsianOption():
         v = self.value(valueDate, stockPrice, discountCurve,
                        dividendCurve, model, method, accruedAverage)
 
-        vBumped = self.value(valueDate, stockPrice, discountCurve,
+        vBumped = self.value(valueDate, stockPrice + bump, discountCurve,
                              dividendCurve, model, method, accruedAverage)
 
         delta = (vBumped - v) / bump
@@ -805,10 +805,10 @@ class TuringEquityAsianOption():
         v = self.value(valueDate, stockPrice, discountCurve,
                        dividendCurve, model, method, accruedAverage)
 
-        vBumpedDn = self.value(valueDate, stockPrice, discountCurve,
+        vBumpedDn = self.value(valueDate, stockPrice - bump, discountCurve,
                                dividendCurve, model, method, accruedAverage)
 
-        vBumpedUp = self.value(valueDate, stockPrice, discountCurve,
+        vBumpedUp = self.value(valueDate, stockPrice + bump, discountCurve,
                                dividendCurve, model, method, accruedAverage)
 
         gamma = (vBumpedUp - 2.0 * v + vBumpedDn) / bump / bump
@@ -847,12 +847,14 @@ class TuringEquityAsianOption():
               model,
               method: TuringAsianOptionValuationMethods,
               accruedAverage: float = None):
-        ''' Calculation of option theta by perturbing value date by one 
-        calendar date (not a business date) and then doing revaluation and 
+        ''' Calculation of option theta by perturbing value date by one
+        calendar date (not a business date) and then doing revaluation and
         calculating the difference divided by dt = 1 / gDaysInYear. '''
 
-        v = self.value(valueDate, stockPrice, discountCurve,
-                       dividendCurve, model, method, accruedAverage)
+        v = self.value(valueDate, stockPrice,
+                       discountCurve,
+                       dividendCurve, model,
+                       method, accruedAverage)
 
         nextDate = valueDate.addDays(1)
 
@@ -861,8 +863,10 @@ class TuringEquityAsianOption():
         discountCurve._valuationDate = nextDate
         bump = (nextDate - valueDate) / gDaysInYear
 
-        vBumped = self.value(valueDate, stockPrice, discountCurve,
-                             dividendCurve, model, method, accruedAverage)
+        vBumped = self.value(nextDate, stockPrice,
+                             discountCurve,
+                             dividendCurve, model,
+                             method, accruedAverage)
 
         discountCurve._valuationDate = valueDate
         theta = (vBumped - v) / bump
@@ -884,7 +888,7 @@ class TuringEquityAsianOption():
         v = self.value(valueDate, stockPrice, discountCurve,
                        dividendCurve, model, method, accruedAverage)
 
-        vBumped = self.value(valueDate, stockPrice, discountCurve,
+        vBumped = self.value(valueDate, stockPrice, discountCurve.bump(bump),
                              dividendCurve, model, method, accruedAverage)
 
         rho = (vBumped - v) / bump
