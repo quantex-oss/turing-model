@@ -1,7 +1,7 @@
 import datetime
 from typing import Union
 
-from tunny.models import model
+from tunny import model, compute
 
 from fundamental import ctx
 from turing_models.instrument.common import OptionType, OptionStyle, Currency, \
@@ -229,7 +229,9 @@ class EqOption:
         return AssetType.Option
 
     @property
+    @compute
     def params(self) -> list:
+        print("params update...")
         params = []
         if (self.option_style == OptionStyle.European or
                 self.option_style == 'European' or
@@ -255,22 +257,38 @@ class EqOption:
                       self.accrued_average]
         return params
 
+    @params.setter
+    def params(self, value):
+        pass
+
+    @compute
     def price(self) -> float:
+        print(f"price called... r={self.ctx.path.r() if self.ctx.path else None}")
         return self.option.value(*self.params)
 
+    @compute
     def delta(self) -> float:
+        print(f"delta called... r={self.ctx.path.r() if self.ctx.path else None}")
         return self.option.delta(*self.params)
 
+    @compute
     def gamma(self) -> float:
+        print(f"gamma called... r={self.ctx.path.r() if self.ctx.path else None}")
         return self.option.gamma(*self.params)
 
+    @compute
     def vega(self) -> float:
+        print(f"vega called... r={self.ctx.path.r() if self.ctx.path else None}")
         return self.option.vega(*self.params)
 
+    @compute
     def theta(self) -> float:
+        print(f"theta called... r={self.ctx.path.r() if self.ctx.path else None}")
         return self.option.theta(*self.params)
 
+    @compute
     def rho(self) -> float:
+        print(f"rho called... r={self.ctx.path.r() if self.ctx.path else None}")
         return self.option.rho(*self.params)
 
 
