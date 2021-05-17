@@ -19,12 +19,12 @@ def _funcName():
 ###############################################################################
 
 def gridIndex(t, gridTimes):
-    
-    n = len(gridTimes)    
+
+    n = len(gridTimes)
     for i in range(0, n):
         gridTime = gridTimes[i]
         if abs(gridTime - t) < gSmall:
-            print(t, gridTimes, i) 
+            print(t, gridTimes, i)
             return i
 
     raise TuringError("Grid index not found")
@@ -435,14 +435,14 @@ def accruedTree(gridTimes: np.ndarray,
 
     # interpolate between coupons
     for iGrid in range(0, numGridTimes):
-        t = gridTimes[iGrid]            
+        t = gridTimes[iGrid]
         for i in range(0, numCoupons):
             if t > couponTimes[i-1] and t <= couponTimes[i]:
                 den = couponTimes[i] - couponTimes[i-1]
                 num = (t - couponTimes[i-1])
                 accrued[iGrid] = face * num * couponFlows[i] / den
                 break
-     
+
     return accrued
 
 ###############################################################################
@@ -454,6 +454,8 @@ def checkArgumentTypes(func, values):
     will not be checked. '''
     for valueName, annotationType in func.__annotations__.items():
         value = values[valueName]
+        if value is None:
+            continue
         usableType = toUsableType(annotationType)
         if(not isinstance(value, usableType)):
 
