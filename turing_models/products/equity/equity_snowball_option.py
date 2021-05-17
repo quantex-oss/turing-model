@@ -1,21 +1,15 @@
-from typing import Union
-
 import numpy as np
-from numba import njit
 
-from turing_models.utilities.mathematics import covar
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.error import TuringError
 
-from turing_models.utilities.global_types import TuringOptionTypes,TuringKnockinTypes
-from turing_models.utilities.helper_functions import checkArgumentTypes, labelToString
+from turing_models.utilities.global_types import TuringOptionTypes, TuringKnockInTypes
+from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.models.model import TuringModel
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-
-from turing_models.utilities.mathematics import N
 
 
 bump = 1e-4
@@ -30,18 +24,21 @@ class TuringEquitySnowBallOption:
                  notional: float,
                  coupon_rate: float,
                  option_type: TuringOptionTypes,
-                 knockin_type: TuringKnockinTypes,
-                 knockin_strike1: float == None,  # 敲入执行价1
-                 knockin_strike2: float == None,  # 敲入执行价2
-                 observation_frequency: TuringFrequencyTypes = TuringFrequencyTypes.MONTHLY):  # 敲入执行价2):
-        """用到期日期、敲出价格、敲入价格、敲出观察频率、名义本金和票面利率
-        创建一个雪球期权对象"""
+                 knock_in_type: TuringKnockInTypes,
+                 knock_in_strike1: float = None,
+                 knock_in_strike2: float = None,
+                 observation_frequency: TuringFrequencyTypes = TuringFrequencyTypes.MONTHLY):
+        """用到期日期、敲出价格、敲入价格、名义本金、票面利率、期权类型、
+        敲入类型、敲入执行价1、敲入执行价2和敲出观察频率创建一个雪球期权对象"""
 
         checkArgumentTypes(self.__init__, locals())
-        
-        if  ((knockin_strike1 != None or knockin_strike2 != None) and knockin_type == TuringKnockinTypes.RETURN) or\
-            ((knockin_strike1 == None or knockin_strike2 != None) and knockin_type == TuringKnockinTypes.VANILLA) or\
-            ((knockin_strike1 == None or knockin_strike2 == None) and knockin_type == TuringKnockinTypes.SPREADS):
+
+        if ((knock_in_strike1 is not None or knock_in_strike2 is not None) and
+            knock_in_type == TuringKnockInTypes.RETURN) or \
+           ((knock_in_strike1 is None or knock_in_strike2 is not None) and
+            knock_in_type == TuringKnockInTypes.VANILLA) or \
+           ((knock_in_strike1 is None or knock_in_strike2 is None) and
+               knock_in_type == TuringKnockInTypes.SPREADS):
             raise TuringError("Mismatched strike inputs and knock_in type!")
 
         self._expiry_date = expiry_date
@@ -51,10 +48,10 @@ class TuringEquitySnowBallOption:
         self.notional = notional
         self.coupon_rate = coupon_rate
         self._option_type = option_type
-        self._knockin_type = knockin_type
-        self.sk1 = knockin_strike1
-        self.sk2 = knockin_strike2
-        
+        self._knock_in_type = knock_in_type
+        self.sk1 = knock_in_strike1
+        self.sk2 = knock_in_strike2
+
     def value(self,
               value_date: TuringDate,
               stock_price: float,
@@ -106,7 +103,7 @@ class TuringEquitySnowBallOption:
                                              vol)
                 if self._option_type == TuringOptionTypes.SNOWBALL_CALL:
                     if s_1[ip] < self.k2:
-                        syb_in_1 = 1   
+                        syb_in_1 = 1
 
                     if (self.obs_freq == TuringFrequencyTypes.MONTHLY and
                         date_list[ip]._d == self._expiry_date._d and
@@ -122,21 +119,21 @@ class TuringEquitySnowBallOption:
                             np.exp(-r * ip / gDaysInYear)
                         s_1_pd[j] = payoff_discounted
                     elif ip == n and syb_out_1 == 0 and syb_in_1 == 1:
-                        if self._knockin_type == TuringKnockinTypes.RETURN:
+                        if self._knock_in_type == TuringKnockInTypes.RETURN:
                             payoff_discounted = -self.notional * (1 - s_1[ip] / s0) * \
                                 np.exp(-r * ip / gDaysInYear)
-                        elif self._knockin_type == TuringKnockinTypes.VANILLA:
-                            payoff_discounted = -self.notional * max(self.sk1 - s_1[ip]/ s0, 0) * \
-                                np.exp(-r * ip / gDaysInYear)
-                        elif self._knockin_type == TuringKnockinTypes.SPREADS:
-                            payoff_discounted = -self.notional * max(self.sk1 - max(s_1[ip]/ s0, self.sk2), 0) * \
-                                np.exp(-r * ip / gDaysInYear)         
+                        elif self._knock_in_type == TuringKnockInTypes.VANILLA:
+                            payoff_discounted = -self.notional * max(self.sk1 - s_1[ip] / s0, 0) * \
+                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                        elif self._knock_in_type == TuringKnockInTypes.SPREADS:
+                            payoff_discounted = -self.notional * max(self.sk1 - max(s_1[ip] / s0, self.sk2), 0) * \
+                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
                         s_1_pd[j] = payoff_discounted
-                
+
                 elif self._option_type == TuringOptionTypes.SNOWBALL_PUT:
                     if s_1[ip] > self.k2:
-                        syb_in_1 = 1          
-                    
+                        syb_in_1 = 1
+
                     if (self.obs_freq == TuringFrequencyTypes.MONTHLY and
                         date_list[ip]._d == self._expiry_date._d and
                             s_1[ip] <= self.k1):
@@ -151,25 +148,24 @@ class TuringEquitySnowBallOption:
                             np.exp(-r * ip / gDaysInYear)
                         s_1_pd[j] = payoff_discounted
                     elif ip == n and syb_out_1 == 0 and syb_in_1 == 1:
-                        if self._knockin_type == TuringKnockinTypes.RETURN:
+                        if self._knock_in_type == TuringKnockInTypes.RETURN:
                             payoff_discounted = -self.notional * (s_1[ip] / s0 -1) * \
                                 np.exp(-r * ip / gDaysInYear)
-                        elif self._knockin_type == TuringKnockinTypes.VANILLA:
+                        elif self._knock_in_type == TuringKnockInTypes.VANILLA:
                             payoff_discounted = -self.notional * max(s_1[ip]/ s0 - self.sk1, 0) * \
-                                np.exp(-r * ip / gDaysInYear)
-                        elif self._knockin_type == TuringKnockinTypes.SPREADS:
+                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                        elif self._knock_in_type == TuringKnockInTypes.SPREADS:
                             payoff_discounted = -self.notional * max(min(s_1[ip]/ s0, self.sk2) -self.sk1, 0) * \
-                                np.exp(-r * ip / gDaysInYear)         
+                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
                         s_1_pd[j] = payoff_discounted
-                        
-                    
+
             for ip in range(1, n+1):
                 s_2[ip] = s_2[ip-1] * np.exp((mu - v2 / 2.0) *
                                              dt - g[ip-1] * np.sqrt(dt) *
                                              vol)
                 if self._option_type == TuringOptionTypes.SNOWBALL_CALL:
                     if s_2[ip] < self.k2:
-                        syb_in_2 = 1   
+                        syb_in_2 = 1
 
                     if (self.obs_freq == TuringFrequencyTypes.MONTHLY and
                         date_list[ip]._d == self._expiry_date._d and
@@ -185,21 +181,21 @@ class TuringEquitySnowBallOption:
                             np.exp(-r * ip / gDaysInYear)
                         s_2_pd[j] = payoff_discounted
                     elif ip == n and syb_out_2 == 0 and syb_in_2 == 1:
-                        if self._knockin_type == TuringKnockinTypes.RETURN:
+                        if self._knock_in_type == TuringKnockInTypes.RETURN:
                             payoff_discounted = -self.notional * (1 - s_2[ip] / s0) * \
                                 np.exp(-r * ip / gDaysInYear)
-                        elif self._knockin_type == TuringKnockinTypes.VANILLA:
+                        elif self._knock_in_type == TuringKnockInTypes.VANILLA:
                             payoff_discounted = -self.notional * max(self.sk1 - syb_in_2[ip]/ s0, 0) * \
-                                np.exp(-r * ip / gDaysInYear)
-                        elif self._knockin_type == TuringKnockinTypes.SPREADS:
+                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                        elif self._knock_in_type == TuringKnockInTypes.SPREADS:
                             payoff_discounted = -self.notional * max(self.sk1 - max(s_2[ip]/ s0, self.sk2), 0) * \
-                                np.exp(-r * ip / gDaysInYear)         
-                        s_1_pd[j] = payoff_discounted
-                        
+                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                        s_2_pd[j] = payoff_discounted
+
                 elif self._option_type == TuringOptionTypes.SNOWBALL_PUT:
                     if s_2[ip] > self.k2:
-                        syb_in_2 = 1          
-                    
+                        syb_in_2 = 1
+
                     if (self.obs_freq == TuringFrequencyTypes.MONTHLY and
                         date_list[ip]._d == self._expiry_date._d and
                             s_2[ip] <= self.k1):
@@ -214,16 +210,16 @@ class TuringEquitySnowBallOption:
                             np.exp(-r * ip / gDaysInYear)
                         s_2_pd[j] = payoff_discounted
                     elif ip == n and syb_out_2 == 0 and syb_in_2 == 1:
-                        if self._knockin_type == TuringKnockinTypes.RETURN:
+                        if self._knock_in_type == TuringKnockInTypes.RETURN:
                             payoff_discounted = -self.notional * (s_2[ip] / s0 -1) * \
                                 np.exp(-r * ip / gDaysInYear)
-                        elif self._knockin_type == TuringKnockinTypes.VANILLA:
+                        elif self._knock_in_type == TuringKnockInTypes.VANILLA:
                             payoff_discounted = -self.notional * max(s_2[ip]/ s0 - self.sk1, 0) * \
-                                np.exp(-r * ip / gDaysInYear)
-                        elif self._knockin_type == TuringKnockinTypes.SPREADS:
+                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                        elif self._knock_in_type == TuringKnockInTypes.SPREADS:
                             payoff_discounted = -self.notional * max(min(s_2[ip]/ s0, self.sk2) -self.sk1, 0) * \
-                                np.exp(-r * ip / gDaysInYear)         
-                        s_1_pd[j] = payoff_discounted
+                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                        s_2_pd[j] = payoff_discounted
 
         return 0.5 * np.mean(s_1_pd + s_2_pd)
 

@@ -4,11 +4,13 @@ from enum import Enum
 
 ###############################################################################
 
+
 class TuringLongShort(Enum):
     LONG = 1
     SHORT = 2
 
 ###############################################################################
+
 
 class TuringOptionTypes(Enum):
     EUROPEAN_CALL = 1
@@ -26,17 +28,20 @@ class TuringOptionTypes(Enum):
 
 ###############################################################################
 
+
 class TuringCapFloorTypes(Enum):
     CAP = 1
     FLOOR = 2
 
 ###############################################################################
 
+
 class TuringSwapTypes(Enum):
     PAY = 1
     RECEIVE = 2
 
 ###############################################################################
+
 
 class TuringExerciseTypes(Enum):
     EUROPEAN = 1
@@ -45,12 +50,14 @@ class TuringExerciseTypes(Enum):
 
 ###############################################################################
 
+
 class TuringSolverTypes(Enum):
     CONJUGATE_GRADIENT = 0
     NELDER_MEAD = 1
     NELDER_MEAD_NUMBA = 2
 
-class TuringKnockinTypes(Enum):
+
+class TuringKnockInTypes(Enum):
     RETURN = 0
     VANILLA = 1
     SPREADS = 2
