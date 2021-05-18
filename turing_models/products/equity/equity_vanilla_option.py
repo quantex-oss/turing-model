@@ -389,7 +389,7 @@ class TuringEquityVanillaOption():
                           discountCurve: TuringDiscountCurve,
                           dividendCurve: TuringDiscountCurve,
                           price):
-        ''' Calculate the Black-Scholes implied volatility of a European 
+        ''' Calculate the Black-Scholes implied volatility of a European
         vanilla option. '''
 
         texp = (self._expiryDate - valueDate) / gDaysInYear
@@ -407,9 +407,9 @@ class TuringEquityVanillaOption():
         k = self._strikePrice
         s0 = stockPrice
 
-        sigma = bsImpliedVolatility(s0, texp, k, r, q, price, 
+        sigma = bsImpliedVolatility(s0, texp, k, r, q, price,
                                     self._optionType.value)
-        
+
         return sigma
 
 ###############################################################################
@@ -434,14 +434,14 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMPY_ONLY(stockPrice, 
-                           texp, 
+        v = _valueMC_NUMPY_ONLY(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
                            seed,
                            useSobol)
 
@@ -469,15 +469,15 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMBA_ONLY(stockPrice, 
-                           texp, 
+        v = _valueMC_NUMBA_ONLY(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
-                           seed, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
+                           seed,
                            useSobol)
 
         return v
@@ -504,15 +504,15 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMBA_PARALLEL(stockPrice, 
-                           texp, 
+        v = _valueMC_NUMBA_PARALLEL(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
-                           seed, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
+                           seed,
                            useSobol)
 
 #        _valueMC_NUMBA_ONLY.parallel_diagnostics(level=4)
@@ -541,14 +541,14 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMPY_NUMBA(stockPrice, 
-                           texp, 
+        v = _valueMC_NUMPY_NUMBA(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
                            seed,
                            useSobol)
 
@@ -576,14 +576,14 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NONUMBA_NONUMPY(stockPrice, 
-                           texp, 
+        v = _valueMC_NONUMBA_NONUMPY(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
                            seed,
                            useSobol)
 
@@ -613,16 +613,16 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMBA_ONLY(stockPrice, 
-                           texp, 
-                           self._strikePrice,
-                           self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
-                           seed, 
-                           useSobol)
+        v = _valueMC_NUMBA_ONLY(stockPrice,
+                                texp,
+                                self._strikePrice,
+                                self._optionType.value,
+                                r,
+                                q,
+                                vol,
+                                numPaths,
+                                seed,
+                                useSobol)
 
         return v
 

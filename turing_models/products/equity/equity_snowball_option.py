@@ -15,7 +15,7 @@ from turing_models.models.model_black_scholes import TuringModelBlackScholes
 bump = 1e-4
 
 
-class TuringEquitySnowBallOption:
+class TuringEquitySnowballOption:
 
     def __init__(self,
                  expiry_date: TuringDate,
@@ -24,7 +24,7 @@ class TuringEquitySnowBallOption:
                  notional: float,
                  coupon_rate: float,
                  option_type: TuringOptionTypes,
-                 knock_in_type: TuringKnockInTypes,
+                 knock_in_type: TuringKnockInTypes = TuringKnockInTypes.RETURN,
                  knock_in_strike1: float = None,
                  knock_in_strike2: float = None,
                  observation_frequency: TuringFrequencyTypes = TuringFrequencyTypes.MONTHLY):

@@ -1,16 +1,19 @@
 import datetime
 from typing import Union
 
-from tunny import model, compute
+from tunny.models import model
+from tunny import compute
 
 from fundamental import ctx
 from turing_models.instrument.common import OptionType, OptionStyle, Currency, \
-     OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, KnockType
+     OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, \
+     KnockType, KnockInType
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
      TuringEquityVanillaOption, TuringEquityAmericanOption, \
-     TuringEquityAsianOption, TuringAsianOptionValuationMethods
+     TuringEquityAsianOption, TuringAsianOptionValuationMethods, \
+     TuringEquitySnowballOption, TuringKnockInTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate, fromDatetime
 from turing_models.utilities.helper_functions import checkArgumentTypes
@@ -25,11 +28,25 @@ class OptionBase:
             expiration_date: TuringDate,
             strike_price: float,
             start_averaging_date: TuringDate,
+            knock_out_price: float,
+            knock_in_price: float,
+            notional: float,
+            coupon_rate: float,
+            knock_in_type: TuringKnockInTypes,
+            knock_in_strike1: float,
+            knock_in_strike2: float
     ):
         self.option_type = option_type
         self.expiration_date = expiration_date
         self.strike_price = strike_price
         self.start_averaging_date = start_averaging_date
+        self.knock_out_price = knock_out_price
+        self.knock_in_price = knock_in_price
+        self.notional = notional
+        self.coupon_rate = coupon_rate
+        self.knock_in_type = knock_in_type
+        self.knock_in_strike1 = knock_in_strike1
+        self.knock_in_strike2 = knock_in_strike2
 
     def get_option(self):
         """返回期权实例化对象"""
@@ -53,6 +70,18 @@ class OptionBase:
                 self.expiration_date,
                 self.strike_price,
                 self.option_type)
+        elif (self.option_type == TuringOptionTypes.SNOWBALL_CALL or
+                self.option_type == TuringOptionTypes.SNOWBALL_PUT):
+            option = TuringEquitySnowballOption(
+                self.expiration_date,
+                self.knock_out_price,
+                self.knock_in_price,
+                self.notional,
+                self.coupon_rate,
+                self.option_type,
+                self.knock_in_type,
+                self.knock_in_strike1,
+                self.knock_in_strike2)
 
         return option
 
@@ -89,6 +118,12 @@ class EqOption:
             method_of_settlement: Union[OptionSettlementMethod, str] = None,  # 结算方式
             premium_currency: Union[Currency, str] = None,  # 期权费币种
             start_averaging_date: datetime.date = None,  # 观察起始日
+            knock_out_price: float = None,  # 敲出价格
+            knock_in_price: float = None,  # 敲出价格
+            coupon_rate: float = None,  # 票面利率
+            knock_in_type: Union[KnockInType, str] = None,  # 敲入类型
+            knock_in_strike1: float = None,  # 敲入执行价1
+            knock_in_strike2: float = None,  # 敲入执行价2
             name: str = None,  # 对象标识名
             value_date: datetime.date = None,  # 估值日期
             stock_price: float = None,  # 股票价格
@@ -125,6 +160,12 @@ class EqOption:
         self.method_of_settlement = method_of_settlement
         self.premium_currency = premium_currency
         self.start_averaging_date = start_averaging_date
+        self.knock_out_price = knock_out_price
+        self.knock_in_price = knock_in_price
+        self.coupon_rate = coupon_rate
+        self.knock_in_type = knock_in_type
+        self.knock_in_strike1 = knock_in_strike1
+        self.knock_in_strike2 = knock_in_strike2
         self.name = name
         self.value_date = value_date
         self.stock_price = stock_price
@@ -132,7 +173,7 @@ class EqOption:
         self.__interest_rate = interest_rate
         self.dividend_yield = dividend_yield
         self.accrued_average = accrued_average
-        ##################################################################################
+
         self.ctx = ctx
 
         # 时间格式转换
@@ -147,7 +188,14 @@ class EqOption:
         option_base = OptionBase(self.option_type,
                                  self.expiration_date,
                                  self.strike_price,
-                                 self.start_averaging_date)
+                                 self.start_averaging_date,
+                                 self.knock_out_price,
+                                 self.knock_in_price,
+                                 self.notional,
+                                 self.coupon_rate,
+                                 self.knock_in_type,
+                                 self.knock_in_strike1,
+                                 self.knock_in_strike2)
         self.option = option_base.get_option()
 
     def time_reformat(self):
@@ -204,6 +252,21 @@ class EqOption:
             elif (self.option_type == OptionType.Put or
                     self.option_type == 'Put'):
                 self.option_type = TuringOptionTypes.ASIAN_PUT
+        elif (self.option_style == OptionStyle.Snowball or
+                self.option_style == 'Snowball'):
+            if (self.option_type == OptionType.Call or
+                    self.option_type == 'Call'):
+                self.option_type = TuringOptionTypes.SNOWBALL_CALL
+            elif (self.option_type == OptionType.Put or
+                    self.option_type == 'Put'):
+                self.option_type = TuringOptionTypes.SNOWBALL_PUT
+
+            if self.knock_in_type == KnockInType.RETURN:
+                self.knock_in_type = TuringKnockInTypes.RETURN
+            elif self.knock_in_type == KnockInType.VANILLA:
+                self.knock_in_type = TuringKnockInTypes.VANILLA
+            elif self.knock_in_type == KnockInType.SPREADS:
+                self.knock_in_type = TuringKnockInTypes.SPREADS
         else:
             raise TuringError("Argument Content Error")
 
@@ -217,7 +280,6 @@ class EqOption:
         return TuringDiscountCurveFlat(
             self.value_date, self.interest_rate())
 
-    ######################################################################################
     @property
     def asset_class(self) -> AssetClass:
         """Equity"""
@@ -236,7 +298,9 @@ class EqOption:
         if (self.option_style == OptionStyle.European or
                 self.option_style == 'European' or
                 self.option_style == OptionStyle.American or
-                self.option_style == 'American'):
+                self.option_style == 'American' or
+                self.option_style == OptionStyle.Snowball or
+                self.option_style == 'Snowball'):
             params = [
                 self.value_date,
                 self.stock_price,
@@ -245,9 +309,8 @@ class EqOption:
                 self.model
             ]
 
-        if (self.option_style == OptionStyle.Asian or
+        elif (self.option_style == OptionStyle.Asian or
                 self.option_style == 'Asian'):
-            # FIXME: 'ModelProxy' object has no attribute 'accruedAverage'
             params = [self.value_date,
                       self.stock_price,
                       self.discount_curve,

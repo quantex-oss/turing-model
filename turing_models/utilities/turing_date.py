@@ -7,6 +7,7 @@ import numpy as np
 
 from enum import Enum
 
+
 class TuringDateFormatTypes(Enum):
     BLOOMBERG = 1
     US_SHORT = 2
@@ -373,8 +374,6 @@ class TuringDate():
             lastDay = monthDaysNotLeapYear[m - 1]
             return TuringDate(lastDay, m, y)
 
-        return False
-
     ###########################################################################
 
     def addHours(self, hours):
@@ -653,7 +652,7 @@ class TuringDate():
     ###########################################################################
 
     def addTenor(self,
-                 tenor: (list,str)):
+                 tenor: (list, str)):
         ''' Return the date following the TuringDate by a period given by the
         tenor which is a string consisting of a number and a letter, the
         letter being d, w, m , y for day, week, month or year. This is case
@@ -871,8 +870,7 @@ class TuringDate():
 ###############################################################################
 
 
-def dailyWorkingDaySchedule(self,
-                            startDate: TuringDate,
+def dailyWorkingDaySchedule(startDate: TuringDate,
                             endDate: TuringDate):
     ''' Returns a list of working dates between startDate and endDate.
     This function should be replaced by dateRange once addTenor allows
@@ -892,7 +890,7 @@ def dailyWorkingDaySchedule(self,
 
 def datediff(d1: TuringDate,
              d2: TuringDate):
-    ''' Calculate the number of days between two Findates. '''
+    ''' Calculate the number of days between two Turingdates. '''
     dd = (d2._excelDate - d1._excelDate)
     return int(dd)
 
@@ -908,6 +906,7 @@ def fromDatetime(dt: datetime.date):
 
 ###############################################################################
 
+
 def daysInMonth(m, y):
     ''' Get the number of days in the month (1-12) of a given year y. '''
 
@@ -920,6 +919,7 @@ def daysInMonth(m, y):
         return monthDaysLeapYear[m-1]
 
 ###############################################################################
+
 
 def dateRange(startDate: TuringDate,
               endDate: TuringDate,
@@ -942,6 +942,7 @@ def dateRange(startDate: TuringDate,
     return dateList
 
 ###############################################################################
+
 
 def testType():
     global gDateFormatType

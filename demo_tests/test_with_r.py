@@ -12,11 +12,15 @@ from turing_models.instrument.eq_option import EqOption
 
 
 option = EqOption(option_type=OptionType.Call,
-                  option_style=OptionStyle.Asian,
+                  option_style=OptionStyle.Snowball,
                   number_of_options=100,
                   expiration_date=datetime.date(2021, 7, 25),
                   strike_price=500.0,
                   start_averaging_date=datetime.date(2021, 6, 25),
+                  knock_out_price=120,
+                  knock_in_price=90,
+                  notional=1000000,
+                  coupon_rate=0.3,
                   value_date=datetime.date(2021, 4, 25),
                   stock_price=510.0,
                   volatility=0.02,

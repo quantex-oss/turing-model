@@ -20,7 +20,7 @@ from turing_models.models.model_black_scholes import TuringModelBlackScholes
 
 from turing_models.utilities.mathematics import N
 
-from turing_models.products.equity.equity_snowball_option import TuringEquitySnowBallOption
+from turing_models.products.equity.equity_snowball_option import TuringEquitySnowballOption
 
 
 expiry_date = TuringDate(12, 2, 2021)
@@ -29,15 +29,19 @@ knock_in_price = 90
 notional = 1000000
 coupon_rate = 0.3
 option_type = TuringOptionTypes.SNOWBALL_CALL
-knock_in_type = TuringKnockInTypes.RETURN
+knock_in_type = TuringKnockInTypes.SPREADS
+knock_in_strike1 = 1
+knock_in_strike2 = 1.5
 
-snowball_option = TuringEquitySnowBallOption(expiry_date,
+snowball_option = TuringEquitySnowballOption(expiry_date,
                                              knock_out_price,
                                              knock_in_price,
                                              notional,
                                              coupon_rate,
                                              option_type,
-                                             knock_in_type)
+                                             knock_in_type,
+                                             knock_in_strike1,
+                                             knock_in_strike2)
 
 value_date = TuringDate(12, 2, 2020)
 stock_price = 100

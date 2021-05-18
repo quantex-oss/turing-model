@@ -44,6 +44,7 @@ class OptionStyle(Enum):
     American = 'American'
     Asian = 'Asian'
     Bermudan = 'Bermudan'
+    Snowball = 'Snowball'
 
     def __repr__(self):
         return self.value
@@ -53,6 +54,16 @@ class KnockType(Enum):
     """Knock Type"""
     Knock_In = 'Knock In'
     Knock_Out = 'Knock Out'
+
+    def __repr__(self):
+        return self.value
+
+
+class KnockInType(Enum):
+    """Knock_in Type"""
+    RETURN = 0
+    VANILLA = 1
+    SPREADS = 2
 
     def __repr__(self):
         return self.value
