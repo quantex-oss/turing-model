@@ -112,8 +112,8 @@ class TuringEquitySnowBallOption:
                         payoff_discounted = (self.notional * self.coupon_rate * ip / gDaysInYear) * \
                             np.exp(-r * ip / gDaysInYear)
                         s_1_pd[j] = payoff_discounted
-
                         break
+
                     if ip == n and syb_out_1 == 0 and syb_in_1 == 0:
                         payoff_discounted = (self.notional * self.coupon_rate * ip / gDaysInYear) * \
                             np.exp(-r * ip / gDaysInYear)
@@ -124,7 +124,7 @@ class TuringEquitySnowBallOption:
                                 np.exp(-r * ip / gDaysInYear)
                         elif self._knock_in_type == TuringKnockInTypes.VANILLA:
                             payoff_discounted = -self.notional * max(self.sk1 - s_1[ip] / s0, 0) * \
-                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                                np.exp(-r * ip / gDaysInYear)
                         elif self._knock_in_type == TuringKnockInTypes.SPREADS:
                             payoff_discounted = -self.notional * max(self.sk1 - max(s_1[ip] / s0, self.sk2), 0) * \
                                 ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
@@ -141,21 +141,21 @@ class TuringEquitySnowBallOption:
                         payoff_discounted = (self.notional * self.coupon_rate * ip / gDaysInYear) * \
                             np.exp(-r * ip / gDaysInYear)
                         s_1_pd[j] = payoff_discounted
-
                         break
+
                     if ip == n and syb_out_1 == 0 and syb_in_1 == 0:
                         payoff_discounted = (self.notional * self.coupon_rate * ip / gDaysInYear) * \
                             np.exp(-r * ip / gDaysInYear)
                         s_1_pd[j] = payoff_discounted
                     elif ip == n and syb_out_1 == 0 and syb_in_1 == 1:
                         if self._knock_in_type == TuringKnockInTypes.RETURN:
-                            payoff_discounted = -self.notional * (s_1[ip] / s0 -1) * \
+                            payoff_discounted = -self.notional * (s_1[ip] / s0 - 1) * \
                                 np.exp(-r * ip / gDaysInYear)
                         elif self._knock_in_type == TuringKnockInTypes.VANILLA:
-                            payoff_discounted = -self.notional * max(s_1[ip]/ s0 - self.sk1, 0) * \
-                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                            payoff_discounted = -self.notional * max(s_1[ip] / s0 - self.sk1, 0) * \
+                                np.exp(-r * ip / gDaysInYear)
                         elif self._knock_in_type == TuringKnockInTypes.SPREADS:
-                            payoff_discounted = -self.notional * max(min(s_1[ip]/ s0, self.sk2) -self.sk1, 0) * \
+                            payoff_discounted = -self.notional * max(min(s_1[ip] / s0, self.sk2) - self.sk1, 0) * \
                                 ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
                         s_1_pd[j] = payoff_discounted
 
@@ -174,8 +174,8 @@ class TuringEquitySnowBallOption:
                         payoff_discounted = (self.notional * self.coupon_rate * ip / gDaysInYear) * \
                             np.exp(-r * ip / gDaysInYear)
                         s_2_pd[j] = payoff_discounted
-
                         break
+
                     if ip == n and syb_out_2 == 0 and syb_in_2 == 0:
                         payoff_discounted = (self.notional * self.coupon_rate * ip / gDaysInYear) * \
                             np.exp(-r * ip / gDaysInYear)
@@ -185,10 +185,10 @@ class TuringEquitySnowBallOption:
                             payoff_discounted = -self.notional * (1 - s_2[ip] / s0) * \
                                 np.exp(-r * ip / gDaysInYear)
                         elif self._knock_in_type == TuringKnockInTypes.VANILLA:
-                            payoff_discounted = -self.notional * max(self.sk1 - syb_in_2[ip]/ s0, 0) * \
-                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                            payoff_discounted = -self.notional * max(self.sk1 - s_2[ip] / s0, 0) * \
+                                np.exp(-r * ip / gDaysInYear)
                         elif self._knock_in_type == TuringKnockInTypes.SPREADS:
-                            payoff_discounted = -self.notional * max(self.sk1 - max(s_2[ip]/ s0, self.sk2), 0) * \
+                            payoff_discounted = -self.notional * max(self.sk1 - max(s_2[ip] / s0, self.sk2), 0) * \
                                 ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
                         s_2_pd[j] = payoff_discounted
 
@@ -203,21 +203,21 @@ class TuringEquitySnowBallOption:
                         payoff_discounted = (self.notional * self.coupon_rate * ip / gDaysInYear) * \
                             np.exp(-r * ip / gDaysInYear)
                         s_2_pd[j] = payoff_discounted
-
                         break
+
                     if ip == n and syb_out_2 == 0 and syb_in_2 == 0:
                         payoff_discounted = (self.notional * self.coupon_rate * ip / gDaysInYear) * \
                             np.exp(-r * ip / gDaysInYear)
                         s_2_pd[j] = payoff_discounted
                     elif ip == n and syb_out_2 == 0 and syb_in_2 == 1:
                         if self._knock_in_type == TuringKnockInTypes.RETURN:
-                            payoff_discounted = -self.notional * (s_2[ip] / s0 -1) * \
+                            payoff_discounted = -self.notional * (s_2[ip] / s0 - 1) * \
                                 np.exp(-r * ip / gDaysInYear)
                         elif self._knock_in_type == TuringKnockInTypes.VANILLA:
-                            payoff_discounted = -self.notional * max(s_2[ip]/ s0 - self.sk1, 0) * \
-                                ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
+                            payoff_discounted = -self.notional * max(s_2[ip] / s0 - self.sk1, 0) * \
+                                np.exp(-r * ip / gDaysInYear)
                         elif self._knock_in_type == TuringKnockInTypes.SPREADS:
-                            payoff_discounted = -self.notional * max(min(s_2[ip]/ s0, self.sk2) -self.sk1, 0) * \
+                            payoff_discounted = -self.notional * max(min(s_2[ip] / s0, self.sk2) - self.sk1, 0) * \
                                 ip / gDaysInYear * np.exp(-r * ip / gDaysInYear)
                         s_2_pd[j] = payoff_discounted
 
