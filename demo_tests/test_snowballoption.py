@@ -1,6 +1,8 @@
 import sys
 sys.path.append("..")
 
+import time
+
 import numpy as np
 from numba import njit
 
@@ -53,11 +55,14 @@ discount_curve = TuringDiscountCurveFlat(value_date, interest_rate)
 dividend_curve = TuringDiscountCurveFlat(value_date, dividend_yield)
 model = TuringModelBlackScholes(volatility)
 
+time_start = time.time()
 price = snowball_option.value(value_date,
                               stock_price,
                               discount_curve,
                               dividend_curve,
                               model)
+time_end = time.time()
+print('Time cost = %fs' % (time_end - time_start))
 print(price)
 delta = snowball_option.delta(value_date,
                               stock_price,
