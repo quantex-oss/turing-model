@@ -29,9 +29,9 @@ knock_in_price = 90
 notional = 1000000
 coupon_rate = 0.3
 option_type = TuringOptionTypes.SNOWBALL_CALL
-knock_in_type = TuringKnockInTypes.SPREADS
-knock_in_strike1 = 1
-knock_in_strike2 = 1.5
+knock_in_type = TuringKnockInTypes.RETURN
+knock_in_strike1 = None
+knock_in_strike2 = None
 
 snowball_option = TuringEquitySnowballOption(expiry_date,
                                              knock_out_price,
@@ -59,36 +59,36 @@ price = snowball_option.value(value_date,
                               dividend_curve,
                               model)
 print(price)
-# delta = snowball_option.delta(value_date,
-#                               stock_price,
-#                               discount_curve,
-#                               dividend_curve,
-#                               model)
-# print(delta)
-# gamma = snowball_option.gamma(value_date,
-#                               stock_price,
-#                               discount_curve,
-#                               dividend_curve,
-#                               model)
-# print(gamma)
-# vega = snowball_option.vega(value_date,
-#                             stock_price,
-#                             discount_curve,
-#                             dividend_curve,
-#                             model)
-# print(vega)
-# theta = snowball_option.theta(value_date,
-#                               stock_price,
-#                               discount_curve,
-#                               dividend_curve,
-#                               model)
-# print(theta)
-# rho = snowball_option.rho(value_date,
-#                           stock_price,
-#                           discount_curve,
-#                           dividend_curve,
-#                           model)
-# print(rho)
+delta = snowball_option.delta(value_date,
+                              stock_price,
+                              discount_curve,
+                              dividend_curve,
+                              model)
+print(delta)
+gamma = snowball_option.gamma(value_date,
+                              stock_price,
+                              discount_curve,
+                              dividend_curve,
+                              model)
+print(gamma)
+vega = snowball_option.vega(value_date,
+                            stock_price,
+                            discount_curve,
+                            dividend_curve,
+                            model)
+print(vega)
+theta = snowball_option.theta(value_date,
+                              stock_price,
+                              discount_curve,
+                              dividend_curve,
+                              model)
+print(theta)
+rho = snowball_option.rho(value_date,
+                          stock_price,
+                          discount_curve,
+                          dividend_curve,
+                          model)
+print(rho)
 
 
 
