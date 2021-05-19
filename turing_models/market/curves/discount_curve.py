@@ -244,13 +244,13 @@ class TuringDiscountCurve():
 
             flowDates = schedule._generate()
             flowDates[0] = effectiveDate
-            
+
             dayCounter = TuringDayCount(dayCountType)
             prevDt = flowDates[0]
             pv01 = 0.0
             df = 1.0
 
-            for nextDt in flowDates[1:]:                
+            for nextDt in flowDates[1:]:
                 df = self.df(nextDt)
                 alpha = dayCounter.yearFrac(prevDt, nextDt)[0]
                 pv01 += alpha * df
@@ -263,7 +263,7 @@ class TuringDiscountCurve():
                 parRate = (dfStart - df) / pv01
 
             parRates.append(parRate)
- 
+
         parRates = np.array(parRates)
 
         if isinstance(maturityDate, TuringDate):
@@ -296,11 +296,11 @@ class TuringDiscountCurve():
         if self._interpType is TuringInterpTypes.FLAT_FWD_RATES or\
             self._interpType is TuringInterpTypes.LINEAR_ZERO_RATES or\
                 self._interpType is TuringInterpTypes.LINEAR_FWD_RATES:
-                    
+
                     df = interpolate(t,
                                      self._times,
                                      self._dfs,
-                                     self._interpType.value)        
+                                     self._interpType.value)
 
         else:
 

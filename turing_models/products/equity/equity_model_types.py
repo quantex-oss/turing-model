@@ -1,6 +1,3 @@
-
-
-
 from turing_models.utilities.helper_functions import labelToString
 
 ###############################################################################

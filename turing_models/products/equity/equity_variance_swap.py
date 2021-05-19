@@ -1,7 +1,3 @@
-
-
-
-
 import numpy as np
 from math import log, exp, sqrt
 

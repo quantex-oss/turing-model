@@ -1,7 +1,3 @@
-
-
-
-
 import numpy as np
 from numba import njit
 
@@ -16,6 +12,7 @@ from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes, labelToString
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.models.model_black_scholes import TuringModelBlackScholes
 
 from turing_models.utilities.mathematics import N
 
@@ -23,6 +20,9 @@ from turing_models.utilities.mathematics import N
 ###############################################################################
 
 from enum import Enum
+
+
+bump = 1e-4
 
 
 class TuringAsianOptionValuationMethods(Enum):
@@ -132,10 +132,10 @@ def _valueMC_NUMBA(t0,
         s_1_arithmetic /= n
         s_2_arithmetic /= n
 
-        if optionType == TuringOptionTypes.EUROPEAN_CALL:
+        if optionType == TuringOptionTypes.ASIAN_CALL:
             payoff_a += max(s_1_arithmetic - K, 0.0)
             payoff_a += max(s_2_arithmetic - K, 0.0)
-        elif optionType == TuringOptionTypes.EUROPEAN_PUT:
+        elif optionType == TuringOptionTypes.ASIAN_PUT:
             payoff_a += max(K - s_1_arithmetic, 0.0)
             payoff_a += max(K - s_2_arithmetic, 0.0)
         else:
@@ -220,10 +220,10 @@ def _valueMC_fast_NUMBA(t0: float,
             s_1_arithmetic[ip] += s_1[ip] / n
             s_2_arithmetic[ip] += s_2[ip] / n
 
-    if optionType == TuringOptionTypes.EUROPEAN_CALL:
+    if optionType == TuringOptionTypes.ASIAN_CALL:
         payoff_a_1 = np.maximum(s_1_arithmetic - K, 0.0)
         payoff_a_2 = np.maximum(s_2_arithmetic - K, 0.0)
-    elif optionType == TuringOptionTypes.EUROPEAN_PUT:
+    elif optionType == TuringOptionTypes.ASIAN_PUT:
         payoff_a_1 = np.maximum(K - s_1_arithmetic, 0.0)
         payoff_a_2 = np.maximum(K - s_2_arithmetic, 0.0)
     else:
@@ -304,12 +304,12 @@ def _valueMC_fast_CV_NUMBA(t0, t, tau, K, n, optionType, stockPrice,
         s_2_arithmetic[ip] /= n
         s_2_geometric[ip] = np.exp(ln_s_2_geometric[ip] / n)
 
-    if optionType == TuringOptionTypes.EUROPEAN_CALL:
+    if optionType == TuringOptionTypes.ASIAN_CALL:
         payoff_a_1 = np.maximum(s_1_arithmetic - K, 0.0)
         payoff_g_1 = np.maximum(s_1_geometric - K, 0.0)
         payoff_a_2 = np.maximum(s_2_arithmetic - K, 0.0)
         payoff_g_2 = np.maximum(s_2_geometric - K, 0.0)
-    elif optionType == TuringOptionTypes.EUROPEAN_PUT:
+    elif optionType == TuringOptionTypes.ASIAN_PUT:
         payoff_a_1 = np.maximum(K - s_1_arithmetic, 0.0)
         payoff_g_1 = np.maximum(K - s_1_geometric, 0.0)
         payoff_a_2 = np.maximum(K - s_2_arithmetic, 0.0)
@@ -321,7 +321,7 @@ def _valueMC_fast_CV_NUMBA(t0, t, tau, K, n, optionType, stockPrice,
     payoff_g = np.concatenate((payoff_g_1, payoff_g_2), axis=0)
 
     # Now we do the control variate adjustment
-    m = covar(payoff_a, payoff_a)
+    m = covar(payoff_a, payoff_g)
     lam = m[0][1] / m[1][1]
 
     payoff_a_mean = np.mean(payoff_a)
@@ -350,8 +350,7 @@ class TuringEquityAsianOption():
                  startAveragingDate: TuringDate,
                  expiryDate: TuringDate,
                  strikePrice: float,
-                 optionType: TuringOptionTypes,
-                 numberOfObservations: int = 100):
+                 optionType: TuringOptionTypes):
         ''' Create an FinEquityAsian option object which takes a start date for
         the averaging, an expiry date, a strike price, an option type and a
         number of observations. '''
@@ -365,7 +364,7 @@ class TuringEquityAsianOption():
         self._expiryDate = expiryDate
         self._strikePrice = float(strikePrice)
         self._optionType = optionType
-        self._numObservations = numberOfObservations
+        self._numObservations = int(expiryDate - startAveragingDate)
 
 ###############################################################################
 
@@ -440,11 +439,11 @@ class TuringEquityAsianOption():
         texp = (self._expiryDate - valueDate) / gDaysInYear
         tau = (self._expiryDate - self._startAveragingDate) / gDaysInYear
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
 #        print("r:", r, "q:", q)
-        
+
         volatility = model._volatility
 
         K = self._strikePrice
@@ -478,9 +477,9 @@ class TuringEquityAsianOption():
         # the Geometric price is the lower bound
         call_g = np.exp(-r * texp) * (EG * N(d1) - K * N(d2))
 
-        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.ASIAN_CALL:
             v = call_g
-        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.ASIAN_PUT:
             put_g = call_g - (EG - K) * np.exp(-r * texp)
             v = put_g
         else:
@@ -505,7 +504,7 @@ class TuringEquityAsianOption():
 
         multiplier = 1.0
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -544,9 +543,9 @@ class TuringEquityAsianOption():
         d1 = (np.log(FA / K) + sigmaA * sigmaA * texp / 2.0) / (sigmaA*np.sqrt(texp))
         d2 = d1 - sigmaA * np.sqrt(texp)
 
-        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.ASIAN_CALL:
             v = np.exp(-r * texp) * (FA * N(d1) - K * N(d2))
-        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.ASIAN_PUT:
             v = np.exp(-r * texp) * (K * N(-d2) - FA * N(-d1))
         else:
             return None
@@ -573,7 +572,7 @@ class TuringEquityAsianOption():
         multiplier = 1.0
         n = self._numObservations
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -619,10 +618,10 @@ class TuringEquityAsianOption():
         d1 = (np.log(F0 / K) + sigma2 * texp / 2) / sigma / np.sqrt(texp)
         d2 = d1 - sigma * np.sqrt(texp)
 
-        if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
+        if self._optionType == TuringOptionTypes.ASIAN_CALL:
             call = np.exp(-r * texp) * (F0 * N(d1) - K * N(d2))
             v = call
-        elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
+        elif self._optionType == TuringOptionTypes.ASIAN_PUT:
             put = np.exp(-r * texp) * (K * N(-d2) - F0 * N(-d1))
             v = put
         else:
@@ -658,7 +657,7 @@ class TuringEquityAsianOption():
         texp = (self._expiryDate - valueDate) / gDaysInYear
         tau = (self._expiryDate - self._startAveragingDate) / gDaysInYear
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -699,7 +698,7 @@ class TuringEquityAsianOption():
         K = self._strikePrice
         n = self._numObservations
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -739,7 +738,7 @@ class TuringEquityAsianOption():
         K = self._strikePrice
         n = self._numObservations
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         volatility = model._volatility
@@ -768,6 +767,132 @@ class TuringEquityAsianOption():
                                    v_g_exact)
 
         return v
+
+###############################################################################
+
+    def delta(self,
+              valueDate: TuringDate,
+              stockPrice: float,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
+              model,
+              method: TuringAsianOptionValuationMethods,
+              accruedAverage: float = None):
+        ''' Calculation of option delta by perturbation of stock price and
+        revaluation. '''
+        v = self.value(valueDate, stockPrice, discountCurve,
+                       dividendCurve, model, method, accruedAverage)
+
+        vBumped = self.value(valueDate, stockPrice + bump, discountCurve,
+                             dividendCurve, model, method, accruedAverage)
+
+        delta = (vBumped - v) / bump
+        return delta
+
+###############################################################################
+
+    def gamma(self,
+              valueDate: TuringDate,
+              stockPrice: float,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
+              model,
+              method: TuringAsianOptionValuationMethods,
+              accruedAverage: float = None):
+        ''' Calculation of option gamma by perturbation of stock price and
+        revaluation. '''
+
+        v = self.value(valueDate, stockPrice, discountCurve,
+                       dividendCurve, model, method, accruedAverage)
+
+        vBumpedDn = self.value(valueDate, stockPrice - bump, discountCurve,
+                               dividendCurve, model, method, accruedAverage)
+
+        vBumpedUp = self.value(valueDate, stockPrice + bump, discountCurve,
+                               dividendCurve, model, method, accruedAverage)
+
+        gamma = (vBumpedUp - 2.0 * v + vBumpedDn) / bump / bump
+        return gamma
+
+###############################################################################
+
+    def vega(self,
+             valueDate: TuringDate,
+             stockPrice: float,
+             discountCurve: TuringDiscountCurve,
+             dividendCurve: TuringDiscountCurve,
+             model,
+             method: TuringAsianOptionValuationMethods,
+             accruedAverage: float = None):
+        ''' Calculation of option vega by perturbing vol and revaluation. '''
+
+        v = self.value(valueDate, stockPrice, discountCurve,
+                       dividendCurve, model, method, accruedAverage)
+
+        model = TuringModelBlackScholes(model._volatility + bump)
+
+        vBumped = self.value(valueDate, stockPrice, discountCurve,
+                             dividendCurve, model, method, accruedAverage)
+
+        vega = (vBumped - v) / bump
+        return vega
+
+###############################################################################
+
+    def theta(self,
+              valueDate: TuringDate,
+              stockPrice: float,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
+              model,
+              method: TuringAsianOptionValuationMethods,
+              accruedAverage: float = None):
+        ''' Calculation of option theta by perturbing value date by one
+        calendar date (not a business date) and then doing revaluation and
+        calculating the difference divided by dt = 1 / gDaysInYear. '''
+
+        v = self.value(valueDate, stockPrice,
+                       discountCurve,
+                       dividendCurve, model,
+                       method, accruedAverage)
+
+        nextDate = valueDate.addDays(1)
+
+        # Need to do this carefully.
+
+        discountCurve._valuationDate = nextDate
+        bump = (nextDate - valueDate) / gDaysInYear
+
+        vBumped = self.value(nextDate, stockPrice,
+                             discountCurve,
+                             dividendCurve, model,
+                             method, accruedAverage)
+
+        discountCurve._valuationDate = valueDate
+        theta = (vBumped - v) / bump
+        return theta
+
+###############################################################################
+
+    def rho(self,
+            valueDate: TuringDate,
+            stockPrice: float,
+            discountCurve: TuringDiscountCurve,
+            dividendCurve: TuringDiscountCurve,
+            model,
+            method: TuringAsianOptionValuationMethods,
+            accruedAverage: float = None):
+        ''' Calculation of option rho by perturbing interest rate and
+        revaluation. '''
+
+        v = self.value(valueDate, stockPrice, discountCurve,
+                       dividendCurve, model, method, accruedAverage)
+
+        vBumped = self.value(valueDate, stockPrice, discountCurve.bump(bump),
+                             dividendCurve, model, method, accruedAverage)
+
+        rho = (vBumped - v) / bump
+        return rho
 
 ###############################################################################
 

@@ -1,6 +1,3 @@
-
-
-
 # TODO: Consider risk management
 # TODO: Consider using Sobol
 # TODO: Consider allowing weights on the individual basket assets

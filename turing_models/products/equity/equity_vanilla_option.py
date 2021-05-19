@@ -1,9 +1,6 @@
-
-
-
-
 import numpy as np
 from numba import njit
+# from tunny import model, compute
 
 # from scipy import optimize
 from turing_models.utilities.solvers_1d import newton_secant, bisection, newton
@@ -70,6 +67,7 @@ def _fvega(v, *args):
 ###############################################################################
 
 
+# @model
 class TuringEquityVanillaOption():
     ''' Class for managing plain vanilla European calls and puts on equities.
     For American calls and puts see the TuringEquityAmericanOption class. '''
@@ -126,6 +124,7 @@ class TuringEquityVanillaOption():
 
 ###############################################################################
 
+    # @compute
     def value(self,
               valueDate: (TuringDate, list),
               stockPrice: (np.ndarray, float),
@@ -390,7 +389,7 @@ class TuringEquityVanillaOption():
                           discountCurve: TuringDiscountCurve,
                           dividendCurve: TuringDiscountCurve,
                           price):
-        ''' Calculate the Black-Scholes implied volatility of a European 
+        ''' Calculate the Black-Scholes implied volatility of a European
         vanilla option. '''
 
         texp = (self._expiryDate - valueDate) / gDaysInYear
@@ -408,9 +407,9 @@ class TuringEquityVanillaOption():
         k = self._strikePrice
         s0 = stockPrice
 
-        sigma = bsImpliedVolatility(s0, texp, k, r, q, price, 
+        sigma = bsImpliedVolatility(s0, texp, k, r, q, price,
                                     self._optionType.value)
-        
+
         return sigma
 
 ###############################################################################
@@ -435,14 +434,14 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMPY_ONLY(stockPrice, 
-                           texp, 
+        v = _valueMC_NUMPY_ONLY(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
                            seed,
                            useSobol)
 
@@ -470,15 +469,15 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMBA_ONLY(stockPrice, 
-                           texp, 
+        v = _valueMC_NUMBA_ONLY(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
-                           seed, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
+                           seed,
                            useSobol)
 
         return v
@@ -505,15 +504,15 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMBA_PARALLEL(stockPrice, 
-                           texp, 
+        v = _valueMC_NUMBA_PARALLEL(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
-                           seed, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
+                           seed,
                            useSobol)
 
 #        _valueMC_NUMBA_ONLY.parallel_diagnostics(level=4)
@@ -542,14 +541,14 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMPY_NUMBA(stockPrice, 
-                           texp, 
+        v = _valueMC_NUMPY_NUMBA(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
                            seed,
                            useSobol)
 
@@ -577,14 +576,14 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NONUMBA_NONUMPY(stockPrice, 
-                           texp, 
+        v = _valueMC_NONUMBA_NONUMPY(stockPrice,
+                           texp,
                            self._strikePrice,
                            self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
+                           r,
+                           q,
+                           vol,
+                           numPaths,
                            seed,
                            useSobol)
 
@@ -614,16 +613,16 @@ class TuringEquityVanillaOption():
 
         vol = model._volatility
 
-        v = _valueMC_NUMBA_ONLY(stockPrice, 
-                           texp, 
-                           self._strikePrice,
-                           self._optionType.value,
-                           r, 
-                           q, 
-                           vol, 
-                           numPaths, 
-                           seed, 
-                           useSobol)
+        v = _valueMC_NUMBA_ONLY(stockPrice,
+                                texp,
+                                self._strikePrice,
+                                self._optionType.value,
+                                r,
+                                q,
+                                vol,
+                                numPaths,
+                                seed,
+                                useSobol)
 
         return v
 

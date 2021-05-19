@@ -3,9 +3,10 @@ from turing_models.utilities.error import TuringError
 from numba import njit, boolean, int64
 import numpy as np
 
-###############################################################################    
+###############################################################################
 
 from enum import Enum
+
 
 class TuringDateFormatTypes(Enum):
     BLOOMBERG = 1
@@ -18,7 +19,7 @@ class TuringDateFormatTypes(Enum):
     UK_LONG = 8
     UK_LONGEST = 9
     DATETIME = 10
-    
+
 
 # Set the default
 gDateFormatType = TuringDateFormatTypes.UK_LONG
@@ -28,7 +29,7 @@ def setDateFormatType(formatType):
     global gDateFormatType
     gDateFormatType = formatType
 
-###############################################################################    
+###############################################################################
 
 ENFORCE_DAY_FIRST = True
 
@@ -108,7 +109,7 @@ def calculateList():
 
     dayCounter = 0
     maxDays = 0
-    
+
     global gDateCounterList
     global gStartYear
     global gEndYear
@@ -147,7 +148,7 @@ def calculateList():
                     gDateCounterList.append(-999)
 
 ###############################################################################
-# The index in these functions is not the excel date index used as the 
+# The index in these functions is not the excel date index used as the
 # internal representation of the date but the index of that date in the
 # padded date object used to store the dates in a way that allows for a
 # quick lookup. Do not confuse them as you will find they are out by months
@@ -155,6 +156,7 @@ def calculateList():
 
 @njit(fastmath=True, cache=True)
 def dateIndex(d, m, y):
+    # the first element(1900.1.1) will be idx=0
     idx = (y-gStartYear) * 12 * 31 + (m-1) * 31 + (d-1)
     return idx
 
@@ -183,7 +185,6 @@ class TuringDate():
     ''' A date class to manage dates that is simple to use and includes a
     number of useful date functions used frequently in Finance. '''
 
-
     MON = 0
     TUE = 1
     WED = 2
@@ -194,7 +195,7 @@ class TuringDate():
 
     ###########################################################################
 
-    def __init__(self, d, m, y, hh=0, mm=0, ss=0):  
+    def __init__(self, d, m, y, hh=0, mm=0, ss=0):
         ''' Create a date given a day of month, month and year. The arguments
         must be in the order of day (of month), month number and then the year.
         The year must be a 4-digit number greater than or equal to 1900. The
@@ -232,7 +233,7 @@ class TuringDate():
                 " to " + str(gEndYear))
 
         if d < 1:
-            raise TuringError("Date: Leap year. Day not valid.")
+            raise TuringError("Date: Day not valid.")
 
         leapYear = isLeapYear(y)
 
@@ -257,7 +258,7 @@ class TuringDate():
         self._y = y
         self._m = m
         self._d = d
-        
+
         self._hh = hh
         self._mm = mm
         self._ss = ss
@@ -280,7 +281,7 @@ class TuringDate():
         '''  Create a TuringDate from a date and format string.
         Example Input:
         start_date = TuringDate('1-1-2018', '%d-%m-%Y') '''
- 
+
         d, m, y = parse_date(dateString, formatString)
         return cls(d, m, y)
 
@@ -340,7 +341,7 @@ class TuringDate():
 
     def isEOM(self):
         ''' returns True if this date falls on a month end. '''
-        
+
         y = self._y
         m = self._m
         d = self._d
@@ -353,7 +354,7 @@ class TuringDate():
         else:
             if d == monthDaysNotLeapYear[m - 1]:
                 return True
-                    
+
         return False
 
     ###########################################################################
@@ -373,8 +374,6 @@ class TuringDate():
             lastDay = monthDaysNotLeapYear[m - 1]
             return TuringDate(lastDay, m, y)
 
-        return False
-
     ###########################################################################
 
     def addHours(self, hours):
@@ -382,8 +381,8 @@ class TuringDate():
 
         if hours < 0:
             raise TuringError("Number of hours must be positive")
-        
-        startHour = self._hh        
+
+        startHour = self._hh
         finalHour = startHour + hours
         days = int(finalHour/24)
         hour = finalHour % 24
@@ -433,7 +432,7 @@ class TuringDate():
 
         positiveNumDays = (numDays > 0)
         numDays = abs(numDays)
-        
+
         # 5 week days make up a week
         numWeeks = int(numDays / 5)
         remainingDays = numDays % 5
@@ -617,7 +616,7 @@ class TuringDate():
 
     def nextIMMDate(self):
         ''' This function returns the next IMM date after the current date
-            This is a 3rd Wednesday of Jun, March, Sep or December. For an 
+            This is a 3rd Wednesday of Jun, March, Sep or December. For an
             IMM contract the IMM date is the First Delivery Date of the
             futures contract. '''
 
@@ -653,7 +652,7 @@ class TuringDate():
     ###########################################################################
 
     def addTenor(self,
-                 tenor: (list,str)):
+                 tenor: (list, str)):
         ''' Return the date following the TuringDate by a period given by the
         tenor which is a string consisting of a number and a letter, the
         letter being d, w, m , y for day, week, month or year. This is case
@@ -676,16 +675,16 @@ class TuringDate():
 
         newDates = []
 
-        for tenStr in tenor:            
+        for tenStr in tenor:
             tenStr = tenStr.upper()
             DAYS = 1
             WEEKS = 2
             MONTHS = 3
             YEARS = 4
-    
+
             periodType = 0
             numPeriods = 0
-    
+
             if tenStr == "ON":   # overnight - should be used only if spot days = 0
                 periodType = DAYS
                 numPeriods = 1
@@ -706,9 +705,9 @@ class TuringDate():
                 numPeriods = int(tenStr[0:-1])
             else:
                 raise TuringError("Unknown tenor type in " + tenor)
-    
+
             newDate = TuringDate(self._d, self._m, self._y)
-    
+
             if periodType == DAYS:
                 for _ in range(0, numPeriods):
                     newDate = newDate.addDays(1)
@@ -758,7 +757,7 @@ class TuringDate():
         ''' returns a formatted string of the date '''
 
         global gDateFormatType
-        
+
         dayNameStr = shortDayNames[self._weekday]
 
         if self._d < 10:
@@ -793,7 +792,7 @@ class TuringDate():
             sep = "/"
             dateStr = dayStr + sep + shortMonthStr + sep + longYearStr
             return dateStr
-    
+
         elif gDateFormatType == TuringDateFormatTypes.UK_SHORT:
 
             sep = "/"
@@ -813,7 +812,7 @@ class TuringDate():
             return dateStr
 
         elif gDateFormatType == TuringDateFormatTypes.US_MEDIUM:
-            
+
             sep = "-"
             dateStr = shortMonthStr + sep + dayStr + sep + longYearStr
             return dateStr
@@ -855,12 +854,12 @@ class TuringDate():
             return dateStr
 
         else:
-            
+
             raise TuringError("Unknown date format")
 
     ###########################################################################
     # REMOVE THIS
-    
+
     def _print(self):
         ''' prints formatted string of the date. '''
         print(self)
@@ -871,8 +870,7 @@ class TuringDate():
 ###############################################################################
 
 
-def dailyWorkingDaySchedule(self,
-                            startDate: TuringDate,
+def dailyWorkingDaySchedule(startDate: TuringDate,
                             endDate: TuringDate):
     ''' Returns a list of working dates between startDate and endDate.
     This function should be replaced by dateRange once addTenor allows
@@ -892,14 +890,14 @@ def dailyWorkingDaySchedule(self,
 
 def datediff(d1: TuringDate,
              d2: TuringDate):
-    ''' Calculate the number of days between two Findates. '''
+    ''' Calculate the number of days between two Turingdates. '''
     dd = (d2._excelDate - d1._excelDate)
     return int(dd)
 
 ###############################################################################
 
 
-def fromDatetime(dt: TuringDate):
+def fromDatetime(dt: datetime.date):
     ''' Construct a TuringDate from a datetime as this is often needed if we
     receive inputs from other Python objects such as Pandas dataframes. '''
 
@@ -908,18 +906,20 @@ def fromDatetime(dt: TuringDate):
 
 ###############################################################################
 
+
 def daysInMonth(m, y):
     ''' Get the number of days in the month (1-12) of a given year y. '''
 
     if m < 1 or m > 12:
         raise TuringError("Month must be 1-12")
-    
+
     if isLeapYear(y) is False:
         return monthDaysNotLeapYear[m-1]
     else:
         return monthDaysLeapYear[m-1]
 
 ###############################################################################
+
 
 def dateRange(startDate: TuringDate,
               endDate: TuringDate,
@@ -943,8 +943,9 @@ def dateRange(startDate: TuringDate,
 
 ###############################################################################
 
+
 def testType():
     global gDateFormatType
     print("TEST TYPE", gDateFormatType)
-    
+
 ###############################################################################

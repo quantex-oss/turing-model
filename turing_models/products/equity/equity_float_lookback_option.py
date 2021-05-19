@@ -1,8 +1,4 @@
-
-
-
 import numpy as np
-
 
 from turing_models.utilities.mathematics import N
 from turing_models.utilities.global_variables import gDaysInYear, gSmall

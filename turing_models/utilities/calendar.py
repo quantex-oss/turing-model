@@ -228,7 +228,7 @@ class TuringCalendar(object):
     def isHoliday(self,
                   dt: TuringDate):
         ''' Determines if a date is a Holiday according to the specified
-        calendar. Weekends are not holidays unless the holiday falls on a 
+        calendar. Weekends are not holidays unless the holiday falls on a
         weekend date. '''
 
         startDate = TuringDate(1, 1, dt._y)
@@ -349,7 +349,7 @@ class TuringCalendar(object):
             return True
 
         return False
-   
+
 ###############################################################################
 
     def HOLIDAY_UNITED_KINGDOM(self):
@@ -805,7 +805,7 @@ class TuringCalendar(object):
         holidays for bond markets, NYSE, and public holidays. For each of
         these and other categories there will be some variations. '''
 
-        m = self._m; d = self._d; 
+        m = self._m; d = self._d;
         weekday = self._weekday
 
         if m == 1 and d == 1:  # NYD
@@ -947,7 +947,9 @@ class TuringCalendar(object):
     def HOLIDAY_ITALY(self):
         ''' Only bank holidays. Weekends by themselves are not a holiday. '''
 
-        m = self._m; d = self._d; y = self._y
+        m = self._m
+        d = self._d
+        y = self._y
         dayInYear = self._dayInYear
 
         if m == 1 and d == 1:  # new years day
@@ -964,16 +966,16 @@ class TuringCalendar(object):
         if dayInYear == em - 3:  # good friday
             return True
 
-        if m == 4 and d == 25: # LIBERATION DAY
+        if m == 4 and d == 25:  # LIBERATION DAY
             return True
 
-        if m == 5 and d == 1: # LABOUR DAY
+        if m == 5 and d == 1:  # LABOUR DAY
             return True
 
-        if m == 6 and d == 2 and y > 1999: # REPUBLIC DAY
+        if m == 6 and d == 2 and y > 1999:  # REPUBLIC DAY
             return True
 
-        if m == 8 and d  == 15:  # ASSUMPTION
+        if m == 8 and d == 15:  # ASSUMPTION
             return True
 
         if m == 11 and d == 1:  # ALL SAINTS
@@ -995,7 +997,9 @@ class TuringCalendar(object):
     def HOLIDAY_TARGET(self):
         ''' Only bank holidays. Weekends by themselves are not a holiday. '''
 
-        m = self._m; d = self._d; y = self._y
+        m = self._m
+        d = self._d
+        y = self._y
         dayInYear = self._dayInYear
 
         if m == 1 and d == 1:  # new year's day
