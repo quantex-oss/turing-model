@@ -14,6 +14,7 @@ from turing_models.products.equity import TuringOptionTypes, \
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 
+
 class OptionBase:
     def __init__(self,
                  option_style=None,

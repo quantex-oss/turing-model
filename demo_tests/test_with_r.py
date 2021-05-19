@@ -38,18 +38,17 @@ option = EqOption(option_type=TuringOptionTypes.EUROPEAN_CALL,
                   volatility=0.02,
                   interest_rate=0.03,
                   dividend_yield=0.01111)
-#
-# print(option.price())
-# print(option.delta())
-# print(option.gamma())
-# print(option.vega())
-# print(option.theta())
-# print(option.rho())
+
+print(option.price())
+print(option.delta())
+print(option.gamma())
+print(option.vega())
+print(option.theta())
+print(option.rho())
 
 print("-" * 100)
 
 with PricingContext(interest_rate=0.04):
-    print(option.__dict__)
     print(option.price())
     print(option.delta())
     print(option.gamma())
