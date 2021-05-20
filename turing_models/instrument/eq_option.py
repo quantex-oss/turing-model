@@ -1,21 +1,19 @@
-import datetime
 from typing import Union
 
 from tunny.models import model
 from tunny import compute
 
 from fundamental import ctx
-from turing_models.instrument.common import OptionType, OptionStyle, Currency, \
+from turing_models.instrument.common import Currency, \
      OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, \
-     KnockType, KnockInType
+     KnockType
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
      TuringEquityVanillaOption, TuringEquityAmericanOption, \
      TuringEquityAsianOption, TuringAsianOptionValuationMethods, \
      TuringEquitySnowballOption, TuringKnockInTypes
-from turing_models.utilities.error import TuringError
-from turing_models.utilities.turing_date import TuringDate, fromDatetime
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import checkArgumentTypes
 
 
@@ -86,7 +84,7 @@ class OptionBase:
         return option
 
 
-# @model
+@model
 class EqOption:
     """Instrument definition for equity option"""
 
@@ -234,21 +232,24 @@ class EqOption:
             else self.__accrued_average
 
     @property
+    @compute
     def model(self):
         return TuringModelBlackScholes(self.volatility)
 
     @property
+    @compute
     def discount_curve(self):
         return TuringDiscountCurveFlat(
             self.value_date, self.interest_rate)
 
     @property
+    @compute
     def dividend_curve(self):
         return TuringDiscountCurveFlat(
             self.value_date, self.dividend_yield)
 
     @property
-    # @compute
+    @compute
     def params(self) -> list:
         params = []
         if (self.option_type == TuringOptionTypes.EUROPEAN_CALL or
@@ -276,32 +277,32 @@ class EqOption:
                       self.accrued_average]
         return params
 
-    # @compute
+    @compute
     def price(self) -> float:
         print(f"price called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.value(*self.params)
 
-    # @compute
+    @compute
     def delta(self) -> float:
         print(f"delta called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.delta(*self.params)
 
-    # @compute
+    @compute
     def gamma(self) -> float:
         print(f"gamma called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.gamma(*self.params)
 
-    # @compute
+    @compute
     def vega(self) -> float:
         print(f"vega called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.vega(*self.params)
 
-    # @compute
+    @compute
     def theta(self) -> float:
         print(f"theta called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.theta(*self.params)
 
-    # @compute
+    @compute
     def rho(self) -> float:
         print(f"rho called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.rho(*self.params)

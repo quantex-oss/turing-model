@@ -1,9 +1,4 @@
-import datetime
-
-import sys
-sys.path.append("..")
 from fundamental import PricingContext
-from turing_models.instrument.common import OptionType, OptionStyle, KnockInType
 from turing_models.instrument.eq_option import EqOption
 from turing_models.products.equity import TuringOptionTypes
 from turing_models.utilities.turing_date import TuringDate
