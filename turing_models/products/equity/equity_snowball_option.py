@@ -34,7 +34,7 @@ class TuringEquitySnowballOption:
 
         checkArgumentTypes(self.__init__, locals())
 
-        if isinstance(knock_in_type, TuringKnockInTypes):
+        if not isinstance(knock_in_type, TuringKnockInTypes):
             raise TuringError("Please check inputs for argument >> knock_in_type <<")
 
         if ((knock_in_strike1 is not None or knock_in_strike2 is not None) and

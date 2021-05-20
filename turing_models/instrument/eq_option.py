@@ -279,44 +279,24 @@ class EqOption:
 
     @compute
     def price(self) -> float:
-        print(f"price called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.value(*self.params)
 
     @compute
     def delta(self) -> float:
-        print(f"delta called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.delta(*self.params)
 
     @compute
     def gamma(self) -> float:
-        print(f"gamma called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.gamma(*self.params)
 
     @compute
     def vega(self) -> float:
-        print(f"vega called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.vega(*self.params)
 
     @compute
     def theta(self) -> float:
-        print(f"theta called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.theta(*self.params)
 
     @compute
     def rho(self) -> float:
-        print(f"rho called... r={self.ctx.path.interest_rate if self.ctx.path else None}")
         return self.option.rho(*self.params)
-
-
-if __name__ == "__main__":
-    option = EqOption(option_type=TuringOptionTypes.EUROPEAN_CALL,
-                      number_of_options=100,
-                      expiration_date=TuringDate(25, 7, 2021),
-                      strike_price=500.0,
-                      value_date=TuringDate(25, 4, 2021),
-                      stock_price=510.0,
-                      volatility=0.02,
-                      interest_rate=0.03,
-                      dividend_yield=0)
-
-    print(f"Option Price: {option.price()}")
