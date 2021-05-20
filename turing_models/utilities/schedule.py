@@ -10,7 +10,6 @@ from .helper_functions import checkArgumentTypes
 # TODO: Start and end date to allow for long stubs
 ###############################################################################
 
-
 class TuringSchedule(object):
     ''' A schedule is a set of dates generated according to ISDA standard
     rules which starts on the next date after the effective date and runs up to
@@ -30,33 +29,33 @@ class TuringSchedule(object):
                  firstDate = None,  # First coupon date
                  nextToLastDate = None): # Penultimate coupon date
         ''' Create TuringSchedule object which calculates a sequence of dates
-        following the ISDA convention for fixed income products, mainly swaps.
+        following the ISDA convention for fixed income products, mainly swaps. 
 
-        If the date gen rule type is FORWARD we get the unadjusted dates by stepping
+        If the date gen rule type is FORWARD we get the unadjusted dates by stepping 
         forward from the effective date in steps of months determined by the period
         tenor - i.e. the number of months between payments. We stop before we go past the
-        termination date.
+        termination date. 
 
-        If the date gen rule type is BACKWARD we get the unadjusted dates by
-        stepping backward from the termination date in steps of months determined by
-        the period tenor - i.e. the number of months between payments. We stop
-        before we go past the effective date.
+        If the date gen rule type is BACKWARD we get the unadjusted dates by 
+        stepping backward from the termination date in steps of months determined by 
+        the period tenor - i.e. the number of months between payments. We stop 
+        before we go past the effective date. 
 
         - If the EOM flag is false, and the start date is on the 31st then the
-        the unadjusted dates will fall on the 30 if a 30 is a previous date.
-        - If the EOM flag is false and the start date is 28 Feb then all
-        unadjusted dates will fall on the 28th.
-        - If the EOM flag is false and the start date is 28 Feb then all
+        the unadjusted dates will fall on the 30 if a 30 is a previous date. 
+        - If the EOM flag is false and the start date is 28 Feb then all 
+        unadjusted dates will fall on the 28th. 
+        - If the EOM flag is false and the start date is 28 Feb then all 
         unadjusted dates will fall on their respective EOM.
 
-        We then adjust all of the flow dates if they fall on a weekend or holiday
-        according to the calendar specified. These dates are adjusted in
+        We then adjust all of the flow dates if they fall on a weekend or holiday 
+        according to the calendar specified. These dates are adjusted in 
         accordance with the business date adjustment.
 
         The effective date is never adjusted as it is not a payment date.
-        The termination date is not automatically business day adjusted in a
+        The termination date is not automatically business day adjusted in a 
         swap - assuming it is a holiday date. This must be explicitly stated in
-        the trade confirm. However, it is adjusted in a CDS contract as standard.
+        the trade confirm. However, it is adjusted in a CDS contract as standard. 
 
         Inputs firstDate and nextToLastDate are for managing long payment stubs
         at the start and end of the swap but *have not yet been implemented*. All
@@ -72,14 +71,14 @@ class TuringSchedule(object):
 
         if firstDate is None:
             self._firstDate  = effectiveDate
-        else:
+        else:            
             if firstDate > effectiveDate and firstDate < terminationDate:
                 self._firstDate = firstDate
                 print("FIRST DATE NOT IMPLEMENTED") # TODO
             else:
                 raise TuringError("First date must be after effective date and" +
                                " before termination date")
-
+        
         if nextToLastDate is None:
             self._nextToLastDate = terminationDate
         else:
@@ -94,7 +93,7 @@ class TuringSchedule(object):
         self._calendarType = calendarType
         self._busDayAdjustType = busDayAdjustType
         self._dateGenRuleType = dateGenRuleType
-
+        
         self._adjustTerminationDate = adjustTerminationDate
 
         if endOfMonthFlag is True:
@@ -139,7 +138,7 @@ class TuringSchedule(object):
 
                 unadjustedScheduleDates.append(nextDate)
                 nextDate = nextDate.addMonths(-numMonths)
-
+                
                 if self._endOfMonthFlag is True:
                     nextDate = nextDate.EOM()
 
@@ -192,15 +191,15 @@ class TuringSchedule(object):
         if self._adjustedDates[0] < self._effectiveDate:
             self._adjustedDates[0] = self._effectiveDate
 
-        # The market standard for swaps is not to adjust the termination date
-        # unless it is specified in the contract. It is standard for CDS.
+        # The market standard for swaps is not to adjust the termination date 
+        # unless it is specified in the contract. It is standard for CDS. 
         # We change it if the adjustTerminationDate flag is True.
         if self._adjustTerminationDate is True:
 
             self._terminationDate = calendar.adjust(self._terminationDate,
                                                     self._busDayAdjustType)
-
-            self._adjustedDates[-1] = self._terminationDate
+        
+            self._adjustedDates[-1] = self._terminationDate 
 
         #######################################################################
         # Check the resulting schedule to ensure that no two dates are the
@@ -212,14 +211,14 @@ class TuringSchedule(object):
 
         prevDt = self._adjustedDates[0]
         for dt in self._adjustedDates[1:]:
-
+ 
             if dt == prevDt:
                 raise TuringError("Two matching dates in schedule")
 
             if dt < prevDt: # Dates must be ordered
                 raise TuringError("Dates are not monotonic")
 
-            prevDt = dt
+            prevDt = dt           
 
         #######################################################################
 
@@ -245,7 +244,7 @@ class TuringSchedule(object):
             if len(self._adjustedDates) > 0:
                 s += "\n\n"
                 s += labelToString("EFF", self._adjustedDates[0], "")
-
+    
             if len(self._adjustedDates) > 1:
                 s += "\n"
                 s += labelToString("FLW", self._adjustedDates[1:], "",
