@@ -1,91 +1,99 @@
 from typing import Union
 
-from tunny.models import model
 from tunny import compute
+from tunny.models import model
 
 from fundamental import ctx
 from turing_models.instrument.common import Currency, \
-     OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, \
-     KnockType
+    OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, \
+    KnockType
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
-     TuringEquityVanillaOption, TuringEquityAmericanOption, \
-     TuringEquityAsianOption, TuringAsianOptionValuationMethods, \
-     TuringEquitySnowballOption, TuringKnockInTypes
-from turing_models.utilities.turing_date import TuringDate
+    TuringEquityVanillaOption, TuringEquityAmericanOption, \
+    TuringEquityAsianOption, TuringAsianOptionValuationMethods, \
+    TuringEquitySnowballOption, TuringKnockInTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes
-
-
-class OptionBase:
-    """Create an option object"""
-
-    def __init__(
-            self,
-            option_type: TuringOptionTypes,
-            expiration_date: TuringDate,
-            strike_price: float,
-            start_averaging_date: TuringDate,
-            knock_out_price: float,
-            knock_in_price: float,
-            notional: float,
-            coupon_rate: float,
-            knock_in_type: TuringKnockInTypes,
-            knock_in_strike1: float,
-            knock_in_strike2: float
-    ):
-        self.option_type = option_type
-        self.expiration_date = expiration_date
-        self.strike_price = strike_price
-        self.start_averaging_date = start_averaging_date
-        self.knock_out_price = knock_out_price
-        self.knock_in_price = knock_in_price
-        self.notional = notional
-        self.coupon_rate = coupon_rate
-        self.knock_in_type = knock_in_type
-        self.knock_in_strike1 = knock_in_strike1
-        self.knock_in_strike2 = knock_in_strike2
-
-    def get_option(self):
-        """返回期权实例化对象"""
-
-        if (self.option_type == TuringOptionTypes.EUROPEAN_CALL or
-                self.option_type == TuringOptionTypes.EUROPEAN_PUT):
-            option = TuringEquityVanillaOption(
-                self.expiration_date,
-                self.strike_price,
-                self.option_type)
-        elif (self.option_type == TuringOptionTypes.AMERICAN_CALL or
-                self.option_type == TuringOptionTypes.AMERICAN_PUT):
-            option = TuringEquityAmericanOption(
-                self.expiration_date,
-                self.strike_price,
-                self.option_type)
-        elif (self.option_type == TuringOptionTypes.ASIAN_CALL or
-                self.option_type == TuringOptionTypes.ASIAN_PUT):
-            option = TuringEquityAsianOption(
-                self.start_averaging_date,
-                self.expiration_date,
-                self.strike_price,
-                self.option_type)
-        elif (self.option_type == TuringOptionTypes.SNOWBALL_CALL or
-                self.option_type == TuringOptionTypes.SNOWBALL_PUT):
-            option = TuringEquitySnowballOption(
-                self.expiration_date,
-                self.knock_out_price,
-                self.knock_in_price,
-                self.notional,
-                self.coupon_rate,
-                self.option_type,
-                self.knock_in_type,
-                self.knock_in_strike1,
-                self.knock_in_strike2)
-
-        return option
+from turing_models.utilities.turing_date import TuringDate
 
 
 @model
-class EqOption:
+class OptionBase:
+    """Create an option object"""
+
+    @property
+    def option_name(self):
+        if getattr(self, 'option_type').value in [1, 2]:
+            return "european", "1"
+        elif getattr(self, 'option_type').value in [3, 4]:
+            return "american", "1"
+        elif getattr(self, 'option_type').value in [7, 8]:
+            return "asian", "2"
+        elif getattr(self, 'option_type').value in [11, 12]:
+            return "snowball", "1"
+
+    @property
+    def option(self, *args, **kwgs):
+        return getattr(self, f'option_{getattr(self, "option_name")[0]}')(*args, **kwgs)
+
+    @property
+    def params(self, *args, **kwgs):
+        return getattr(self, f'params_{getattr(self, "option_name")[1]}')(*args, **kwgs)
+
+    @compute
+    def params_1(self) -> list:
+        return [
+            self.value_date,
+            self.stock_price,
+            self.discount_curve,
+            self.dividend_curve,
+            self.model
+        ]
+
+    @compute
+    def params_2(self) -> list:
+        return [self.value_date,
+                self.stock_price,
+                self.discount_curve,
+                self.dividend_curve,
+                self.model,
+                TuringAsianOptionValuationMethods.CURRAN,
+                self.accrued_average]
+
+    def option_european(self):
+        return TuringEquityVanillaOption(
+            self.expiration_date,
+            self.strike_price,
+            self.option_type)
+
+    def option_american(self):
+        return TuringEquityAmericanOption(
+            self.expiration_date,
+            self.strike_price,
+            self.option_type)
+
+    def option_asian(self):
+        return TuringEquityAsianOption(
+            self.start_averaging_date,
+            self.expiration_date,
+            self.strike_price,
+            self.option_type)
+
+    def option_snowball(self):
+        return TuringEquitySnowballOption(
+            self.expiration_date,
+            self.knock_out_price,
+            self.knock_in_price,
+            self.notional,
+            self.coupon_rate,
+            self.option_type,
+            self.knock_in_type,
+            self.knock_in_strike1,
+            self.knock_in_strike2)
+
+
+@model
+class EqOption(OptionBase):
     """Instrument definition for equity option"""
 
     def __init__(
@@ -172,19 +180,6 @@ class EqOption:
 
         self.ctx = ctx
 
-        option_base = OptionBase(self.option_type,
-                                 self.expiration_date,
-                                 self.strike_price,
-                                 self.start_averaging_date,
-                                 self.knock_out_price,
-                                 self.knock_in_price,
-                                 self.notional,
-                                 self.coupon_rate,
-                                 self.knock_in_type,
-                                 self.knock_in_strike1,
-                                 self.knock_in_strike2)
-        self.option = option_base.get_option()
-
     @property
     def asset_class(self) -> AssetClass:
         """Equity"""
@@ -247,35 +242,6 @@ class EqOption:
     def dividend_curve(self):
         return TuringDiscountCurveFlat(
             self.value_date, self.dividend_yield)
-
-    @property
-    @compute
-    def params(self) -> list:
-        params = []
-        if (self.option_type == TuringOptionTypes.EUROPEAN_CALL or
-                self.option_type == TuringOptionTypes.EUROPEAN_PUT or
-                self.option_type == TuringOptionTypes.AMERICAN_CALL or
-                self.option_type == TuringOptionTypes.AMERICAN_PUT or
-                self.option_type == TuringOptionTypes.SNOWBALL_CALL or
-                self.option_type == TuringOptionTypes.SNOWBALL_PUT):
-            params = [
-                self.value_date,
-                self.stock_price,
-                self.discount_curve,
-                self.dividend_curve,
-                self.model
-            ]
-
-        elif (self.option_type == TuringOptionTypes.ASIAN_CALL or
-                self.option_type == TuringOptionTypes.ASIAN_PUT):
-            params = [self.value_date,
-                      self.stock_price,
-                      self.discount_curve,
-                      self.dividend_curve,
-                      self.model,
-                      TuringAsianOptionValuationMethods.CURRAN,
-                      self.accrued_average]
-        return params
 
     @compute
     def price(self) -> float:
