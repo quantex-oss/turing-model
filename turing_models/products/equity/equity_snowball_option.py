@@ -341,3 +341,21 @@ class TuringEquitySnowballOption:
 
         rho = (vBumped - v) / bump
         return rho
+    
+    def rho_q(self,
+            value_date: TuringDate,
+            stock_price: float,
+            discount_curve: TuringDiscountCurve,
+            dividend_curve: TuringDiscountCurve,
+            model):
+        ''' Calculation of option rho by perturbing interest rate and
+        revaluation. '''
+
+        v = self.value(value_date, stock_price, discount_curve,
+                       dividend_curve, model)
+
+        vBumped = self.value(value_date, stock_price, discount_curve,
+                             dividend_curve.bump(bump), model)
+
+        rho_q = (vBumped - v) / bump
+        return rho_q

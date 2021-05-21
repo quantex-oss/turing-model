@@ -300,3 +300,7 @@ class EqOption:
     @compute
     def rho(self) -> float:
         return self.option.rho(*self.params)
+
+    @compute
+    def rho_q(self) -> float:
+        return self.option.rho_q(*self.params)
