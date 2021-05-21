@@ -1,3 +1,4 @@
+import datetime
 from typing import Union
 
 from tunny import compute
@@ -191,7 +192,7 @@ class EqOption(OptionBase):
         return AssetType.Option
 
     @property
-    def value_date(self) -> float:
+    def value_date(self) -> (datetime.date or str):
         return self.ctx.path.value_date \
             if self.ctx.path and self.ctx.path.value_date \
             else self.__value_date
@@ -228,18 +229,18 @@ class EqOption(OptionBase):
 
     @property
     @compute
-    def model(self):
+    def model(self) -> TuringModelBlackScholes:
         return TuringModelBlackScholes(self.volatility)
 
     @property
     @compute
-    def discount_curve(self)->TuringDiscountCurveFlat:
+    def discount_curve(self) -> TuringDiscountCurveFlat:
         return TuringDiscountCurveFlat(
             self.value_date, self.interest_rate)
 
     @property
     @compute
-    def dividend_curve(self)->TuringDiscountCurveFlat:
+    def dividend_curve(self) -> TuringDiscountCurveFlat:
         return TuringDiscountCurveFlat(
             self.value_date, self.dividend_yield)
 
