@@ -1,4 +1,5 @@
 import datetime
+from dataclasses import dataclass, InitVar
 from typing import Union
 
 from tunny import compute
@@ -94,84 +95,51 @@ class OptionBase:
 
 
 @model
+@dataclass
 class EqOption(OptionBase):
     """Instrument definition for equity option"""
+    trade_id: str = None,  # 合约编号
+    underlier: str = None,  # 标的证券
+    buy_sell: Union[BuySell, str] = None,  # 买卖方向
+    counterparty: Union[Exchange, str] = None,  # 交易所名称（场内）/交易对手名称（场外）
+    option_type: TuringOptionTypes = None,  # style + type
+    knock_type: Union[KnockType, str] = None,  # 敲入敲出
+    notional: float = None,  # 名义本金
+    initial_spot: float = None,  # 期初价格
+    number_of_options: float = None,  # 期权数量：名义本金/期初价格
+    start_date: TuringDate = None,  # 开始时间
+    end_date: TuringDate = None,  # 期末观察日
+    expiration_date: TuringDate = None,  # 到期日
+    exercise_date: TuringDate = None,  # 行权日
+    participation_rate: float = None,  # 参与率
+    strike_price: float = None,  # 行权价
+    barrier: float = None,  # 敲出价
+    rebate: float = None,  # 敲出补偿收益率
+    multiplier: float = None,  # 合约乘数
+    settlement_date: TuringDate = None,  # 结算日期
+    settlement_currency: Union[Currency, str] = None,  # 结算货币
+    premium: float = 0,  # 期权费
+    premium_payment_date: TuringDate = None,  # 期权费支付日期
+    method_of_settlement: Union[OptionSettlementMethod, str] = None,  # 结算方式
+    premium_currency: Union[Currency, str] = None,  # 期权费币种
+    start_averaging_date: TuringDate = None,  # 观察起始日
+    knock_out_price: float = None,  # 敲出价格
+    knock_in_price: float = None,  # 敲出价格
+    coupon_rate: float = None,  # 票面利率
+    knock_in_type: Union[TuringKnockInTypes, str] = None,  # 敲入类型
+    knock_in_strike1: float = None,  # 敲入执行价1
+    knock_in_strike2: float = None,  # 敲入执行价2
+    name: str = None,  # 对象标识名
+    value_date: InitVar[TuringDate] = None,  # 估值日期
+    stock_price: InitVar[float] = None,  # 股票价格
+    volatility: InitVar[float] = None,  # 波动率
+    interest_rate: InitVar[float] = None,  # 无风险利率
+    dividend_yield: InitVar[float] = None,  # 股息率
+    accrued_average: InitVar[float] = None  # 应计平均价
 
-    def __init__(
-            self,
-            trade_id: str = None,  # 合约编号
-            underlier: str = None,  # 标的证券
-            buy_sell: Union[BuySell, str] = None,  # 买卖方向
-            counterparty: Union[Exchange, str] = None,  # 交易所名称（场内）/交易对手名称（场外）
-            option_type: TuringOptionTypes = None,  # style + type
-            knock_type: Union[KnockType, str] = None,  # 敲入敲出
-            notional: float = None,  # 名义本金
-            initial_spot: float = None,  # 期初价格
-            number_of_options: float = None,  # 期权数量：名义本金/期初价格
-            start_date: TuringDate = None,  # 开始时间
-            end_date: TuringDate = None,  # 期末观察日
-            expiration_date: TuringDate = None,  # 到期日
-            exercise_date: TuringDate = None,  # 行权日
-            participation_rate: float = None,  # 参与率
-            strike_price: float = None,  # 行权价
-            barrier: float = None,  # 敲出价
-            rebate: float = None,  # 敲出补偿收益率
-            multiplier: float = None,  # 合约乘数
-            settlement_date: TuringDate = None,  # 结算日期
-            settlement_currency: Union[Currency, str] = None,  # 结算货币
-            premium: float = 0,  # 期权费
-            premium_payment_date: TuringDate = None,  # 期权费支付日期
-            method_of_settlement: Union[OptionSettlementMethod, str] = None,  # 结算方式
-            premium_currency: Union[Currency, str] = None,  # 期权费币种
-            start_averaging_date: TuringDate = None,  # 观察起始日
-            knock_out_price: float = None,  # 敲出价格
-            knock_in_price: float = None,  # 敲出价格
-            coupon_rate: float = None,  # 票面利率
-            knock_in_type: Union[TuringKnockInTypes, str] = None,  # 敲入类型
-            knock_in_strike1: float = None,  # 敲入执行价1
-            knock_in_strike2: float = None,  # 敲入执行价2
-            name: str = None,  # 对象标识名
-            value_date: TuringDate = None,  # 估值日期
-            stock_price: float = None,  # 股票价格
-            volatility: float = None,  # 波动率
-            interest_rate: float = None,  # 无风险利率
-            dividend_yield: float = None,  # 股息率
-            accrued_average: float = None  # 应计平均价
-    ):
-        checkArgumentTypes(self.__init__, locals())
+    def __post_init__(self, value_date, stock_price, volatility, interest_rate, dividend_yield, accrued_average):
+        checkArgumentTypes(self.__post_init__, locals())
 
-        self.trade_id = trade_id
-        self.underlier = underlier
-        self.buy_sell = buy_sell
-        self.counterparty = counterparty
-        self.option_type = option_type
-        self.knock_type = knock_type
-        self.notional = notional
-        self.initial_spot = initial_spot
-        self.number_of_options = number_of_options
-        self.start_date = start_date
-        self.end_date = end_date
-        self.expiration_date = expiration_date
-        self.exercise_date = exercise_date
-        self.participation_rate = participation_rate
-        self.strike_price = strike_price
-        self.barrier = barrier
-        self.rebate = rebate
-        self.multiplier = multiplier
-        self.settlement_date = settlement_date
-        self.settlement_currency = settlement_currency
-        self.premium = premium
-        self.premium_payment_date = premium_payment_date
-        self.method_of_settlement = method_of_settlement
-        self.premium_currency = premium_currency
-        self.start_averaging_date = start_averaging_date
-        self.knock_out_price = knock_out_price
-        self.knock_in_price = knock_in_price
-        self.coupon_rate = coupon_rate
-        self.knock_in_type = knock_in_type
-        self.knock_in_strike1 = knock_in_strike1
-        self.knock_in_strike2 = knock_in_strike2
-        self.name = name
         self.__value_date = value_date
         self.__stock_price = stock_price
         self.__volatility = volatility
