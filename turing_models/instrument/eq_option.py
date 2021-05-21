@@ -60,26 +60,26 @@ class OptionBase:
                 TuringAsianOptionValuationMethods.CURRAN,
                 self.accrued_average]
 
-    def option_european(self):
+    def option_european(self) -> TuringEquityVanillaOption:
         return TuringEquityVanillaOption(
             self.expiration_date,
             self.strike_price,
             self.option_type)
 
-    def option_american(self):
+    def option_american(self) -> TuringEquityAmericanOption:
         return TuringEquityAmericanOption(
             self.expiration_date,
             self.strike_price,
             self.option_type)
 
-    def option_asian(self):
+    def option_asian(self) -> TuringEquityAsianOption:
         return TuringEquityAsianOption(
             self.start_averaging_date,
             self.expiration_date,
             self.strike_price,
             self.option_type)
 
-    def option_snowball(self):
+    def option_snowball(self) -> TuringEquitySnowballOption:
         return TuringEquitySnowballOption(
             self.expiration_date,
             self.knock_out_price,
@@ -233,13 +233,13 @@ class EqOption(OptionBase):
 
     @property
     @compute
-    def discount_curve(self):
+    def discount_curve(self)->TuringDiscountCurveFlat:
         return TuringDiscountCurveFlat(
             self.value_date, self.interest_rate)
 
     @property
     @compute
-    def dividend_curve(self):
+    def dividend_curve(self)->TuringDiscountCurveFlat:
         return TuringDiscountCurveFlat(
             self.value_date, self.dividend_yield)
 
