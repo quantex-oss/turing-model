@@ -18,7 +18,7 @@ from turing_models.models.model_black_scholes_analytical import bsValue
 from turing_models.models.model_black_scholes_analytical import bsDelta
 from turing_models.models.model_black_scholes_analytical import bsVega
 from turing_models.models.model_black_scholes_analytical import bsGamma
-from turing_models.models.model_black_scholes_analytical import bsRho
+from turing_models.models.model_black_scholes_analytical import bsRho, bsPsi
 from turing_models.models.model_black_scholes_analytical import bsTheta
 from turing_models.models.model_black_scholes_analytical import bsImpliedVolatility
 from turing_models.models.model_black_scholes_analytical import bsIntrinsic
@@ -382,13 +382,54 @@ class TuringEquityVanillaOption():
         return rho
 
 ###############################################################################
+    def rho_q(self,
+                valueDate: TuringDate,
+                stockPrice: float,
+                discountCurve: TuringDiscountCurve,
+                dividendCurve: TuringDiscountCurve,
+                model:TuringModel):
+            ''' Calculate the analytical rho_q of a European vanilla option. '''
+
+            if type(valueDate) == TuringDate:
+                texp = (self._expiryDate - valueDate) / gDaysInYear
+            else:
+                texp = valueDate
+
+            if np.any(stockPrice <= 0.0):
+                raise TuringError("Stock price must be greater than zero.")
+
+            if np.any(texp < 0.0):
+                raise TuringError("Time to expiry must be positive.")
+
+            s0 = stockPrice
+            texp = np.maximum(texp, 1e-10)
+
+            df = discountCurve.df(self._expiryDate)
+            r = -np.log(df)/texp
+
+            dq = dividendCurve.df(self._expiryDate)
+            q = -np.log(dq)/texp
+
+            k = self._strikePrice
+
+            if isinstance(model, TuringModelBlackScholes):
+
+                v = model._volatility
+                rho_q = bsPsi(s0, texp, k, r, q, v, self._optionType.value)
+
+            else:
+                raise TuringError("Unknown Model Type")
+
+            return rho_q
+
+    ###############################################################################
 
     def impliedVolatility(self,
-                          valueDate: TuringDate,
-                          stockPrice: (float, list, np.ndarray),
-                          discountCurve: TuringDiscountCurve,
-                          dividendCurve: TuringDiscountCurve,
-                          price):
+                        valueDate: TuringDate,
+                        stockPrice: (float, list, np.ndarray),
+                        discountCurve: TuringDiscountCurve,
+                        dividendCurve: TuringDiscountCurve,
+                        price):
         ''' Calculate the Black-Scholes implied volatility of a European
         vanilla option. '''
 

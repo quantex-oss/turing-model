@@ -157,6 +157,31 @@ def bsRho(s, t, k, r, q, v, optionTypeValue):
 
 ###############################################################################
 
+def bsPsi(s, t, k, r, q, v, optionTypeValue):
+    ''' Price a derivative using Black-Scholes model. ''' 
+
+    if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
+        phi = 1.0
+    elif optionTypeValue == TuringOptionTypes.EUROPEAN_PUT.value:
+        phi = -1.0
+    else:
+        raise TuringError("Unknown option type value")
+
+    k = np.maximum(k, gSmall)
+    t = np.maximum(t, gSmall)
+    v = np.maximum(v, gSmall)
+
+    sqrtT = np.sqrt(t)
+    vsqrtT = v * sqrtT
+    ss = s * np.exp(-q*t)
+    kk = k * np.exp(-r*t)
+    d1 = np.log(ss/kk) / vsqrtT + vsqrtT / 2.0
+    d2 = d1 - vsqrtT
+    rho = -phi * s * t * np.exp(-q*t) * NVect(phi*d1)
+    return rho
+
+###############################################################################
+
 #@njit(fastmath=True, cache=True)
 def _f(sigma, args):
 

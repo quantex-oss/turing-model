@@ -149,3 +149,23 @@ class TuringEquityOption(object):
         return rho
 
 ###############################################################################
+
+def rho_q(self,
+            valueDate: TuringDate,
+            stockPrice: float,
+            discountCurve: TuringDiscountCurve,
+            dividendCurve: TuringDiscountCurve,
+            model):
+        ''' Calculation of option rho_q by perturbing interest rate and
+        revaluation. '''
+
+        v = self.value(valueDate, stockPrice, discountCurve,
+                       dividendCurve, model)
+
+        vBumped = self.value(valueDate, stockPrice, discountCurve,
+                             dividendCurve.bump(bump), model)
+
+        rho_q = (vBumped - v) / bump
+        return rho_q
+
+###############################################################################
