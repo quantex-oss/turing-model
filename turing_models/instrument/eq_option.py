@@ -1,11 +1,11 @@
 import datetime
-from dataclasses import dataclass, InitVar
+from dataclasses import dataclass, InitVar, field
 from typing import Union
-
+from fundamental.base import ctx
 from tunny import compute
 from tunny.models import model
 
-from fundamental import ctx
+from fundamental.base import Context
 from turing_models.instrument.common import Currency, \
     OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, \
     KnockType
@@ -136,6 +136,7 @@ class EqOption(OptionBase):
     interest_rate: InitVar[float] = None,  # 无风险利率
     dividend_yield: InitVar[float] = None,  # 股息率
     accrued_average: InitVar[float] = None  # 应计平均价
+    ctx: Context = ctx
 
     def __post_init__(self, value_date, stock_price, volatility, interest_rate, dividend_yield, accrued_average):
         checkArgumentTypes(self.__post_init__, locals())
@@ -147,7 +148,6 @@ class EqOption(OptionBase):
         self.__dividend_yield = dividend_yield
         self.__accrued_average = accrued_average
 
-        self.ctx = ctx
 
     @property
     def asset_class(self) -> AssetClass:
