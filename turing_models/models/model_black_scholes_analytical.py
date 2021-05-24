@@ -12,10 +12,10 @@ from turing_models.utilities.solvers_1d import bisection, newton, newton_secant
 # Analytical Black Scholes model implementation and approximations
 ###############################################################################
 
-@vectorize([float64(float64, float64, float64, float64, float64, float64, 
+@vectorize([float64(float64, float64, float64, float64, float64, float64,
                     int64)], fastmath=True, cache=True)
 def bsValue(s, t, k, r, q, v, optionTypeValue):
-    ''' Price a derivative using Black-Scholes model. ''' 
+    ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = 1.0
@@ -33,16 +33,16 @@ def bsValue(s, t, k, r, q, v, optionTypeValue):
     kk = k * np.exp(-r*t)
     d1 = np.log(ss/kk) / vsqrtT + vsqrtT / 2.0
     d2 = d1 - vsqrtT
-    
-    value = phi * ss * NVect(phi*d1) - phi * kk * NVect(phi*d2)    
+
+    value = phi * ss * NVect(phi*d1) - phi * kk * NVect(phi*d2)
     return value
 
 ###############################################################################
 
-@vectorize([float64(float64, float64, float64, float64, 
+@vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
 def bsDelta(s, t, k, r, q, v, optionTypeValue):
-    ''' Price a derivative using Black-Scholes model. ''' 
+    ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = +1.0
@@ -64,10 +64,10 @@ def bsDelta(s, t, k, r, q, v, optionTypeValue):
 
 ###############################################################################
 
-@vectorize([float64(float64, float64, float64, float64, 
+@vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
 def bsGamma(s, t, k, r, q, v, optionTypeValue):
-    ''' Price a derivative using Black-Scholes model. ''' 
+    ''' Price a derivative using Black-Scholes model. '''
 
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
@@ -82,10 +82,10 @@ def bsGamma(s, t, k, r, q, v, optionTypeValue):
 
 ###############################################################################
 
-@vectorize([float64(float64, float64, float64, float64, 
+@vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
 def bsVega(s, t, k, r, q, v, optionTypeValue):
-    ''' Price a derivative using Black-Scholes model. ''' 
+    ''' Price a derivative using Black-Scholes model. '''
 
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
@@ -101,10 +101,10 @@ def bsVega(s, t, k, r, q, v, optionTypeValue):
 
 ###############################################################################
 
-@vectorize([float64(float64, float64, float64, float64, 
+@vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
 def bsTheta(s, t, k, r, q, v, optionTypeValue):
-    ''' Price a derivative using Black-Scholes model. ''' 
+    ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = 1.0
@@ -130,10 +130,11 @@ def bsTheta(s, t, k, r, q, v, optionTypeValue):
 
 ###############################################################################
 
-@vectorize([float64(float64, float64, float64, float64, 
+
+@vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
 def bsRho(s, t, k, r, q, v, optionTypeValue):
-    ''' Price a derivative using Black-Scholes model. ''' 
+    ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = 1.0
@@ -157,8 +158,11 @@ def bsRho(s, t, k, r, q, v, optionTypeValue):
 
 ###############################################################################
 
+
+@vectorize([float64(float64, float64, float64, float64,
+                    float64, float64, int64)], fastmath=True, cache=True)
 def bsPsi(s, t, k, r, q, v, optionTypeValue):
-    ''' Price a derivative using Black-Scholes model. ''' 
+    ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = 1.0
@@ -176,11 +180,11 @@ def bsPsi(s, t, k, r, q, v, optionTypeValue):
     ss = s * np.exp(-q*t)
     kk = k * np.exp(-r*t)
     d1 = np.log(ss/kk) / vsqrtT + vsqrtT / 2.0
-    d2 = d1 - vsqrtT
-    rho = -phi * s * t * np.exp(-q*t) * NVect(phi*d1)
-    return rho
+    rho_q = -phi * s * t * np.exp(-q*t) * NVect(phi*d1)
+    return rho_q
 
 ###############################################################################
+
 
 #@njit(fastmath=True, cache=True)
 def _f(sigma, args):
@@ -211,10 +215,10 @@ def _fvega(sigma, args):
 
 ###############################################################################
 
-@vectorize([float64(float64, float64, float64, float64, 
+@vectorize([float64(float64, float64, float64, float64,
                     float64, int64)], fastmath=True, cache=True)
 def bsIntrinsic(s, t, k, r, q, optionTypeValue):
-    ''' Calculate the Black-Scholes implied volatility of a European 
+    ''' Calculate the Black-Scholes implied volatility of a European
     vanilla option using Newton with a fallback to bisection. '''
 
     fwd = s * np.exp((r-q)*t)
@@ -229,14 +233,14 @@ def bsIntrinsic(s, t, k, r, q, optionTypeValue):
 ###############################################################################
 
 
-#@vectorize([float64(float64, float64, float64, float64, float64, float64, 
+#@vectorize([float64(float64, float64, float64, float64, float64, float64,
 #                    int64)], fastmath=True, cache=True,  forceobj=True)
 def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
-    ''' Calculate the Black-Scholes implied volatility of a European 
+    ''' Calculate the Black-Scholes implied volatility of a European
     vanilla option using Newton with a fallback to bisection. '''
 
     fwd = s * np.exp((r-q)*t)
-                                
+
     if optionTypeValue==TuringOptionTypes.EUROPEAN_CALL.value:
         intrinsicVal = np.exp(-r*t) * max(fwd - k, 0.0)
     else:
@@ -263,13 +267,13 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
 
     timeValue = price - intrinsicVal
 
-    # Add a tolerance in case it is just numerical imprecision 
+    # Add a tolerance in case it is just numerical imprecision
     if timeValue < 0.0:
         print("Time value", timeValue)
         raise TuringError("Option Price is below the intrinsic value")
 
     ###########################################################################
-    # Some approximations which might be used later    
+    # Some approximations which might be used later
     ###########################################################################
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
@@ -292,7 +296,7 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
     ###########################################################################
     # Corrado Miller from Hallerbach equation (7)
     ###########################################################################
-    
+
     cmsigma = 0.0
     # arg = (C - 0.5*(S-X))**2 - ((S-X)**2)/ pi
 
@@ -327,7 +331,7 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
 
     tol = 1e-6
     sigma = newton(_f, sigma0, _fvega, argsv, tol=tol)
-    
+
     if sigma is None:
         sigma = bisection(_f, 1e-4, 10.0, argsv, xtol=tol)
         if sigma is None:
@@ -336,7 +340,7 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
             method = "Bisection"
     else:
         method = "Newton"
- 
+
     if 1==0:
         print("S: %7.2f K: %7.3f T:%5.3f V:%10.7f Sig0: %7.5f CM: %7.5f HL: %7.5f NW: %7.5f %10s"% (s, k, t, price, sigma0*100.0, cmsigma*100.0, hsigma*100.0, sigma*100.0, method))
 
@@ -371,7 +375,7 @@ def _fcall(si, *args):
     d1 = (np.log(si / k) + (b + v2 / 2.0) * t) / (v * np.sqrt(t))
 
     objFn = si - k
-    objFn = objFn - bsValue(si, t, k, r, q, v, +1) 
+    objFn = objFn - bsValue(si, t, k, r, q, v, +1)
     objFn = objFn - (1.0 - np.exp(-q*t) * NVect(d1)) * si / q2
     return objFn
 
@@ -423,9 +427,9 @@ def bawValue(s, t, k, r, q, v, phi):
 
         sstar = newton_secant(_fcall, x0=s, args=argtuple,
                               tol=1e-7, maxiter=50)
-                    
+
         M = 2.0 * r / (v*v)
-        W = 2.0 * b / (v*v) 
+        W = 2.0 * b / (v*v)
         K = 1.0 - np.exp(-r * t)
         d1 = (np.log(sstar/k) + (b + v*v/ 2.0) * t) / (v * np.sqrt(t))
         q2 = (-1.0 * (W - 1.0) + np.sqrt((W - 1.0)**2 + 4.0 * M/K)) / 2.0
@@ -447,7 +451,7 @@ def bawValue(s, t, k, r, q, v, phi):
                               tol=1e-7, maxiter=50)
 
         v2 = v * v
-        
+
         M = 2.0 * r / v2
         W = 2.0 * b / v2
         K = 1.0 - np.exp(-r * t)
@@ -461,7 +465,7 @@ def bawValue(s, t, k, r, q, v, phi):
             return k - s
 
     else:
-        
+
         raise TuringError("Phi must equal 1 or -1.")
 
 ###############################################################################
@@ -469,14 +473,13 @@ def bawValue(s, t, k, r, q, v, phi):
 if __name__ == '__main__':
     # spot_price, strikePrice, timeToExpiry, r, b, vol, phi
 
-    # Checking against table 3-1 in Haug 
+    # Checking against table 3-1 in Haug
     k = 100.0
     r = 0.10
     q = 0.10
-    
+
     for t in [0.1, 0.5]:
         for v in [0.15, 0.25, 0.35]:
             for s in [90.0, 100.0, 110.0]:
                 bawPrice = bawValue(s, t, k, r, q, v, +1)
                 print("%9.5f %9.5f %9.5f %9.5f"% (s, t, v, bawPrice))
-

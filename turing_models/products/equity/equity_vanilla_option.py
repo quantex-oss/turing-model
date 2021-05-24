@@ -346,7 +346,7 @@ class TuringEquityVanillaOption():
             stockPrice: float,
             discountCurve: TuringDiscountCurve,
             dividendCurve: TuringDiscountCurve,
-            model:TuringModel):
+            model: TuringModel):
         ''' Calculate the analytical rho of a European vanilla option. '''
 
         if type(valueDate) == TuringDate:
@@ -383,11 +383,11 @@ class TuringEquityVanillaOption():
 
 ###############################################################################
     def rho_q(self,
-                valueDate: TuringDate,
-                stockPrice: float,
-                discountCurve: TuringDiscountCurve,
-                dividendCurve: TuringDiscountCurve,
-                model:TuringModel):
+              valueDate: TuringDate,
+              stockPrice: float,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
+              model: TuringModel):
             ''' Calculate the analytical rho_q of a European vanilla option. '''
 
             if type(valueDate) == TuringDate:
@@ -425,11 +425,11 @@ class TuringEquityVanillaOption():
     ###############################################################################
 
     def impliedVolatility(self,
-                        valueDate: TuringDate,
-                        stockPrice: (float, list, np.ndarray),
-                        discountCurve: TuringDiscountCurve,
-                        dividendCurve: TuringDiscountCurve,
-                        price):
+                          valueDate: TuringDate,
+                          stockPrice: (float, list, np.ndarray),
+                          discountCurve: TuringDiscountCurve,
+                          dividendCurve: TuringDiscountCurve,
+                          price):
         ''' Calculate the Black-Scholes implied volatility of a European
         vanilla option. '''
 
