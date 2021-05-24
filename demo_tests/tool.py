@@ -8,4 +8,5 @@ def print_result(option):
                     f"gamma: {option.gamma()}\n"
                     f"vega: {option.vega()}\n"
                     f"theta: {option.theta()}\n"
-                    f"rho: {option.rho()}", title="Result"))
+                    f"rho: {option.rho()}\n"
+                    f"rho_q: {option.rho_q()}", title="Result"))
