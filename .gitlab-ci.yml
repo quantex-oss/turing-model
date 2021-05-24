@@ -2,12 +2,12 @@ stages:
   - sonar
   - deploy
 
-variables:
-  # 无需拉取源代码.
-  GIT_STRATEGY: none
 
 Sync_Latest_Models:
   stage: deploy
+  variables:
+    # 无需拉取源代码.
+    GIT_STRATEGY: none
   image: hub.iquantex.com/base/node:12-alpine-with-tools
   script:
     # 在操作前生成git凭证,凭证使用gitlab deploy token定义在项目Settings CI变量中.
@@ -26,7 +26,6 @@ sonar-analyze:
   stage: sonar
   image: hub.iquantex.com/base/sonar-scanner:4.2.0
   script:
-    - sleep 3000
     - sonar-scanner -Dsonar.host.url=https://sonar.bj.iquantex.com -Dsonar.qualitygate.wait=false -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.sources=./turing_models  # 自行修改需要分析的源代码目录
   only:
     - develop
