@@ -385,7 +385,6 @@ class TuringEquityOneTouchOption(TuringEquityOption):
         else:
             raise TuringError("Unknown option type.")
 
-        return v
 
 ###############################################################################
 
@@ -543,7 +542,6 @@ class TuringEquityOneTouchOption(TuringEquityOption):
         else:
             raise TuringError("Unknown option type.")
 
-        return v
 
 ###############################################################################
 
