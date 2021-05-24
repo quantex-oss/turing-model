@@ -36,7 +36,6 @@ class OptionBase:
         elif getattr(self, 'option_type').value in [11, 12]:
             return "snowball", "1"
 
-    @property
     def option(self, *args, **kwgs):
         return getattr(self, f'option_{getattr(self, "option_name")[0]}')(*args, **kwgs)
 
