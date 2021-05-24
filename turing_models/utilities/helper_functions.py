@@ -111,7 +111,6 @@ def timesFromDates(dt: TuringDate,
     else:
         raise TuringError("Discount factor must take dates.")
 
-    return None
 
 ###############################################################################
 

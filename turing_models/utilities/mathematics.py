@@ -29,7 +29,7 @@ def accruedInterpolator(tset: float,  # Settlement time in years
         pct = couponTimes[i - 1]
         nct = couponTimes[i]
         denom = (nct-pct)
-       
+
         if tset >= pct and tset < nct:
             accdFrac = (tset-pct) / denom
             accdCpn = accdFrac * couponAmounts[i]
@@ -37,11 +37,6 @@ def accruedInterpolator(tset: float,  # Settlement time in years
 
     # TODO: NEED TO REVISIT THIS TODO
     return 0.0
-    print("t", tset)
-    print("CPN TIMES", couponTimes)
-    print("CPN AMNTS", couponAmounts)
- 
-    raise TuringError("Failed to calculate accrued")
 
 ###############################################################################
 
@@ -269,7 +264,7 @@ def normpdf(x: float):
 
 @njit(float64(float64), fastmath=True, cache=True)
 def N(x):
-    ''' Fast Normal CDF function based on Hull OFAODS  4th Edition Page 252. 
+    ''' Fast Normal CDF function based on Hull OFAODS  4th Edition Page 252.
     This function is accurate to 6 decimal places. '''
 
     a1 = 0.319381530

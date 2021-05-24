@@ -184,7 +184,7 @@ def _check_unknown_options(unknown_options):
         # called from another function in SciPy. Level 4 is the first
         # level in user code.
         print("Unknown solver options")
-        
+
 
 from scipy.optimize._differentiable_functions import ScalarFunction
 
@@ -253,7 +253,6 @@ def _prepare_scalar_function(fun, x0, jac=None, args=(), bounds=None,
         # epsilon value that is not None to use absolute steps. This is
         # normally the case from most _minimize* methods.
         grad = '2-point'
-        epsilon = epsilon
 
     if hess is None:
         # ScalarFunction requires something for hess, so we give a dummy

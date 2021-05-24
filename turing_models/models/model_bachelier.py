@@ -44,7 +44,6 @@ class TuringModelBachelier():
         else:
             raise Exception("Option type must be a European Call(C) or Put(P)")
 
-        return 999
 
 ###############################################################################
 

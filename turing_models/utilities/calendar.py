@@ -168,7 +168,6 @@ class TuringCalendar(object):
             raise TuringError("Unknown adjustment convention" +
                               str(busDayConventionType))
 
-        return dt
 
 ###############################################################################
 

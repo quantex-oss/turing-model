@@ -337,15 +337,15 @@ def LMMSimulateFwdsNF(numForwards, numPaths, fwd0, zetas, correl, taus, seed):
     # CALCULATED INSIDE THE MAIN LOOP SO I CALCULATE THEM NOW
     ###########################################################################
 
-    if 1 == 1:
-        gMatrix = np.empty((numPaths, numForwards, numForwards))
-        for iPath in range(0, halfNumPaths):
-            for j in range(1, numForwards):
-                for k in range(0, numForwards-j):
-                    g = np.random.normal()
-                    # ANTITHETICS
-                    gMatrix[iPath, j, k] = g
-                    gMatrix[iPath + halfNumPaths, j, k] = -g
+    # if 1 == 1:
+    gMatrix = np.empty((numPaths, numForwards, numForwards))
+    for iPath in range(0, halfNumPaths):
+        for j in range(1, numForwards):
+            for k in range(0, numForwards-j):
+                g = np.random.normal()
+                # ANTITHETICS
+                gMatrix[iPath, j, k] = g
+                gMatrix[iPath + halfNumPaths, j, k] = -g
 
     avgg = 0.0
     stdg = 0.0

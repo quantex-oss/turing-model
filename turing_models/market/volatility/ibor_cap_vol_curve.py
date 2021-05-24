@@ -181,13 +181,13 @@ class TuringIborCapVolCurve():
         s = labelToString("OBJECT TYPE", type(self).__name__)
         numTimes = len(self._times)
         s += " TIME     TAU    CAP VOL    CAPLET VOL"
-        for i in range(0, numTimes):
-            t = self._times[i]
-            tau = self._taus[i]
-            volCap = self._capSigmas[i]
-            fwdIborVol = self._capletVols[i]
-            s += labelToString("%7.4f  %6.4f  %9.4f  %9.4f"
-                               % (t, tau, volCap*100.0, fwdIborVol*100.0))
+        # for i in range(0, numTimes):
+        #     t = self._times[i]
+        #     tau = self._taus[i]
+        #     volCap = self._capSigmas[i]
+        #     fwdIborVol = self._capletVols[i]
+        #     s += labelToString("%7.4f  %6.4f  %9.4f  %9.4f"
+        #                        % (t, tau, volCap*100.0, fwdIborVol*100.0))
 
         return s
 

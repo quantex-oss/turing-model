@@ -20,7 +20,7 @@ class TuringInflationSwap(object):
     notional amount. This period starts on the settlement date of the
     FRA and ends on the maturity date of the FRA. For example a 1x4 FRA
     relates to a Ibor starting in 1 month for a loan period ending in 4
-    months. Hence it links to 3-month Ibor rate. The amount received by a 
+    months. Hence it links to 3-month Ibor rate. The amount received by a
     payer of fixed rate at settlement is:
 
         acc(1,2) * (Ibor(1,2) - FRA RATE) / (1 + acc(0,1) x Ibor(0,1))
@@ -47,29 +47,29 @@ class TuringInflationSwap(object):
 
         print("DO NOT USE")
         raise TuringError("DO NOT USE")
-        
-        checkArgumentTypes(self.__init__, locals())
 
-        self._calendarType = calendarType
-        self._busDayAdjustType = busDayAdjustType
+        # checkArgumentTypes(self.__init__, locals())
 
-        if type(maturityDateOrTenor) == TuringDate:
-            maturityDate = maturityDateOrTenor
-        else:
-            maturityDate = startDate.addTenor(maturityDateOrTenor)
-            calendar = TuringCalendar(self._calendarType)
-            maturityDate = calendar.adjust(maturityDate,
-                                           self._busDayAdjustType)
+        # self._calendarType = calendarType
+        # self._busDayAdjustType = busDayAdjustType
 
-        if startDate > maturityDate:
-            raise TuringError("Settlement date after maturity date")
+        # if type(maturityDateOrTenor) == TuringDate:
+        #     maturityDate = maturityDateOrTenor
+        # else:
+        #     maturityDate = startDate.addTenor(maturityDateOrTenor)
+        #     calendar = TuringCalendar(self._calendarType)
+        #     maturityDate = calendar.adjust(maturityDate,
+        #                                    self._busDayAdjustType)
 
-        self._startDate = startDate
-        self._maturityDate = maturityDate
-        self._fraRate = fraRate
-        self._payFixedRate = payFixedRate
-        self._dayCountType = dayCountType
-        self._notional = notional
+        # if startDate > maturityDate:
+        #     raise TuringError("Settlement date after maturity date")
+
+        # self._startDate = startDate
+        # self._maturityDate = maturityDate
+        # self._fraRate = fraRate
+        # self._payFixedRate = payFixedRate
+        # self._dayCountType = dayCountType
+        # self._notional = notional
 
     ###########################################################################
 
