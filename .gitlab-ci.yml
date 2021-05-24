@@ -21,7 +21,7 @@ Sync_Latest_Models:
   tags:
     - turing-ide
 
-  sonar-analyze:
+sonar-analyze:
   stage: sonar
   image: hub.iquantex.com/base/sonar-scanner:4.2.0
   script:
