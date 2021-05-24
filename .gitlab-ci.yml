@@ -31,4 +31,4 @@ sonar-analyze:
   only:
     - develop
   tags:
-    - sigma-dev
+    - phx-dev
