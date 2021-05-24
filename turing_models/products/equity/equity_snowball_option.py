@@ -91,8 +91,7 @@ class TuringEquitySnowballOption:
 
         schedule = TuringSchedule(value_date,
                                   self._expiry_date,
-                                  self.obs_freq
-                                  )
+                                  self.obs_freq)
         scheduleDates = schedule._adjustedDates
 
         s_1 = np.empty(n+1)
@@ -336,19 +335,20 @@ class TuringEquitySnowballOption:
         v = self.value(value_date, stock_price, discount_curve,
                        dividend_curve, model)
 
-        vBumped = self.value(value_date, stock_price, discount_curve.bump(bump),
+        vBumped = self.value(value_date, stock_price,
+                             discount_curve.bump(bump),
                              dividend_curve, model)
 
         rho = (vBumped - v) / bump
         return rho
-    
+
     def rho_q(self,
-            value_date: TuringDate,
-            stock_price: float,
-            discount_curve: TuringDiscountCurve,
-            dividend_curve: TuringDiscountCurve,
-            model):
-        ''' Calculation of option rho by perturbing interest rate and
+              value_date: TuringDate,
+              stock_price: float,
+              discount_curve: TuringDiscountCurve,
+              dividend_curve: TuringDiscountCurve,
+              model):
+        ''' Calculation of option rho_q by perturbing interest rate and
         revaluation. '''
 
         v = self.value(value_date, stock_price, discount_curve,

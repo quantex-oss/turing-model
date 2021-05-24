@@ -105,11 +105,11 @@ class TuringEquityOption(object):
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
               model):
-        ''' Calculation of option theta by perturbing value date by one 
-        calendar date (not a business date) and then doing revaluation and 
+        ''' Calculation of option theta by perturbing value date by one
+        calendar date (not a business date) and then doing revaluation and
         calculating the difference divided by dt = 1 / gDaysInYear. '''
 
-        v = self.value(valueDate, stockPrice, 
+        v = self.value(valueDate, stockPrice,
                        discountCurve,
                        dividendCurve, model)
 
@@ -120,7 +120,7 @@ class TuringEquityOption(object):
         discountCurve._valuationDate = nextDate
         bump = (nextDate - valueDate) / gDaysInYear
 
-        vBumped = self.value(nextDate, stockPrice, 
+        vBumped = self.value(nextDate, stockPrice,
                              discountCurve,
                              dividendCurve, model)
 
@@ -150,12 +150,12 @@ class TuringEquityOption(object):
 
 ###############################################################################
 
-def rho_q(self,
-            valueDate: TuringDate,
-            stockPrice: float,
-            discountCurve: TuringDiscountCurve,
-            dividendCurve: TuringDiscountCurve,
-            model):
+    def rho_q(self,
+              valueDate: TuringDate,
+              stockPrice: float,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
+              model):
         ''' Calculation of option rho_q by perturbing interest rate and
         revaluation. '''
 

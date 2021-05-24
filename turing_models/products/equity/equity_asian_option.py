@@ -893,15 +893,15 @@ class TuringEquityAsianOption():
 
         rho = (vBumped - v) / bump
         return rho
-    
+
     def rho_q(self,
-            valueDate: TuringDate,
-            stockPrice: float,
-            discountCurve: TuringDiscountCurve,
-            dividendCurve: TuringDiscountCurve,
-            model,
-            method: TuringAsianOptionValuationMethods,
-            accruedAverage: float = None):
+              valueDate: TuringDate,
+              stockPrice: float,
+              discountCurve: TuringDiscountCurve,
+              dividendCurve: TuringDiscountCurve,
+              model,
+              method: TuringAsianOptionValuationMethods,
+              accruedAverage: float = None):
         ''' Calculation of option rho_q by perturbing interest rate and
         revaluation. '''
 
@@ -909,7 +909,8 @@ class TuringEquityAsianOption():
                        dividendCurve, model, method, accruedAverage)
 
         vBumped = self.value(valueDate, stockPrice, discountCurve,
-                             dividendCurve.bump(bump), model, method, accruedAverage)
+                             dividendCurve.bump(bump), model, method,
+                             accruedAverage)
 
         rho_q = (vBumped - v) / bump
         return rho_q
