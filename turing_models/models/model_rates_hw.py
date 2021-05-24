@@ -35,7 +35,7 @@ class TuringHWEuropeanCalcType(Enum):
 
 ###############################################################################
 
-  
+
 def optionExerciseTypesToInt(optionExerciseType):
 
     if optionExerciseType == TuringExerciseTypes.EUROPEAN:
@@ -190,7 +190,7 @@ def americanBondOption_Tree_Fast(texp,
     dt = _dt
     jmax = ceil(0.1835/(_a * dt))
     expiryStep = int(texp/dt + 0.50)
-    
+
     ###########################################################################
 
     # Want to add coupons before expiry to the grid so that we can value
@@ -282,7 +282,7 @@ def americanBondOption_Tree_Fast(texp,
                 bondPrice += cpn * faceAmount * zcb
 
         bondPrice += zcb * faceAmount
-        
+
         # The flow on this date has been added
         bondValues[expiryStep, kN] = bondPrice
 
@@ -298,7 +298,7 @@ def americanBondOption_Tree_Fast(texp,
         putOptionValues[expiryStep, kN] = putExercise
 
     m = expiryStep
-    
+
     if DEBUG:
         print("-----------------------------------------")
         print("EXP", _treeTimes[m], accrued[m], fullPrice, cleanPrice,
@@ -481,7 +481,7 @@ def bermudanSwaption_Tree_Fast(texp, tmat, strikePrice, faceAmount,
     payValues = np.zeros(shape=(numTimeSteps, numNodes))
     # The value of the option to enter into a receiver swap
     recValues = np.zeros(shape=(numTimeSteps, numNodes))
-    
+
     # Start with the value of the bond at maturity
     for k in range(0, numNodes):
         flow = 1.0 + fixedLegFlows[maturityStep]
@@ -565,8 +565,8 @@ def bermudanSwaption_Tree_Fast(texp, tmat, strikePrice, faceAmount,
             holdRec = recValues[m, kN]
 
             # The floating value is clean and so must be the fixed value
-            fixedLegValue = fixedLegValues[m, kN] - accrued[m]          
-            floatLegValue = floatLegValues[m]               
+            fixedLegValue = fixedLegValues[m, kN] - accrued[m]
+            floatLegValue = floatLegValues[m]
 
             payExercise = max(floatLegValue - fixedLegValue, 0.0)
             recExercise = max(fixedLegValue - floatLegValue, 0.0)
@@ -699,7 +699,7 @@ def callablePuttableBond_Tree_Fast(couponTimes, couponFlows,
             flow = treeFlows[i]
             t = _treeTimes[i]
             df = _uinterpolate(t, _dfTimes, _dfValues, interp)
-            
+
             if flow > gSmall:
                 pv = flow * df
                 px += pv
@@ -941,7 +941,7 @@ class TuringModelRatesHW():
         callValue = 0.0
         putValue = 0.0
 
-        # Adjust strike to handle 
+        # Adjust strike to handle
         for i in range(0, numCoupons):
 
             tcpn = cpnTimes[i]
@@ -1024,7 +1024,7 @@ class TuringModelRatesHW():
 #            print(texp)
 #            print(cpnTimes)
 #            print(cpnAmounts)
-            
+
             accrued = accruedInterpolator(texp, cpnTimes, cpnAmounts)
 
             pv = pv - accrued
@@ -1080,7 +1080,7 @@ class TuringModelRatesHW():
             q = self._Q[expiryStep, k]
             rt = self._rt[expiryStep, k]
 
-            zcb = P_Fast(texp, tmat, 
+            zcb = P_Fast(texp, tmat,
                          rt, dt, ptexp, ptdelta, ptmat,
                          self._sigma, self._a)
 
@@ -1093,7 +1093,7 @@ class TuringModelRatesHW():
 
 ###############################################################################
 
-    def bermudanSwaption(self, texp, tmat, strike, face,
+    def bermudanSwaption(self, texp, strike, face,
                          couponTimes, couponFlows, exerciseType):
         ''' Swaption that can be exercised on specific dates over the exercise
         period. Due to non-analytical bond price we need to extend tree out to
@@ -1125,17 +1125,17 @@ class TuringModelRatesHW():
 
 ###############################################################################
 
-    def bondOption(self, texp, strikePrice, faceAmount, 
+    def bondOption(self, texp, strikePrice, faceAmount,
                    couponTimes, couponFlows, exerciseType):
         ''' Value a bond option that can have European or American exercise.
-        This is done using a trinomial tree that we extend out to bond 
+        This is done using a trinomial tree that we extend out to bond
         maturity. For European bond options, Jamshidian's model is
         faster and is used instead i.e. not this function. '''
 
         exerciseTypeInt = optionExerciseTypesToInt(exerciseType)
 
         if exerciseTypeInt == 1:
-            
+
             if self._europeanCalcType == TuringHWEuropeanCalcType.JAMSHIDIAN:
 
                 v = self.europeanBondOptionJamshidian(texp,

@@ -1,7 +1,3 @@
-
-
-
-
 import numpy as np
 from enum import Enum
 
@@ -138,9 +134,9 @@ def _barrierPayAssetAtExpiryUpOut(s, H):
 class TuringFXOneTouchOption(TuringEquityOption):
     ''' A TuringFXOneTouchOption is an option in which the buyer receives one
     unit of currency if the FX rate touches a barrier at any time
-    before the option expiry date and zero otherwise. The single barrier 
-    payoff must define whether the option pays or cancels if the barrier is 
-    touched and also when the payment is made (at hit time or option expiry). 
+    before the option expiry date and zero otherwise. The single barrier
+    payoff must define whether the option pays or cancels if the barrier is
+    touched and also when the payment is made (at hit time or option expiry).
     All of these variants are members of the FinTouchOptionTypes type. '''
 
     def __init__(self,
@@ -391,7 +387,6 @@ class TuringFXOneTouchOption(TuringEquityOption):
         else:
             raise TuringError("Unknown option type.")
 
-        return v
 
 ###############################################################################
 
@@ -549,7 +544,6 @@ class TuringFXOneTouchOption(TuringEquityOption):
         else:
             raise TuringError("Unknown option type.")
 
-        return v
 
 ###############################################################################
 

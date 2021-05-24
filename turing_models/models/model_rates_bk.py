@@ -190,7 +190,7 @@ def bermudanSwaption_Tree_Fast(texp, tmat,
         floatpv = df_tree
         swaptionpv = (fixedpv/df_tree - 1.0) * df_tree
         print("PV:", fixedpv, floatpv, swaptionpv)
-    
+
         fixedpv = 0.0
         for n in range(0, numCoupons):
             tcpn = couponTimes[n]
@@ -204,7 +204,7 @@ def bermudanSwaption_Tree_Fast(texp, tmat,
         floatpv = df_tree
         swaptionpv = (fixedpv/df_tree - 1.0) * df_tree
         print("PV:", fixedpv, floatpv, swaptionpv)
-        
+
     ########################### REMOVE END ####################################
 
     ###########################################################################
@@ -254,7 +254,7 @@ def bermudanSwaption_Tree_Fast(texp, tmat,
         fixedLegValues[maturityStep, k] = flow * faceAmount
 
     N = jmax
-    
+
     # Now step back to today considering early exercise on coupon dates
     for m in range(maturityStep-1, -1, -1):
         nm = min(m, jmax)
@@ -331,8 +331,8 @@ def bermudanSwaption_Tree_Fast(texp, tmat,
             holdRec = recValues[m, kN]
 
             # The floating value is clean and so must be the fixed value
-            fixedLegValue = fixedLegValues[m, kN] - accrued[m]          
-            floatLegValue = floatLegValues[m]               
+            fixedLegValue = fixedLegValues[m, kN] - accrued[m]
+            floatLegValue = floatLegValues[m]
 
             payExercise = max(floatLegValue - fixedLegValue, 0.0)
             recExercise = max(fixedLegValue - floatLegValue, 0.0)
@@ -353,8 +353,8 @@ def bermudanSwaption_Tree_Fast(texp, tmat,
 
                 ## Need to define floating value on all grid dates
 
-                payValues[m, kN] = max(payExercise, holdPay)
-                recValues[m, kN] = max(recExercise, holdRec)
+                # payValues[m, kN] = max(payExercise, holdPay)
+                # recValues[m, kN] = max(recExercise, holdRec)
 
     return payValues[0, jmax], recValues[0, jmax]
 
@@ -393,7 +393,7 @@ def americanBondOption_Tree_Fast(texp, tmat,
     # Do not include first coupon as it is the previous coupon and is negative
     for i in range(1, numCoupons):
         tcpn = couponTimes[i]
-        
+
         if tcpn < 0.0:
             raise TuringError("Coupon times must be positive.")
 
@@ -493,7 +493,7 @@ def americanBondOption_Tree_Fast(texp, tmat,
             kN = k + jmax
             r = _rt[m, kN]
             df = np.exp(-r * _dt)
- 
+
             pu = _pu[kN]
             pm = _pm[kN]
             pd = _pd[kN]
@@ -579,7 +579,7 @@ def americanBondOption_Tree_Fast(texp, tmat,
         if DEBUG:
             print(m, _treeTimes[m], accrued[m], fullPrice, cleanPrice,
                   callExercise, putExercise)
-            
+
     return callOptionValues[0, jmax], putOptionValues[0, jmax]
 
 ###############################################################################
@@ -859,9 +859,9 @@ def buildTreeFast(a, sigma, treeTimes, numTimeSteps, discountFactors):
 
 class TuringModelRatesBK():
 
-    def __init__(self, 
-                 sigma: float, 
-                 a: float, 
+    def __init__(self,
+                 sigma: float,
+                 a: float,
                  numTimeSteps:int=100):
         ''' Constructs the Black Karasinski rate model. The speed of mean
         reversion a and volatility are passed in. The short rate process
@@ -917,7 +917,7 @@ class TuringModelRatesBK():
 
         self._dfTimes = dfTimes
         self._dfs = dfValues
-        
+
         self._Q, self._pu, self._pm, self._pd, self._rt, self._dt \
             = buildTreeFast(self._a, self._sigma,
                             treeTimes, self._numTimeSteps, dfTree)
@@ -958,12 +958,12 @@ class TuringModelRatesBK():
 
 ###############################################################################
 
-    def bermudanSwaption(self, texp, tmat, strikePrice, faceAmount,
+    def bermudanSwaption(self, texp, strikePrice, faceAmount,
                          couponTimes, couponFlows, exerciseType):
         ''' Swaption that can be exercised on specific dates over the exercise
         period. Due to non-analytical bond price we need to extend tree out to
         bond maturity and take into account cash flows through time. '''
-        
+
         exerciseTypeInt = optionExerciseTypesToInt(exerciseType)
 
         tmat = couponTimes[-1]

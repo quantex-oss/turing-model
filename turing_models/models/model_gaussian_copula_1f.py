@@ -212,8 +212,8 @@ def gaussApproxTrancheLoss(k1, k2, mu, sigma):
         d2 = (mu - k2) / sigma
 
         gaussApproxTrancheLoss = (mu - k1) * N(d1) - (mu - k2) * N(d2)
-        + sigma * np.exp(-0.5 * d1 * d1) * INVROOT2PI
-        - sigma * np.exp(-0.5 * d2 * d2) * INVROOT2PI
+        # + sigma * np.exp(-0.5 * d1 * d1) * INVROOT2PI
+        # - sigma * np.exp(-0.5 * d2 * d2) * INVROOT2PI
 
     return gaussApproxTrancheLoss
 

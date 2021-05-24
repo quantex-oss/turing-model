@@ -99,7 +99,6 @@ class TuringDiscountCurveNSS(TuringDiscountCurve):
         else:
             return np.array(zeroRates)
 
-        return zeroRates
 
 ###############################################################################
 

@@ -90,14 +90,14 @@ class TuringInflationSwapCurve(TuringDiscountCurve):
         The curve will assign a discount factor of 1.0 to the valuation date.
         '''
         raise TuringError("DO NOT USE")
-        
-        checkArgumentTypes(getattr(self, _funcName(), None), locals())
 
-        self._valuationDate = valuationDate
-        self._validateInputs(iborDeposits, iborFRAs, iborSwaps)
-        self._interpType = interpType
-        self._checkRefit = checkRefit
-        self._buildCurve()
+        # checkArgumentTypes(getattr(self, _funcName(), None), locals())
+
+        # self._valuationDate = valuationDate
+        # self._validateInputs(iborDeposits, iborFRAs, iborSwaps)
+        # self._interpType = interpType
+        # self._checkRefit = checkRefit
+        # self._buildCurve()
 
 ###############################################################################
 

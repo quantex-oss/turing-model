@@ -233,7 +233,6 @@ class TuringCDSBasket(object):
                              nToDefault,
                              issuerCurves,
                              betaVector,
-                             liborCurve,
                              numPoints=50):
         ''' Value default basket using 1 factor Gaussian copula and analytical
         approach which is only exact when all recovery rates are the same. '''

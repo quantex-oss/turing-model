@@ -11,7 +11,7 @@ from turing_models.utilities.global_variables import gSmall
 interp = TuringInterpTypes.FLAT_FWD_RATES.value
 
 ###############################################################################
-# TODO: PUT CALL PARITY IS NOT EXACTLY OBSERVED FOR BERMUDAN SWAPTIONS WHEN 
+# TODO: PUT CALL PARITY IS NOT EXACTLY OBSERVED FOR BERMUDAN SWAPTIONS WHEN
 #       VOL IS TURNED UP. SMALL EFFECT. $3 OUT OF $1m. SEE TESTFINBERMUDANSWAPTIONS
 ###############################################################################
 
@@ -207,8 +207,8 @@ def bermudanSwaption_Tree_Fast(texp, tmat,
             holdRec = recValues[m, k]
 
             # The floating value is clean and so must be the fixed value
-            fixedLegValue = fixedLegValues[m, k] - accrued[m]          
-            floatLegValue = floatLegValues[m]               
+            fixedLegValue = fixedLegValues[m, k] - accrued[m]
+            floatLegValue = floatLegValues[m]
 
             payExercise = max(floatLegValue - fixedLegValue, 0.0)
             recExercise = max(fixedLegValue - floatLegValue, 0.0)
@@ -229,8 +229,8 @@ def bermudanSwaption_Tree_Fast(texp, tmat,
 
                 ## Need to define floating value on all grid dates
 
-                payValues[m, k] = max(payExercise, holdPay)
-                recValues[m, k] = max(recExercise, holdRec)
+                # payValues[m, k] = max(payExercise, holdPay)
+                # recValues[m, k] = max(recExercise, holdRec)
 
     return payValues[0, 0], recValues[0, 0]
 
@@ -401,12 +401,12 @@ def americanBondOption_Tree_Fast(texp, tmat,
             holdCall = callOptionValues[m, k]
             holdPut = putOptionValues[m, k]
 
-            if m == expiryStep: 
+            if m == expiryStep:
 
                 callOptionValues[m, k] = max(callExercise, holdCall)
                 putOptionValues[m, k] = max(putExercise, holdPut)
 
-            elif exerciseTypeInt == 3 and m < expiryStep:  
+            elif exerciseTypeInt == 3 and m < expiryStep:
 
                 callOptionValues[m, k] = max(callExercise, holdCall)
                 putOptionValues[m, k] = max(putExercise, holdPut)
@@ -639,8 +639,8 @@ def buildTreeFast(sigma, treeTimes, numTimeSteps, discountFactors):
 
 class TuringModelRatesBDT():
 
-    def __init__(self, 
-                 sigma: float, 
+    def __init__(self,
+                 sigma: float,
                  numTimeSteps:int=100):
         ''' Constructs the Black-Derman-Toy rate model in the case when the
         volatility is assumed to be constant. The short rate process simplifies
@@ -715,7 +715,7 @@ class TuringModelRatesBDT():
         #######################################################################
 
         callValue, putValue \
-            = americanBondOption_Tree_Fast(texp, tmat, 
+            = americanBondOption_Tree_Fast(texp, tmat,
                                            strikePrice, faceAmount,
                                            couponTimes, couponFlows,
                                            exerciseTypeInt,
@@ -728,7 +728,7 @@ class TuringModelRatesBDT():
 
 ###############################################################################
 
-    def bermudanSwaption(self, texp, tmat, strike, faceAmount,
+    def bermudanSwaption(self, texp, strike, faceAmount,
                          couponTimes, couponFlows, exerciseType):
         ''' Swaption that can be exercised on specific dates over the exercise
         period. Due to non-analytical bond price we need to extend tree out to

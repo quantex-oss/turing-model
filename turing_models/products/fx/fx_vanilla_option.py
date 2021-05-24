@@ -25,7 +25,7 @@ from turing_models.utilities.mathematics import N
 
 
 ###############################################################################
-# TODO: Refactor code to use FinBlackScholesAnalytic 
+# TODO: Refactor code to use FinBlackScholesAnalytic
 ###############################################################################
 
 def f(volatility, *args):
@@ -80,7 +80,7 @@ def fvega(volatility, *args):
 @njit(fastmath=True, cache=True)
 def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
     ''' Calculation of the FX Option delta. Used in the determination of
-    the volatility surface. Avoids discount curve interpolation so it 
+    the volatility surface. Avoids discount curve interpolation so it
     should be slightly faster than the full calculation of delta. '''
 
     pips_spot_delta = bsDelta(s, t, k, rd, rf, vol, optionTypeValue)
@@ -102,7 +102,7 @@ def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
         raise TuringError("Unknown TuringFXDeltaMethod")
 
 ###############################################################################
-    
+
 # def g(K, *args):
 #     ''' This is the objective function used in the determination of the FX
 #     Option implied strike which is computed in the class below. '''
@@ -260,11 +260,11 @@ class TuringFXVanillaOption():
             raise TuringError("Time to expiry must be positive.")
 
         tdel = np.maximum(tdel, 1e-10)
-        
-        # TODO RESOLVE TDEL versus TEXP 
+
+        # TODO RESOLVE TDEL versus TEXP
         domDF = domDiscountCurve._df(tdel)
         forDF = forDiscountCurve._df(tdel)
-            
+
         rd = -np.log(domDF) / tdel
         rf = -np.log(forDF) / tdel
 
@@ -323,7 +323,6 @@ class TuringFXVanillaOption():
         else:
             raise TuringError("Invalid notional currency.")
 
-        vdf = vdf
         pips_dom = vdf
         pips_for = vdf / (spotFXRate * self._strikeFXRate)
 
@@ -447,7 +446,7 @@ class TuringFXVanillaOption():
                   rf,
                   vol):
         ''' Calculation of the FX Option delta. Used in the determination of
-        the volatility surface. Avoids discount curve interpolation so it 
+        the volatility surface. Avoids discount curve interpolation so it
         should be slightly faster than the full calculation of delta. '''
 
 #        spotDate = valueDate.addWeekDays(self._spotDays)

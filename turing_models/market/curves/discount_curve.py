@@ -183,7 +183,6 @@ class TuringDiscountCurve():
         else:
             return np.array(zeroRates)
 
-        return zeroRates
 
 ###############################################################################
 
@@ -348,7 +347,6 @@ class TuringDiscountCurve():
         else:
             return np.array(fwd)
 
-        return fwd
 
 ###############################################################################
 
