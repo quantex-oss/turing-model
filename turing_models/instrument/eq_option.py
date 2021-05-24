@@ -40,7 +40,6 @@ class OptionBase:
     def option(self, *args, **kwgs):
         return getattr(self, f'option_{getattr(self, "option_name")[0]}')(*args, **kwgs)
 
-    @property
     def params(self, *args, **kwgs):
         return getattr(self, f'params_{getattr(self, "option_name")[1]}')(*args, **kwgs)
 
@@ -225,28 +224,28 @@ class EqOption(OptionBase):
 
     @compute
     def price(self) -> float:
-        return self.option.value(*self.params)
+        return self.option().value(*self.params())
 
     @compute
     def delta(self) -> float:
-        return self.option.delta(*self.params)
+        return self.option().delta(*self.params())
 
     @compute
     def gamma(self) -> float:
-        return self.option.gamma(*self.params)
+        return self.option().gamma(*self.params())
 
     @compute
     def vega(self) -> float:
-        return self.option.vega(*self.params)
+        return self.option().vega(*self.params())
 
     @compute
     def theta(self) -> float:
-        return self.option.theta(*self.params)
+        return self.option().theta(*self.params())
 
     @compute
     def rho(self) -> float:
-        return self.option.rho(*self.params)
+        return self.option().rho(*self.params())
 
     @compute
     def rho_q(self) -> float:
-        return self.option.rho_q(*self.params)
+        return self.option().rho_q(*self.params())
