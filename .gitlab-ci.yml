@@ -3,6 +3,26 @@ stages:
   - sonar
   - deploy
 
+Sonar-Analyze:
+  stage: sonar
+  image:
+    name: hub.iquantex.com/base/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    SONAR_HOST_URL: "https://sonar.bj.iquantex.com"
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+    GIT_DEPTH: "0"
+  cache:
+    key: "${CI_PROJECT_NAME}-sonar"
+    paths:
+      - .sonar/cache
+  script:
+    - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.sources=./turing_models
+  only:
+    - master
+    - develop
+  tags:
+    - sigma-dev
 
 Sync_Latest_Models:
   stage: deploy
@@ -22,24 +42,3 @@ Sync_Latest_Models:
     - master
   tags:
     - turing-ide
-
-
-sonar-analyze:
-  stage: sonar
-  image:
-    name: hub.iquantex.com/base/sonar-scanner-cli:latest
-    entrypoint: [""]
-  variables:
-    SONAR_HOST_URL: "https://sonar.bj.iquantex.com" # Defines the sonar server
-    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
-    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
-  cache:
-    key: "${CI_PROJECT_NAME}-sonar"
-    paths:
-      - .sonar/cache
-  script:
-    - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.sources=./turing_models  # 自行修改需要分析的源代码目录
-  only:
-    - master
-  tags:
-    - sigma-dev
