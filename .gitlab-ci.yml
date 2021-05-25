@@ -24,23 +24,21 @@ Sync_Latest_Models:
     - turing-ide
 
 
-code_unit_test:      # 定义一个任务,名字可以任意,但不能使用内置关键字.
-  stage: test        # 表明是属于哪一阶段的任务，要与开头的stages一一对应
-  script:            # 执行的动作,这里指定动作为执行命令
-    - npm run test   # 执行的具体命令,可以添加多行,按顺序从上到下执行每一行
-    - mvn test
-  only:
-    - develop         # 分支或者tag选择,这里表示这个任务阶段仅仅对master分支生效
-    - /^feat.*/      # 也可以使用正则表达式匹配
-  tags:
-    - phx-dev             # 编译机选择标签.
-
 sonar-analyze:
-  stage: sonar
-  image: hub.iquantex.com/base/sonar-scanner:4.2.0
+  image:
+    name: hub.iquantex.com/base/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    SONAR_HOST_URL: "https://sonar.bj.iquantex.com" # Defines the sonar server
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_PROJECT_NAME}-sonar"
+    paths:
+      - .sonar/cache
   script:
-    - sonar-scanner -Dsonar.host.url=https://sonar.bj.iquantex.com -Dsonar.qualitygate.wait=false -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.sources=./turing_models  # 自行修改需要分析的源代码目录
+    - sonar-scanner -Dsonar.qualitygate.wait=true -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.sources=./turing_models  # 自行修改需要分析的源代码目录
   only:
-    - develop
+    - master
   tags:
-    - phx-dev
+    - sigma-dev
