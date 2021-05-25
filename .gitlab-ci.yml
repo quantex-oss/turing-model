@@ -25,6 +25,7 @@ Sync_Latest_Models:
 
 
 sonar-analyze:
+  stage: sonar
   image:
     name: hub.iquantex.com/base/sonar-scanner-cli:latest
     entrypoint: [""]
