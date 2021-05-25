@@ -1,4 +1,5 @@
 stages:
+  - test
   - sonar
   - deploy
 
@@ -21,6 +22,18 @@ Sync_Latest_Models:
     - master
   tags:
     - turing-ide
+
+
+code_unit_test:      # 定义一个任务,名字可以任意,但不能使用内置关键字.
+  stage: test        # 表明是属于哪一阶段的任务，要与开头的stages一一对应
+  script:            # 执行的动作,这里指定动作为执行命令
+    - npm run test   # 执行的具体命令,可以添加多行,按顺序从上到下执行每一行
+    - mvn test
+  only:
+    - develop         # 分支或者tag选择,这里表示这个任务阶段仅仅对master分支生效
+    - /^feat.*/      # 也可以使用正则表达式匹配
+  tags:
+    - phx-dev             # 编译机选择标签.
 
 sonar-analyze:
   stage: sonar
