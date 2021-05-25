@@ -17,7 +17,7 @@ Sonar-Analyze:
     paths:
       - .sonar/cache
   script:
-    - sonar-scanner -Dsonar.host.url=https://sonar.bj.iquantex.com -Dsonar.qualitygate.wait=true -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.sources=./turing_models
+    - sonar-scanner -Dsonar.host.url=https://sonar.bj.iquantex.com -Dsonar.qualitygate.wait=false -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.sources=./turing_models
   only:
     - master
     - develop
