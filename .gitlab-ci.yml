@@ -26,7 +26,7 @@ sonar-analyze:
   stage: sonar
   image: hub.iquantex.com/base/sonar-scanner:4.2.0
   script:
-    - sonar-scanner -Dsonar.host.url=https://sonar.bj.iquantex.com -Dsonar.qualitygate.wait=false -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.sources=./  # 自行修改需要分析的源代码目录
+    - sonar-scanner -Dsonar.host.url=https://sonar.bj.iquantex.com -Dsonar.qualitygate.wait=false -Dsonar.projectKey=${CI_PROJECT_NAME} -Dsonar.sources=./turing_models  # 自行修改需要分析的源代码目录
   only:
     - develop
   tags:
