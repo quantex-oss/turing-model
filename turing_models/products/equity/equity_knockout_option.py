@@ -115,7 +115,7 @@ class TuringEquityKnockoutOption(TuringEquityOption):
         Sall = process.getProcess(process_type, texp, model_params, num_ann_obs,
                                   num_paths, seed)
 
-        (num_paths, num_time_steps) = Sall.shape
+        (num_paths, _) = Sall.shape
 
         if option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL or \
            option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT:
