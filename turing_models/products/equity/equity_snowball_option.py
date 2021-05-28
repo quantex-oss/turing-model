@@ -1,16 +1,16 @@
 import numpy as np
 
-from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.error import TuringError
+from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
+from turing_models.utilities.global_variables import gDaysInYear
+from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes, TuringKnockInTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.models.model import TuringModel
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.utilities.schedule import TuringSchedule
+from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
+     TuringGBMNumericalScheme, TuringHestonNumericalScheme
 
 
 bump = 1e-4
@@ -25,12 +25,13 @@ class TuringEquitySnowballOption:
                  notional: float,
                  coupon_rate: float,
                  option_type: TuringOptionTypes,
+                 coupon_annualized_flag: bool = True,
                  knock_in_type: TuringKnockInTypes = TuringKnockInTypes.RETURN,
                  knock_in_strike1: float = None,
                  knock_in_strike2: float = None,
-                 observation_frequency: TuringFrequencyTypes = TuringFrequencyTypes.MONTHLY):
+                 participation_rate: float = 1.0):
         """用到期日期、敲出价格、敲入价格、名义本金、票面利率、期权类型、
-        敲入类型、敲入执行价1、敲入执行价2和敲出观察频率创建一个雪球期权对象"""
+        敲入类型、敲入执行价1、敲入执行价2、敲出观察频率和参与率创建一个雪球期权对象"""
 
         checkArgumentTypes(self.__init__, locals())
 
@@ -46,15 +47,16 @@ class TuringEquitySnowballOption:
             raise TuringError("Mismatched strike inputs and knock_in type!")
 
         self._expiry_date = expiry_date
-        self.k1 = knock_out_price
-        self.k2 = knock_in_price
-        self.obs_freq = observation_frequency
-        self.notional = notional
-        self.coupon_rate = coupon_rate
+        self._k1 = knock_out_price
+        self._k2 = knock_in_price
+        self._notional = notional
+        self._coupon_rate = coupon_rate
         self._option_type = option_type
+        self._flag = coupon_annualized_flag
         self._knock_in_type = knock_in_type
-        self.sk1 = knock_in_strike1
-        self.sk2 = knock_in_strike2
+        self._sk1 = knock_in_strike1
+        self._sk2 = knock_in_strike2
+        self._participation_rate = participation_rate
 
     def value(self,
               value_date: TuringDate,
@@ -62,8 +64,10 @@ class TuringEquitySnowballOption:
               discount_curve: TuringDiscountCurve,
               dividend_curve: TuringDiscountCurve,
               model: TuringModel,
+              process_type: TuringProcessTypes = TuringProcessTypes.GBM,
+              scheme: (TuringGBMNumericalScheme, TuringHestonNumericalScheme) = TuringGBMNumericalScheme.ANTITHETIC,
+              num_ann_obs: int = 252,
               num_paths: int = 10000,
-              numAnnObs: int = 261,
               seed: int = 4242):
         """用蒙特卡洛方法对雪球期权进行估值计算"""
 
@@ -77,157 +81,116 @@ class TuringEquitySnowballOption:
 
         vol = model._volatility
 
-        np.random.seed(seed)
-        mu = r - q
-        v2 = vol**2
-        n = int(texp * numAnnObs)
-        dt = 1/numAnnObs
         s0 = stock_price
-        date_list = []
-        date_list.append(value_date)
-        for i in range(1, n + 1):
-            dateinc = value_date.addWeekDays(i)
-            date_list.append(dateinc)
 
-        schedule = TuringSchedule(value_date,
-                                  self._expiry_date,
-                                  self.obs_freq)
-        scheduleDates = schedule._adjustedDates
+        model_params = (s0, r-q, vol, scheme)
 
-        s_1 = np.empty(n+1)
-        s_2 = np.empty(n+1)
-        s_1[0] = s_2[0] = s0
-        s_1_pd = np.empty(num_paths)
-        s_2_pd = np.empty(num_paths)
+        process = TuringProcessSimulator()
 
-        for j in range(0, num_paths):
-            g = np.random.normal(0.0, 1.0, size=n)
-            syb_out_1 = 0
-            syb_out_2 = 0
-            syb_in_1 = 0
-            syb_in_2 = 0
+        # Get full set of paths
+        Sall = process.getProcess(process_type, texp, model_params,
+                                  num_ann_obs, num_paths, seed)
 
-            for ip in range(1, n+1):
-                s_1[ip] = s_1[ip-1] * np.exp((mu - v2 / 2.0) *
-                                             dt + g[ip-1] * np.sqrt(dt) *
-                                             vol)
-                if self._option_type == TuringOptionTypes.SNOWBALL_CALL:
-                    if s_1[ip] < self.k2:
-                        syb_in_1 = 1
+        (num_paths, num_time_steps) = Sall.shape
 
-                    if (date_list[ip] in scheduleDates and
-                            s_1[ip] >= self.k1):
-                        syb_out_1 = 1
-                        payoff_discounted = (self.notional * self.coupon_rate * (date_list[ip] - value_date) / gDaysInYear) * \
-                            np.exp(-r * (date_list[ip] - value_date) / gDaysInYear)
-                        s_1_pd[j] = payoff_discounted
-                        break
+        out_call_sign = [False] * num_paths
+        out_call_index = [False] * num_paths
+        in_call_sign = [False] * num_paths
+        out_put_sign = [False] * num_paths
+        out_put_index = [False] * num_paths
+        in_put_sign = [False] * num_paths
 
-                    if ip == n and syb_out_1 == 0 and syb_in_1 == 0:
-                        payoff_discounted = (self.notional * self.coupon_rate * texp) * \
-                            np.exp(-r * texp)
-                        s_1_pd[j] = payoff_discounted
-                    elif ip == n and syb_out_1 == 0 and syb_in_1 == 1:
-                        if self._knock_in_type == TuringKnockInTypes.RETURN:
-                            payoff_discounted = -self.notional * (1 - s_1[ip] / s0) * \
-                                np.exp(-r * texp)
-                        elif self._knock_in_type == TuringKnockInTypes.VANILLA:
-                            payoff_discounted = -self.notional * max(self.sk1 - s_1[ip] / s0, 0) * \
-                                np.exp(-r * texp)
-                        elif self._knock_in_type == TuringKnockInTypes.SPREADS:
-                            payoff_discounted = -self.notional * max(self.sk1 - max(s_1[ip] / s0, self.sk2), 0) * \
-                                texp * np.exp(-r * texp)
-                        s_1_pd[j] = payoff_discounted
+        # 相邻敲出观察日之间的交易日数量
+        num_bus_days = int(num_ann_obs / 12)
 
-                elif self._option_type == TuringOptionTypes.SNOWBALL_PUT:
-                    if s_1[ip] > self.k2:
-                        syb_in_1 = 1
+        # 生成一个标识索引的列表
+        slice_length = (self._expiry_date._y - value_date._y) * 12 + \
+                       (self._expiry_date._m - value_date._m) + \
+                       (self._expiry_date._d > value_date._d)
+        index_list = list(range(num_time_steps))[::-num_bus_days][:slice_length][::-1]
 
-                    if (date_list[ip] in scheduleDates and
-                            s_1[ip] <= self.k1):
-                        syb_out_1 = 1
-                        payoff_discounted = (self.notional * self.coupon_rate * (date_list[ip] - value_date) / gDaysInYear) * \
-                            np.exp(-r * (date_list[ip] - value_date) / gDaysInYear)
-                        s_1_pd[j] = payoff_discounted
-                        break
+        if self._option_type == TuringOptionTypes.SNOWBALL_CALL:
+            for p in range(0, num_paths):
+                out_call_sign[p] = np.any(Sall[p][::-num_bus_days][:slice_length] >= self._k1)
 
-                    if ip == n and syb_out_1 == 0 and syb_in_1 == 0:
-                        payoff_discounted = (self.notional * self.coupon_rate * texp) * \
-                            np.exp(-r * texp)
-                        s_1_pd[j] = payoff_discounted
-                    elif ip == n and syb_out_1 == 0 and syb_in_1 == 1:
-                        if self._knock_in_type == TuringKnockInTypes.RETURN:
-                            payoff_discounted = -self.notional * (s_1[ip] / s0 - 1) * \
-                                np.exp(-r * texp)
-                        elif self._knock_in_type == TuringKnockInTypes.VANILLA:
-                            payoff_discounted = -self.notional * max(s_1[ip] / s0 - self.sk1, 0) * \
-                                np.exp(-r * texp)
-                        elif self._knock_in_type == TuringKnockInTypes.SPREADS:
-                            payoff_discounted = -self.notional * max(min(s_1[ip] / s0, self.sk2) - self.sk1, 0) * \
-                                texp * np.exp(-r * texp)
-                        s_1_pd[j] = payoff_discounted
+                if out_call_sign[p]:
+                    for i in index_list:
+                        if Sall[p][i] >= self._k1:
+                            out_call_index[p] = i
+                            break
 
-            for ip in range(1, n+1):
-                s_2[ip] = s_2[ip-1] * np.exp((mu - v2 / 2.0) *
-                                             dt - g[ip-1] * np.sqrt(dt) *
-                                             vol)
-                if self._option_type == TuringOptionTypes.SNOWBALL_CALL:
-                    if s_2[ip] < self.k2:
-                        syb_in_2 = 1
+                in_call_sign[p] = np.any(Sall[p] < self._k2)
 
-                    if (date_list[ip] in scheduleDates and
-                            s_2[ip] >= self.k1):
-                        syb_out_2 = 1
-                        payoff_discounted = (self.notional * self.coupon_rate * (date_list[ip] - value_date) / gDaysInYear) * \
-                            np.exp(-r * (date_list[ip] - value_date) / gDaysInYear)
-                        s_2_pd[j] = payoff_discounted
-                        break
+        elif self._option_type == TuringOptionTypes.SNOWBALL_PUT:
+            for p in range(0, num_paths):
+                out_put_sign[p] = np.any(Sall[p][::-num_bus_days][:slice_length] <= self._k1)
 
-                    if ip == n and syb_out_2 == 0 and syb_in_2 == 0:
-                        payoff_discounted = (self.notional * self.coupon_rate * texp) * \
-                            np.exp(-r * texp)
-                        s_2_pd[j] = payoff_discounted
-                    elif ip == n and syb_out_2 == 0 and syb_in_2 == 1:
-                        if self._knock_in_type == TuringKnockInTypes.RETURN:
-                            payoff_discounted = -self.notional * (1 - s_2[ip] / s0) * \
-                                np.exp(-r * texp)
-                        elif self._knock_in_type == TuringKnockInTypes.VANILLA:
-                            payoff_discounted = -self.notional * max(self.sk1 - s_2[ip] / s0, 0) * \
-                                np.exp(-r * texp)
-                        elif self._knock_in_type == TuringKnockInTypes.SPREADS:
-                            payoff_discounted = -self.notional * max(self.sk1 - max(s_2[ip] / s0, self.sk2), 0) * \
-                                texp * np.exp(-r * texp)
-                        s_2_pd[j] = payoff_discounted
+                if out_put_sign[p]:
+                    for i in index_list:
+                        if Sall[p][i] <= self._k1:
+                            out_put_index[p] = i
+                            break
 
-                elif self._option_type == TuringOptionTypes.SNOWBALL_PUT:
-                    if s_2[ip] > self.k2:
-                        syb_in_2 = 1
+                in_put_sign[p] = np.any(Sall[p] > self._k2)
 
-                    if (date_list[ip] in scheduleDates and
-                            s_2[ip] <= self.k1):
-                        syb_out_2 = 1
-                        payoff_discounted = (self.notional * self.coupon_rate *  (date_list[ip] - value_date)  / gDaysInYear) * \
-                            np.exp(-r * (date_list[ip] - value_date)  / gDaysInYear)
-                        s_2_pd[j] = payoff_discounted
-                        break
+        ones = np.ones(num_paths)
+        # list转成ndarray
+        out_call_sign = np.array(out_call_sign)
+        not_out_call_sign = ones - out_call_sign
+        out_call_index = np.array(out_call_index)
+        in_call_sign = np.array(in_call_sign)
+        not_in_call_sign = ones - in_call_sign
+        out_put_sign = np.array(out_put_sign)
+        not_out_put_sign = ones - out_put_sign
+        out_put_index = np.array(out_put_index)
+        in_put_sign = np.array(in_put_sign)
+        not_in_put_sign = ones - in_put_sign
 
-                    if ip == n and syb_out_2 == 0 and syb_in_2 == 0:
-                        payoff_discounted = (self.notional * self.coupon_rate * texp) * \
-                            np.exp(-r * texp)
-                        s_2_pd[j] = payoff_discounted
-                    elif ip == n and syb_out_2 == 0 and syb_in_2 == 1:
-                        if self._knock_in_type == TuringKnockInTypes.RETURN:
-                            payoff_discounted = -self.notional * (s_2[ip] / s0 - 1) * \
-                                np.exp(-r * texp)
-                        elif self._knock_in_type == TuringKnockInTypes.VANILLA:
-                            payoff_discounted = -self.notional * max(s_2[ip] / s0 - self.sk1, 0) * \
-                                np.exp(-r * texp)
-                        elif self._knock_in_type == TuringKnockInTypes.SPREADS:
-                            payoff_discounted = -self.notional * max(min(s_2[ip] / s0, self.sk2) - self.sk1, 0) * \
-                                texp * np.exp(-r * texp)
-                        s_2_pd[j] = payoff_discounted
+        if self._option_type == TuringOptionTypes.SNOWBALL_CALL:
 
-        return 0.5 * np.mean(s_1_pd + s_2_pd)
+            payoff = out_call_sign * ((self._notional * self._coupon_rate * (out_call_index / num_ann_obs)**self._flag) *
+                     np.exp(-r * out_call_index / num_ann_obs)) + not_out_call_sign * not_in_call_sign * \
+                     ((self._notional * self._coupon_rate * texp**self._flag) * np.exp(-r * texp))
+
+            if self._knock_in_type == TuringKnockInTypes.RETURN:
+                payoff += not_out_call_sign * in_call_sign * \
+                          (-self._notional * (1 - Sall[:, -1] / s0) *
+                           self._participation_rate * np.exp(-r * texp))
+
+            elif self._knock_in_type == TuringKnockInTypes.VANILLA:
+                payoff += not_out_call_sign * in_call_sign * \
+                          (-self._notional * np.maximum(self._sk1 - Sall[:, -1] / s0, 0) * \
+                           self._participation_rate * texp**self._flag * np.exp(-r * texp))
+
+            elif self._knock_in_type == TuringKnockInTypes.SPREADS:
+                payoff += not_out_call_sign * in_call_sign * \
+                          (-self._notional * np.maximum(self._sk1 - np.maximum(Sall[:, -1] / s0, self._sk2), 0) * \
+                           self._participation_rate * texp**self._flag * np.exp(-r * texp))
+
+        elif self._option_type == TuringOptionTypes.SNOWBALL_PUT:
+
+            payoff = out_put_sign * ((self._notional * self._coupon_rate * (out_put_index / num_ann_obs)**self._flag) *
+                     np.exp(-r * out_put_index / num_ann_obs)) + not_out_put_sign * not_in_put_sign * \
+                     ((self._notional * self._coupon_rate * texp**self._flag) * np.exp(-r * texp))
+
+            if self._knock_in_type == TuringKnockInTypes.RETURN:
+                payoff += not_out_put_sign * in_put_sign * \
+                          (-self._notional * (Sall[:, -1] / s0 - 1) * \
+                           self._participation_rate * np.exp(-r * texp))
+
+            elif self._knock_in_type == TuringKnockInTypes.VANILLA:
+                payoff += not_out_put_sign * in_put_sign * \
+                          (-self._notional * np.maximum(Sall[:, -1] / s0 - self._sk1, 0) * \
+                           self._participation_rate * texp**self._flag * np.exp(-r * texp))
+
+            elif self._knock_in_type == TuringKnockInTypes.SPREADS:
+                payoff += not_out_put_sign * in_put_sign * \
+                          (-self._notional * np.maximum(np.minimum(Sall[:, -1] / s0, self._sk2) - self._sk1, 0) * \
+                           self._participation_rate * texp**self._flag * np.exp(-r * texp))
+
+        v = payoff.mean()
+
+        return v
 
     def delta(self,
               value_date: TuringDate,

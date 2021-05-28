@@ -34,9 +34,9 @@ class TuringEquityKnockoutOption(TuringEquityOption):
                  knock_out_level: float,
                  coupon_rate: float,
                  coupon_annualized_flag: bool = True,
-                 num_observations_per_year: int = 252,
                  notional: float = 1.0,
-                 participation_rate: float = 1.0):
+                 participation_rate: float = 1.0,
+                 num_observations_per_year: int = 252):
         """ Create the TuringEquityKnockoutOption by specifying the expiry date,
         strike price, option type, knockout level, coupon rate, coupon annualized flag,
         the number of observations per year, the notional and participation rate. """
@@ -52,9 +52,9 @@ class TuringEquityKnockoutOption(TuringEquityOption):
         self._knockout_level = knock_out_level
         self._coupon_rate = coupon_rate
         self._coupon_annualized_flag = coupon_annualized_flag
-        self._num_observations_per_year = num_observations_per_year
         self._notional = notional
         self._participation_rate = participation_rate
+        self._num_observations_per_year = num_observations_per_year
 
 ###############################################################################
 

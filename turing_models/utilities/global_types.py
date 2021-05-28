@@ -25,6 +25,7 @@ class TuringOptionTypes(Enum):
     COMPOUND_PUT = 10
     SNOWBALL_CALL = 11
     SNOWBALL_PUT = 12
+    KNOCKOUT = 13
 
 ###############################################################################
 
