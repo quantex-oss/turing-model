@@ -3,6 +3,7 @@ from fundamental import PricingContext
 from turing_models.utilities.global_types import TuringOptionTypes, TuringKnockInTypes
 from turing_models.instrument.eq_option import EqOption
 from turing_models.utilities.turing_date import TuringDate
+from turing_models.products.equity import TuringEquityKnockoutTypes
 
 
 european_option = EqOption(option_type=TuringOptionTypes.EUROPEAN_CALL,
@@ -49,11 +50,27 @@ snowball_option = EqOption(option_type=TuringOptionTypes.SNOWBALL_CALL,
                            interest_rate=0.02,
                            dividend_yield=0)
 
+knockout_option = EqOption(option_type=TuringOptionTypes.KNOCKOUT,
+                           knock_type=TuringEquityKnockoutTypes.UP_AND_OUT_CALL,
+                           expiration_date=TuringDate(12, 2, 2021),
+                           strike_price=90,
+                           participation_rate=1.0,
+                           knock_out_price=120,
+                           notional=1000000,
+                           coupon_rate=0.2,
+                           coupon_annualized_flag=True,
+                           value_date=TuringDate(12, 2, 2020),
+                           stock_price=100,
+                           volatility=0.1,
+                           interest_rate=0.02,
+                           dividend_yield=0)
+
 
 print_result(european_option)
 print_result(american_option)
 print_result(asian_option)
 print_result(snowball_option)
+print_result(knockout_option)
 
 
 with PricingContext(interest_rate=0.04):
@@ -61,6 +78,7 @@ with PricingContext(interest_rate=0.04):
     print_result(american_option)
     print_result(asian_option)
     print_result(snowball_option)
+    print_result(knockout_option)
 
 
 with PricingContext(interest_rate=0.04):
@@ -68,6 +86,7 @@ with PricingContext(interest_rate=0.04):
     print_result(american_option)
     print_result(asian_option)
     print_result(snowball_option)
+    print_result(knockout_option)
 
 
 with PricingContext(interest_rate=0.06):
@@ -75,3 +94,4 @@ with PricingContext(interest_rate=0.06):
     print_result(american_option)
     print_result(asian_option)
     print_result(snowball_option)
+    print_result(knockout_option)
