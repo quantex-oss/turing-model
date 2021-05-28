@@ -8,7 +8,7 @@ from turing_models.products.bonds.bond import TuringBond
 
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
 from enum import Enum
 import numpy as np

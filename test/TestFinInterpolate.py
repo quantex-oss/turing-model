@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.append("..")
 
-from turing_models.market.curves.interpolator import TuringInterpolator, TuringInterpTypes
+from fundamental.market.curves.interpolator import TuringInterpolator, TuringInterpTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

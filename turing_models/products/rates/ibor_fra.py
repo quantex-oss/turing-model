@@ -5,7 +5,7 @@ from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
 ###############################################################################
 

@@ -3,7 +3,7 @@ from numba import njit, float64, int64
 
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.mathematics import accruedInterpolator
-from turing_models.market.curves.interpolator import TuringInterpTypes, _uinterpolate
+from fundamental.market.curves.interpolator import TuringInterpTypes, _uinterpolate
 from turing_models.utilities.helper_functions import labelToString
 from turing_models.utilities.global_types import TuringExerciseTypes
 from turing_models.utilities.global_variables import gSmall

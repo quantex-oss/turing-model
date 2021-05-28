@@ -12,7 +12,7 @@ from turing_models.products.rates.ibor_swap import TuringIborSwap
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.products.bonds.bond import TuringBond
 from turing_models.products.bonds.bond_embedded_option import TuringBondEmbeddedOption
 from turing_models.utilities.global_types import TuringSwapTypes

@@ -10,7 +10,7 @@ from fundamental.base import Context
 from turing_models.instrument.common import Currency, \
     OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, \
     KnockType
-from turing_models.market.curves import TuringDiscountCurveFlat
+from fundamental.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
     TuringEquityVanillaOption, TuringEquityAmericanOption, \

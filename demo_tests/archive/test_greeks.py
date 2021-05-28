@@ -5,7 +5,7 @@ from turing_models.products.equity import TuringOptionTypes, \
      TuringEquityVanillaOption, TuringEquityAmericanOption, \
      TuringEquityAsianOption, TuringAsianOptionValuationMethods
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.market.curves import TuringDiscountCurveFlat
+from fundamental.market.curves import TuringDiscountCurveFlat
 from turing_models.utilities.turing_date import TuringDate
 
 value_date = TuringDate(y=2021, m=4, d=25)

@@ -33,7 +33,7 @@ from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.utilities.global_types import TuringCapFloorTypes
 
-from turing_models.market.volatility.ibor_cap_vol_curve import TuringIborCapVolCurve
+from fundamental.market.volatility.ibor_cap_vol_curve import TuringIborCapVolCurve
 
 ###############################################################################
 

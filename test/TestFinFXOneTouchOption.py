@@ -3,7 +3,7 @@ sys.path.append("..")
 
 from turing_models.products.equity.equity_one_touch_option import TuringEquityOneTouchOption
 from turing_models.products.equity.equity_one_touch_option import TuringTouchOptionPayoffTypes
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.turing_date import TuringDate
 

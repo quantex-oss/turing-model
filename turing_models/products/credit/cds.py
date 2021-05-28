@@ -12,7 +12,7 @@ from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTy
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.helper_functions import labelToString, tableToString
-from turing_models.market.curves.interpolator import TuringInterpTypes, _uinterpolate
+from fundamental.market.curves.interpolator import TuringInterpTypes, _uinterpolate
 
 from turing_models.utilities.helper_functions import checkArgumentTypes
 

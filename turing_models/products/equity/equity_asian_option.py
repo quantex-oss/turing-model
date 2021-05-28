@@ -11,7 +11,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes, labelToString
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from fundamental.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 
 from turing_models.utilities.mathematics import N

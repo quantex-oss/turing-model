@@ -6,7 +6,7 @@ sys.path.append("..")
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.products.fx.fx_float_lookback_option import TuringFXFloatLookbackOption
 from turing_models.products.fx.fx_fixed_lookback_option import TuringFXFixedLookbackOption
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

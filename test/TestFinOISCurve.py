@@ -15,7 +15,7 @@ from turing_models.products.rates.ois import TuringOIS
 from turing_models.products.rates.ois_curve import TuringOISCurve
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
-from turing_models.market.curves.interpolator import TuringInterpTypes
+from fundamental.market.curves.interpolator import TuringInterpTypes
 from turing_models.utilities.global_types import TuringSwapTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

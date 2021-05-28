@@ -18,8 +18,8 @@ from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes
 
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.market.curves.interpolator import TuringInterpTypes, _uinterpolate
+from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from fundamental.market.curves.interpolator import TuringInterpTypes, _uinterpolate
 
 ###############################################################################
 

@@ -14,7 +14,7 @@ from turing_models.models.model_black import TuringModelBlack
 from turing_models.models.model_rates_bk import TuringModelRatesBK
 from turing_models.models.model_rates_hw import TuringModelRatesHW
 from turing_models.models.model_rates_bdt import TuringModelRatesBDT
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

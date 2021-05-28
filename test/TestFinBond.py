@@ -15,7 +15,7 @@ from turing_models.utilities.turing_date import TuringDate, fromDatetime
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

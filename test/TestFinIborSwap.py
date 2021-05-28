@@ -14,8 +14,8 @@ from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_types import TuringSwapTypes
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.market.curves.interpolator import TuringInterpTypes
+from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from fundamental.market.curves.interpolator import TuringInterpTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -21,9 +21,9 @@ from turing_models.utilities.calendar import TuringDateGenRuleTypes
 
 from turing_models.utilities.global_types import TuringSwapTypes
 
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.market.curves.interpolator import TuringInterpTypes
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from fundamental.market.curves.interpolator import TuringInterpTypes
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 from turing_models.models.model_black import TuringModelBlack
 from turing_models.models.model_bachelier import TuringModelBachelier
@@ -34,7 +34,7 @@ from turing_models.models.model_rates_hw import TuringModelRatesHW
 
 from turing_models.utilities.global_variables import gDaysInYear
 
-from turing_models.market.volatility.ibor_cap_vol_curve import TuringIborCapVolCurve
+from fundamental.market.volatility.ibor_cap_vol_curve import TuringIborCapVolCurve
 from turing_models.utilities.schedule import TuringSchedule
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

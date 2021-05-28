@@ -3,7 +3,7 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turing_models.market.curves.discount_curve_poly import TuringDiscountCurvePoly
+from fundamental.market.curves.discount_curve_poly import TuringDiscountCurvePoly
 from turing_models.utilities.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
