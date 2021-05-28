@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass, InitVar, field
 from typing import Union
 from fundamental.base import ctx
-from fundamental.api.turing_db import Turing
+from fundamental.turing_db.data import Turing
 from tunny import compute
 from tunny.models import model
 
