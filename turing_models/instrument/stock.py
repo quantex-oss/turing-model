@@ -1,4 +1,4 @@
-class stock:
+class Stock:
     def __init__(self, stock_price, quantity, multiplier=100):
         self.stock_price = stock_price
         self.quantity = quantity
