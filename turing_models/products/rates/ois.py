@@ -9,7 +9,7 @@ from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustT
 from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
 from .fixed_leg import TuringFixedLeg
 from .float_leg import TuringFloatLeg

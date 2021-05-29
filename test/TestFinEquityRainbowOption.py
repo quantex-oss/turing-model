@@ -8,7 +8,7 @@ sys.path.append("..")
 from turing_models.products.equity.equity_rainbow_option import TuringEquityRainbowOption
 from turing_models.products.equity.equity_rainbow_option import TuringEquityRainbowOptionTypes
 from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

@@ -1,21 +1,22 @@
 import datetime
-from dataclasses import dataclass, InitVar, field
+from dataclasses import dataclass, InitVar
 from typing import Union
-from fundamental.base import ctx
-from fundamental.api.turing_db import Turing
+
 from tunny import compute
 from tunny.models import model
 
-from fundamental.base import Context
+from fundamental.base import ctx, Context
+from fundamental.turing_db.data import Turing
+from fundamental.market.curves import TuringDiscountCurveFlat
+
 from turing_models.instrument.common import Currency, \
-    OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange, \
-    KnockType
-from turing_models.market.curves import TuringDiscountCurveFlat
+    OptionSettlementMethod, BuySell, AssetClass, AssetType, Exchange
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringOptionTypes, \
     TuringEquityVanillaOption, TuringEquityAmericanOption, \
     TuringEquityAsianOption, TuringAsianOptionValuationMethods, \
-    TuringEquitySnowballOption, TuringKnockInTypes
+    TuringEquitySnowballOption, TuringKnockInTypes, \
+    TuringEquityKnockoutOption, TuringEquityKnockoutTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
@@ -35,6 +36,8 @@ class OptionBase:
             return "asian", "2"
         elif getattr(self, 'option_type').value in [11, 12]:
             return "snowball", "1"
+        elif getattr(self, 'option_type').value in [13]:
+            return "knockout", "1"
 
     def option(self, *args, **kwgs):
         return getattr(self, f'option_{getattr(self, "option_name")[0]}')(*args, **kwgs)
@@ -89,9 +92,22 @@ class OptionBase:
             self.notional,
             self.coupon_rate,
             self.option_type,
+            self.coupon_annualized_flag,
             self.knock_in_type,
             self.knock_in_strike1,
-            self.knock_in_strike2)
+            self.knock_in_strike2,
+            self.participation_rate)
+
+    def option_knockout(self) -> TuringEquityKnockoutOption:
+        return TuringEquityKnockoutOption(
+            self.expiration_date,
+            self.strike_price,
+            self.knock_type,
+            self.knock_out_price,
+            self.coupon_rate,
+            self.coupon_annualized_flag,
+            self.notional,
+            self.participation_rate)
 
 
 @model
@@ -103,7 +119,7 @@ class EqOption(OptionBase):
     buy_sell: Union[BuySell, str] = None  # 买卖方向
     counterparty: Union[Exchange, str] = None  # 交易所名称（场内）/交易对手名称（场外）
     option_type: TuringOptionTypes = None  # style + type
-    knock_type: Union[KnockType, str] = None  # 敲入敲出
+    knock_type: TuringEquityKnockoutTypes = None  # 敲出类型
     notional: float = None  # 名义本金
     initial_spot: float = None  # 期初价格
     number_of_options: float = None  # 期权数量：名义本金/期初价格
@@ -124,8 +140,9 @@ class EqOption(OptionBase):
     premium_currency: Union[Currency, str] = None  # 期权费币种
     start_averaging_date: TuringDate = None  # 观察起始日
     knock_out_price: float = None  # 敲出价格
-    knock_in_price: float = None  # 敲出价格
+    knock_in_price: float = None  # 敲入价格
     coupon_rate: float = None  # 票面利率
+    coupon_annualized_flag: bool = None  # 票面利率是否为年化的标识
     knock_in_type: Union[TuringKnockInTypes, str] = None  # 敲入类型
     knock_in_strike1: float = None  # 敲入执行价1
     knock_in_strike2: float = None  # 敲入执行价2

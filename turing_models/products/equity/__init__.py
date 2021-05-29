@@ -16,3 +16,4 @@ from .equity_vanilla_option import *
 from .equity_variance_swap import *
 from .equity_one_touch_option import *
 from .equity_snowball_option import *
+from .equity_knockout_option import *

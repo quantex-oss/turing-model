@@ -6,8 +6,8 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import labelToString
 from turing_models.utilities.helper_functions import checkArgumentTypes, _funcName
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.market.curves.interpolator import TuringInterpTypes
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from fundamental.market.curves.interpolator import TuringInterpTypes
+from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
 swaptol = 1e-8
 

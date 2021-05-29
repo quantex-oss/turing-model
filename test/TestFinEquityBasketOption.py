@@ -5,7 +5,7 @@ sys.path.append("..")
 
 from turing_models.products.equity.equity_basket_option import TuringEquityBasketOption
 from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 from turing_models.utilities.turing_date import TuringDate
 

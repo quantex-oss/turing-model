@@ -3,8 +3,8 @@ sys.path.append("..")
 
 import numpy as np
 
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.market.volatility.swaption_vol_surface import TuringSwaptionVolSurface
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.volatility.swaption_vol_surface import TuringSwaptionVolSurface
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 

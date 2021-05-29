@@ -15,7 +15,7 @@ from turing_models.products.rates.ibor_future import TuringIborFuture
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 from turing_models.products.rates.ibor_swap import TuringIborSwap
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
-from turing_models.market.curves.interpolator import TuringInterpTypes
+from fundamental.market.curves.interpolator import TuringInterpTypes
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
 

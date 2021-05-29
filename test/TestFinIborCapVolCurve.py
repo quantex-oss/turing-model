@@ -5,7 +5,7 @@ sys.path.append("..")
 
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.market.volatility.ibor_cap_vol_curve import TuringIborCapVolCurve
+from fundamental.market.volatility.ibor_cap_vol_curve import TuringIborCapVolCurve
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

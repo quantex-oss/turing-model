@@ -4,7 +4,7 @@ import scipy.optimize as optimize
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.market.curves.interpolator import _uinterpolate, TuringInterpTypes
+from fundamental.market.curves.interpolator import _uinterpolate, TuringInterpTypes
 from turing_models.utilities.helper_functions import inputTime, tableToString
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes

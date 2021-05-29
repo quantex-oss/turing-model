@@ -9,8 +9,8 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.products.inflation.inflation_bond import TuringInflationBond
 from turing_models.products.bonds import TuringYTMCalcType
 from turing_models.products.inflation.inflation_index_curve import TuringInflationIndexCurve
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

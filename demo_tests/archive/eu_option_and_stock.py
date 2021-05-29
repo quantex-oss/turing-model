@@ -1,6 +1,6 @@
 from turing_models.utilities import *
 from turing_models.products.equity import TuringEquityVanillaOption
-from turing_models.market.curves import TuringDiscountCurveFlat
+from fundamental.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import *
 # from model import model
 # from compute import compute

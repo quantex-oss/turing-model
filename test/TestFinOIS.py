@@ -3,7 +3,7 @@ sys.path.append("..")
 
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.products.rates.ois import TuringOIS
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.turing_date import TuringDate

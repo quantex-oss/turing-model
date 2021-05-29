@@ -6,7 +6,7 @@ sys.path.append("..")
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.products.fx.fx_vanilla_option import TuringFXVanillaOption
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve

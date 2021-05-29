@@ -3,11 +3,11 @@ sys.path.append("..")
 
 import numpy as np
 
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.market.volatility.fx_vol_surface import TuringFXVolSurface
-from turing_models.market.volatility.fx_vol_surface_plus import TuringFXVolSurfacePlus
-from turing_models.market.volatility.fx_vol_surface_plus import TuringFXATMMethod
-from turing_models.market.volatility.fx_vol_surface_plus import TuringFXDeltaMethod
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.volatility.fx_vol_surface import TuringFXVolSurface
+from fundamental.market.volatility.fx_vol_surface_plus import TuringFXVolSurfacePlus
+from fundamental.market.volatility.fx_vol_surface_plus import TuringFXATMMethod
+from fundamental.market.volatility.fx_vol_surface_plus import TuringFXDeltaMethod
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 

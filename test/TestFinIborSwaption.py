@@ -21,9 +21,9 @@ from turing_models.models.model_rates_bk import TuringModelRatesBK
 from turing_models.models.model_rates_bdt import TuringModelRatesBDT
 
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.market.curves.interpolator import TuringInterpTypes
+from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from fundamental.market.curves.interpolator import TuringInterpTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

@@ -19,7 +19,7 @@ from turing_models.products.credit.cds_curve import TuringCDSCurve
 
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.mathematics import ONE_MILLION
-from turing_models.market.curves.interpolator import TuringInterpTypes, interpolate
+from fundamental.market.curves.interpolator import TuringInterpTypes, interpolate
 from turing_models.utilities.error import TuringError
 
 from turing_models.utilities.helper_functions import checkArgumentTypes
