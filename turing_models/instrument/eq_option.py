@@ -23,24 +23,24 @@ class EqOption(Priceable):
     end_date: TuringDate = DateField("end_date")
     start_averaging_date: TuringDate = DateField("start_averaging_date")
     expiration_date: TuringDate = DateField("expiry")
-    participation_rate = FloatField("participation_rate")
+    participation_rate: float = FloatField("participation_rate")
     strike_price: float = FloatField("strike")
-    barrier = FloatField("barrier")
-    rebate = FloatField("rebate")
-    coupon = FloatField("coupon")
-    multiplier = FloatField("multiplier")
+    barrier: float = FloatField("barrier")
+    rebate: float = FloatField("rebate")
+    coupon: float = FloatField("coupon")
+    multiplier: float = FloatField("multiplier")
     settlement_currency = StringField("settlement_currency")
     premium = FloatField("premium")
     premium_payment_date: TuringDate = DateField("premium_payment_date")
     method_of_settlement = StringField("method_of_settlement")
-    knock_out_price = FloatField("knock_out_price")  # yapi无值
-    knock_in_price = FloatField("knock_in_price")  # yapi无值
-    coupon_rate = FloatField("coupon_rate")  # yapi无值
-    coupon_annualized_flag = BoolField("coupon_annualized_flag")  # yapi无值
-    knock_out_type = StringField("knock_out_type")  # yapi无值
+    knock_out_price: float = FloatField("knock_out_price")  # yapi无值
+    knock_in_price: float = FloatField("knock_in_price")  # yapi无值
+    coupon_rate: float = FloatField("coupon_rate")  # yapi无值
+    coupon_annualized_flag: bool = BoolField("coupon_annualized_flag")  # yapi无值
+    knock_out_type: TuringEquityKnockoutTypes = StringField("knock_out_type")  # yapi无值
     knock_in_type = StringField("knock_in_type")  # yapi无值
-    knock_in_strike1 = FloatField("knock_in_strike1")  # yapi无值
-    knock_in_strike2 = FloatField("knock_in_strike2")  # yapi无值
+    knock_in_strike1: float = FloatField("knock_in_strike1")  # yapi无值
+    knock_in_strike2: float = FloatField("knock_in_strike2")  # yapi无值
 
     def __init__(self, **kw):
         super().__init__(**kw)
