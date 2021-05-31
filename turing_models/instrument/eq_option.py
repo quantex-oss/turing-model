@@ -1,12 +1,12 @@
 from tunny.compute import compute
 
-from fundamental.base import Priceable, StringField, FloatField, DateField
+from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField
 from fundamental.market.curves import TuringDiscountCurveFlat
 from turing_models.instrument.common import AssetClass, AssetType
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption, TuringEquityAsianOption, \
     TuringEquityAmericanOption, TuringEquityVanillaOption, TuringAsianOptionValuationMethods, \
-    TuringEquityKnockoutOption, TuringEquityKnockoutTypes
+    TuringEquityKnockoutOption, TuringEquityKnockoutTypes, TuringKnockInTypes
 from turing_models.utilities import TuringOptionTypes, TuringDate, TuringError
 from .quotes import Quotes
 
@@ -36,7 +36,7 @@ class EqOption(Priceable):
     knock_out_price = FloatField("knock_out_price")  # yapi无值
     knock_in_price = FloatField("knock_in_price")  # yapi无值
     coupon_rate = FloatField("coupon_rate")  # yapi无值
-    coupon_annualized_flag: bool  # yapi无值
+    coupon_annualized_flag = BoolField("coupon_annualized_flag")  # yapi无值
     knock_out_type = StringField("knock_out_type")  # yapi无值
     knock_in_type = StringField("knock_in_type")  # yapi无值
     knock_in_strike1 = FloatField("knock_in_strike1")  # yapi无值
@@ -57,49 +57,65 @@ class EqOption(Priceable):
         if isinstance(self.option_type, str) and isinstance(self.product_type, str):
             if self.option_type == "call":
                 if self.product_type == "European":
-                    self.option_type = TuringOptionTypes.EUROPEAN_CALL
+                    self.option_type_turing = TuringOptionTypes.EUROPEAN_CALL
                     return "european", "generic"
                 elif self.product_type == "American":
-                    self.option_type = TuringOptionTypes.AMERICAN_CALL
+                    self.option_type_turing = TuringOptionTypes.AMERICAN_CALL
                     return "american", "generic"
                 elif self.product_type == "Asian":
-                    self.option_type = TuringOptionTypes.ASIAN_CALL
+                    self.option_type_turing = TuringOptionTypes.ASIAN_CALL
                     return "asian", "asian"
-                elif self.product_type == "Snowball":
-                    self.option_type = TuringOptionTypes.SNOWBALL_CALL
+                elif self.product_type == "Snowball" and isinstance(self.knock_in_type, str):
+                    self.option_type_turing = TuringOptionTypes.SNOWBALL_CALL
+                    if self.knock_in_type == "Return":
+                        self.knock_in_type_turing = TuringKnockInTypes.RETURN
+                    elif self.knock_in_type == "Vanilla":
+                        self.knock_in_type_turing = TuringKnockInTypes.VANILLA
+                    elif self.knock_in_type == "Spreads":
+                        self.knock_in_type_turing = TuringKnockInTypes.SPREADS
+                    else:
+                        raise TuringError("Knockin type unknown.")
                     return "snowball", "generic"
                 elif self.product_type == "Knockout" and isinstance(self.knock_out_type, str):
-                    self.option_type = TuringOptionTypes.KNOCKOUT
+                    self.option_type_turing = TuringOptionTypes.KNOCKOUT
                     if self.knock_out_type == "down_and_out":
-                        self.knock_out_type = TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL
+                        self.knock_out_type_turing = TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL
                     elif self.knock_out_type == "up_and_out":
-                        self.knock_out_type = TuringEquityKnockoutTypes.UP_AND_OUT_CALL
+                        self.knock_out_type_turing = TuringEquityKnockoutTypes.UP_AND_OUT_CALL
                     else:
-                        raise TuringError("Knock type unknown.")
+                        raise TuringError("Knockout type unknown.")
                     return "knockout", "generic"
                 else:
                     raise TuringError("Product type unknown.")
             elif self.option_type == "put":
                 if self.product_type == "European":
-                    self.option_type = TuringOptionTypes.EUROPEAN_PUT
+                    self.option_type_turing = TuringOptionTypes.EUROPEAN_PUT
                     return "european", "generic"
                 elif self.product_type == "American":
-                    self.option_type = TuringOptionTypes.AMERICAN_PUT
+                    self.option_type_turing = TuringOptionTypes.AMERICAN_PUT
                     return "american", "generic"
                 elif self.product_type == "Asian":
-                    self.option_type = TuringOptionTypes.ASIAN_PUT
+                    self.option_type_turing = TuringOptionTypes.ASIAN_PUT
                     return "asian", "asian"
-                elif self.product_type == "Snowball":
-                    self.option_type = TuringOptionTypes.SNOWBALL_PUT
+                elif self.product_type == "Snowball" and isinstance(self.knock_in_type, str):
+                    self.option_type_turing = TuringOptionTypes.SNOWBALL_PUT
+                    if self.knock_in_type == "Return":
+                        self.knock_in_type_turing = TuringKnockInTypes.RETURN
+                    elif self.knock_in_type == "Vanilla":
+                        self.knock_in_type_turing = TuringKnockInTypes.VANILLA
+                    elif self.knock_in_type == "Spreads":
+                        self.knock_in_type_turing = TuringKnockInTypes.SPREADS
+                    else:
+                        raise TuringError("Knockin type unknown.")
                     return "snowball", "generic"
                 elif self.product_type == "Knockout" and isinstance(self.knock_out_type, str):
-                    self.option_type = TuringOptionTypes.KNOCKOUT
+                    self.option_type_turing = TuringOptionTypes.KNOCKOUT
                     if self.knock_out_type == "down_and_out":
-                        self.knock_out_type = TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT
+                        self.knock_out_type_turing = TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT
                     elif self.knock_out_type == "up_and_out":
-                        self.knock_out_type = TuringEquityKnockoutTypes.UP_AND_OUT_PUT
+                        self.knock_out_type_turing = TuringEquityKnockoutTypes.UP_AND_OUT_PUT
                     else:
-                        raise TuringError("Knock type unknown.")
+                        raise TuringError("Knockout type unknown.")
                     return "knockout", "generic"
                 else:
                     raise TuringError("Product type unknown.")
@@ -136,20 +152,20 @@ class EqOption(Priceable):
         return TuringEquityVanillaOption(
             self.expiration_date,
             self.strike_price,
-            self.option_type)
+            self.option_type_turing)
 
     def option_american(self) -> TuringEquityAmericanOption:
         return TuringEquityAmericanOption(
             self.expiration_date,
             self.strike_price,
-            self.option_type)
+            self.option_type_turing)
 
     def option_asian(self) -> TuringEquityAsianOption:
         return TuringEquityAsianOption(
             self.start_averaging_date,
             self.expiration_date,
             self.strike_price,
-            self.option_type)
+            self.option_type_turing)
 
     def option_snowball(self) -> TuringEquitySnowballOption:
         return TuringEquitySnowballOption(
@@ -158,9 +174,9 @@ class EqOption(Priceable):
             self.knock_in_price,
             self.notional,
             self.coupon_rate,
-            self.option_type,
+            self.option_type_turing,
             self.coupon_annualized_flag,
-            self.knock_in_type,
+            self.knock_in_type_turing,
             self.knock_in_strike1,
             self.knock_in_strike2,
             self.participation_rate)
