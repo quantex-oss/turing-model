@@ -221,28 +221,42 @@ class EqOption(Priceable):
 
     @compute
     def price(self) -> float:
+        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+            return self.option().value(*self.params()) * self.multiplier
         return self.option().value(*self.params())
 
     @compute
     def delta(self) -> float:
+        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+            return self.option().delta(*self.params()) * self.multiplier
         return self.option().delta(*self.params())
 
     @compute
     def gamma(self) -> float:
+        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+            return self.option().gamma(*self.params()) * self.multiplier
         return self.option().gamma(*self.params())
 
     @compute
     def vega(self) -> float:
+        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+            return self.option().vega(*self.params()) * self.multiplier
         return self.option().vega(*self.params())
 
     @compute
     def theta(self) -> float:
+        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+            return self.option().theta(*self.params()) * self.multiplier
         return self.option().theta(*self.params())
 
     @compute
     def rho(self) -> float:
+        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+            return self.option().rho(*self.params()) * self.multiplier
         return self.option().rho(*self.params())
 
     @compute
     def rho_q(self) -> float:
+        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+            return self.option().rho_q(*self.params()) * self.multiplier
         return self.option().rho_q(*self.params())
