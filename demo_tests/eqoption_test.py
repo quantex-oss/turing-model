@@ -7,18 +7,21 @@ from turing_models.instrument.eq_option import EqOption
 european_option = EqOption(option_type='call',
                            product_type='European',
                            expiration_date=TuringDate(12, 2, 2021),
-                           strike_price=90)
+                           strike_price=90,
+                           multiplier=10000)
 
 american_option = EqOption(option_type='call',
                            product_type='American',
                            expiration_date=TuringDate(12, 2, 2021),
-                           strike_price=90)
+                           strike_price=90,
+                           multiplier=10000)
 
 asian_option = EqOption(option_type='call',
                         product_type='Asian',
                         expiration_date=TuringDate(12, 2, 2021),
                         start_averaging_date=TuringDate(15, 2, 2020),
-                        strike_price=90)
+                        strike_price=90,
+                        multiplier=10000)
 
 snowball_option = EqOption(option_type='call',
                            product_type='Snowball',
