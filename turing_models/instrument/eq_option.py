@@ -1,4 +1,4 @@
-from tunny.compute import compute
+from tunny.compute import model, compute
 
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField
 from fundamental.market.curves import TuringDiscountCurveFlat
@@ -11,6 +11,7 @@ from turing_models.utilities import TuringOptionTypes, TuringDate, TuringError
 from .quotes import Quotes
 
 
+@model
 class EqOption(Priceable):
     asset_id = StringField('asset_id')
     option_type = StringField("option_type")
