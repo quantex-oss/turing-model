@@ -185,7 +185,7 @@ class EqOption(Priceable):
         return TuringEquityKnockoutOption(
             self.expiration_date,
             self.strike_price,
-            self.knock_out_type,
+            self.knock_out_type_turing,
             self.knock_out_price,
             self.coupon_rate,
             self.coupon_annualized_flag,

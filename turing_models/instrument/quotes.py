@@ -19,4 +19,4 @@ class Quotes(Priceable):
         self.volatility = 0.1
         self.interest_rate = 0.02
         self.dividend_yield = 0
-        self.accrued_average = 1
+        self.accrued_average = 100
