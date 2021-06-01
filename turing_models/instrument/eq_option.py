@@ -15,79 +15,20 @@ from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption, TuringEquityAsianOption, \
     TuringEquityAmericanOption, TuringEquityVanillaOption, TuringAsianOptionValuationMethods, \
     TuringEquityKnockoutOption, TuringEquityKnockoutTypes, TuringKnockInTypes
-from turing_models.utilities import TuringOptionTypes, TuringDate, TuringError, checkArgumentTypes
+from turing_models.utilities import TuringDate, option_type_dict
 
 
 class OptionModel:
+    """eq_option功能集"""
 
     def option_name(self):
-        if isinstance(self.option_type, str) and isinstance(self.product_type, str):
-            if self.option_type == "call":
-                if self.product_type == "European":
-                    self.option_type_turing = TuringOptionTypes.EUROPEAN_CALL
-                    return "european", "generic"
-                elif self.product_type == "American":
-                    self.option_type_turing = TuringOptionTypes.AMERICAN_CALL
-                    return "american", "generic"
-                elif self.product_type == "Asian":
-                    self.option_type_turing = TuringOptionTypes.ASIAN_CALL
-                    return "asian", "asian"
-                elif self.product_type == "Snowball" and isinstance(self.knock_in_type, str):
-                    self.option_type_turing = TuringOptionTypes.SNOWBALL_CALL
-                    if self.knock_in_type == "Return":
-                        self.knock_in_type_turing = TuringKnockInTypes.RETURN
-                    elif self.knock_in_type == "Vanilla":
-                        self.knock_in_type_turing = TuringKnockInTypes.VANILLA
-                    elif self.knock_in_type == "Spreads":
-                        self.knock_in_type_turing = TuringKnockInTypes.SPREADS
-                    else:
-                        raise TuringError("Knockin type unknown.")
-                    return "snowball", "generic"
-                elif self.product_type == "Knockout" and isinstance(self.knock_out_type, str):
-                    self.option_type_turing = TuringOptionTypes.KNOCKOUT
-                    if self.knock_out_type == "down_and_out":
-                        self.knock_out_type_turing = TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL
-                    elif self.knock_out_type == "up_and_out":
-                        self.knock_out_type_turing = TuringEquityKnockoutTypes.UP_AND_OUT_CALL
-                    else:
-                        raise TuringError("Knockout type unknown.")
-                    return "knockout", "generic"
-                else:
-                    raise TuringError("Product type unknown.")
-            elif self.option_type == "put":
-                if self.product_type == "European":
-                    self.option_type_turing = TuringOptionTypes.EUROPEAN_PUT
-                    return "european", "generic"
-                elif self.product_type == "American":
-                    self.option_type_turing = TuringOptionTypes.AMERICAN_PUT
-                    return "american", "generic"
-                elif self.product_type == "Asian":
-                    self.option_type_turing = TuringOptionTypes.ASIAN_PUT
-                    return "asian", "asian"
-                elif self.product_type == "Snowball" and isinstance(self.knock_in_type, str):
-                    self.option_type_turing = TuringOptionTypes.SNOWBALL_PUT
-                    if self.knock_in_type == "Return":
-                        self.knock_in_type_turing = TuringKnockInTypes.RETURN
-                    elif self.knock_in_type == "Vanilla":
-                        self.knock_in_type_turing = TuringKnockInTypes.VANILLA
-                    elif self.knock_in_type == "Spreads":
-                        self.knock_in_type_turing = TuringKnockInTypes.SPREADS
-                    else:
-                        raise TuringError("Knockin type unknown.")
-                    return "snowball", "generic"
-                elif self.product_type == "Knockout" and isinstance(self.knock_out_type, str):
-                    self.option_type_turing = TuringOptionTypes.KNOCKOUT
-                    if self.knock_out_type == "down_and_out":
-                        self.knock_out_type_turing = TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT
-                    elif self.knock_out_type == "up_and_out":
-                        self.knock_out_type_turing = TuringEquityKnockoutTypes.UP_AND_OUT_PUT
-                    else:
-                        raise TuringError("Knockout type unknown.")
-                    return "knockout", "generic"
-                else:
-                    raise TuringError("Product type unknown.")
-            else:
-                raise TuringError("Option type unknown.")
+        knock_in_type = '_' + self.knock_in_type if self.knock_in_type else ''
+        knock_out_type = '_' + self.knock_out_type if self.knock_out_type else ''
+        option_ident = self.option_type + '_' + self.product_type + knock_in_type + knock_out_type
+        op = option_type_dict.get(option_ident, None)
+        if op:
+            self.option_type_turing = op.get('type')
+            return op.get('option_name')
 
     def option(self, *args, **kwgs):
         return getattr(self, f'option_{getattr(self, "option_name")()[0]}')(*args, **kwgs)
@@ -230,6 +171,7 @@ class OptionModel:
 
 
 class Option(OptionModel, Priceable):
+    """eqoption orm定义,取数据用"""
     asset_id = StringField('asset_id')
     option_type = StringField("option_type")
     product_type = StringField("product_type")
@@ -295,6 +237,7 @@ class EqOption(OptionModel):
     buy_sell: Union[BuySell, str] = None  # 买卖方向
     counterparty: Union[Exchange, str] = None  # 交易所名称（场内）/交易对手名称（场外）
     option_type: str = None  # style + type
+    product_type: str = None
     knock_type: TuringEquityKnockoutTypes = None  # 敲出类型
     notional: float = None  # 名义本金
     initial_spot: float = None  # 期初价格
@@ -333,7 +276,6 @@ class EqOption(OptionModel):
     ctx: Context = ctx
 
     def __post_init__(self, option_data):
-        checkArgumentTypes(self.__post_init__, locals())
         self.__option_data = option_data
 
     def from_json(self):
@@ -353,7 +295,7 @@ class EqOption(OptionModel):
 
 
 if __name__ == '__main__':
-    eq = EqOption(option_type='call', notional=1.00, option_data={'asset_id': '123'})
+    eq = EqOption(option_type='call', product_type="European", notional=1.00)
     eq.from_json()
     # eq.price()
     logger.debug(f"eq.asset_id,notional:, {eq.asset_id},{eq.notional}")
