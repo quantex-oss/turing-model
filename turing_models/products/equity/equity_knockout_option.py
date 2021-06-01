@@ -30,7 +30,7 @@ class TuringEquityKnockoutOption(TuringEquityOption):
     def __init__(self,
                  expiry_date: TuringDate,
                  strike_price: float,
-                 option_type: TuringEquityKnockoutTypes,
+                 knock_out_type: TuringEquityKnockoutTypes,
                  knock_out_level: float,
                  coupon_rate: float,
                  coupon_annualized_flag: bool = True,
@@ -43,12 +43,12 @@ class TuringEquityKnockoutOption(TuringEquityOption):
 
         checkArgumentTypes(self.__init__, locals())
 
-        if option_type not in TuringEquityKnockoutTypes:
-            raise TuringError("Option Type " + str(option_type) + " unknown.")
+        if knock_out_type not in TuringEquityKnockoutTypes:
+            raise TuringError("Option Type " + str(knock_out_type) + " unknown.")
 
         self._expiry_date = expiry_date
         self._strike_price = strike_price
-        self._option_type = option_type
+        self._knock_out_type = knock_out_type
         self._knockout_level = knock_out_level
         self._coupon_rate = coupon_rate
         self._coupon_annualized_flag = coupon_annualized_flag
@@ -78,7 +78,7 @@ class TuringEquityKnockoutOption(TuringEquityOption):
         texp = (self._expiry_date - value_date) / gDaysInYear
         K = self._strike_price
         B = self._knockout_level
-        option_type = self._option_type
+        knock_out_type = self._knock_out_type
 
         s0 = stock_price
         process = TuringProcessSimulator()
@@ -90,23 +90,23 @@ class TuringEquityKnockoutOption(TuringEquityOption):
         model_params = (stock_price, r-q, vol, scheme)
         #######################################################################
         if self._coupon_annualized_flag:
-            if option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL and stock_price <= B:
+            if knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL and stock_price <= B:
                 return self._coupon_rate * texp * self._notional * np.exp(- r * texp)
-            elif option_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL and stock_price >= B:
+            elif knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL and stock_price >= B:
                 return self._coupon_rate * texp * self._notional * np.exp(- r * texp)
-            elif option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT and stock_price <= B:
+            elif knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT and stock_price <= B:
                 return self._coupon_rate * texp * self._notional * np.exp(- r * texp)
-            elif option_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT and stock_price >= B:
+            elif knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT and stock_price >= B:
                 return self._coupon_rate * texp * self._notional * np.exp(- r * texp)
 
         elif not self._coupon_annualized_flag:
-            if option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL and stock_price <= B:
+            if knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL and stock_price <= B:
                 return self._coupon_rate * self._notional * np.exp(- r * texp)
-            elif option_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL and stock_price >= B:
+            elif knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL and stock_price >= B:
                 return self._coupon_rate * self._notional * np.exp(- r * texp)
-            elif option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT and stock_price <= B:
+            elif knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT and stock_price <= B:
                 return self._coupon_rate * self._notional * np.exp(- r * texp)
-            elif option_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT and stock_price >= B:
+            elif knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT and stock_price >= B:
                 return self._coupon_rate * self._notional * np.exp(- r * texp)
 
         #######################################################################
@@ -117,16 +117,16 @@ class TuringEquityKnockoutOption(TuringEquityOption):
 
         (num_paths, _) = Sall.shape
 
-        if option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL or \
-           option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT:
+        if knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL or \
+           knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT:
 
             barrierCrossedFromAbove = [False] * num_paths
 
             for p in range(0, num_paths):
                 barrierCrossedFromAbove[p] = np.any(Sall[p] <= B)
 
-        if option_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL or \
-           option_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT:
+        if knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL or \
+           knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT:
 
             barrierCrossedFromBelow = [False] * num_paths
             for p in range(0, num_paths):
@@ -136,36 +136,36 @@ class TuringEquityKnockoutOption(TuringEquityOption):
         ones = np.ones(num_paths)
 
         if self._coupon_annualized_flag:
-            if option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL:
+            if knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL:
                 payoff = np.maximum((Sall[:, -1] - K) / s0, 0.0) * \
                     self._participation_rate * (ones - barrierCrossedFromAbove) + \
                         self._coupon_rate * texp * (ones * barrierCrossedFromAbove)
-            elif option_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL:
+            elif knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL:
                 payoff = np.maximum((Sall[:, -1] - K) / s0, 0.0) * \
                     self._participation_rate * (ones - barrierCrossedFromBelow) + \
                         self._coupon_rate * texp * (ones * barrierCrossedFromBelow)
-            elif option_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT:
+            elif knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT:
                 payoff = np.maximum((K - Sall[:, -1]) / s0, 0.0) * \
                     self._participation_rate * (ones - barrierCrossedFromBelow) + \
                         self._coupon_rate * texp * (ones * barrierCrossedFromBelow)
-            elif option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT:
+            elif knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT:
                 payoff = np.maximum((K - Sall[:, -1]) / s0, 0.0) * \
                     self._participation_rate * (ones - barrierCrossedFromAbove) + \
                         self._coupon_rate * texp * (ones * barrierCrossedFromAbove)
         elif not self._coupon_annualized_flag:
-            if option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL:
+            if knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL:
                 payoff = np.maximum((Sall[:, -1] - K) / s0, 0.0) * \
                     self._participation_rate * (ones - barrierCrossedFromAbove) + \
                         self._coupon_rate * (ones * barrierCrossedFromAbove)
-            elif option_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL:
+            elif knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_CALL:
                 payoff = np.maximum((Sall[:, -1] - K) / s0, 0.0) * \
                     self._participation_rate * (ones - barrierCrossedFromBelow) + \
                         self._coupon_rate * (ones * barrierCrossedFromBelow)
-            elif option_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT:
+            elif knock_out_type == TuringEquityKnockoutTypes.UP_AND_OUT_PUT:
                 payoff = np.maximum((K - Sall[:, -1]) / s0, 0.0) * \
                     self._participation_rate * (ones - barrierCrossedFromBelow) + \
                         self._coupon_rate * (ones * barrierCrossedFromBelow)
-            elif option_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT:
+            elif knock_out_type == TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT:
                 payoff = np.maximum((K - Sall[:, -1]) / s0, 0.0) * \
                     self._participation_rate * (ones - barrierCrossedFromAbove) + \
                         self._coupon_rate * (ones * barrierCrossedFromAbove)
@@ -180,7 +180,7 @@ class TuringEquityKnockoutOption(TuringEquityOption):
         s = labelToString("OBJECT TYPE", type(self).__name__)
         s += labelToString("EXPIRY DATE", self._expiry_date)
         s += labelToString("STRIKE PRICE", self._strike_price)
-        s += labelToString("OPTION TYPE", self._option_type)
+        s += labelToString("OPTION TYPE", self._knock_out_type)
         s += labelToString("KNOCKOUT LEVEL", self._knockout_level)
         s += labelToString("NUM OBSERVATIONS", self._num_observations_per_year)
         s += labelToString("NOTIONAL", self._notional, "")
