@@ -35,3 +35,18 @@ class Stock(Priceable):
 
     def delta(self):
         return self.quantity * self.multiplier
+
+    def gamma(self):
+        return 0
+
+    def vega(self):
+        return 0
+
+    def theta(self):
+        return 0
+
+    def rho(self):
+        return 0
+
+    def rho_q(self):
+        return 0
