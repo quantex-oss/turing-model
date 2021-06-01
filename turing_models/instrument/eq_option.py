@@ -22,13 +22,17 @@ class OptionModel:
     """eq_option功能集"""
 
     def option_name(self):
-        knock_in_type = '_' + self.knock_in_type if self.knock_in_type else ''
-        knock_out_type = '_' + self.knock_out_type if self.knock_out_type else ''
-        option_ident = self.option_type + '_' + self.product_type + knock_in_type + knock_out_type
+        knock_in_type = '_' + getattr(self, 'knock_in_type') if getattr(self, 'knock_in_type') else ''
+        knock_out_type = '_' + getattr(self, 'knock_out_type') if getattr(self, 'knock_out_type') else ''
+        option_ident = getattr(self, 'option_type') + '_' + \
+                       getattr(self, 'product_type') + \
+                       knock_in_type + knock_out_type
         op = option_type_dict.get(option_ident, None)
         if op:
             self.option_type_turing = op.get('type')
             return op.get('option_name')
+        else:
+            raise Exception(f"{option_ident.split('_')}类型组合不存在")
 
     def option(self, *args, **kwgs):
         return getattr(self, f'option_{getattr(self, "option_name")()[0]}')(*args, **kwgs)
