@@ -8,6 +8,7 @@ from tunny.compute import compute
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField, Context
 from fundamental.base import ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
+from fundamental.turing_db.utils import convert_map, pascal_to_snake
 from turing_models.instrument.common import AssetClass, AssetType, BuySell, Exchange, Currency, OptionSettlementMethod
 from turing_models.instrument.quotes import Quotes
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
@@ -273,7 +274,22 @@ class Option(OptionModel, Priceable):
 
 @dataclass
 class EqOption(OptionModel):
-    """Instrument definition for equity option"""
+    """
+        Instrument definition for equity option
+        支持多种参数传入方式
+        Examples:
+        1.
+        >>> eq = EqOption(option_data={'asset_id': '123'})
+        >>> eq.from_json()
+        >>> eq.price()
+        2.
+        >>> eq = EqOption(option_type='call', notional=1.00)
+        >>> eq.price()
+        3.
+        >>> eq = EqOption(option_type='call', notional=1.00, option_data={'asset_id': '123'})
+        >>> eq.from_json()
+        >>> eq.price()
+    """
     trade_id: str = None  # 合约编号
     underlier: str = None  # 标的证券
     buy_sell: Union[BuySell, str] = None  # 买卖方向
@@ -322,6 +338,7 @@ class EqOption(OptionModel):
 
     def from_json(self):
         option_data = deepcopy(self.__option_data)
+        option_data = convert_map(option_data, pascal_to_snake)
         logger.debug(option_data)
         self.quote_obj = Quotes()
         self.quote_obj.resolve(_resource=option_data)
