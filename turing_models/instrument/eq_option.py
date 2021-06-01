@@ -1,4 +1,4 @@
-from tunny.compute import model, compute
+from tunny import model, compute
 
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField
 from fundamental.market.curves import TuringDiscountCurveFlat
