@@ -22,11 +22,11 @@ class OptionModel:
     """eq_option功能集"""
 
     def option_name(self):
-        knock_in_type = '_' + getattr(self, 'knock_in_type') if getattr(self, 'knock_in_type') else ''
-        knock_out_type = '_' + getattr(self, 'knock_out_type') if getattr(self, 'knock_out_type') else ''
-        option_ident = getattr(self, 'option_type') + '_' + \
-                       getattr(self, 'product_type') + \
-                       knock_in_type + knock_out_type
+        knock_in_type = '_' + getattr(self, 'knock_in_type', '') if getattr(self, 'knock_in_type', '') else ''
+        knock_out_type = '_' + getattr(self, 'knock_out_type', '') if getattr(self, 'knock_out_type', '') else ''
+        option_ident = getattr(self, 'option_type', '') + '_' + getattr(self, 'product_type',
+                                                                        '') + knock_in_type + knock_out_type
+        logger.debug(option_ident)
         op = option_type_dict.get(option_ident, None)
         if op:
             self.option_type_turing = op.get('type')
@@ -174,7 +174,7 @@ class OptionModel:
         return self.option().rho_q(*self.params())
 
 
-class Option(OptionModel, Priceable):
+class Option(Priceable, OptionModel):
     """eqoption orm定义,取数据用"""
     asset_id = StringField('asset_id')
     option_type = StringField("option_type")
@@ -225,17 +225,18 @@ class EqOption(OptionModel):
         支持多种参数传入方式
         Examples:
         1.
-        >>> eq = EqOption(option_data={'asset_id': '123'})
-        >>> eq.from_json()
-        >>> eq.price()
+        # >>> eq = EqOption(option_type='call',product_type='European',option_data={'asset_id': '123'})
+        # >>> eq.from_json()
+        # >>> eq.price()
         2.
-        >>> eq = EqOption(option_type='call', notional=1.00)
-        >>> eq.price()
+        # >>> eq = EqOption(option_type='call',product_type='European',expiration_date=TuringDate(12, 2, 2021), strike_price=90, multiplier=10000)
+        # >>> eq.price()
         3.
-        >>> eq = EqOption(option_type='call', notional=1.00, option_data={'asset_id': '123'})
-        >>> eq.from_json()
-        >>> eq.price()
+        # >>> eq = EqOption(option_type='call',product_type='European', notional=1.00, option_data={'asset_id': '123'})
+        # >>> eq.from_json()
+        # >>> eq.price()
     """
+    asset_id: str = None
     trade_id: str = None  # 合约编号
     underlier: str = None  # 标的证券
     buy_sell: Union[BuySell, str] = None  # 买卖方向
@@ -278,28 +279,32 @@ class EqOption(OptionModel):
     accrued_average: float = None  # 应计平均价
     option_data: InitVar[dict] = None
     ctx: Context = ctx
+    knock_out_type: str = None
 
     def __post_init__(self, option_data):
         self.__option_data = option_data
+        self.quote_obj = Quotes()
+        self.option_obj = Option()
 
     def from_json(self):
         option_data = deepcopy(self.__option_data)
         option_data = convert_map(option_data, pascal_to_snake)
         logger.debug(option_data)
-        self.quote_obj = Quotes()
         self.quote_obj.resolve(_resource=option_data)
-        self.option_obj = Option()
         self.option_obj.resolve(_resource=option_data)
 
     def __getattr__(self, item):
+        logger.debug(f'item:{item}')
         try:
-            return getattr(self.quote_obj, item, None) or getattr(self.option_obj, item)
-        except Exception:
-            return None
+            return getattr(self.quote_obj, item)
+        except Exception as e:
+            logger.debug(str(e))
+            getattr(self.option_obj, item, '')
 
 
 if __name__ == '__main__':
-    eq = EqOption(option_type='call', product_type="European", notional=1.00)
-    eq.from_json()
+    eq = EqOption(asset_id='123', option_type='call', product_type='European', expiration_date=TuringDate(12, 2, 2021),
+                  strike_price=90, multiplier=10000)
+    # eq.from_json()
     # eq.price()
-    logger.debug(f"eq.asset_id,notional:, {eq.asset_id},{eq.notional}")
+    logger.debug(f"eq.asset_id,notional: {eq.asset_id},{eq.notional}")
