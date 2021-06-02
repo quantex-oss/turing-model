@@ -4,6 +4,7 @@ from turing_models.instrument.quotes import Quotes
 
 class Stock(Priceable):
     asset_id = StringField('asset_id')
+    type = StringField('type')
     asset_type = StringField('asset_type')
     symbol = StringField('symbol')
     name_cn = StringField('name_cn')
