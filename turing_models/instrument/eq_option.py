@@ -141,6 +141,41 @@ class OptionModel:
             self.coupon_annualized_flag,
             self.notional,
             self.participation_rate)
+    @property
+    def value_date(self):
+        return self.ctx.path.value_date \
+            if self.ctx.path and self.ctx.path.value_date \
+            else self.__value_date
+
+    @property
+    def stock_price(self) -> float:
+        return self.ctx.path.stock_price \
+            if self.ctx.path and self.ctx.path.stock_price \
+            else self.__stock_price
+
+    @property
+    def volatility(self) -> float:
+        return self.ctx.path.volatility \
+            if self.ctx.path and self.ctx.path.volatility \
+            else self.__volatility
+
+    @property
+    def interest_rate(self) -> float:
+        return self.ctx.path.interest_rate \
+            if self.ctx.path and self.ctx.path.interest_rate \
+            else self.__interest_rate
+
+    @property
+    def dividend_yield(self) -> float:
+        return self.ctx.path.dividend_yield \
+            if self.ctx.path and self.ctx.path.dividend_yield \
+            else self.__dividend_yield
+
+    @property
+    def accrued_average(self) -> float:
+        return self.ctx.path.accrued_average \
+            if self.ctx.path and self.ctx.path.accrued_average \
+            else self.__accrued_average
 
     @property
     def asset_class(self) -> AssetClass:
@@ -168,7 +203,6 @@ class OptionModel:
 
     @compute
     def price(self) -> float:
-        print('计算了price')
         if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
             return self.option().value(*self.params()) * self.multiplier
         return self.option().value(*self.params())
