@@ -8,20 +8,35 @@ european_option = EqOption(option_type='call',
                            product_type='European',
                            expiration_date=TuringDate(12, 2, 2021),
                            strike_price=90,
-                           multiplier=10000)
+                           multiplier=10000,
+                           value_date = TuringDate(12, 2, 2020),
+                           stock_price=100,
+                           volatility=0.1,
+                           interest_rate=0.02,
+                           dividend_yield=0)
 
 american_option = EqOption(option_type='call',
                            product_type='American',
                            expiration_date=TuringDate(12, 2, 2021),
                            strike_price=90,
-                           multiplier=10000)
+                           multiplier=10000,
+                           value_date = TuringDate(12, 2, 2020),
+                           stock_price=100,
+                           volatility=0.1,
+                           interest_rate=0.02,
+                           dividend_yield=0)
 
 asian_option = EqOption(option_type='call',
                         product_type='Asian',
                         expiration_date=TuringDate(12, 2, 2021),
                         start_averaging_date=TuringDate(15, 2, 2020),
                         strike_price=90,
-                        multiplier=10000)
+                        value_date = TuringDate(12, 2, 2020),
+                        multiplier=10000,
+                        stock_price=100,
+                        volatility=0.1,
+                        interest_rate=0.02,
+                        dividend_yield=0)
 
 snowball_option = EqOption(option_type='call',
                            product_type='Snowball',
@@ -32,7 +47,13 @@ snowball_option = EqOption(option_type='call',
                            notional=1000000,
                            coupon_rate=0.2,
                            coupon_annualized_flag=True,
-                           knock_in_type='Return')
+                           knock_in_type='Return',
+                           value_date=TuringDate(12, 2, 2020),
+                           multiplier=10000,
+                           stock_price=100,
+                           volatility=0.1,
+                           interest_rate=0.02,
+                           dividend_yield=0)
 
 knockout_option = EqOption(option_type='call',
                            product_type='Knockout',
@@ -43,7 +64,13 @@ knockout_option = EqOption(option_type='call',
                            knock_out_price=120,
                            notional=1000000,
                            coupon_rate=0.2,
-                           coupon_annualized_flag=True)
+                           coupon_annualized_flag=True,
+                           value_date=TuringDate(12, 2, 2020),
+                           multiplier=10000,
+                           stock_price=100,
+                           volatility=0.1,
+                           interest_rate=0.02,
+                           dividend_yield=0)
 
 
 print_result(european_option)
