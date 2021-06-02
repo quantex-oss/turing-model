@@ -27,7 +27,7 @@ class OptionModel:
         knock_out_type = '_' + getattr(self, 'knock_out_type', '') if getattr(self, 'knock_out_type', '') else ''
         option_ident = getattr(self, 'option_type', '') + '_' + getattr(self, 'product_type',
                                                                         '') + knock_in_type + knock_out_type
-        logger.debug(option_ident)
+
         op = option_type_dict.get(option_ident, None)
         if op:
             self.option_type_turing = op.get('type')
