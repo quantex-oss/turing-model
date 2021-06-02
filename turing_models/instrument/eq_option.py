@@ -1,5 +1,4 @@
 from dataclasses import dataclass, InitVar
-from typing import Union
 
 from loguru import logger
 from tunny import model, compute
@@ -7,13 +6,17 @@ from tunny import model, compute
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField, Context
 from fundamental.base import ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
+
 from turing_models.instrument.common import AssetClass, AssetType, BuySell, Exchange, Currency, OptionSettlementMethod
+
+from fundamental.turing_db.utils import convert_map, pascal_to_snake
+from turing_models.instrument.common import AssetClass, AssetType
 from turing_models.instrument.quotes import Quotes
 from turing_models.instrument.stock import Stock
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption, TuringEquityAsianOption, \
     TuringEquityAmericanOption, TuringEquityVanillaOption, TuringAsianOptionValuationMethods, \
-    TuringEquityKnockoutOption, TuringEquityKnockoutTypes, TuringKnockInTypes
+    TuringEquityKnockoutOption
 from turing_models.utilities import TuringDate, option_type_dict
 
 
@@ -68,6 +71,8 @@ class OptionModel:
         op = option_type_dict.get(option_ident, None)
         if op:
             self.option_type_turing = op.get('type')
+            self.knock_out_type_turing = op.get('knock_out_type')
+            self.knock_in_type_turing = op.get('knock_in_type')
             return op.get('option_name')
         else:
             raise Exception(f"{option_ident.split('_')}类型组合不存在")
@@ -272,7 +277,7 @@ class Option(Priceable):
     knock_in_price: float = FloatField("knock_in_price")  # yapi无值
     coupon_rate: float = FloatField("coupon_rate")  # yapi无值
     coupon_annualized_flag: bool = BoolField("coupon_annualized_flag")  # yapi无值
-    knock_out_type: TuringEquityKnockoutTypes = StringField("knock_out_type")  # yapi无值
+    knock_out_type = StringField("knock_out_type")  # yapi无值
     knock_in_type = StringField("knock_in_type")  # yapi无值
     knock_in_strike1: float = FloatField("knock_in_strike1")  # yapi无值
     knock_in_strike2: float = FloatField("knock_in_strike2")  # yapi无值
@@ -309,39 +314,34 @@ class EqOption(OptionModel):
         # >>> eq.price()
     """
     asset_id: str = None
-    trade_id: str = None  # 合约编号
-    underlier: str = None  # 标的证券
-    buy_sell: Union[BuySell, str] = None  # 买卖方向
-    counterparty: Union[Exchange, str] = None  # 交易所名称（场内）/交易对手名称（场外）
-    option_type: str = None  # style + type
+    option_type: str = None
     product_type: str = None
-    knock_type: TuringEquityKnockoutTypes = None  # 敲出类型
-    notional: float = None  # 名义本金
-    initial_spot: float = None  # 期初价格
-    number_of_options: float = None  # 期权数量：名义本金/期初价格
-    start_date: TuringDate = None  # 开始时间
-    end_date: TuringDate = None  # 期末观察日
-    expiration_date: TuringDate = None  # 到期日
-    exercise_date: TuringDate = None  # 行权日
-    participation_rate: float = None  # 参与率
-    strike_price: float = None  # 行权价
-    barrier: float = None  # 敲出价
-    rebate: float = None  # 敲出补偿收益率
-    multiplier: float = None  # 合约乘数
-    settlement_date: TuringDate = None  # 结算日期
-    settlement_currency: Union[Currency, str] = None  # 结算货币
-    premium: float = 0  # 期权费
-    premium_payment_date: TuringDate = None  # 期权费支付日期
-    method_of_settlement: Union[OptionSettlementMethod, str] = None  # 结算方式
-    premium_currency: Union[Currency, str] = None  # 期权费币种
-    start_averaging_date: TuringDate = None  # 观察起始日
-    knock_out_price: float = None  # 敲出价格
-    knock_in_price: float = None  # 敲入价格
-    coupon_rate: float = None  # 票面利率
-    coupon_annualized_flag: bool = None  # 票面利率是否为年化的标识
-    knock_in_type: Union[TuringKnockInTypes, str] = None  # 敲入类型
-    knock_in_strike1: float = None  # 敲入执行价1
-    knock_in_strike2: float = None  # 敲入执行价2
+    underlier: str = None
+    notional: float = None
+    initial_spot: float = None
+    number_of_options: float = None
+    start_date: TuringDate = None
+    end_date: TuringDate = None
+    start_averaging_date: TuringDate = None
+    expiration_date: TuringDate = None
+    participation_rate: float = None
+    strike_price: float = None
+    barrier: float = None
+    rebate: float = None
+    coupon: float = None
+    multiplier: float = None
+    settlement_currency: str = None
+    premium: float = None
+    premium_payment_date: TuringDate = None
+    method_of_settlement: str = None
+    knock_out_price: float = None  # yapi无值
+    knock_in_price: float = None  # yapi无值
+    coupon_rate: float = None  # yapi无值
+    coupon_annualized_flag: bool = None  # yapi无值
+    knock_out_type: str = None  # yapi无值
+    knock_in_type: str = None  # yapi无值
+    knock_in_strike1: float = None  # yapi无值
+    knock_in_strike2: float = None  # yapi无值
     name: str = None  # 对象标识名
     value_date: TuringDate = None  # 估值日期
     stock_price: float = None  # 股票价格
