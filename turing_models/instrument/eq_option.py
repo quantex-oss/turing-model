@@ -18,7 +18,7 @@ from turing_models.products.equity import TuringEquitySnowballOption, TuringEqui
 from turing_models.utilities import TuringDate, option_type_dict
 
 
-@model
+
 class OptionModel:
     """eq_option功能集"""
 
@@ -178,6 +178,7 @@ class OptionModel:
 class Option(Priceable, OptionModel):
     """eqoption orm定义,取数据用"""
     asset_id = StringField('asset_id')
+    type = StringField('type')
     option_type = StringField("option_type")
     product_type = StringField("product_type")
     underlier = StringField("underlier")
