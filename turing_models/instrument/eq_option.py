@@ -1,4 +1,3 @@
-from copy import deepcopy
 from dataclasses import dataclass, InitVar
 from typing import Union
 
@@ -8,9 +7,9 @@ from tunny import model, compute
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField, Context
 from fundamental.base import ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
-from fundamental.turing_db.utils import convert_map, pascal_to_snake
 from turing_models.instrument.common import AssetClass, AssetType, BuySell, Exchange, Currency, OptionSettlementMethod
 from turing_models.instrument.quotes import Quotes
+from turing_models.instrument.stock import Stock
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption, TuringEquityAsianOption, \
     TuringEquityAmericanOption, TuringEquityVanillaOption, TuringAsianOptionValuationMethods, \
@@ -18,11 +17,49 @@ from turing_models.products.equity import TuringEquitySnowballOption, TuringEqui
 from turing_models.utilities import TuringDate, option_type_dict
 
 
+def merge_data(data_1, data_2):
+    """
+    使用 data_2 和 data_1 的 value 相加，合成一个新的字典。
+    对于 data_2 和 data_1 都有的 key，合成规则为保留 data_1 的 value
+    :param data_1:
+    :param data_2:
+    :return:
+    """
+    if isinstance(data_1, dict) and isinstance(data_2, dict):
+        new_dict = {}
+        d2_keys = list(data_2.keys())
+        for d1k in data_1.keys():
+            if d1k in d2_keys:  # d1,d2都有。去往深层比对
+                d2_keys.remove(d1k)
+                new_dict[d1k] = merge_data(data_1.get(d1k), data_2.get(d1k))
+            # else:
+            #     new_dict[d1k] = data_1.get(d1k)  # d1有d2没有的key
+        for d2k in d2_keys:  # d2有d1没有的key
+            new_dict[d2k] = data_2.get(d2k)
+        return new_dict
+    else:  # 递归遍历到最底层 value
+        if data_2 and data_1:
+            return data_1
+        elif data_2:
+            return data_2
+        elif data_1:
+            return data_1
+        else:  # 全为 None，0，[] 或 {}中的一个
+            return data_2
+
+
+def dict_to_obj(data, obj):
+    data2 = obj.__dict__
+    data2 = merge_data(data, data2)
+    return data2
+
+
 @model
 class OptionModel:
     """eq_option功能集"""
 
     def option_name(self):
+        # print(self.option_type, self.product_type)
         knock_in_type = '_' + getattr(self, 'knock_in_type', '') if getattr(self, 'knock_in_type', '') else ''
         knock_out_type = '_' + getattr(self, 'knock_out_type', '') if getattr(self, 'knock_out_type', '') else ''
         option_ident = getattr(self, 'option_type', '') + '_' + getattr(self, 'product_type',
@@ -104,6 +141,41 @@ class OptionModel:
             self.coupon_annualized_flag,
             self.notional,
             self.participation_rate)
+    @property
+    def value_date(self):
+        return self.ctx.path.value_date \
+            if self.ctx.path and self.ctx.path.value_date \
+            else self.__value_date
+
+    @property
+    def stock_price(self) -> float:
+        return self.ctx.path.stock_price \
+            if self.ctx.path and self.ctx.path.stock_price \
+            else self.__stock_price
+
+    @property
+    def volatility(self) -> float:
+        return self.ctx.path.volatility \
+            if self.ctx.path and self.ctx.path.volatility \
+            else self.__volatility
+
+    @property
+    def interest_rate(self) -> float:
+        return self.ctx.path.interest_rate \
+            if self.ctx.path and self.ctx.path.interest_rate \
+            else self.__interest_rate
+
+    @property
+    def dividend_yield(self) -> float:
+        return self.ctx.path.dividend_yield \
+            if self.ctx.path and self.ctx.path.dividend_yield \
+            else self.__dividend_yield
+
+    @property
+    def accrued_average(self) -> float:
+        return self.ctx.path.accrued_average \
+            if self.ctx.path and self.ctx.path.accrued_average \
+            else self.__accrued_average
 
     @property
     def asset_class(self) -> AssetClass:
@@ -116,18 +188,15 @@ class OptionModel:
         return AssetType.Option
 
     @property
-    @compute
     def model(self) -> TuringModelBlackScholes:
         return TuringModelBlackScholes(self.volatility)
 
     @property
-    @compute
     def discount_curve(self) -> TuringDiscountCurveFlat:
         return TuringDiscountCurveFlat(
             self.value_date, self.interest_rate)
 
     @property
-    @compute
     def dividend_curve(self) -> TuringDiscountCurveFlat:
         return TuringDiscountCurveFlat(
             self.value_date, self.dividend_yield)
@@ -175,9 +244,10 @@ class OptionModel:
         return self.option().rho_q(*self.params())
 
 
-class Option(Priceable, OptionModel):
+class Option(Priceable):
     """eqoption orm定义,取数据用"""
     asset_id = StringField('asset_id')
+    type = StringField('type')
     option_type = StringField("option_type")
     product_type = StringField("product_type")
     underlier = StringField("underlier")
@@ -219,6 +289,7 @@ class Option(Priceable, OptionModel):
         self.accrued_average = quote.accrued_average
 
 
+@model
 @dataclass
 class EqOption(OptionModel):
     """
@@ -278,34 +349,28 @@ class EqOption(OptionModel):
     interest_rate: float = None  # 无风险利率
     dividend_yield: float = None  # 股息率
     accrued_average: float = None  # 应计平均价
-    option_data: InitVar[dict] = None
     ctx: Context = ctx
     knock_out_type: str = None
+    obj: (Stock, Option) = None
 
-    def __post_init__(self, option_data):
-        self.__option_data = option_data
-        self.quote_obj = Quotes()
-        self.option_obj = Option()
+    def __post_init__(self):
+        quote = Quotes()
+        self.name = 'No name'
+        self.value_date = quote.value_date
+        self.stock_price = quote.stock_price
+        self.volatility = quote.volatility
+        self.interest_rate = quote.interest_rate
+        self.dividend_yield = quote.dividend_yield
+        self.accrued_average = quote.accrued_average
 
-    def from_json(self):
-        option_data = deepcopy(self.__option_data)
-        option_data = convert_map(option_data, pascal_to_snake)
-        logger.debug(option_data)
-        self.quote_obj.resolve(_resource=option_data)
-        self.option_obj.resolve(_resource=option_data)
-
-    def __getattr__(self, item):
-        logger.debug(f'item:{item}')
-        try:
-            return getattr(self.quote_obj, item)
-        except Exception as e:
-            logger.debug(str(e))
-            getattr(self.option_obj, item, '')
-
+    def resolve(self):
+        for k, v in self.obj.items():
+            # print(k,v)
+            setattr(self, k, v)
 
 if __name__ == '__main__':
     eq = EqOption(asset_id='123', option_type='call', product_type='European', expiration_date=TuringDate(12, 2, 2021),
-                  strike_price=90, multiplier=10000)
+                  strike_price=90, multiplier=10000, dividend_curve=0.3)
     # eq.from_json()
-    # eq.price()
-    logger.debug(f"eq.asset_id,notional: {eq.asset_id},{eq.notional}")
+    eq.price()
+    # logger.debug(f"eq.asset_id,notional: {eq.asset_id},{eq.notional}")
