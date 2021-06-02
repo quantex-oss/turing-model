@@ -18,6 +18,7 @@ from turing_models.products.equity import TuringEquitySnowballOption, TuringEqui
 from turing_models.utilities import TuringDate, option_type_dict
 
 
+@model
 class OptionModel:
     """eq_option功能集"""
 
