@@ -3,7 +3,7 @@ from dataclasses import dataclass, InitVar
 from typing import Union
 
 from loguru import logger
-from tunny.compute import compute
+from tunny import model, compute
 
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField, Context
 from fundamental.base import ctx
