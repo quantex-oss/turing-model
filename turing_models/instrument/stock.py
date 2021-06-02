@@ -35,7 +35,7 @@ class Stock(Priceable):
         return self.stock_price * self.quantity * self.multiplier
 
     def delta(self):
-        return self.quantity * self.multiplier
+        return self.multiplier
     
     def gamma(self):
         return 0
