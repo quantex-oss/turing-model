@@ -35,7 +35,7 @@ class Stock(Priceable):
 
     def delta(self):
         return self.quantity * self.multiplier
-
+    
     def gamma(self):
         return 0
 
@@ -50,3 +50,4 @@ class Stock(Priceable):
 
     def rho_q(self):
         return 0
+

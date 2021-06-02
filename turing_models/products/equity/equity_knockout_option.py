@@ -1,6 +1,7 @@
 import numpy as np
 from enum import Enum
 
+from turing_models.utilities import TuringEquityKnockoutTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.products.equity.equity_option import TuringEquityOption
@@ -14,12 +15,6 @@ from turing_models.utilities.turing_date import TuringDate
 
 ###############################################################################
 
-
-class TuringEquityKnockoutTypes(Enum):
-    DOWN_AND_OUT_CALL = 1
-    UP_AND_OUT_CALL = 2
-    UP_AND_OUT_PUT = 3
-    DOWN_AND_OUT_PUT = 4
 
 ###############################################################################
 

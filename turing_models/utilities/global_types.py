@@ -62,3 +62,34 @@ class TuringKnockInTypes(Enum):
     RETURN = 0
     VANILLA = 1
     SPREADS = 2
+
+class TuringEquityKnockoutTypes(Enum):
+    DOWN_AND_OUT_CALL = 1
+    UP_AND_OUT_CALL = 2
+    UP_AND_OUT_PUT = 3
+    DOWN_AND_OUT_PUT = 4
+
+
+option_type_dict = {
+        'call_European': {'type': TuringOptionTypes.EUROPEAN_CALL, 'option_name': ["european", "generic"]},
+        'call_American': {'type': TuringOptionTypes.AMERICAN_CALL, 'option_name': ["american", "generic"]},
+        'call_Asian': {'type': TuringOptionTypes.ASIAN_CALL, 'option_name': ["asian", "asian"]},
+        'call_Snowball': {'type': TuringOptionTypes.SNOWBALL_CALL, 'option_name': []},
+        'call_Snowball_Return': {'type': TuringKnockInTypes.RETURN, 'option_name': []},
+        'call_Snowball_Vanilla': {'type': TuringKnockInTypes.VANILLA, 'option_name': []},
+        'call_Snowball_Spreads': {'type': TuringKnockInTypes.SPREADS, 'option_name': []},
+        'call_Knockout': {'type': TuringOptionTypes.KNOCKOUT, 'option_name': []},
+        'call_Knockout_down_and_out': {'type': TuringEquityKnockoutTypes.DOWN_AND_OUT_CALL, 'option_name': []},
+        'call_Knockout_up_and_out': {'type': TuringEquityKnockoutTypes.UP_AND_OUT_PUT, 'option_name': []},
+
+        'put_European': {'type': TuringOptionTypes.EUROPEAN_PUT, 'option_name': ["european", "generic"]},
+        'put_American': {'type': TuringOptionTypes.AMERICAN_PUT, 'option_name': ["american", "generic"]},
+        'put_Asian': {'type': TuringOptionTypes.ASIAN_PUT, 'option_name': ["asian", "asian"]},
+        'put_Snowball': {'type': TuringOptionTypes.SNOWBALL_PUT, 'option_name': []},
+        'put_Snowball_Return': {'type': TuringKnockInTypes.RETURN, 'option_name': []},
+        'put_Snowball_Vanilla': {'type': TuringKnockInTypes.VANILLA, 'option_name': []},
+        'put_Snowball_Spreads': {'type': TuringKnockInTypes.SPREADS, 'option_name': []},
+        'put_Knockout': {'type': TuringOptionTypes.KNOCKOUT, 'option_name': []},
+        'put_Knockout_down_and_out': {'type': TuringEquityKnockoutTypes.DOWN_AND_OUT_PUT, 'option_name': []},
+        'put_Knockout_up_and_out': {'type': TuringEquityKnockoutTypes.UP_AND_OUT_PUT, 'option_name': []},
+    }
