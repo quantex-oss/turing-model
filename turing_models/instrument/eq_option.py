@@ -24,38 +24,50 @@ class OptionModel:
 
     @property
     def value_date_(self):
-        return self.ctx.path.value_date \
-            if self.ctx and self.ctx.path and self.ctx.path.value_date \
+        return getattr(self.ctx.path, 'value_date') \
+            if (hasattr(self, "ctx") and
+                hasattr(self.ctx, "path") and
+                getattr(self.ctx.path, 'value_date', None)) \
             else self._value_date
 
     @property
     def stock_price_(self) -> float:
-        return self.ctx.path.stock_price \
-            if self.ctx and self.ctx.path and self.ctx.path.stock_price \
+        return getattr(self.ctx.path, 'stock_price') \
+            if (hasattr(self, "ctx") and
+                hasattr(self.ctx, "path") and
+                getattr(self.ctx.path, 'stock_price', None)) \
             else self._stock_price
 
     @property
     def volatility_(self) -> float:
-        return self.ctx.path.volatility \
-            if self.ctx and self.ctx.path and self.ctx.path.volatility \
+        return getattr(self.ctx.path, 'volatility') \
+            if (hasattr(self, "ctx") and
+                hasattr(self.ctx, "path") and
+                getattr(self.ctx.path, 'volatility', None)) \
             else self._volatility
 
     @property
     def interest_rate_(self) -> float:
-        return self.ctx.path.interest_rate \
-            if self.ctx and self.ctx.path and self.ctx.path.interest_rate \
+        return getattr(self.ctx.path, 'interest_rate') \
+            if (hasattr(self, "ctx") and
+                hasattr(self.ctx, "path") and
+                getattr(self.ctx.path, 'interest_rate', None)) \
             else self._interest_rate
 
     @property
     def dividend_yield_(self) -> float:
-        return self.ctx.path.dividend_yield \
-            if self.ctx and self.ctx.path and self.ctx.path.dividend_yield \
+        return getattr(self.ctx.path, 'dividend_yield') \
+            if (hasattr(self, "ctx") and
+                hasattr(self.ctx, "path") and
+                getattr(self.ctx.path, 'dividend_yield', None)) \
             else self._dividend_yield
 
     @property
     def accrued_average_(self) -> float:
-        return self.ctx.path.accrued_average \
-            if self.ctx and self.ctx.path and self.ctx.path.accrued_average \
+        return getattr(self.ctx.path, 'accrued_average') \
+            if (hasattr(self, "ctx") and
+                hasattr(self.ctx, "path") and
+                getattr(self.ctx.path, 'accrued_average', None)) \
             else self._accrued_average
 
     def option_name(self):
@@ -81,16 +93,16 @@ class OptionModel:
 
     def params_generic(self) -> list:
         return [
-            self.value_date,
-            self.stock_price,
+            self.value_date_,
+            self.stock_price_,
             self.discount_curve,
             self.dividend_curve,
             self.model
         ]
 
     def params_asian(self) -> list:
-        return [self.value_date,
-                self.stock_price,
+        return [self.value_date_,
+                self.stock_price_,
                 self.discount_curve,
                 self.dividend_curve,
                 self.model,
@@ -153,19 +165,17 @@ class OptionModel:
 
     @property
     def model(self) -> TuringModelBlackScholes:
-        return TuringModelBlackScholes(self.volatility)
+        return TuringModelBlackScholes(self.volatility_)
 
     @property
     def discount_curve(self) -> TuringDiscountCurveFlat:
-        print(
-            f"self.interest_rate :{self.ctx.path.interest_rate if self.ctx and self.ctx.path and self.ctx.path.interest_rate else self.interest_rate}")
         return TuringDiscountCurveFlat(
-            self.value_date, self.interest_rate_)
+            self.value_date_, self.interest_rate_)
 
     @property
     def dividend_curve(self) -> TuringDiscountCurveFlat:
         return TuringDiscountCurveFlat(
-            self.value_date, self.dividend_yield)
+            self.value_date_, self.dividend_yield_)
 
     @compute
     def price(self) -> float:
