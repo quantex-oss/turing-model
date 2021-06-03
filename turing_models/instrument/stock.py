@@ -23,8 +23,8 @@ class Stock(Priceable):
     def __init__(self, **kw):
         super(Stock, self).__init__(**kw)
         self.multiplier = 100
-        # quote = Quotes()
-        # self.stock_price = quote.stock_price
+        quote = Quotes()
+        self.stock_price = quote.stock_price
 
     def price(self):
         """"计算一手股票的价格"""
