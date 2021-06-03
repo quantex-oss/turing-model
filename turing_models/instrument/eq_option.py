@@ -317,7 +317,6 @@ class EqOption(OptionModel):
     dividend_yield: float = None  # 股息率
     accrued_average: float = None  # 应计平均价
     ctx: Context = ctx
-    knock_out_type: str = None
     obj: Optional[Option] = None
 
     def __post_init__(self):
