@@ -4,12 +4,12 @@ from turing_models.utilities import TuringDate
 
 class Quotes(Priceable):
     name: str = StringField('name')  # 对象标识名
-    value_date: (str, TuringDate) = StringField('value_date')  # 估值日期
-    stock_price: float = FloatField('stock_price')  # 股票价格
+    value_date: (str, TuringDate) = StringField('valueDate')  # 估值日期
+    stock_price: float = FloatField('stockPrice')  # 股票价格
     volatility: float = FloatField('volatility')  # 波动率
-    interest_rate: float = FloatField('interest_rate')  # 无风险利率
-    dividend_yield: float = FloatField('dividend_yield')  # 股息率
-    accrued_average: float = FloatField('accrued_average')  # 应计平均价
+    interest_rate: float = FloatField('interestRate')  # 无风险利率
+    dividend_yield: float = FloatField('dividendYield')  # 股息率
+    accrued_average: float = FloatField('accruedAverage')  # 应计平均价
 
     def __init__(self, **kw):
         super().__init__(**kw)
