@@ -1,4 +1,5 @@
 from dataclasses import dataclass, InitVar
+from typing import Optional
 
 from loguru import logger
 from tunny import model, compute
@@ -294,7 +295,6 @@ class Option(Priceable):
         self.accrued_average = quote.accrued_average
 
 
-@model
 @dataclass
 class EqOption(OptionModel):
     """
@@ -302,14 +302,16 @@ class EqOption(OptionModel):
         支持多种参数传入方式
         Examples:
         1.
-        # >>> eq = EqOption(option_type='call',product_type='European',option_data={'asset_id': '123'})
+        # >>> eq = EqOption(asset_id='123', option_type='call', product_type='European', expiration_date=TuringDate(12, 2, 2021), strike_price=90, multiplier=10000)
         # >>> eq.from_json()
         # >>> eq.price()
         2.
         # >>> eq = EqOption(option_type='call',product_type='European',expiration_date=TuringDate(12, 2, 2021), strike_price=90, multiplier=10000)
         # >>> eq.price()
         3.
-        # >>> eq = EqOption(option_type='call',product_type='European', notional=1.00, option_data={'asset_id': '123'})
+        # >>> _option = Option()
+        # >>> _option.resolve(_resource=somedict)
+        # >>> eq = EqOption(option_type='call',product_type='European', notional=1.00, obj=_option)
         # >>> eq.from_json()
         # >>> eq.price()
     """
@@ -351,7 +353,7 @@ class EqOption(OptionModel):
     accrued_average: float = None  # 应计平均价
     ctx: Context = ctx
     knock_out_type: str = None
-    obj: (Stock, Option) = None
+    obj: Optional[Option] = None
 
     def __post_init__(self):
         quote = Quotes()
@@ -370,7 +372,7 @@ class EqOption(OptionModel):
 
 if __name__ == '__main__':
     eq = EqOption(asset_id='123', option_type='call', product_type='European', expiration_date=TuringDate(12, 2, 2021),
-                  strike_price=90, multiplier=10000, dividend_curve=0.3)
+                  strike_price=90, multiplier=10000)
     # eq.from_json()
-    eq.price()
+    print(eq.price())
     # logger.debug(f"eq.asset_id,notional: {eq.asset_id},{eq.notional}")
