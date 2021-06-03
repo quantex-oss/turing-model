@@ -18,8 +18,46 @@ from turing_models.utilities import TuringDate, option_type_dict
 @model
 class OptionModel:
     """eq_option功能集"""
+
     def __init__(self):
         self.ctx = ctx
+
+    @property
+    def value_date_(self):
+        return self.ctx.path.value_date \
+            if self.ctx and self.ctx.path and self.ctx.path.value_date \
+            else self._value_date
+
+    @property
+    def stock_price_(self) -> float:
+        return self.ctx.path.stock_price \
+            if self.ctx and self.ctx.path and self.ctx.path.stock_price \
+            else self._stock_price
+
+    @property
+    def volatility_(self) -> float:
+        return self.ctx.path.volatility \
+            if self.ctx and self.ctx.path and self.ctx.path.volatility \
+            else self._volatility
+
+    @property
+    def interest_rate_(self) -> float:
+        return self.ctx.path.interest_rate \
+            if self.ctx and self.ctx.path and self.ctx.path.interest_rate \
+            else self._interest_rate
+
+    @property
+    def dividend_yield_(self) -> float:
+        return self.ctx.path.dividend_yield \
+            if self.ctx and self.ctx.path and self.ctx.path.dividend_yield \
+            else self._dividend_yield
+
+    @property
+    def accrued_average_(self) -> float:
+        return self.ctx.path.accrued_average \
+            if self.ctx and self.ctx.path and self.ctx.path.accrued_average \
+            else self._accrued_average
+
     def option_name(self):
         knock_in_type = '_' + getattr(self, 'knock_in_type', '') if getattr(self, 'knock_in_type', '') else ''
         knock_out_type = '_' + getattr(self, 'knock_out_type', '') if getattr(self, 'knock_out_type', '') else ''
@@ -41,7 +79,6 @@ class OptionModel:
     def params(self, *args, **kwgs):
         return getattr(self, f'params_{getattr(self, "option_name")()[1]}')(*args, **kwgs)
 
-
     def params_generic(self) -> list:
         return [
             self.value_date,
@@ -50,7 +87,6 @@ class OptionModel:
             self.dividend_curve,
             self.model
         ]
-
 
     def params_asian(self) -> list:
         return [self.value_date,
@@ -105,42 +141,6 @@ class OptionModel:
             self.notional,
             self.participation_rate)
 
-    # @property
-    # def value_date(self):
-    #     return self.ctx.path.value_date \
-    #         if self.ctx.path and self.ctx.path.value_date \
-    #         else self.quote.value_date
-    #
-    # @property
-    # def stock_price(self) -> float:
-    #     return self.ctx.path.stock_price \
-    #         if self.ctx.path and self.ctx.path.stock_price \
-    #         else self.quote.stock_price
-    #
-    # @property
-    # def volatility(self) -> float:
-    #     return self.ctx.path.volatility \
-    #         if self.ctx.path and self.ctx.path.volatility \
-    #         else self.quote.volatility
-    #
-    #
-    # def interest_rate(self) -> float:
-    #     return self.ctx.path.interest_rate \
-    #         if self.ctx.path and self.ctx.path.interest_rate \
-    #         else self.quote.interest_rate
-    #
-    # @property
-    # def dividend_yield(self) -> float:
-    #     return self.ctx.path.dividend_yield \
-    #         if self.ctx.path and self.ctx.path.dividend_yield \
-    #         else self.quote.dividend_yield
-    #
-    # @property
-    # def accrued_average(self) -> float:
-    #     return self.ctx.path.accrued_average \
-    #         if self.ctx.path and self.ctx.path.accrued_average \
-    #         else self.quote.accrued_average
-
     @property
     def asset_class(self) -> AssetClass:
         """Equity"""
@@ -157,11 +157,10 @@ class OptionModel:
 
     @property
     def discount_curve(self) -> TuringDiscountCurveFlat:
-        print(f"self.interest_rate :{ self.ctx.path.interest_rate if self.ctx.path and self.ctx.path.interest_rate else self.interest_rate}")
+        print(
+            f"self.interest_rate :{self.ctx.path.interest_rate if self.ctx and self.ctx.path and self.ctx.path.interest_rate else self.interest_rate}")
         return TuringDiscountCurveFlat(
-            self.value_date, self.ctx.path.interest_rate \
-            if self.ctx.path and self.ctx.path.interest_rate \
-            else self.interest_rate)
+            self.value_date, self.interest_rate_)
 
     @property
     def dividend_curve(self) -> TuringDiscountCurveFlat:
@@ -174,36 +173,30 @@ class OptionModel:
             return self.option().value(*self.params()) * self.multiplier
         return self.option().value(*self.params())
 
-
     def delta(self) -> float:
         if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
             return self.option().delta(*self.params()) * self.multiplier
         return self.option().delta(*self.params())
-
 
     def gamma(self) -> float:
         if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
             return self.option().gamma(*self.params()) * self.multiplier
         return self.option().gamma(*self.params())
 
-
     def vega(self) -> float:
         if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
             return self.option().vega(*self.params()) * self.multiplier
         return self.option().vega(*self.params())
-
 
     def theta(self) -> float:
         if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
             return self.option().theta(*self.params()) * self.multiplier
         return self.option().theta(*self.params())
 
-
     def rho(self) -> float:
         if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
             return self.option().rho(*self.params()) * self.multiplier
         return self.option().rho(*self.params())
-
 
     def rho_q(self) -> float:
         if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
@@ -321,15 +314,17 @@ class EqOption(OptionModel):
     obj: Optional[Option] = None
 
     def __post_init__(self):
+        super(EqOption, self).__init__()
         self.ctx = ctx
-        self.quote = Quotes()
-        # self.name = 'No name'
-        # self.value_date = quote.value_date
-        # self.stock_price = quote.stock_price
-        # self.volatility = quote.volatility
-        # self.interest_rate = quote.interest_rate
-        # self.dividend_yield = quote.dividend_yield
-        # self.accrued_average = quote.accrued_average
+        quote = Quotes()
+        self.ctx = ctx
+        self.name = 'No name'
+        self._value_date = quote.value_date
+        self._stock_price = quote.stock_price
+        self._volatility = quote.volatility
+        self._interest_rate = quote.interest_rate
+        self._dividend_yield = quote.dividend_yield
+        self._accrued_average = quote.accrued_average
 
     def resolve(self):
         for k, v in self.obj.items():
@@ -339,6 +334,4 @@ class EqOption(OptionModel):
 if __name__ == '__main__':
     eq = EqOption(asset_id='123', option_type='call', product_type='European', expiration_date=TuringDate(12, 2, 2021),
                   strike_price=90, multiplier=10000)
-    # eq.from_json()
     print(eq.price())
-    # logger.debug(f"eq.asset_id,notional: {eq.asset_id},{eq.notional}")
