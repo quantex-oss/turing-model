@@ -17,14 +17,14 @@ class Stock(Priceable):
     wind_id = StringField('wind_id')
     sedol = StringField('sedol')
     cusip = StringField('cusip')
-    stock_price = FloatField('stock_price')
     quantity: float = FloatField('quantity')
+    stock_price: float = FloatField('price')
 
     def __init__(self, **kw):
         super(Stock, self).__init__(**kw)
         self.multiplier = 100
-        quote = Quotes()
-        self.stock_price = quote.stock_price
+        # quote = Quotes()
+        # self.stock_price = quote.stock_price
 
     def price(self):
         """"计算一手股票的价格"""
@@ -36,7 +36,7 @@ class Stock(Priceable):
 
     def delta(self):
         return self.multiplier
-    
+
     def gamma(self):
         return 0
 
@@ -51,4 +51,3 @@ class Stock(Priceable):
 
     def rho_q(self):
         return 0
-
