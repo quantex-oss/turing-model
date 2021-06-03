@@ -21,43 +21,6 @@ from turing_models.products.equity import TuringEquitySnowballOption, TuringEqui
 from turing_models.utilities import TuringDate, option_type_dict
 
 
-def merge_data(data_1, data_2):
-    """
-    使用 data_2 和 data_1 的 value 相加，合成一个新的字典。
-    对于 data_2 和 data_1 都有的 key，合成规则为保留 data_1 的 value
-    :param data_1:
-    :param data_2:
-    :return:
-    """
-    if isinstance(data_1, dict) and isinstance(data_2, dict):
-        new_dict = {}
-        d2_keys = list(data_2.keys())
-        for d1k in data_1.keys():
-            if d1k in d2_keys:  # d1,d2都有。去往深层比对
-                d2_keys.remove(d1k)
-                new_dict[d1k] = merge_data(data_1.get(d1k), data_2.get(d1k))
-            # else:
-            #     new_dict[d1k] = data_1.get(d1k)  # d1有d2没有的key
-        for d2k in d2_keys:  # d2有d1没有的key
-            new_dict[d2k] = data_2.get(d2k)
-        return new_dict
-    else:  # 递归遍历到最底层 value
-        if data_2 and data_1:
-            return data_1
-        elif data_2:
-            return data_2
-        elif data_1:
-            return data_1
-        else:  # 全为 None，0，[] 或 {}中的一个
-            return data_2
-
-
-def dict_to_obj(data, obj):
-    data2 = obj.__dict__
-    data2 = merge_data(data, data2)
-    return data2
-
-
 @model
 class OptionModel:
     """eq_option功能集"""
@@ -306,13 +269,16 @@ class EqOption(OptionModel):
         # >>> eq.from_json()
         # >>> eq.price()
         2.
-        # >>> eq = EqOption(option_type='call',product_type='European',expiration_date=TuringDate(12, 2, 2021), strike_price=90, multiplier=10000)
+        # >>> _option = Option()
+        # >>> _option.resolve(_resource=somedict)
+        # >>> eq = EqOption(obj=_option)
+        # >>> eq.resolve()
         # >>> eq.price()
         3.
         # >>> _option = Option()
         # >>> _option.resolve(_resource=somedict)
         # >>> eq = EqOption(option_type='call',product_type='European', notional=1.00, obj=_option)
-        # >>> eq.from_json()
+        # >>> eq.resolve()
         # >>> eq.price()
     """
     asset_id: str = None
@@ -367,7 +333,6 @@ class EqOption(OptionModel):
 
     def resolve(self):
         for k, v in self.obj.items():
-            # print(k,v)
             setattr(self, k, v)
 
 if __name__ == '__main__':
