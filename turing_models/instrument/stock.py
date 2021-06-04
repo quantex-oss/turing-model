@@ -18,13 +18,11 @@ class Stock(Priceable):
     sedol = StringField('sedol')
     cusip = StringField('cusip')
     quantity: float = FloatField('quantity')
-    stock_price: float = FloatField('price')
+    stock_price: float = FloatField('stock_price')
 
     def __init__(self, **kw):
         super(Stock, self).__init__(**kw)
         self.multiplier = 100
-        quote = Quotes()
-        self.stock_price = quote.stock_price
 
     def price(self):
         """"计算一手股票的价格"""

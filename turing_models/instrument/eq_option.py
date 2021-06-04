@@ -246,6 +246,7 @@ class Option(Priceable):
     knock_in_type = StringField("knock_in_type")  # yapi无值
     knock_in_strike1: float = FloatField("knock_in_strike1")  # yapi无值
     knock_in_strike2: float = FloatField("knock_in_strike2")  # yapi无值
+    stock_price: float = FloatField("stock_price")  # 股票价格
 
     def __init__(self, **kw):
         super().__init__(**kw)
@@ -253,7 +254,6 @@ class Option(Priceable):
         self.ctx = ctx
         self.name = 'No name'
         self.value_date = quote.value_date
-        self.stock_price = quote.stock_price
         self.volatility = quote.volatility
         self.interest_rate = quote.interest_rate
         self.dividend_yield = quote.dividend_yield
@@ -328,16 +328,16 @@ class EqOption(OptionModel):
         quote = Quotes()
         self.ctx = ctx
         self.name = 'No name'
-        self._value_date = quote.value_date
-        self._stock_price = quote.stock_price
-        self._volatility = quote.volatility
-        self._interest_rate = quote.interest_rate
-        self._dividend_yield = quote.dividend_yield
-        self._accrued_average = quote.accrued_average
+        self._volatility = 0.1
+        self._interest_rate = 0.02
+        self._dividend_yield = 0
+        self._accrued_average = 100
+        self._value_date = TuringDate(12, 2, 2020)
 
     def resolve(self):
         for k, v in self.obj.items():
             setattr(self, k, v)
+        self._stock_price = self.stock_price
 
 
 if __name__ == '__main__':
