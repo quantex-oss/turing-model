@@ -177,7 +177,7 @@ class OptionModel:
         return TuringDiscountCurveFlat(
             self.value_date_, self.dividend_yield_)
 
-    @compute
+
     def price(self) -> float:
         if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
             return self.option().value(*self.params()) * self.multiplier
