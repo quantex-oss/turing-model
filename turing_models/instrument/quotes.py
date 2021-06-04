@@ -15,5 +15,5 @@ class Quotes(Priceable):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.name = 'No name'
-        self.value_date = TuringDate(12, 2, 2020)
+        self.value_date = TuringDate(4, 6, 2021)
 
