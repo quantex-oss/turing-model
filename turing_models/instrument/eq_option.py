@@ -331,8 +331,8 @@ class EqOption(OptionModel):
         self._volatility = 0.1
         self._interest_rate = 0.02
         self._dividend_yield = 0
-        self._accrued_average = 100
-        self._value_date = TuringDate(12, 2, 2020)
+        self._accrued_average = 0
+        self._value_date = TuringDate(4, 6, 2021)
 
     def resolve(self):
         for k, v in self.obj.items():
