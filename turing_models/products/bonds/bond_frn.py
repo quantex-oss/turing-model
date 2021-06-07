@@ -80,7 +80,7 @@ class TuringBondFRN(object):
     def _calculateFlowDates(self):
         ''' Determine the bond cashflow payment dates. '''
 
-        # This should only be called once from init 
+        # This should only be called once from init
 
         calendarType = TuringCalendarTypes.NONE
         busDayRuleType = TuringBusDayAdjustTypes.NONE
@@ -114,7 +114,7 @@ class TuringBondFRN(object):
 
         q = self._quotedMargin
         numFlows = len(self._flowDates)
-        
+
         # We discount using Libor over the period from settlement to the ncd
         (alpha, _, _) = dayCounter.yearFrac(settlementDate, self._ncd)
         df = 1.0 / (1.0 + alpha * (currentIbor + dm))
@@ -122,9 +122,9 @@ class TuringBondFRN(object):
         # A full coupon is paid
         (alpha, _, _) = dayCounter.yearFrac(self._pcd, self._ncd)
         pv = nextCoupon * alpha * df
-        
+
         # Now do all subsequent coupons that fall after the ncd
-        for iFlow in range(1, numFlows):            
+        for iFlow in range(1, numFlows):
 
             if self._flowDates[iFlow] > self._ncd:
 
@@ -340,7 +340,7 @@ class TuringBondFRN(object):
                                   futureIbor,
                                   dm)
 
-        conv = ((p2 + p0) - 2.0 * p1) / dy / dy / p1 / self._par
+        conv = ((p2 + p0) - 2.0 * p1) / dy / dy / p1
         return conv
 
 ###############################################################################
@@ -383,7 +383,7 @@ class TuringBondFRN(object):
                        cleanPrice: float):
         ''' Calculate the bond's yield to maturity by solving the price
         yield relationship using a one-dimensional root solver. '''
-        
+
         self.calcAccruedInterest(settlementDate, nextCoupon)
 
         # Needs to be adjusted to par notional
@@ -410,7 +410,7 @@ class TuringBondFRN(object):
                             settlementDate: TuringDate,
                             nextCoupon: float):
         ''' Calculate the amount of coupon that has accrued between the
-        previous coupon date and the settlement date. Ex-dividend dates are 
+        previous coupon date and the settlement date. Ex-dividend dates are
         not handled. Contact me if you need this functionality. '''
 
         numFlows = len(self._flowDates)

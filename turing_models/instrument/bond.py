@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from fundamental.base import Priceable, StringField, FloatField, DateField
+from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.utilities import TuringDate
 from turing_models.products.bonds.bond import TuringBond, TuringFrequencyTypes, \
      TuringDayCountTypes, TuringYTMCalcType
@@ -22,7 +23,10 @@ class Bond:
     settlement_date: TuringDate = None
     yield_to_maturity: float = None
     convention: str = None
-    spot_yields: list = None
+    zero_dates: list = None
+    zero_rates: list = None
+    clean_price: float = None
+    value_date: TuringDate = None
 
     def __post_init__(self):
         self.name = 'No name'
@@ -81,7 +85,9 @@ class Bond:
 
     @property
     def discount_curve(self):
-        return
+        return TuringDiscountCurveZeros(self.value_date,
+                                        self.zero_dates,
+                                        self.zero_rates)
 
     def full_price_from_ytm(self):
         return self.bond.fullPriceFromYTM(self.settlement_date,
@@ -121,3 +127,18 @@ class Bond:
     def clean_price_from_discount_curve(self):
         return self.bond.cleanPriceFromDiscountCurve(self.settlement_date,
                                                      self.discount_curve)
+
+    def full_price_from_discount_curve(self):
+        return self.bond.fullPriceFromDiscountCurve(self.settlement_date,
+                                                    self.discount_curve)
+
+    def current_yield(self):
+        return self.bond.currentYield(self.clean_price)
+
+    def yield_to_maturity(self):
+        return self.bond.yieldToMaturity(self.settlement_date,
+                                         self.clean_price,
+                                         self.convention)
+
+    def calc_accrued_interest(self):
+        return self.bond.calcAccruedInterest(self.settlement_date)
