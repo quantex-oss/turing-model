@@ -333,6 +333,7 @@ class EqOption(OptionModel):
         self._dividend_yield = 0
         self._accrued_average = 0
         self._value_date = TuringDate(4, 6, 2021)
+        self._stock_price = self.stock_price
 
     def resolve(self):
         for k, v in self.obj.items():
