@@ -324,8 +324,6 @@ class EqOption(OptionModel):
     def __post_init__(self):
         super(EqOption, self).__init__()
         self.ctx = ctx
-        quote = Quotes()
-        self.ctx = ctx
         self.name = 'No name'
         self._volatility = 0.1
         self._interest_rate = 0.02
