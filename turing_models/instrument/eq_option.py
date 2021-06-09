@@ -350,14 +350,14 @@ class EqOption(OptionModel):
     def _set_by_dict(self, tmp_dict):
         for k, v in tmp_dict.items():
             setattr(self, k, v)
-        self.set_param()
+
 
     def resolve(self, expand_dict=None):
         if expand_dict:
             self._set_by_dict(expand_dict)
         else:
             self._set_by_dict(self.obj)
-
+        self.set_param()
 
 if __name__ == '__main__':
     eq = EqOption(asset_id='123', option_type='call',
