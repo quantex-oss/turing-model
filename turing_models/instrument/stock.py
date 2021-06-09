@@ -5,35 +5,30 @@ from turing_models.instrument.quotes import Quotes
 class Stock(Priceable):
     asset_id = StringField('asset_id')
     type = StringField('type')
-    asset_type = StringField('asset_type')
+    asset_type = StringField('assetType')
     symbol = StringField('symbol')
-    name_cn = StringField('name_cn')
-    name_en = StringField('name_en')
-    exchange_code = StringField('exchange_code')
+    name_cn = StringField('nameCn')
+    name_en = StringField('nameEn')
+    exchange_code = StringField('exchangeCode')
     currency = StringField('currency')
     bbid = StringField('bbid')
     ric = StringField('ric')
     isin = StringField('isin')
-    wind_id = StringField('wind_id')
+    wind_id = StringField('windId')
     sedol = StringField('sedol')
     cusip = StringField('cusip')
-    quantity: float = FloatField('quantity')
+    quantity: float = FloatField('quantity')  # 股数
     stock_price: float = FloatField('stock_price')
 
     def __init__(self, **kw):
         super(Stock, self).__init__(**kw)
-        self.multiplier = 100
 
     def price(self):
-        """"计算一手股票的价格"""
-        return self.stock_price * self.multiplier
-
-    def value(self):
-        """"计算持仓现值"""
-        return self.stock_price * self.quantity * self.multiplier
+        """"计算持仓股票的现价"""
+        return self.stock_price * self.quantity
 
     def delta(self):
-        return self.multiplier
+        return self.quantity
 
     def gamma(self):
         return 0

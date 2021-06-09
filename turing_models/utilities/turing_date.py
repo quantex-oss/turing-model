@@ -759,7 +759,7 @@ class TuringDate():
         global gDateFormatType
 
         dayNameStr = shortDayNames[self._weekday]
-
+        
         if self._d < 10:
             dayStr = "0" + str(self._d)
         else:
@@ -778,25 +778,25 @@ class TuringDate():
         if gDateFormatType == TuringDateFormatTypes.UK_LONGEST:
 
             sep = " "
-            dateStr = dayNameStr + " " + dayStr + sep + longMonthStr + sep + longYearStr
+            dateStr = dayNameStr + " " + longYearStr  + sep + longMonthStr + sep + dayStr
             return dateStr
 
         elif gDateFormatType == TuringDateFormatTypes.UK_LONG:
 
             sep = "-"
-            dateStr = dayStr + sep + longMonthStr + sep + longYearStr
+            dateStr = longYearStr  + sep + shortMonthStr + sep + dayStr
             return dateStr
 
         elif gDateFormatType == TuringDateFormatTypes.UK_MEDIUM:
 
             sep = "/"
-            dateStr = dayStr + sep + shortMonthStr + sep + longYearStr
+            dateStr = longYearStr  + sep + shortMonthStr + sep + dayStr
             return dateStr
 
         elif gDateFormatType == TuringDateFormatTypes.UK_SHORT:
 
             sep = "/"
-            dateStr = dayStr + sep + shortMonthStr + sep + shortYearStr
+            dateStr = shortYearStr  + sep + shortMonthStr + sep + dayStr
             return dateStr
 
         elif gDateFormatType == TuringDateFormatTypes.US_LONGEST:
@@ -849,8 +849,9 @@ class TuringDate():
                 secondStr = str(self._ss)
 
             timeStr = hourStr + ":" + minuteStr + ":" + secondStr
-            dateStr = dayStr + sep + shortMonthStr + sep + longYearStr
+            dateStr = longYearStr + sep + shortMonthStr + sep + dayStr
             dateStr = dateStr + " " + timeStr
+
             return dateStr
 
         else:

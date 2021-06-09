@@ -1,13 +1,14 @@
+import datetime
 from dataclasses import dataclass
 from typing import Optional
 
-from tunny import model, compute
+from tunny import model
 
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField, Context
 from fundamental.base import ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
+from fundamental.turing_db.utils import to_turing_date
 from turing_models.instrument.common import AssetClass, AssetType
-from turing_models.instrument.quotes import Quotes
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption, TuringEquityAsianOption, \
     TuringEquityAmericanOption, TuringEquityVanillaOption, TuringAsianOptionValuationMethods, \
@@ -177,39 +178,44 @@ class OptionModel:
         return TuringDiscountCurveFlat(
             self.value_date_, self.dividend_yield_)
 
-    @compute
+    @property
+    def run_mutiplier(self):
+        return self.product_type == 'European' \
+               or self.product_type == 'American' \
+               or self.product_type == 'Asian'
+
     def price(self) -> float:
-        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+        if self.run_mutiplier:
             return self.option().value(*self.params()) * self.multiplier
         return self.option().value(*self.params())
 
     def delta(self) -> float:
-        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+        if self.run_mutiplier:
             return self.option().delta(*self.params()) * self.multiplier
         return self.option().delta(*self.params())
 
     def gamma(self) -> float:
-        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+        if self.run_mutiplier:
             return self.option().gamma(*self.params()) * self.multiplier
         return self.option().gamma(*self.params())
 
     def vega(self) -> float:
-        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+        if self.run_mutiplier:
             return self.option().vega(*self.params()) * self.multiplier
         return self.option().vega(*self.params())
 
     def theta(self) -> float:
-        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+        if self.run_mutiplier:
             return self.option().theta(*self.params()) * self.multiplier
         return self.option().theta(*self.params())
 
     def rho(self) -> float:
-        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+        if self.run_mutiplier:
             return self.option().rho(*self.params()) * self.multiplier
         return self.option().rho(*self.params())
 
     def rho_q(self) -> float:
-        if self.product_type == 'European' or self.product_type == 'American' or self.product_type == 'Asian':
+        if self.run_mutiplier:
             return self.option().rho_q(*self.params()) * self.multiplier
         return self.option().rho_q(*self.params())
 
@@ -250,14 +256,7 @@ class Option(Priceable):
 
     def __init__(self, **kw):
         super().__init__(**kw)
-        quote = Quotes()
         self.ctx = ctx
-        self.name = 'No name'
-        self.value_date = quote.value_date
-        self.volatility = quote.volatility
-        self.interest_rate = quote.interest_rate
-        self.dividend_yield = quote.dividend_yield
-        self.accrued_average = quote.accrued_average
 
 
 @dataclass
@@ -283,6 +282,7 @@ class EqOption(OptionModel):
         # >>> eq.resolve()
         # >>> eq.price()
     """
+
     asset_id: str = None
     option_type: str = None
     product_type: str = None
@@ -290,10 +290,10 @@ class EqOption(OptionModel):
     notional: float = None
     initial_spot: float = None
     number_of_options: float = None
-    start_date: TuringDate = None
-    end_date: TuringDate = None
-    start_averaging_date: TuringDate = None
-    expiration_date: TuringDate = None
+    start_date: str = None
+    end_date: str = None
+    start_averaging_date: str = None
+    expiration_date: str = None
     participation_rate: float = None
     strike_price: float = None
     barrier: float = None
@@ -302,7 +302,7 @@ class EqOption(OptionModel):
     multiplier: float = None
     settlement_currency: str = None
     premium: float = None
-    premium_payment_date: TuringDate = None
+    premium_payment_date: str = None
     method_of_settlement: str = None
     knock_out_price: float = None  # yapi无值
     knock_in_price: float = None  # yapi无值
@@ -313,35 +313,55 @@ class EqOption(OptionModel):
     knock_in_strike1: float = None  # yapi无值
     knock_in_strike2: float = None  # yapi无值
     name: str = None  # 对象标识名
-    value_date: TuringDate = None  # 估值日期
+    value_date: str = None  # 估值日期
     stock_price: float = None  # 股票价格
-    volatility: float = None  # 波动率
-    interest_rate: float = None  # 无风险利率
-    dividend_yield: float = None  # 股息率
-    accrued_average: float = None  # 应计平均价
+    volatility: float = 0.1  # 波动率
+    interest_rate: float = 0.02  # 无风险利率
+    dividend_yield: float = 0.01  # 股息率
+    accrued_average: float = 0.1  # 应计平均价
     ctx: Context = ctx
     obj: Optional[Option] = None
 
     def __post_init__(self):
         super(EqOption, self).__init__()
         self.ctx = ctx
-        quote = Quotes()
-        self.ctx = ctx
-        self.name = 'No name'
-        self._volatility = 0.1
-        self._interest_rate = 0.02
-        self._dividend_yield = 0
-        self._accrued_average = 0
-        self._value_date = TuringDate(4, 6, 2021)
-        self._stock_price = self.stock_price
+        self.set_param()
 
-    def resolve(self):
-        for k, v in self.obj.items():
-            setattr(self, k, v)
+    def set_param(self):
+        self.name = 'No name'
+        self._volatility = self.volatility
+        self._interest_rate = self.interest_rate
+        self._dividend_yield = self.dividend_yield
+        self._accrued_average = self.accrued_average
+        self._value_date = to_turing_date(self.value_date) \
+            if self.value_date and isinstance(self.value_date, str) \
+            else TuringDate(*tuple(reversed(datetime.date.today().timetuple()[:3])))
         self._stock_price = self.stock_price
+        self.convert_date()
+
+    def convert_date(self):
+        date_fields = ["start_date", "end_date", "start_averaging_date",
+                       "expiration_date", "premium_payment_date", "value_date"]
+        for field in date_fields:
+            setattr(self, field, to_turing_date(getattr(self, field, None))
+            if getattr(self, field, None)
+               and isinstance(getattr(self, field, None), str) else getattr(self, field, None))
+
+    def _set_by_dict(self, tmp_dict):
+        for k, v in tmp_dict.items():
+            setattr(self, k, v)
+        self.set_param()
+
+    def resolve(self, expand_dict=None):
+        if expand_dict:
+            self._set_by_dict(expand_dict)
+        else:
+            self._set_by_dict(self.obj)
 
 
 if __name__ == '__main__':
-    eq = EqOption(asset_id='123', option_type='call', product_type='European', expiration_date=TuringDate(12, 2, 2021),
-                  strike_price=90, multiplier=10000)
+    eq = EqOption(asset_id='123', option_type='call',
+                  product_type='European', stock_price=511.11,
+                  expiration_date="20211121",
+                  strike_price=90, multiplier=1000)
     print(eq.price())

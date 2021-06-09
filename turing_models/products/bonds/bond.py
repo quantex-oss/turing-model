@@ -31,6 +31,7 @@ from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from fundamental.market.curves import TuringDiscountCurveFlat
 
 from scipy import optimize
 
@@ -261,12 +262,59 @@ class TuringBond(object):
         return md
 
 ###############################################################################
+    def macauleyDuration_new(self,
+                             settlementDate: TuringDate,
+                             ytm: float,
+                             convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+        ''' Calculate the Macauley duration of the bond on a settlement date
+        given its yield to maturity. '''
 
+        if settlementDate > self._maturityDate:
+            raise TuringError("Bond settles after it matures.")
+
+        discount_curve = TuringDiscountCurveFlat(settlementDate, ytm)
+
+        px = 0.0
+        df = 1.0
+        dfSettle = discount_curve.df(settlementDate)
+        dc = TuringDayCount(TuringDayCountTypes.ACT_ACT_ISDA)
+
+        for dt in self._flowDates[1:]:
+
+            dates = dc.yearFrac(settlementDate, dt)[0]
+            # coupons paid on the settlement date are included
+            if dt >= settlementDate:
+                df = discount_curve.df(dt)
+                flow = self._coupon / self._frequency
+                pv = flow * df * dates * self._par
+                px += pv
+
+        px += df * self._redemption * self._par * dates
+        px = px / dfSettle
+
+        fp = self.fullPriceFromDiscountCurve(settlementDate, discount_curve)
+        dmac = px / fp
+
+        return dmac
+###############################################################################
+
+    def modifiedDuration_new(self,
+                             settlementDate: TuringDate,
+                             ytm: float,
+                             convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+        ''' Calculate the modified duration of the bond on a settlement date
+        given its yield to maturity. '''
+
+        dmac = self.macauleyDuration_new(settlementDate, ytm, convention)
+        md = dmac / (1.0 + ytm / self._frequency)
+        return md
+
+###############################################################################
     def modifiedDuration(self,
                          settlementDate: TuringDate,
                          ytm: float,
                          convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
-        ''' Calculate the modified duration of the bondon a settlement date
+        ''' Calculate the modified duration of the bond on a settlement date
         given its yield to maturity. '''
 
         dd = self.dollarDuration(settlementDate, ytm, convention)
@@ -287,8 +335,45 @@ class TuringBond(object):
         p0 = self.fullPriceFromYTM(settlementDate, ytm - dy, convention)
         p1 = self.fullPriceFromYTM(settlementDate, ytm, convention)
         p2 = self.fullPriceFromYTM(settlementDate, ytm + dy, convention)
-        conv = ((p2 + p0) - 2.0 * p1) / dy / dy / p1 / self._par
+        conv = ((p2 + p0) - 2.0 * p1) / dy / dy / p1
         return conv
+
+###############################################################################
+
+    def convexityFromYTM_new(self,
+                             settlementDate: TuringDate,
+                             ytm: float,
+                             convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+        ''' Calculate the bond convexity from the yield to maturity. This
+        function is vectorised with respect to the yield input. '''
+
+        if settlementDate > self._maturityDate:
+            raise TuringError("Bond settles after it matures.")
+
+        discount_curve = TuringDiscountCurveFlat(settlementDate, ytm)
+
+        px = 0.0
+        df = 1.0
+        dfSettle = discount_curve.df(settlementDate)
+        dc = TuringDayCount(TuringDayCountTypes.ACT_ACT_ISDA)
+
+        for dt in self._flowDates[1:]:
+
+            dates = dc.yearFrac(settlementDate, dt)[0]
+            # coupons paid on the settlement date are included
+            if dt >= settlementDate:
+                df = discount_curve.df(dt)
+                flow = self._coupon / self._frequency
+                pv = flow * df * dates * (dates + 1 / self._frequency) * self._par
+                px += pv
+
+        px += df * self._redemption * self._par * dates * (dates + 1 / self._frequency)
+        px = px / dfSettle
+
+        fp = self.fullPriceFromDiscountCurve(settlementDate, discount_curve)
+        dmac = px / fp / (1.0 + ytm / self._frequency)**2
+
+        return dmac
 
 ###############################################################################
 
@@ -369,7 +454,7 @@ class TuringBond(object):
     def yieldToMaturity(self,
                         settlementDate: TuringDate,
                         cleanPrice: float,
-                        convention: TuringYTMCalcType = TuringYTMCalcType.US_TREASURY):
+                        convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
         ''' Calculate the bond's yield to maturity by solving the price
         yield relationship using a one-dimensional root solver. '''
 
