@@ -759,7 +759,7 @@ class TuringDate():
         global gDateFormatType
 
         dayNameStr = shortDayNames[self._weekday]
-        print("gDateFormatType:", gDateFormatType)
+        
         if self._d < 10:
             dayStr = "0" + str(self._d)
         else:

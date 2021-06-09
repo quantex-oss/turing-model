@@ -346,7 +346,6 @@ class EqOption(OptionModel):
             setattr(self, field, to_turing_date(getattr(self, field, None))
             if getattr(self, field, None)
                and isinstance(getattr(self, field, None), str) else getattr(self, field, None))
-        print(self._value_date)
 
     def _set_by_dict(self, tmp_dict):
         for k, v in tmp_dict.items():
