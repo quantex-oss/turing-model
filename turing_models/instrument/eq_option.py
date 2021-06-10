@@ -7,7 +7,6 @@ from tunny import model
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField, Context
 from fundamental.base import ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
-from fundamental.turing_db.utils import to_turing_date
 from turing_models.instrument.common import AssetClass, AssetType
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption, TuringEquityAsianOption, \
@@ -311,14 +310,13 @@ class EqOption(OptionModel):
     knock_in_strike1: float = None  # yapi无值
     knock_in_strike2: float = None  # yapi无值
     name: str = None  # 对象标识名
-    value_date: str = None  # 估值日期
+    value_date: str = TuringDate(*tuple(datetime.date.today().timetuple()[:3]))  # 估值日期
     stock_price: float = None  # 股票价格
     volatility: float = 0.1  # 波动率
     interest_rate: float = 0.02  # 无风险利率
     dividend_yield: float = 0.01  # 股息率
     accrued_average: float = 0.1  # 应计平均价
     ctx: Context = ctx
-    obj: Optional[Option] = None
 
     def __post_init__(self):
         super(EqOption, self).__init__()
@@ -331,32 +329,18 @@ class EqOption(OptionModel):
         self._interest_rate = self.interest_rate
         self._dividend_yield = self.dividend_yield
         self._accrued_average = self.accrued_average
-        # self._value_date = to_turing_date(self.value_date) \
-        #     if self.value_date and isinstance(self.value_date, str) \
-        #     else TuringDate(*tuple(reversed(datetime.date.today().timetuple()[:3])))
         self._value_date = self.value_date
         self._stock_price = self.stock_price
-        # self.convert_date()
-
-    # def convert_date(self):
-    #     date_fields = ["start_date", "end_date", "start_averaging_date",
-    #                    "expiration_date", "premium_payment_date", "value_date"]
-    #     for field in date_fields:
-    #         setattr(self, field, to_turing_date(getattr(self, field, None))
-    #         if getattr(self, field, None)
-    #            and isinstance(getattr(self, field, None), str) else getattr(self, field, None))
 
     def _set_by_dict(self, tmp_dict):
         for k, v in tmp_dict.items():
             setattr(self, k, v)
 
-
-    def resolve(self, expand_dict=None):
+    def resolve(self, expand_dict):
         if expand_dict:
             self._set_by_dict(expand_dict)
-        else:
-            self._set_by_dict(self.obj)
         self.set_param()
+
 
 if __name__ == '__main__':
     eq = EqOption(asset_id='123', option_type='call',
