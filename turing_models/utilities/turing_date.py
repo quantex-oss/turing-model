@@ -783,7 +783,7 @@ class TuringDate():
 
         elif gDateFormatType == TuringDateFormatTypes.UK_LONG:
 
-            sep = "-"
+            sep = ""
             dateStr = longYearStr  + sep + shortMonthStr + sep + dayStr
             return dateStr
 
