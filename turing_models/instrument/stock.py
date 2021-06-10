@@ -19,6 +19,7 @@ class Stock(Priceable):
     cusip = StringField('cusip')
     quantity: float = FloatField('quantity')  # 股数
     stock_price: float = FloatField('stock_price')
+    volatility: float = FloatField('volatility')
 
     def __init__(self, **kw):
         super(Stock, self).__init__(**kw)

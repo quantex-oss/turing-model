@@ -308,7 +308,7 @@ class EqOption(OptionModel):
     knock_in_price: float = None  # yapi无值
     coupon_rate: float = None  # yapi无值
     coupon_annualized_flag: bool = None  # yapi无值
-    knock_out_type: str = None  # yapi无值
+    knock_out_type: str = None  # yapi无值---
     knock_in_type: str = None  # yapi无值
     knock_in_strike1: float = None  # yapi无值
     knock_in_strike2: float = None  # yapi无值
@@ -351,13 +351,13 @@ class EqOption(OptionModel):
         for k, v in tmp_dict.items():
             setattr(self, k, v)
 
-
     def resolve(self, expand_dict=None):
         if expand_dict:
             self._set_by_dict(expand_dict)
         else:
             self._set_by_dict(self.obj)
         self.set_param()
+
 
 if __name__ == '__main__':
     eq = EqOption(asset_id='123', option_type='call',
