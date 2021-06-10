@@ -33,7 +33,7 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -102,7 +102,7 @@ def test_FinFXMktVolSurface2(verboseCalibration):
         # Example from Book extract by Iain Clarke using Tables 3.3 and 3.4
         # print("EURJPY EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "JPY"
@@ -172,7 +172,7 @@ def test_FinFXMktVolSurface3(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 4.4 and 4.5
         # where we examine the calibration to a full surface in Chapter 4
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -196,7 +196,7 @@ def test_FinFXMktVolSurface3(verboseCalibration):
 
         # I HAVE NO YET MADE DELTA METHOD A VECTOR FOR EACH TERM AS I WOULD
         # NEED TO DO AS DESCRIBED IN CLARK PAGE 70
-        
+
         atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
         deltaMethod = TuringFXDeltaMethod.FORWARD_DELTA # THIS IS DIFFERENT
         volFunctionType = TuringVolFunctionTypes.CLARK5
@@ -235,35 +235,35 @@ def test_FinFXMktVolSurface3(verboseCalibration):
                 print("SUM:", dbns[i].sum())
 
         # Test interpolation
-        
+
         years = [1.0, 1.5, 2.0]
         dates = valueDate.addYears(years)
 
         strikes = np.linspace(1.0, 2.0, 20)
 
         if 1==1:
-            volSurface = []        
+            volSurface = []
             for k in strikes:
                 volSmile = []
                 for dt in dates:
                     vol = fxMarketPlus.volatilityFromStrikeDate(k, dt)
                     volSmile.append(vol*100.0)
-                    
+
                     print(k, dt, vol*100.0)
                 volSurface.append(volSmile)
-    
+
             fig = plt.figure()
             ax = fig.add_subplot(111, projection='3d')
             X, Y = np.meshgrid(years, strikes)
             zs = np.array(volSurface)
             Z = zs.reshape(X.shape)
-            
+
             ax.plot_surface(X, Y, Z)
-            
+
             ax.set_xlabel('Years')
             ax.set_ylabel('Strikes')
             ax.set_zlabel('Volatility')
-            
+
             plt.show()
 
         #######################################################################
@@ -271,7 +271,7 @@ def test_FinFXMktVolSurface3(verboseCalibration):
         deltas = np.linspace(0.10, 0.90, 17)
 
         if 1==1:
-            volSurface = []        
+            volSurface = []
             for delta in deltas:
                 volSmile = []
                 for dt in dates:
@@ -280,15 +280,15 @@ def test_FinFXMktVolSurface3(verboseCalibration):
                     print(delta, k, dt, vol*100.0)
 
                 volSurface.append(volSmile)
-    
+
             fig = plt.figure()
             ax = fig.add_subplot(111, projection='3d')
             X, Y = np.meshgrid(years, deltas)
             zs = np.array(volSurface)
             Z = zs.reshape(X.shape)
-            
+
             ax.plot_surface(X, Y, Z)
-            
+
             ax.set_xlabel('Years')
             ax.set_ylabel('Delta')
             ax.set_zlabel('Volatility')
@@ -303,13 +303,13 @@ def test_FinFXMktVolSurface4(verboseCalibration):
     ###########################################################################
     # Here I remove the 25D Vols
     ###########################################################################
-    
+
     if 1 == 1:
 
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -331,7 +331,7 @@ def test_FinFXMktVolSurface4(verboseCalibration):
 
         marketStrangle25DeltaVols = None
         riskReversal25DeltaVols = None
-        
+
         notionalCurrency = forName
 
         atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
@@ -365,7 +365,7 @@ def test_FinFXMktVolSurface4(verboseCalibration):
         deltas = np.linspace(0.10, 0.90, 17)
 
         if 1==1:
-            volSurface = []        
+            volSurface = []
             for delta in deltas:
                 volSmile = []
                 for dt in dates:
@@ -374,15 +374,15 @@ def test_FinFXMktVolSurface4(verboseCalibration):
                     print(delta, k, dt, vol*100.0)
 
                 volSurface.append(volSmile)
-    
+
             fig = plt.figure()
             ax = fig.add_subplot(111, projection='3d')
             X, Y = np.meshgrid(years, deltas)
             zs = np.array(volSurface)
             Z = zs.reshape(X.shape)
-            
+
             ax.plot_surface(X, Y, Z)
-            
+
             ax.set_xlabel('Years')
             ax.set_ylabel('Delta')
             ax.set_zlabel('Volatility')
@@ -396,13 +396,13 @@ def test_FinFXMktVolSurface5(verboseCalibration):
     ###########################################################################
     # Here I remove the 10D Vols
     ###########################################################################
-    
+
     if 1 == 1:
 
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -424,7 +424,7 @@ def test_FinFXMktVolSurface5(verboseCalibration):
 
         marketStrangle10DeltaVols = None
         riskReversal10DeltaVols = None
-        
+
         notionalCurrency = forName
 
         atmMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL
@@ -467,9 +467,9 @@ if __name__ == '__main__':
     test_FinFXMktVolSurface3(verboseCalibration)
     test_FinFXMktVolSurface4(verboseCalibration)
     test_FinFXMktVolSurface5(verboseCalibration)
-    
+
     end = time.time()
-    
+
     elapsed = end - start
 #    print("Elapsed Time:", elapsed)
     testCases.compareTestCases()

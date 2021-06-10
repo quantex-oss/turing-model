@@ -47,7 +47,7 @@ class TuringBondFuture(object):
         newMat = self._firstDeliveryDate.addMonths(roundedTmatInMonths)
         face = 1.0
 
-        issueDate = TuringDate(newMat._d, newMat._m, 2000)
+        issueDate = TuringDate(2000, newMat._m, newMat._d)
 
         newBond = TuringBond(issueDate,
                              newMat,

@@ -20,7 +20,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinCDSCurve():
 
-    curveDate = TuringDate(20, 12, 2018)
+    curveDate = TuringDate(2018, 12, 20)
 
     swaps = []
     depos = []

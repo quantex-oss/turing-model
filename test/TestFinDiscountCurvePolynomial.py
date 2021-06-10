@@ -21,7 +21,7 @@ PLOT_GRAPHS = False
 def test_FinDiscountCurvePolynomial():
 
     times = np.linspace(0.00, 10.0, 21)
-    curveDate = TuringDate(2, 2, 2019)
+    curveDate = TuringDate(2019, 2, 2)
     dates = curveDate.addYears(times)
     coeffs = [0.0004, -0.0001, 0.00000010]
     curve1 = TuringDiscountCurvePoly(curveDate, coeffs)

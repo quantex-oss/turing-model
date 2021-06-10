@@ -269,7 +269,7 @@ class TuringBondConvertible(object):
         ''' Create TuringBondConvertible object by providing the bond Maturity
         date, coupon, frequency type, accrual convention type and then all of
         the details regarding the conversion option including the list of the
-        call and put dates and the corresponding list of call and put prices. 
+        call and put dates and the corresponding list of call and put prices.
         '''
 
         checkArgumentTypes(self.__init__, locals())
@@ -311,7 +311,7 @@ class TuringBondConvertible(object):
         self._conversionRatio = conversionRatio
         self._faceAmount = faceAmount
 
-        self._settlementDate = TuringDate(1, 1, 1900)
+        self._settlementDate = TuringDate(1900, 1, 1)
         ''' I do not determine cashflow dates as I do not want to require
         users to supply the issue date and without that I do not know how
         far to go back in the cashflow date schedule. '''
@@ -319,7 +319,7 @@ class TuringBondConvertible(object):
         self._accruedInterest = None
         self._accruedDays = 0.0
         self._alpha = 0.0
-       
+
 ###############################################################################
 
     def _calculateFlowDates(self,
@@ -555,7 +555,7 @@ class TuringBondConvertible(object):
 
         (accFactor, num, _) = dc.yearFrac(self._pcd,
                                           settlementDate,
-                                          self._ncd, 
+                                          self._ncd,
                                           self._frequency)
 
         self._alpha = 1.0 - accFactor * self._frequency

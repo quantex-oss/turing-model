@@ -30,9 +30,9 @@ class TuringInflationBond(TuringBond):
                  numExDividendDays: int = 0): # Value of CPI index at bond issue date
         ''' Create TuringInflationBond object by providing Maturity, Frequency,
         coupon, frequency and the accrual convention type. You must also supply
-        the base CPI used for all coupon and principal related calculations. 
+        the base CPI used for all coupon and principal related calculations.
         The class inherits from TuringBond so has many similar functions. The YTM'''
-        
+
         checkArgumentTypes(self.__init__, locals())
 
         if issueDate >= maturityDate:
@@ -53,11 +53,11 @@ class TuringInflationBond(TuringBond):
         self._flowDates = []
         self._flowAmounts = []
 
-        self._settlementDate = TuringDate(1, 1, 1900)
+        self._settlementDate = TuringDate(1900, 1, 1)
         self._accruedInterest = None
         self._accruedDays = 0.0
         self._alpha = 0.0
-                   
+
         self._calculateFlowDates()
         self._calculateFlowAmounts()
 
@@ -104,9 +104,9 @@ class TuringInflationBond(TuringBond):
         We assume no ex-dividend period.
         '''
 
-        self.calcAccruedInterest(settlementDate)        
+        self.calcAccruedInterest(settlementDate)
         indexRatio = referenceCPI/self._baseCPIValue
-        self._inflationAccruedInterest = self._accruedInterest * indexRatio        
+        self._inflationAccruedInterest = self._accruedInterest * indexRatio
         return self._inflationAccruedInterest
 
 ###############################################################################

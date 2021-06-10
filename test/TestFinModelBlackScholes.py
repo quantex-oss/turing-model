@@ -23,8 +23,8 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def testFinModelBlackScholes():
 
-    valueDate = TuringDate(8, 5, 2015)
-    expiryDate = TuringDate(15, 1, 2016)
+    valueDate = TuringDate(2015, 5, 8)
+    expiryDate = TuringDate(2016, 1, 15)
 
     strikePrice = 130.0
     stockPrice = 127.62
@@ -34,16 +34,16 @@ def testFinModelBlackScholes():
 
     optionType = TuringOptionTypes.AMERICAN_CALL
     euOptionType = TuringOptionTypes.EUROPEAN_CALL
-    
+
     amOption = TuringEquityAmericanOption(expiryDate, strikePrice,
                                           optionType)
-    
+
     ameuOption = TuringEquityAmericanOption(expiryDate, strikePrice,
                                             euOptionType)
-    
+
     euOption = TuringEquityVanillaOption(expiryDate, strikePrice,
                                          euOptionType)
-    
+
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate,
                                             TuringFrequencyTypes.CONTINUOUS,
                                             TuringDayCountTypes.ACT_365F)
@@ -51,31 +51,31 @@ def testFinModelBlackScholes():
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield,
                                             TuringFrequencyTypes.CONTINUOUS,
                                             TuringDayCountTypes.ACT_365F)
-    
+
     numStepsPerYear = 400
-    
+
     modelTree = TuringModelBlackScholes(volatility,
                                         TuringModelBlackScholesTypes.CRR_TREE,
                                         numStepsPerYear)
-    
-    v = amOption.value(valueDate, stockPrice, discountCurve, 
+
+    v = amOption.value(valueDate, stockPrice, discountCurve,
                            dividendCurve, modelTree)
 #    print(v)
 
     modelApprox = TuringModelBlackScholes(volatility,
                                           TuringModelBlackScholesTypes.BARONE_ADESI)
 
-    v = amOption.value(valueDate, stockPrice, discountCurve, 
+    v = amOption.value(valueDate, stockPrice, discountCurve,
                        dividendCurve, modelApprox)
 
 #    print(v)
 
-    v = ameuOption.value(valueDate, stockPrice, discountCurve, 
+    v = ameuOption.value(valueDate, stockPrice, discountCurve,
                            dividendCurve, modelTree)
 
 #    print(v)
 
-    v = euOption.value(valueDate, stockPrice, discountCurve, 
+    v = euOption.value(valueDate, stockPrice, discountCurve,
                          dividendCurve, modelTree)
 
 #    print(v)
@@ -87,7 +87,7 @@ def testFinModelBlackScholes():
     volatility = 0.20
 
     # numStepsPerYear = range(5, 200, 1)
-    
+
     # for numSteps in numStepsPerYear:
 
     #     modelTree = TuringModelBlackScholes(volatility,
@@ -101,24 +101,24 @@ def testFinModelBlackScholes():
     #                                     TuringModelBlackScholesTypes.BARONE_ADESI)
 
 
-    #     v_am = amOption.value(valueDate, stockPrice, discountCurve, 
+    #     v_am = amOption.value(valueDate, stockPrice, discountCurve,
     #                           dividendYield, modelTree)
 
-    #     v_eu = ameuOption.value(valueDate, stockPrice, discountCurve, 
+    #     v_eu = ameuOption.value(valueDate, stockPrice, discountCurve,
     #                             dividendYield, modelTree)
- 
-    #     v_bs = euOption.value(valueDate, stockPrice, discountCurve, 
+
+    #     v_bs = euOption.value(valueDate, stockPrice, discountCurve,
     #                           dividendYield, modelAnal)
 
-    #     v_am_baw = amOption.value(valueDate, stockPrice, discountCurve, 
+    #     v_am_baw = amOption.value(valueDate, stockPrice, discountCurve,
     #                               dividendYield, modelBAW)
-        
+
     #     amTreeValue.append(v_am)
     #     euTreeValue.append(v_eu)
     #     euAnalValue.append(v_bs)
     #     amBAWValue.append(v_am_baw)
-        
-    
+
+
     # plt.title("American PUT Option Price Convergence Analysis")
     # plt.plot(numStepsPerYear, amTreeValue, label="American Tree")
     # plt.plot(numStepsPerYear, amBAWValue, label="American BAW")

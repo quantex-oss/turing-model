@@ -17,15 +17,15 @@ def test_FinEquityDigitalOption():
 
     underlyingType = TuringDigitalOptionTypes.CASH_OR_NOTHING
 
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 1, 2016)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2016, 1, 1)
     stockPrice = 100.0
     volatility = 0.30
     interestRate = 0.05
     dividendYield = 0.01
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)
     dividendCurve = TuringDiscountCurveFlat(valueDate, dividendYield)
-    
+
     model = TuringModelBlackScholes(volatility)
     import time
 

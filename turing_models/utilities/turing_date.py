@@ -88,7 +88,7 @@ def isLeapYear(y: int):
 
 def parse_date(dateStr, dateFormat):
     dt_obj = datetime.datetime.strptime(dateStr, dateFormat)
-    return dt_obj.day, dt_obj.month, dt_obj.year
+    return dt_obj.year, dt_obj.month, dt_obj.day
 
 ###############################################################################
 # CREATE DATE COUNTER
@@ -155,7 +155,7 @@ def calculateList():
 ###############################################################################
 
 @njit(fastmath=True, cache=True)
-def dateIndex(d, m, y):
+def dateIndex(y, m, d):
     # the first element(1900.1.1) will be idx=0
     idx = (y-gStartYear) * 12 * 31 + (m-1) * 31 + (d-1)
     return idx
@@ -169,7 +169,7 @@ def dateFromIndex(idx):
     y = int(gStartYear + idx/12/31)
     m = 1 + int((idx - (y-gStartYear) * 12 * 31) / 31)
     d = 1 + idx - (y-gStartYear) * 12 * 31 - (m-1) * 31
-    return (d, m, y)
+    return (y, m, d)
 
 ###############################################################################
 
@@ -195,14 +195,14 @@ class TuringDate():
 
     ###########################################################################
 
-    def __init__(self, d, m, y, hh=0, mm=0, ss=0):
-        ''' Create a date given a day of month, month and year. The arguments
+    def __init__(self, y, m, d, hh=0, mm=0, ss=0):
+        ''' Create a date given a day of year month and day. The arguments
         must be in the order of day (of month), month number and then the year.
         The year must be a 4-digit number greater than or equal to 1900. The
         user can also supply an hour, minute and second for intraday work.
 
         Example Input:
-        start_date = TuringDate(1, 1, 2018)
+        start_date = TuringDate(2018, 1, 1)
         '''
 
         global gStartYear
@@ -210,7 +210,7 @@ class TuringDate():
 
         # If the date has been entered as y, m, d we flip it to d, m, y
         if d >= gStartYear and d < gEndYear and y > 0 and y <= 31:
-            raise TuringError("Dates must be in the format TuringDate(dd, mm, yyyy")
+            raise TuringError("Dates must be in the format TuringDate(yyyy, mm, dd)")
 
         if gDateCounterList is None:
             calculateList()
@@ -239,11 +239,11 @@ class TuringDate():
 
         if leapYear:
             if d > monthDaysLeapYear[m - 1]:
-                print(d, m, y)
+                print(y, m, d)
                 raise TuringError("Date: Leap year. Day not valid.")
         else:
             if d > monthDaysNotLeapYear[m - 1]:
-                print(d, m, y)
+                print(y, m, d)
                 raise TuringError("Date: Not Leap year. Day not valid.")
 
         if hh < 0 or hh > 23:
@@ -277,13 +277,13 @@ class TuringDate():
     ###########################################################################
 
     @classmethod
-    def fromString(cls, dateString, formatString):
+    def fromString(cls, dateString, formatString='%Y%m%d'):
         '''  Create a TuringDate from a date and format string.
         Example Input:
-        start_date = TuringDate('1-1-2018', '%d-%m-%Y') '''
+        start_date = TuringDate('2018-1-1', '%Y-%m-%d') '''
 
-        d, m, y = parse_date(dateString, formatString)
-        return cls(d, m, y)
+        y, m, d = parse_date(dateString, formatString)
+        return cls(y, m, d)
 
     ###########################################################################
 
@@ -291,7 +291,7 @@ class TuringDate():
         ''' Update internal representation of date as number of days since the
         1st Jan 1900. This is same as Excel convention. '''
 
-        idx = dateIndex(self._d, self._m, self._y)
+        idx = dateIndex(self._y, self._m, self._d)
         daysSinceFirstJan1900 = gDateCounterList[idx]
         wd = weekDay(daysSinceFirstJan1900)
         self._excelDate = daysSinceFirstJan1900
@@ -369,10 +369,10 @@ class TuringDate():
 
         if leapYear:
             lastDay = monthDaysLeapYear[m - 1]
-            return TuringDate(lastDay, m, y)
+            return TuringDate(y, m, lastDay)
         else:
             lastDay = monthDaysNotLeapYear[m - 1]
-            return TuringDate(lastDay, m, y)
+            return TuringDate(y, m, lastDay)
 
     ###########################################################################
 
@@ -391,7 +391,7 @@ class TuringDate():
         dt1 = self.addDays(days)
 
         # On that date we then move to the correct hour
-        dt2 = TuringDate(dt1._d, dt1._m, dt1._y, hour, dt1._mm, dt1._ss)
+        dt2 = TuringDate(dt1._y, dt1._m, dt1._d, hour, dt1._mm, dt1._ss)
         return dt2
 
     ###########################################################################
@@ -401,7 +401,7 @@ class TuringDate():
         ''' Returns a new date that is numDays after the TuringDate. I also make
         it possible to go backwards a number of days. '''
 
-        idx = dateIndex(self._d, self._m, self._y)
+        idx = dateIndex(self._y, self._m, self._d)
 
         step = +1
         if numDays < 0:
@@ -412,8 +412,8 @@ class TuringDate():
             if gDateCounterList[idx] > 0:
                 numDays -= step
 
-        (d, m, y) = dateFromIndex(idx)
-        newDt = TuringDate(d, m, y)
+        (y, m, d) = dateFromIndex(idx)
+        newDt = TuringDate(y, m, d)
         return newDt
 
     ###########################################################################
@@ -502,7 +502,7 @@ class TuringDate():
                 if d > monthDaysNotLeapYear[m - 1]:
                     d = monthDaysNotLeapYear[m-1]
 
-            newDt = TuringDate(d, m, y)
+            newDt = TuringDate(y, m, d)
             dateList.append(newDt)
 
         if scalarFlag is True:
@@ -586,14 +586,14 @@ class TuringDate():
         elif m == 1 or m == 2 or m == 3:
             m_cds = 3
 
-        cdsDate = TuringDate(d_cds, m_cds, y_cds)
+        cdsDate = TuringDate(y_cds, m_cds, d_cds)
         return cdsDate
 
     ##########################################################################
 
     def thirdWednesdayOfMonth(self,
-                              m: int,  # Month number
-                              y: int):  # Year number
+                              y: int,  # Year number
+                              m: int):  # Month number
         ''' For a specific month and year this returns the day number of the
             3rd Wednesday by scanning through dates in the third week. '''
 
@@ -605,7 +605,7 @@ class TuringDate():
         d_end = 21
 
         for d in range(d_start, d_end+1):
-            immDate = TuringDate(d, m, y)
+            immDate = TuringDate(y, m, d)
             if immDate._weekday == self.WED:
                 return d
 
@@ -626,27 +626,27 @@ class TuringDate():
 
         y_imm = y
 
-        if m == 12 and d >= self.thirdWednesdayOfMonth(m, y):
+        if m == 12 and d >= self.thirdWednesdayOfMonth(y, m):
             m_imm = 3
             y_imm = y + 1
         elif m == 10 or m == 11 or m == 12:
             m_imm = 12
-        elif m == 9 and d >= self.thirdWednesdayOfMonth(m, y):
+        elif m == 9 and d >= self.thirdWednesdayOfMonth(y, m):
             m_imm = 12
         elif m == 7 or m == 8 or m == 9:
             m_imm = 9
-        elif m == 6 and d >= self.thirdWednesdayOfMonth(m, y):
+        elif m == 6 and d >= self.thirdWednesdayOfMonth(y, m):
             m_imm = 9
         elif m == 4 or m == 5 or m == 6:
             m_imm = 6
-        elif m == 3 and d >= self.thirdWednesdayOfMonth(m, y):
+        elif m == 3 and d >= self.thirdWednesdayOfMonth(y, m):
             m_imm = 6
         elif m == 1 or m == 2 or m == 3:
             m_imm = 3
 
-        d_imm = self.thirdWednesdayOfMonth(m_imm, y_imm)
+        d_imm = self.thirdWednesdayOfMonth(y_imm, m_imm)
 
-        immDate = TuringDate(d_imm, m_imm, y_imm)
+        immDate = TuringDate(y_imm, m_imm, d_imm)
         return immDate
 
     ###########################################################################
@@ -706,7 +706,7 @@ class TuringDate():
             else:
                 raise TuringError("Unknown tenor type in " + tenor)
 
-            newDate = TuringDate(self._d, self._m, self._y)
+            newDate = TuringDate(self._y, self._m, self._d)
 
             if periodType == DAYS:
                 for _ in range(0, numPeriods):
@@ -759,7 +759,7 @@ class TuringDate():
         global gDateFormatType
 
         dayNameStr = shortDayNames[self._weekday]
-        
+
         if self._d < 10:
             dayStr = "0" + str(self._d)
         else:
@@ -902,7 +902,7 @@ def fromDatetime(dt: datetime.date):
     ''' Construct a TuringDate from a datetime as this is often needed if we
     receive inputs from other Python objects such as Pandas dataframes. '''
 
-    finDate = TuringDate(dt.day, dt.month, dt.year)
+    finDate = TuringDate(dt.year, dt.month, dt.day)
     return finDate
 
 ###############################################################################

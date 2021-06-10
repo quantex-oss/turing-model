@@ -29,7 +29,7 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         # Example from Book extract by Iain Clarke using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -73,7 +73,7 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         # for atmMethod in TuringFXATMMethod:
         #     for deltaMethod in TuringFXDeltaMethod:
         #         for volFunctionType in TuringVolFunctionTypes:
-    
+
         #             fxMarket = TuringFXVolSurface(valueDate,
         #                                        spotFXRate,
         #                                        currencyPair,
@@ -85,9 +85,9 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         #                                        marketStrangle25DeltaVols,
         #                                        riskReversal25DeltaVols,
         #                                        atmMethod,
-        #                                        deltaMethod, 
+        #                                        deltaMethod,
         #                                        volFunctionType)
-        
+
         #             fxMarket.checkCalibration(verboseCalibration)
 
         if PLOT_GRAPHS:
@@ -110,7 +110,7 @@ def test_FinFXMktVolSurface2(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURJPY EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "JPY"
@@ -160,7 +160,7 @@ def test_FinFXMktVolSurface3(verboseCalibration):
         # EURUSD Example from Paper by Uwe Wystup using Tables 4
 #        print("EURUSD EXAMPLE WYSTUP")
 
-        valueDate = TuringDate(20, 1, 2009)
+        valueDate = TuringDate(2009, 1, 20)
 
         forName = "EUR"
         domName = "USD"
@@ -208,7 +208,7 @@ def test_FinFXMktVolSurface4(verboseCalibration):
         # USDJPY Example from Paper by Uwe Wystup using Tables 4
 #        print("USDJPY EXAMPLE WYSTUP")
 
-        valueDate = TuringDate(20, 1, 2009)
+        valueDate = TuringDate(2009, 1, 20)
 
         forName = "USD"
         domName = "JPY"
@@ -266,9 +266,9 @@ if __name__ == '__main__':
     test_FinFXMktVolSurface2(verboseCalibration)
     test_FinFXMktVolSurface3(verboseCalibration)
     test_FinFXMktVolSurface4(verboseCalibration)
-    
+
     end = time.time()
-    
+
     elapsed = end - start
 #    print("Elapsed Time:", elapsed)
     testCases.compareTestCases()

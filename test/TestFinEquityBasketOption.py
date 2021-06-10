@@ -19,8 +19,8 @@ def test_FinEquityBasketOption():
 
     import time
 
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 1, 2016)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2016, 1, 1)
     volatility = 0.30
     interestRate = 0.05
     discountCurve = TuringDiscountCurveFlat(valueDate, interestRate)

@@ -30,8 +30,8 @@ def _f(df, *args):
     numPoints = len(indexCurve._times)
     indexCurve._dfs[numPoints - 1] = df
 
-    # For curves that need a fit function, we fit it now 
-    indexCurve._interpolator.fit(indexCurve._times, indexCurve._dfs)     
+    # For curves that need a fit function, we fit it now
+    indexCurve._interpolator.fit(indexCurve._times, indexCurve._dfs)
     v_swap = swap.value(valueDate, discountCurve, indexCurve, None)
 
     notional = swap._fixedLeg._notional
@@ -51,8 +51,8 @@ def _g(df, *args):
     numPoints = len(curve._times)
     curve._dfs[numPoints - 1] = df
 
-    # For curves that need a fit function, we fit it now 
-    curve._interpolator.fit(curve._times, curve._dfs)     
+    # For curves that need a fit function, we fit it now
+    curve._interpolator.fit(curve._times, curve._dfs)
     v_fra = fra.value(valueDate, discountCurve, curve)
     v_fra /= fra._notional
     return v_fra
@@ -153,7 +153,7 @@ class TuringIborDualCurve(TuringDiscountCurve):
                     raise TuringError("Deposits must be in increasing maturity")
                 prevDt = nextDt
 
-        # REMOVED THIS AS WE WANT TO ANCHOR CURVE AT VALUATION DATE 
+        # REMOVED THIS AS WE WANT TO ANCHOR CURVE AT VALUATION DATE
         # USE A SYNTHETIC DEPOSIT TO BRIDGE GAP FROM VALUE DATE TO SETTLEMENT DATE
         # Ensure that valuation date is on or after first deposit start date
         # if numDepos > 1:
@@ -224,9 +224,9 @@ class TuringIborDualCurve(TuringDiscountCurve):
         # Now we have ensure they are in order check for overlaps and the like
         #######################################################################
 
-        lastDepositMaturityDate = TuringDate(1, 1, 1900)
-        firstFRAMaturityDate = TuringDate(1, 1, 1900)
-        lastFRAMaturityDate = TuringDate(1, 1, 1900)
+        lastDepositMaturityDate = TuringDate(1900, 1, 1)
+        firstFRAMaturityDate = TuringDate(1900, 1, 1)
+        lastFRAMaturityDate = TuringDate(1900, 1, 1)
 
         if numDepos > 0:
             lastDepositMaturityDate = iborDeposits[-1]._maturityDate
@@ -250,7 +250,7 @@ class TuringIborDualCurve(TuringDiscountCurve):
 
         # If both depos and swaps start after T, we need a rate to get them to
         # the first deposit. So we create a synthetic deposit rate contract.
-        
+
         if swapStartDate > self._valuationDate:
 
             if numDepos == 0:
@@ -496,7 +496,7 @@ class TuringIborDualCurve(TuringDiscountCurve):
                 raise TuringError("Deposit not repriced.")
 
         for fra in self._usedFRAs:
-            v = fra.value(self._valuationDate, 
+            v = fra.value(self._valuationDate,
                           self._discountCurve, self) / fra._notional
             if abs(v) > fraTol:
                 print("Value", v)
@@ -504,7 +504,7 @@ class TuringIborDualCurve(TuringDiscountCurve):
 
         for swap in self._usedSwaps:
             # We value it as of the start date of the swap
-            v = swap.value(swap._effectiveDate, self._discountCurve, 
+            v = swap.value(swap._effectiveDate, self._discountCurve,
                            self, None)
             v = v / swap._fixedLeg._notional
             if abs(v) > swapTol:

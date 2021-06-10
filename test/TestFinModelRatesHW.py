@@ -30,8 +30,8 @@ def test_HullWhiteExampleOne():
     zeros = np.array(zeros)
     dfs = np.exp(-zeros*times)
 
-    startDate = TuringDate(1, 12, 2019)
-    endDate = TuringDate(1, 12, 2022)
+    startDate = TuringDate(2019, 12, 1)
+    endDate = TuringDate(2022, 12, 1)
     sigma = 0.01
     a = 0.1
     numTimeSteps = 3
@@ -61,7 +61,7 @@ def test_HullWhiteExampleTwo():
     zeros = np.array(zeroRates) / 100.0
     dfs = np.exp(-zeros*times)
 
-    startDate = TuringDate(1, 12, 2019)
+    startDate = TuringDate(2019, 12, 1)
     sigma = 0.01
     a = 0.1
     strike = 63.0
@@ -84,7 +84,7 @@ def test_HullWhiteExampleTwo():
 
     testCases.banner("Comparing option on zero coupon bond analytical vs Tree")
 
-    testCases.header("NUMTIMESTEP", "TIME", "VTREE_CALL", "VTREE_PUT", 
+    testCases.header("NUMTIMESTEP", "TIME", "VTREE_CALL", "VTREE_PUT",
                      "VANAL CALL", "VANAL_PUT", "CALLDIFF", "PUTDIFF")
 
     for numTimeSteps in numStepsList:
@@ -98,7 +98,7 @@ def test_HullWhiteExampleTwo():
         model = TuringModelRatesHW(sigma, a, numTimeSteps + 1)
         model.buildTree(texp, times, dfs)
         vTree2 = model.optionOnZeroCouponBond_Tree(texp, tmat, strike, face)
- 
+
         end = time.time()
         period = end-start
         treeVector.append(vTree1['put'])
@@ -107,7 +107,7 @@ def test_HullWhiteExampleTwo():
         vTreePut = (vTree1['put'] + vTree2['put'] ) / 2.0
         diffC = vTreeCall - vAnal['call']
         diffP = vTreePut - vAnal['put']
-        
+
         testCases.print(numTimeSteps, period, vTreeCall, vAnal['call'],
                         vTreePut, vAnal['put'], diffC, diffP)
 
@@ -120,8 +120,8 @@ def test_HullWhiteExampleTwo():
 def test_HullWhiteBondOption():
     # Valuation of a European option on a coupon bearing bond
 
-    settlementDate = TuringDate(1, 12, 2019)
-    issueDate = TuringDate(1, 12, 2018)
+    settlementDate = TuringDate(2019, 12, 1)
+    issueDate = TuringDate(2018, 12, 1)
     expiryDate = settlementDate.addTenor("18m")
     maturityDate = settlementDate.addTenor("10Y")
     coupon = 0.05
@@ -140,12 +140,12 @@ def test_HullWhiteBondOption():
         ncd = bond._flowDates[i]
 
         if ncd > settlementDate:
-            
+
             if len(couponTimes) == 0:
                 flowTime = (pcd - settlementDate) / gDaysInYear
                 couponTimes.append(flowTime)
                 couponFlows.append(cpn)
-                
+
             flowTime = (ncd - settlementDate) / gDaysInYear
             couponTimes.append(flowTime)
             couponFlows.append(cpn)
@@ -170,7 +170,7 @@ def test_HullWhiteBondOption():
     vJam = model.europeanBondOptionJamshidian(texp, strikePrice, face,
                                               couponTimes, couponFlows,
                                               times, dfs)
-    
+
     testCases.banner("Pricing bond option on tree that goes to bond maturity and one using european bond option tree that goes to expiry.")
 
     testCases.header("NUMSTEPS", "TIME", "EXPIRY_ONLY", "EXPIRY_TREE", "JAMSHIDIAN")
@@ -214,8 +214,8 @@ def test_HullWhiteBondOption():
 def test_HullWhiteCallableBond():
     # Valuation of a European option on a coupon bearing bond
 
-    settlementDate = TuringDate(1, 12, 2019)
-    issueDate = TuringDate(1, 12, 2018)
+    settlementDate = TuringDate(2019, 12, 1)
+    issueDate = TuringDate(2018, 12, 1)
     maturityDate = settlementDate.addTenor("10Y")
     coupon = 0.05
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
@@ -227,7 +227,7 @@ def test_HullWhiteCallableBond():
     cpn = bond._coupon/bond._frequency
 
     for flowDate in bond._flowDates[1:]:
-        
+
         if flowDate > settlementDate:
             flowTime = (flowDate - settlementDate) / gDaysInYear
             couponTimes.append(flowTime)
@@ -285,8 +285,8 @@ def test_HullWhiteCallableBond():
             t = (dt - settlementDate) / gDaysInYear
             df = curve.df(dt)
             times.append(t)
-            dfs.append(df) 
-                        
+            dfs.append(df)
+
     dfs = np.array(dfs)
     times = np.array(times)
 

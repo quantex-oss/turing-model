@@ -24,7 +24,7 @@ def test_FinBondPortfolio():
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     accrualType = TuringDayCountTypes.ACT_ACT_ICMA
 
-    settlement = TuringDate(19, 9, 2012)
+    settlement = TuringDate(2012, 9, 19)
 
     testCases.header("DCTYPE", "MATDATE", "CPN", "PRICE", "ACCD", "YTM")
 
@@ -35,7 +35,7 @@ def test_FinBondPortfolio():
             dateString = bond['maturity']
             matDatetime = dt.datetime.strptime(dateString, '%d-%b-%y')
             maturityDt = fromDatetime(matDatetime)
-            issueDt = TuringDate(maturityDt._d, maturityDt._m, 2000)
+            issueDt = TuringDate(2000, maturityDt._m, maturityDt._d)
             coupon = bond['coupon']/100.0
             cleanPrice = bond['mid']
             bond = TuringBond(issueDt, maturityDt,

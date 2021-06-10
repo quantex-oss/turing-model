@@ -12,7 +12,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinFlatCurve():
 
-    curveDate = TuringDate(1, 1, 2019)
+    curveDate = TuringDate(2019, 1, 1)
     months = range(1, 60, 3)
     dates = curveDate.addMonths(months)
     testCases.header("COMPOUNDING", "DFS")

@@ -19,8 +19,8 @@ def test_FinFXAmericanOption():
     # There is no FXAmericanOption class. It is embedded in the FXVanillaOption
     # class. This test just compares it to the European
 
-    valueDate = TuringDate(13, 2, 2018)
-    expiryDate = TuringDate(13, 2, 2019)
+    valueDate = TuringDate(2018, 2, 13)
+    expiryDate = TuringDate(2019, 2, 13)
 
     # In BS the FX rate is the price in domestic of one unit of foreign
     # In case of EURUSD = 1.3 the domestic currency is USD and foreign is EUR

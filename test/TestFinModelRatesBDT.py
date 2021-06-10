@@ -32,13 +32,13 @@ def testBlackModelCheck():
     # Used to check swaption price below - we have Ts = 1 and Te = 4
     # Expect a price around 122 cents which is what I find.
 
-    valuationDate = TuringDate(1, 1, 2020)
+    valuationDate = TuringDate(2020, 1, 1)
     liborCurve = TuringDiscountCurveFlat(valuationDate, 0.06,
                                          TuringFrequencyTypes.SEMI_ANNUAL)
 
-    settlementDate = TuringDate(1, 1, 2020)
-    exerciseDate = TuringDate(1, 1, 2021)
-    maturityDate = TuringDate(1, 1, 2024)
+    settlementDate = TuringDate(2020, 1, 1)
+    exerciseDate = TuringDate(2021, 1, 1)
+    maturityDate = TuringDate(2024, 1, 1)
 
     fixedCoupon = 0.06
     fixedFrequencyType = TuringFrequencyTypes.SEMI_ANNUAL
@@ -68,7 +68,7 @@ def test_BDTExampleOne():
     # HULL BOOK NOTES
     # http://www-2.rotman.utoronto.ca/~hull/technicalnotes/TechnicalNote23.pdf
 
-    valuationDate = TuringDate(1, 1, 2020)
+    valuationDate = TuringDate(2020, 1, 1)
     years = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
     zeroDates = valuationDate.addYears(years)
     zeroRates = [0.00, 0.10, 0.11, 0.12, 0.125, 0.13]
@@ -109,8 +109,8 @@ def test_BDTExampleTwo():
 
     testCases.banner("===================== FIG 28.11 HULL BOOK =============")
 
-    settlementDate = TuringDate(1, 12, 2019)
-    issueDate = TuringDate(1, 12, 2015)
+    settlementDate = TuringDate(2019, 12, 1)
+    issueDate = TuringDate(2015, 12, 1)
     expiryDate = settlementDate.addTenor("18m")
     maturityDate = settlementDate.addTenor("10Y")
     coupon = 0.05
@@ -197,7 +197,7 @@ def test_BDTExampleThree():
     # This is a sanity check
     testBlackModelCheck()
 
-    settlementDate = TuringDate(1, 1, 2020)
+    settlementDate = TuringDate(2020, 1, 1)
     times = np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0])
     dates = settlementDate.addYears(times)
     rate = 0.06
@@ -212,7 +212,7 @@ def test_BDTExampleThree():
     # Andersen paper
     numTimeSteps = 200
 
-    testCases.header("ExerciseType", "Sigma", "NumSteps", "Texp", "Tmat", 
+    testCases.header("ExerciseType", "Sigma", "NumSteps", "Texp", "Tmat",
                      "V_Fixed", "V_pay", "V_rec")
 
     for exerciseType in [TuringExerciseTypes.EUROPEAN,
@@ -221,7 +221,7 @@ def test_BDTExampleThree():
         for maturityYears in [4.0, 5.0, 10.0, 20.0]:
 
             maturityDate = settlementDate.addYears(maturityYears)
-            issueDate = TuringDate(maturityDate._d, maturityDate._m, 2000)
+            issueDate = TuringDate(2000, maturityDate._m, maturityDate._d)
 
             if maturityYears == 4.0 or maturityYears == 5.0:
                 sigma = 0.2012

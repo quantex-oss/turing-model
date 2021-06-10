@@ -33,11 +33,11 @@ def _f(df, *args):
     numPoints = len(curve._times)
     curve._dfs[numPoints - 1] = df
 
-    # For curves that need a fit function, we fit it now 
-    curve._interpolator.fit(curve._times, curve._dfs)     
+    # For curves that need a fit function, we fit it now
+    curve._interpolator.fit(curve._times, curve._dfs)
     v_swap = swap.value(valueDate, curve, curve, None)
     notional = swap._fixedLeg._notional
-    v_swap /= notional    
+    v_swap /= notional
     return v_swap
 
 ###############################################################################
@@ -51,8 +51,8 @@ def _g(df, *args):
     numPoints = len(curve._times)
     curve._dfs[numPoints - 1] = df
 
-    # For curves that need a fit function, we fit it now 
-    curve._interpolator.fit(curve._times, curve._dfs)     
+    # For curves that need a fit function, we fit it now
+    curve._interpolator.fit(curve._times, curve._dfs)
     v_fra = fra.value(valueDate, curve)
     v_fra /= fra._notional
     return v_fra
@@ -68,11 +68,11 @@ def _costFunction(dfs, *args):
     liborCurve = args[0]
     valuationDate = liborCurve._valuationDate
     liborCurve._dfs = dfs
-    
+
     times = liborCurve._times
     values = -np.log(dfs)
 
-    # For curves that need a fit function, we fit it now 
+    # For curves that need a fit function, we fit it now
     liborCurve._interpolator.fit(liborCurve._times, liborCurve._dfs)
 
     if liborCurve._interpType == TuringInterpTypes.CUBIC_SPLINE_LOGDFS:
@@ -105,11 +105,11 @@ def _costFunction(dfs, *args):
 class TuringIborSingleCurve(TuringDiscountCurve):
     ''' Constructs one discount and index curve as implied by prices of Ibor
     deposits, FRAs and IRS. Discounting is assumed to be at Libor and the value
-    of the floating leg (including a notional) is assumed to be par. This 
+    of the floating leg (including a notional) is assumed to be par. This
     approach has been overtaken since 2008 as OIS discounting has become the
     agreed discounting approach for ISDA derivatives. This curve method is
     therefore intended for those happy to assume simple Libor discounting.
-    
+
     The curve date is the date on which we are performing the valuation based
     on the information available on the curve date. Typically it is the date on
     which an amount of 1 unit paid has a present value of 1. This class
@@ -161,7 +161,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
         self._valuationDate = valuationDate
         self._validateInputs(iborDeposits, iborFRAs, iborSwaps)
         self._interpType = interpType
-        self._checkRefit = checkRefit        
+        self._checkRefit = checkRefit
         self._interpolator = None
         self._buildCurve()
 
@@ -192,7 +192,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
 
         # Validation of the inputs.
         if numDepos > 0:
-            
+
             depoStartDate = iborDeposits[0]._startDate
 
             for depo in iborDeposits:
@@ -216,7 +216,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
 
         # Ensure order of depos
         if numDepos > 1:
-            
+
             prevDt = iborDeposits[0]._maturityDate
             for depo in iborDeposits[1:]:
                 nextDt = depo._maturityDate
@@ -224,7 +224,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
                     raise TuringError("Deposits must be in increasing maturity")
                 prevDt = nextDt
 
-        # REMOVED THIS AS WE WANT TO ANCHOR CURVE AT VALUATION DATE 
+        # REMOVED THIS AS WE WANT TO ANCHOR CURVE AT VALUATION DATE
         # USE A SYNTHETIC DEPOSIT TO BRIDGE GAP FROM VALUE DATE TO SETTLEMENT DATE
         # Ensure that valuation date is on or after first deposit start date
         # if numDepos > 1:
@@ -283,13 +283,13 @@ class TuringIborSingleCurve(TuringDiscountCurve):
 
             # Swaps must have same cashflows for bootstrap to work
             longestSwap = iborSwaps[-1]
-            
+
             longestSwapCpnDates = longestSwap._fixedLeg._paymentDates
 
             for swap in iborSwaps[0:-1]:
 
                 swapCpnDates = swap._fixedLeg._paymentDates
-                
+
                 numFlows = len(swapCpnDates)
                 for iFlow in range(0, numFlows):
                     if swapCpnDates[iFlow] != longestSwapCpnDates[iFlow]:
@@ -299,9 +299,9 @@ class TuringIborSingleCurve(TuringDiscountCurve):
         # Now we have ensure they are in order check for overlaps and the like
         #######################################################################
 
-        lastDepositMaturityDate = TuringDate(1, 1, 1900)
-        firstFRAMaturityDate = TuringDate(1, 1, 1900)
-        lastFRAMaturityDate = TuringDate(1, 1, 1900)
+        lastDepositMaturityDate = TuringDate(1900, 1, 1)
+        firstFRAMaturityDate = TuringDate(1900, 1, 1)
+        lastFRAMaturityDate = TuringDate(1900, 1, 1)
 
         if numDepos > 0:
             lastDepositMaturityDate = iborDeposits[-1]._maturityDate
@@ -322,10 +322,10 @@ class TuringIborSingleCurve(TuringDiscountCurve):
         if numFRAs > 0 and numSwaps > 0:
             if firstSwapMaturityDate <= lastFRAMaturityDate:
                 raise TuringError("First Swap must mature after last FRA ends")
-            
+
         # If both depos and swaps start after T, we need a rate to get them to
         # the first deposit. So we create a synthetic deposit rate contract.
-        
+
         if swapStartDate > self._valuationDate:
 
             if numDepos == 0:
@@ -440,11 +440,11 @@ class TuringIborSingleCurve(TuringDiscountCurve):
 
         self._times = np.array(gridTimes)
         self._dfs = np.exp(-self._times * 0.05)
-        
+
         argtuple = (self)
 
         res = optimize.minimize(_costFunction, self._dfs, method = 'BFGS',
-                                args = argtuple, options = {'gtol':1e-3})    
+                                args = argtuple, options = {'gtol':1e-3})
 
         self._dfs = np.array(res.x)
 
@@ -625,7 +625,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
                 raise TuringError("Swap not repriced.")
 
 ###############################################################################
-        
+
     def __repr__(self):
         ''' Print out the details of the Ibor curve. '''
 

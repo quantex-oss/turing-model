@@ -26,7 +26,7 @@ def test_FinIborBermudanSwaptionBKModel():
     ''' Replicate examples in paper by Leif Andersen which can be found at
     file:///C:/Users/Dominic/Downloads/SSRN-id155208.pdf '''
 
-    valuationDate = TuringDate(1, 1, 2011)
+    valuationDate = TuringDate(2011, 1, 1)
     settlementDate = valuationDate
     exerciseDate = settlementDate.addYears(1)
     swapMaturityDate = settlementDate.addYears(4)
@@ -72,7 +72,7 @@ def test_FinIborBermudanSwaptionBKModel():
                                              swapFixedCoupon,
                                              swapFixedFrequencyType,
                                              swapFixedDayCountType)
-    
+
     ###########################################################################
     ###########################################################################
     ###########################################################################
@@ -132,10 +132,10 @@ def test_FinIborBermudanSwaptionBKModel():
 
     valuePay = europeanSwaptionPay.value(valuationDate, liborCurve, model)
     testCases.print("EUROPEAN BK PAY VALUE:", valuePay)
-    
+
     valueRec = europeanSwaptionRec.value(valuationDate, liborCurve, model)
     testCases.print("EUROPEAN BK REC VALUE:", valueRec)
-    
+
     payRec = valuePay - valueRec
     testCases.print("PAY MINUS RECEIVER :", payRec)
 
@@ -157,7 +157,7 @@ def test_FinIborBermudanSwaptionBKModel():
 
     payRec = valuePay - valueRec
     testCases.print("PAY MINUS RECEIVER :", payRec)
-    
+
     ###########################################################################
 
     # Now we create the Bermudan swaptions but only allow European exercise
@@ -184,7 +184,7 @@ def test_FinIborBermudanSwaptionBKModel():
                                                      swapFixedCoupon,
                                                      swapFixedFrequencyType,
                                                      swapFixedDayCountType)
-   
+
     testCases.banner("======= 0% VOLATILITY BERMUDAN SWAPTION EUROPEAN EXERCISE BK MODEL ========")
 
     # Used BK with constant short-rate volatility
@@ -218,7 +218,7 @@ def test_FinIborBermudanSwaptionBKModel():
 
     payRec = valuePay - valueRec
     testCases.print("PAY MINUS RECEIVER :", payRec)
-    
+
     ###########################################################################
     # Now we create the Bermudan swaptions but allow Bermudan exercise
     ###########################################################################
@@ -280,7 +280,7 @@ def test_FinIborBermudanSwaptionBKModel():
 
     payRec = valuePay - valueRec
     testCases.print("PAY MINUS RECEIVER :", payRec)
-    
+
     ###########################################################################
     ###########################################################################
     ###########################################################################
@@ -353,7 +353,7 @@ def test_FinIborBermudanSwaptionBKModel():
                                                      swapFixedCoupon,
                                                      swapFixedFrequencyType,
                                                      swapFixedDayCountType)
-   
+
     testCases.banner("======= 0% VOLATILITY BERMUDAN SWAPTION EUROPEAN EXERCISE BDT MODEL ========")
 
     # Used BK with constant short-rate volatility
@@ -385,7 +385,7 @@ def test_FinIborBermudanSwaptionBKModel():
 
     payRec = valuePay - valueRec
     testCases.print("PAY MINUS RECEIVER :", payRec)
-    
+
     ###########################################################################
     # Now we create the Bermudan swaptions but allow Bermudan exercise
     ###########################################################################
@@ -445,7 +445,7 @@ def test_FinIborBermudanSwaptionBKModel():
 
     payRec = valuePay - valueRec
     testCases.print("PAY MINUS RECEIVER :", payRec)
-    
+
     ###########################################################################
     ###########################################################################
     ###########################################################################
@@ -518,7 +518,7 @@ def test_FinIborBermudanSwaptionBKModel():
                                                      swapFixedCoupon,
                                                      swapFixedFrequencyType,
                                                      swapFixedDayCountType)
-   
+
     testCases.banner("======= 0% VOLATILITY BERMUDAN SWAPTION EUROPEAN EXERCISE HW MODEL ========")
 
     sigma = 0.000001
@@ -549,7 +549,7 @@ def test_FinIborBermudanSwaptionBKModel():
 
     payRec = valuePay - valueRec
     testCases.print("PAY MINUS RECEIVER :", payRec)
-    
+
     ###########################################################################
     # Now we create the Bermudan swaptions but allow Bermudan exercise
     ###########################################################################

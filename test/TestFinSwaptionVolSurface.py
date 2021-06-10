@@ -29,13 +29,13 @@ def test_FinSwaptionVolSurface1(verboseCalibration):
 
         # https://fr.mathworks.com/help/fininst/pricing-a-swaption-using-the-sabr-model.html
 
-        valueDate = TuringDate(12, 6, 2013)
+        valueDate = TuringDate(2013, 6, 12)
 
         # These are 3M, 1Y, 2Y, 3Y, 4Y, 5Y, 7Y, 10Y
-        exerciseDates = [TuringDate(12, 9, 2013), TuringDate(12, 6, 2014),
-                         TuringDate(12, 6, 2015), TuringDate(12, 6, 2016),
-                         TuringDate(12, 6, 2017), TuringDate(12, 6, 2018),
-                         TuringDate(12, 6, 2020), TuringDate(12, 6, 2023)]
+        exerciseDates = [TuringDate(2013, 9, 12), TuringDate(2014, 6, 12),
+                         TuringDate(2015, 6, 12), TuringDate(2016, 6, 12),
+                         TuringDate(2017, 6, 12), TuringDate(2018, 6, 12),
+                         TuringDate(2020, 6, 12), TuringDate(2023, 6, 12)]
 
         # First dimension is the strike, then the expiry date
         marketVolatilities = [[57.6, 53.7, 49.4, 45.6, 44.1, 41.1, 35.2, 32.0],
@@ -45,7 +45,7 @@ def test_FinSwaptionVolSurface1(verboseCalibration):
                               [41.0, 41.3, 39.5, 37.8, 36.0, 32.6, 29.0, 26.0],
                               [45.8, 43.4, 41.9, 39.2, 36.9, 33.2, 29.6, 26.3],
                               [50.3, 46.9, 44.0, 40.0, 37.5, 33.8, 30.2, 27.3]]
-        
+
         marketVolatilities = np.array(marketVolatilities) / 100.0
 
         # First dimension is the strike, then the expiry date
@@ -56,9 +56,9 @@ def test_FinSwaptionVolSurface1(verboseCalibration):
                          [3.00, 3.25, 3.68, 4.00, 4.26, 4.41, 4.58, 4.62],
                          [3.50, 3.75, 4.18, 4.50, 4.76, 4.91, 5.08, 5.12],
                          [4.00, 4.25, 4.68, 5.00, 5.26, 5.41, 5.58, 5.62]]
-        
+
         marketStrikes = np.array(marketStrikes) / 100.0
-        
+
         fwdSwapRates = marketStrikes[3]
         atmVols = marketVolatilities[3]
 
@@ -109,9 +109,9 @@ if __name__ == '__main__':
     verboseCalibration = False
 
     test_FinSwaptionVolSurface1(verboseCalibration)
-    
+
     end = time.time()
-    
+
     elapsed = end - start
     print("Elapsed Time:", elapsed)
     testCases.compareTestCases()

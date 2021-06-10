@@ -17,7 +17,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 def test_FinBondMortgage():
 
     principal = 130000
-    startDate = TuringDate(23, 2, 2018)
+    startDate = TuringDate(2018, 2, 23)
     endDate = startDate.addTenor("10Y")
     mortgage = TuringBondMortgage(startDate, endDate, principal)
 

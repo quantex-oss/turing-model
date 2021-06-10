@@ -24,7 +24,7 @@ def test_FinInterpolatedForwards():
     dfValues = np.exp(-tValues*rValues)
     tInterpValues = np.linspace(0.0, 12.0, 49)
 
-    curveDate = TuringDate(1, 1, 2019)
+    curveDate = TuringDate(2019, 1, 1)
 
     tDates = curveDate.addYears(tValues)
     tInterpDates = curveDate.addYears(tInterpValues)

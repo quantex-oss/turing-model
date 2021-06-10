@@ -30,7 +30,7 @@ def dumpSchedule(desc, schedule):
     years = 0.0
     diff = 0.0
     testCases.print(0, "EFCT DATE", str(effDate), years, diff)
-    
+
     prevDate = schedule._adjustedDates[0]
     for iFlow in range(1, numFlows-1):
         adjustedDate = schedule._adjustedDates[iFlow]
@@ -45,16 +45,16 @@ def dumpSchedule(desc, schedule):
 
     testCases.print(numFlows-1, "TERM DATE", str(termDate), years, diff)
 
-############################################################################### 
-   
+###############################################################################
+
 def test_FinSchedule():
 
     ###########################################################################
     # BACKWARD SCHEDULES TESTING DIFFERENT FREQUENCIES
     ###########################################################################
-    
-    d1 = TuringDate(20, 6, 2018)
-    d2 = TuringDate(20, 6, 2020)
+
+    d1 = TuringDate(2018, 6, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -71,8 +71,8 @@ def test_FinSchedule():
 
     dumpSchedule("BACKWARD SEMI-ANNUAL FREQUENCY", schedule)
 
-    d1 = TuringDate(20, 6, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 6, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.QUARTERLY
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -88,8 +88,8 @@ def test_FinSchedule():
 
     dumpSchedule("BACKWARD QUARTERLY FREQUENCY", schedule)
 
-    d1 = TuringDate(20, 6, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 6, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.MONTHLY
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -109,8 +109,8 @@ def test_FinSchedule():
     # FORWARD SCHEDULES TESTING DIFFERENT FREQUENCIES
     ###########################################################################
 
-    d1 = TuringDate(20, 6, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 6, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -123,11 +123,11 @@ def test_FinSchedule():
                               busDayAdjustType,
                               dateGenRuleType,
                               terminationDateAdjust)
-    
+
     dumpSchedule("FORWARD ANNUAL", schedule)
 
-    d1 = TuringDate(20, 6, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 6, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -139,11 +139,11 @@ def test_FinSchedule():
                               calendarType,
                               busDayAdjustType,
                               dateGenRuleType)
-    
+
     dumpSchedule("FORWARD SEMI-ANNUAL", schedule)
 
-    d1 = TuringDate(20, 6, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 6, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.MONTHLY
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -156,15 +156,15 @@ def test_FinSchedule():
                               busDayAdjustType,
                               dateGenRuleType,
                               terminationDateAdjust)
-    
+
     dumpSchedule("FORWARD MONTHLY", schedule)
 
     ###########################################################################
     # BACKWARD SHORT STUB AT FRONT
     ###########################################################################
 
-    d1 = TuringDate(20, 8, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 8, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.QUARTERLY
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -183,8 +183,8 @@ def test_FinSchedule():
     # BACKWARD SUPER SHORT STUB AT FRONT
     ###########################################################################
 
-    d1 = TuringDate(19, 9, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 9, 19)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.QUARTERLY
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -204,8 +204,8 @@ def test_FinSchedule():
     # FORWARD SHORT STUB AT END
     ###########################################################################
 
-    d1 = TuringDate(20, 8, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 8, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -221,8 +221,8 @@ def test_FinSchedule():
 
     dumpSchedule("FORWARD GEN WITH END STUB", schedule)
 
-    d1 = TuringDate(19, 9, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 9, 19)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.QUARTERLY
     calendarType = TuringCalendarTypes.TARGET
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
@@ -237,14 +237,14 @@ def test_FinSchedule():
 
     dumpSchedule("FORWARD GEN WITH VERY SHORT END STUB", schedule)
 
-    d1 = TuringDate(20, 6, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 6, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
     dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
     terminationDateAdjust = True
-    
+
     schedule = TuringSchedule(d1,
                               d2,
                               freqType,
@@ -255,8 +255,8 @@ def test_FinSchedule():
 
     dumpSchedule("TERMINATION DATE ADJUSTED", schedule)
 
-    d1 = TuringDate(20, 6, 2018)
-    d2 = TuringDate(20, 6, 2020)
+    d1 = TuringDate(2018, 6, 20)
+    d2 = TuringDate(2020, 6, 20)
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
@@ -275,8 +275,8 @@ def test_FinSchedule():
 
     dumpSchedule("END OF MONTH - NOT EOM TERM DATE - USING MOD FOLL", schedule)
 
-    d1 = TuringDate(30, 6, 2018)
-    d2 = TuringDate(30, 6, 2020)
+    d1 = TuringDate(2018, 6, 30)
+    d2 = TuringDate(2020, 6, 30)
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
     busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
@@ -294,12 +294,12 @@ def test_FinSchedule():
                               eomFlag)
 
     dumpSchedule("END OF MONTH - EOM TERM DATE - USING MOD FOLL", schedule)
-    
+
 ###############################################################################
 
 def test_FinScheduleAlignment(eomFlag):
-        
-    valuationDate = TuringDate(29, 3, 2005)
+
+    valuationDate = TuringDate(2005, 3, 29)
     effDate = valuationDate.addTenor("2d")
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
@@ -320,7 +320,7 @@ def test_FinScheduleAlignment(eomFlag):
 
 #    print(adjustedMatDate1)
 #    print(adjustedMatDate2)
-    
+
     sched1 = TuringSchedule(effDate,
                             adjustedMatDate1,
                             freqType,
@@ -329,9 +329,9 @@ def test_FinScheduleAlignment(eomFlag):
                             dateGenRuleType,
                             adjustTerminationDate,
                             eomFlag)
-    
+
 #    print(sched1)
-    
+
     sched2 = TuringSchedule(effDate,
                             adjustedMatDate2,
                             freqType,
@@ -348,8 +348,8 @@ def test_FinScheduleAlignment(eomFlag):
 
 def test_FinScheduleAlignmentLeapYearEOM():
     ''' Effective date on leap year.'''
-    
-    valuationDate = TuringDate(26, 2, 2006)
+
+    valuationDate = TuringDate(2006, 2, 26)
     effDate = valuationDate.addTenor("2D")
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
@@ -360,7 +360,7 @@ def test_FinScheduleAlignmentLeapYearEOM():
     matDate1 = effDate.addTenor("4Y")
     matDate2 = effDate.addTenor("50Y")
     eomFlag = True
-    
+
     sched1 = TuringSchedule(effDate,
                             matDate1,
                             freqType,
@@ -369,7 +369,7 @@ def test_FinScheduleAlignmentLeapYearEOM():
                             dateGenRuleType,
                             adjustTerminationDate,
                             eomFlag)
-        
+
     sched2 = TuringSchedule(effDate,
                             matDate2,
                             freqType,
@@ -389,10 +389,10 @@ def test_FinScheduleAlignmentLeapYearEOM():
 
 def test_FinScheduleAlignmentLeapYearNotEOM():
     ''' Effective date on leap year. Not EOM. '''
-    
+
     eomFlag = False
 
-    valuationDate = TuringDate(26, 2, 2006)
+    valuationDate = TuringDate(2006, 2, 26)
     effDate = valuationDate.addTenor("2D")
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
@@ -403,7 +403,7 @@ def test_FinScheduleAlignmentLeapYearNotEOM():
     matDate1 = effDate.addTenor("4Y")
     matDate2 = effDate.addTenor("50Y")
 
-#    print(matDate1, matDate2) 
+#    print(matDate1, matDate2)
 
     sched1 = TuringSchedule(effDate,
                             matDate1,
@@ -413,7 +413,7 @@ def test_FinScheduleAlignmentLeapYearNotEOM():
                             dateGenRuleType,
                             adjustTerminationDate,
                             eomFlag)
-        
+
     sched2 = TuringSchedule(effDate,
                             matDate2,
                             freqType,
@@ -433,9 +433,9 @@ def test_FinScheduleAlignmentLeapYearNotEOM():
 
 def test_FinScheduleAlignmentEff31():
     ''' EOM schedule so all unadjusted dates fall on month end.'''
-    
+
     eomFlag = True
-    valuationDate = TuringDate(29, 7, 2006)
+    valuationDate = TuringDate(2006, 7, 29)
     effDate = valuationDate.addTenor("2D")
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
@@ -445,7 +445,7 @@ def test_FinScheduleAlignmentEff31():
 
     matDate1 = effDate.addTenor("4Y")
     matDate2 = effDate.addTenor("50Y")
-    
+
 #    print(matDate1, matDate2)
 
     sched1 = TuringSchedule(effDate,
@@ -456,7 +456,7 @@ def test_FinScheduleAlignmentEff31():
                             dateGenRuleType,
                             adjustTerminationDate,
                             eomFlag)
-        
+
     sched2 = TuringSchedule(effDate,
                             matDate2,
                             freqType,

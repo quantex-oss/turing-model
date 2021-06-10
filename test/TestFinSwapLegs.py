@@ -22,9 +22,9 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinFixedIborSwapLeg():
 
-    effectiveDate = TuringDate(28, 10, 2020)
-    maturityDate = TuringDate(28, 10, 2025)
-    
+    effectiveDate = TuringDate(2020, 10, 28)
+    maturityDate = TuringDate(2025, 10, 28)
+
     coupon = -0.44970/100.0
     freqType = TuringFrequencyTypes.ANNUAL
     dayCountType = TuringDayCountTypes.THIRTY_360_BOND
@@ -53,9 +53,9 @@ def test_FinFixedIborSwapLeg():
 
 def test_FinFixedOISSwapLeg():
 
-    effectiveDate = TuringDate(28, 10, 2020)
-    maturityDate = TuringDate(28, 10, 2025)
-    
+    effectiveDate = TuringDate(2020, 10, 28)
+    maturityDate = TuringDate(2025, 10, 28)
+
     coupon = -0.515039/100.0
     freqType = TuringFrequencyTypes.ANNUAL
     dayCountType = TuringDayCountTypes.ACT_360
@@ -84,9 +84,9 @@ def test_FinFixedOISSwapLeg():
 
 def test_FinFloatIborLeg():
 
-    effectiveDate = TuringDate(28, 10, 2020)
-    maturityDate = TuringDate(28, 10, 2025)
-    
+    effectiveDate = TuringDate(2020, 10, 28)
+    maturityDate = TuringDate(2025, 10, 28)
+
     spread = 0.0
     freqType = TuringFrequencyTypes.ANNUAL
     dayCountType = TuringDayCountTypes.THIRTY_360_BOND
@@ -115,7 +115,7 @@ def test_FinFloatIborLeg():
 
     firstFixing = 0.03
 
-    v = swapFloatLeg.value(effectiveDate, liborCurve, liborCurve, 
+    v = swapFloatLeg.value(effectiveDate, liborCurve, liborCurve,
                            firstFixing)
 
 
@@ -123,9 +123,9 @@ def test_FinFloatIborLeg():
 
 def test_FinFloatOISLeg():
 
-    effectiveDate = TuringDate(28, 10, 2020)
-    maturityDate = TuringDate(28, 10, 2025)
-    
+    effectiveDate = TuringDate(2020, 10, 28)
+    maturityDate = TuringDate(2025, 10, 28)
+
     spread = 0.0
     freqType = TuringFrequencyTypes.ANNUAL
     dayCountType = TuringDayCountTypes.ACT_360
@@ -154,7 +154,7 @@ def test_FinFloatOISLeg():
 
     firstFixing = 0.03
 
-    v = swapFloatLeg.value(effectiveDate, liborCurve, liborCurve, 
+    v = swapFloatLeg.value(effectiveDate, liborCurve, liborCurve,
                            firstFixing)
 
 ###############################################################################

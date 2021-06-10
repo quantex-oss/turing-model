@@ -28,10 +28,10 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 #     startYear = 2020
 #     endYear = 2030
-#     valuationDate = TuringDate(1, 1, startYear)
-#     exerciseDate = TuringDate(1, 1, 2023)
+#     valuationDate = TuringDate(startYear, 1, 1)
+#     exerciseDate = TuringDate(2023, 1, 1)
 #     settlementDate = valuationDate
-#     maturityDate = TuringDate(1, 1, endYear)
+#     maturityDate = TuringDate(endYear, 1, 1)
 #     fixedCoupon = 0.04
 
 #     # DEFINE THE DISCOUNT CURVE
@@ -96,7 +96,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 #         swapVolSim1F = LMMSimSwaptionVol(a, b, fwd0, fwds1F, taus)
 #         swapVolSimNF = LMMSimSwaptionVol(a, b, fwd0, fwdsNF, taus)
 
-#         valuationDate = TuringDate(1, 1, 2010)
+#         valuationDate = TuringDate(2010, 1, 1)
 #         liborCurve = TuringDiscountCurveFlat(valuationDate, r,
 #                                           TuringFrequencyTypes.QUARTERLY)
 #         settlementDate = valuationDate
@@ -127,7 +127,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 #         blackSwaptionPrice = swaption.value(valuationDate, liborCurve, model)
 
 #         testCases.print("K:%6.5f texp:%8.2f FwdVol:%9.5f SimVol1F:%9.5f " +
-#                         " SimVolNF:%9.5f RebVol:%9.5f SimPx1F:%9.5f SimPxNF:%9.5f Black Px:%9.5f" 
+#                         " SimVolNF:%9.5f RebVol:%9.5f SimPx1F:%9.5f SimPxNF:%9.5f Black Px:%9.5f"
 #               % (strike, texp, fwdRateVol, swapVolSim1F, swapVolSimNF,
 #                  swaptionVol, swaptionPrice1F, swaptionPriceNF,
 #                  blackSwaptionPrice))
@@ -142,9 +142,9 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 #     # years which in our convention means we are modelling 10 forwards
 #     startYear = 2020
 #     endYear = 2030
-#     valuationDate = TuringDate(1, 1, startYear)
+#     valuationDate = TuringDate(startYear, 1, 1)
 #     settlementDate = valuationDate
-#     capMaturityDate = TuringDate(1, 1, endYear)
+#     capMaturityDate = TuringDate(endYear, 1, 1)
 #     freqType = TuringFrequencyTypes.ANNUAL
 #     dayCountType = TuringDayCountTypes.ACT_360
 #     capFloorRate = 0.04

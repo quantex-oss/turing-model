@@ -19,8 +19,8 @@ def test_FinFixedOIS():
     # Here I follow the example in
     # https://blog.deriscope.com/index.php/en/excel-quantlib-overnight-index-swap
 
-    effectiveDate = TuringDate(30, 11, 2018)
-    endDate = TuringDate(30, 11, 2023)
+    effectiveDate = TuringDate(2018, 11, 30)
+    endDate = TuringDate(2023, 11, 30)
 
     endDate = effectiveDate.addMonths(60)
     oisRate = 0.04
@@ -32,7 +32,7 @@ def test_FinFixedOIS():
     floatSpread = 0.0
     notional = ONE_MILLION
     paymentLag = 1
-    
+
     ois = TuringOIS(effectiveDate,
                     endDate,
                     fixedLegType,
@@ -53,15 +53,15 @@ def test_FinFixedOIS():
                                        TuringFrequencyTypes.ANNUAL)
 
     v = ois.value(effectiveDate, oisCurve)
-    
+
 #    print(v)
-    
+
 #    ois._fixedLeg.printValuation()
 #    ois._floatLeg.printValuation()
-    
+
     testCases.header("LABEL", "VALUE")
     testCases.print("SWAP_VALUE", v)
-    
+
 ###############################################################################
 
 test_FinFixedOIS()

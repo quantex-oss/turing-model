@@ -97,7 +97,7 @@ def buildIssuerCurve(valuationDate, liborCurve):
     cdsMarketContracts = []
 
     cdsCoupon = 0.0048375
-    maturityDate = TuringDate(29, 6, 2010)
+    maturityDate = TuringDate(2010, 6, 29)
     cds = TuringCDS(valuationDate, maturityDate, cdsCoupon)
     cdsMarketContracts.append(cds)
 
@@ -115,7 +115,7 @@ def buildIssuerCurve(valuationDate, liborCurve):
 
 def test_CDSIndexAdjustSpreads():
 
-    tradeDate = TuringDate(1, 8, 2007)
+    tradeDate = TuringDate(2007, 8, 1)
     stepInDate = tradeDate.addDays(1)
     valuationDate = tradeDate
 
@@ -229,10 +229,10 @@ def test_CDSIndexAdjustSpreads():
 
     indexCoupons = [0.002, 0.0037, 0.0050, 0.0063]
     indexUpfronts = [0.0, 0.0, 0.0, 0.0]
-    indexMaturityDates = [TuringDate(20, 12, 2009),
-                          TuringDate(20, 12, 2011),
-                          TuringDate(20, 12, 2013),
-                          TuringDate(20, 12, 2016)]
+    indexMaturityDates = [TuringDate(2009, 12, 20),
+                          TuringDate(2011, 12, 20),
+                          TuringDate(2013, 12, 20),
+                          TuringDate(2016, 12, 20)]
     indexRecoveryRate = 0.40
 
     tolerance = 1e-7

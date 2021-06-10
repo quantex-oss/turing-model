@@ -25,8 +25,8 @@ def test_FinBinomialTree():
     dividendYield = 0.04
     volatility = 0.40
 
-    valueDate = TuringDate(1, 1, 2016)
-    expiryDate = TuringDate(1, 1, 2017)
+    valueDate = TuringDate(2016, 1, 1)
+    expiryDate = TuringDate(2017, 1, 1)
 
     model = TuringModelBlackScholes(volatility)
     discountCurve = TuringDiscountCurveFlat(valueDate, riskFreeRate)

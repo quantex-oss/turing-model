@@ -26,8 +26,8 @@ def test_FinFXVanillaOptionWystupExample1():
 
     # Not exactly T=1.0 but close so don't exact exact agreement
     # (in fact I do not get exact agreement even if I do set T=1.0)
-    valueDate = TuringDate(13, 2, 2018)
-    expiryDate = TuringDate(13, 2, 2019)
+    valueDate = TuringDate(2018, 2, 13)
+    expiryDate = TuringDate(2019, 2, 13)
 
     # In BS the FX rate is the price in domestic of one unit of foreign
     # In case of EURUSD = 1.3 the domestic currency is USD and foreign is EUR
@@ -98,8 +98,8 @@ def test_FinFXVanillaOptionWystupExample2():
     # Example Bloomberg Pricing at
     # https://stackoverflow.com/questions/48778712/fx-vanilla-call-price-in-quantlib-doesnt-match-bloomberg
 
-    valueDate = TuringDate(13, 2, 2018)
-    expiryDate = TuringDate(13, 2, 2019)
+    valueDate = TuringDate(2018, 2, 13)
+    expiryDate = TuringDate(2019, 2, 13)
 
     # In BS the FX rate is the price in domestic of one unit of foreign
     # In case of EURUSD = 1.3 the domestic currency is USD and foreign is EUR
@@ -155,8 +155,8 @@ def test_FinFXVanillaOptionBloombergExample():
     # Example Bloomberg Pricing at
     # https://stackoverflow.com/questions/48778712/fx-vanilla-call-price-in-quantlib-doesnt-match-bloomberg
 
-    valuationDate = TuringDate(13, 2, 2018)
-    expiryDate = TuringDate(15, 2, 2019)
+    valuationDate = TuringDate(2018, 2, 13)
+    expiryDate = TuringDate(2019, 2, 15)
 
     # In BS the FX rate is the price in domestic of one unit of foreign
     # In case of EURUSD = 1.3 the domestic currency is USD and foreign is EUR
@@ -226,7 +226,7 @@ def test_FinFXVanillaOptionBloombergExample():
 def test_FinFXVanillaOptionHullExample():
 
     #   Example from Hull 4th edition page 284
-    valuationDate = TuringDate(1, 1, 2015)
+    valuationDate = TuringDate(2015, 1, 1)
     expiryDate = valuationDate.addMonths(4)
     spotFXRate = 1.60
     volatility = 0.1411

@@ -15,8 +15,8 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 ###############################################################################
 
 def test_FinEquityLookBackOption():
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 1, 2016)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2016, 1, 1)
     stockPrice = 100.0
     volatility = 0.3
     interestRate = 0.05
@@ -508,14 +508,14 @@ def test_FinEquityLookBackOption():
 
 def test_example():
 
-    expiryDate = TuringDate(1, 1, 2021)
+    expiryDate = TuringDate(2021, 1, 1)
     strikePrice = 105.0
     optionTypeCall = TuringOptionTypes.EUROPEAN_CALL
     optionTypePut = TuringOptionTypes.EUROPEAN_PUT
     lookbackCall = TuringEquityFixedLookbackOption(expiryDate, optionTypeCall, strikePrice)
     lookbackPut = TuringEquityFixedLookbackOption(expiryDate, optionTypePut, strikePrice)
 
-    valueDate = TuringDate(1, 1, 2020)
+    valueDate = TuringDate(2020, 1, 1)
     interestRate = 0.10
     stockPrice = 100.0
     dividendYield = 0.0
