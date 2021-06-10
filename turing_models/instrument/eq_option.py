@@ -309,7 +309,7 @@ class EqOption(OptionModel):
     premium_date: str = None
     knock_in_price: float = None  # yapi无值
     coupon_annualized_flag: bool = None  # yapi无值
-    knock_out_type: str = None  # yapi无值
+    knock_out_type: str = None  # yapi无值---
     knock_in_type: str = None  # yapi无值
     knock_in_strike1: float = None  # yapi无值
     knock_in_strike2: float = None  # yapi无值
@@ -341,8 +341,7 @@ class EqOption(OptionModel):
             setattr(self, k, v)
 
     def resolve(self, expand_dict):
-        if expand_dict:
-            self._set_by_dict(expand_dict)
+        self._set_by_dict(expand_dict)
         self.set_param()
 
 
