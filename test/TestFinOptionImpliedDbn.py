@@ -31,7 +31,7 @@ def test_FinOptionImpliedDbn():
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -72,9 +72,9 @@ def test_FinOptionImpliedDbn():
         PLOT_GRAPHS = False
         if PLOT_GRAPHS:
             fxMarket.plotVolCurves()
- 
+
         for iTenor in range(0, len(fxMarket._tenors)):
-            
+
             F = fxMarket._F0T[iTenor]
             texp = fxMarket._texp[iTenor]
 
@@ -96,16 +96,16 @@ def test_FinOptionImpliedDbn():
             vols = []
 
             for iK in range(0, numSteps):
-                strike = startFX + iK*dFX                
+                strike = startFX + iK*dFX
                 vol = volFunctionClark(params, F, strike, texp)
-                strikes.append(strike) 
+                strikes.append(strike)
                 vols.append(vol)
-            
+
             strikes = np.array(strikes)
             vols = np.array(vols)
 
             dbn = optionImpliedDbn(spotFXRate, texp, rd, rf, strikes, vols)
-            
+
 #            print("SUM:", dbn.sum())
 #            plt.figure()
 #            plt.plot(dbn._x, dbn._densitydx)

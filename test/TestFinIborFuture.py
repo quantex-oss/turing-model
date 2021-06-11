@@ -14,7 +14,7 @@ setDateFormatType(TuringDateFormatTypes.UK_LONG)
 
 def test_FinIborFuture():
 
-    todayDate = TuringDate(5, 5, 2020)
+    todayDate = TuringDate(2020, 5, 5)
 
     testCases.header("VALUES")
 

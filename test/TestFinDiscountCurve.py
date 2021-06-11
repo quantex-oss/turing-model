@@ -23,7 +23,7 @@ PLOT_GRAPHS = False
 def test_FinDiscountCurve():
 
     # Create a curve from times and discount factors
-    startDate = TuringDate(1, 1, 2018)
+    startDate = TuringDate(2018, 1, 1)
     years = np.linspace(0, 10, 6)
     rate = 0.05 + 0.005*years - 0.0003*years*years
     dfs = np.exp(-rate * years)

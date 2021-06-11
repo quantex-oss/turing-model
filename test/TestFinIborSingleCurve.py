@@ -32,7 +32,7 @@ def test_FinIborDepositsOnly():
     # I have used the following useful blog post by Ioannis Rigopoulos for this
     # https://blog.deriscope.com/index.php/en/yield-curve-excel-quantlib-deposit
 
-    valuationDate = TuringDate(23, 2, 2018)
+    valuationDate = TuringDate(2018, 2, 23)
 
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
@@ -91,7 +91,7 @@ def test_FinIborDepositsOnly():
 def test_FinIborFRAsOnly():
 
     # TO DO FIX THIS
-    valuationDate = TuringDate(23, 2, 2018)
+    valuationDate = TuringDate(2018, 2, 23)
 
     spotDays = 0
     settlementDate = valuationDate.addWeekDays(spotDays)
@@ -140,7 +140,7 @@ def test_FinIborFRAsOnly():
 
 def test_FinIborDepositsFRAsSwaps():
 
-    valuationDate = TuringDate(18, 9, 2019)
+    valuationDate = TuringDate(2019, 9, 18)
 
     dccType = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
@@ -332,7 +332,7 @@ def futureToFRARate(price, convexity):
 
 def test_FinIborDepositsFuturesSwaps():
 
-    spotDate = TuringDate(6, 6, 2018)
+    spotDate = TuringDate(2018, 6, 6)
     spotDays = 0
     settlementDate = spotDate.addWeekDays(spotDays)
     depoDCCType = TuringDayCountTypes.ACT_360
@@ -445,7 +445,7 @@ def test_FinIborDepositsFuturesSwaps():
         df = liborCurve.df(endDate)
         print(endDate, df)
 
-        endDate = TuringDate(20, 6, 2018)
+        endDate = TuringDate(2018, 6, 20)
         df = liborCurve.df(endDate)
         print(endDate, df)
 
@@ -474,7 +474,7 @@ def test_FinIborDepositsFuturesSwaps():
 
 def test_derivativePricingExample():
 
-    valuationDate = TuringDate(10, 11, 2011)
+    valuationDate = TuringDate(2011, 11, 10)
 
     dccType = TuringDayCountTypes.ACT_360
     depos = []
@@ -556,7 +556,7 @@ def test_derivativePricingExample():
 #    dayCountType = TuringDayCountTypes.ACT_360
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     fixedLegType = TuringSwapTypes.PAY
-    
+
     swapRate = 0.0058
     swap = TuringIborSwap(settlementDate, "1Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
@@ -621,7 +621,7 @@ def test_bloombergPricingExample(interpType):
     https://github.com/vilen22/curve-building/blob/master/Bloomberg%20Curve%20Building%20Replication.xlsx
 
     '''
-    valuationDate = TuringDate(6, 6, 2018)
+    valuationDate = TuringDate(2018, 6, 6)
 
     # We do the O/N rate which settles on trade date
     spotDays = 0
@@ -699,16 +699,16 @@ def test_bloombergPricingExample(interpType):
 
     if 1==0:
         plt.figure()
-    
-        years = np.linspace(0, 50, 500)    
+
+        years = np.linspace(0, 50, 500)
         dates = settlementDate.addYears(years)
         fwds = liborCurve.fwd(dates)
         plt.plot(years, fwds, label = "Fwd Rate")
         plt.title(interpType)
         plt.xlabel("Years")
         plt.legend()
-    
-        years = np.linspace(0, 50, 500)    
+
+        years = np.linspace(0, 50, 500)
         dates = settlementDate.addYears(years)
         fwds = liborCurve.zeroRate(dates)
         plt.plot(years, fwds, label = "Zero Rate")
@@ -716,7 +716,7 @@ def test_bloombergPricingExample(interpType):
         plt.xlabel("Years")
         plt.ylabel("Rate")
         plt.legend()
-    
+
 ###############################################################################
 
 if 1==0:

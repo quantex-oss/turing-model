@@ -33,7 +33,7 @@ def test_FinBondEmbeddedOptionMATLAB():
     # FOUND BY MATLAB ALTHOUGH THEY DO NOT EXAMINE THE ASYMPTOTIC PRICE
     # WHICH MIGHT BE A BETTER MATCH - ALSO THEY DO NOT USE A REALISTIC VOL
 
-    valuationDate = TuringDate(1, 1, 2007)
+    valuationDate = TuringDate(2007, 1, 1)
     settlementDate = valuationDate
 
     ###########################################################################
@@ -49,8 +49,8 @@ def test_FinBondEmbeddedOptionMATLAB():
 
     ###########################################################################
 
-    issueDate = TuringDate(1, 1, 2005)
-    maturityDate = TuringDate(1, 1, 2010)
+    issueDate = TuringDate(2005, 1, 1)
+    maturityDate = TuringDate(2010, 1, 1)
     coupon = 0.0525
     freqType = TuringFrequencyTypes.ANNUAL
     accrualType = TuringDayCountTypes.ACT_ACT_ICMA
@@ -61,7 +61,7 @@ def test_FinBondEmbeddedOptionMATLAB():
     putDates = []
     putPrices = []
 
-    putDate = TuringDate(1, 1, 2008)
+    putDate = TuringDate(2008, 1, 1)
     for _ in range(0, 24):
         putDates.append(putDate)
         putPrices.append(100)
@@ -109,7 +109,7 @@ def test_FinBondEmbeddedOptionQUANTLIB():
     # 68.38 found in blog article. But this is for 40 grid points.
     # Note also that a basis point vol of 0.120 is 12% which is VERY HIGH!
 
-    valuationDate = TuringDate(16, 8, 2016)
+    valuationDate = TuringDate(2016, 8, 16)
     settlementDate = valuationDate.addWeekDays(3)
 
     ###########################################################################
@@ -119,8 +119,8 @@ def test_FinBondEmbeddedOptionQUANTLIB():
 
     ###########################################################################
 
-    issueDate = TuringDate(15, 9, 2010)
-    maturityDate = TuringDate(15, 9, 2022)
+    issueDate = TuringDate(2010, 9, 15)
+    maturityDate = TuringDate(2022, 9, 15)
     coupon = 0.025
     freqType = TuringFrequencyTypes.QUARTERLY
     accrualType = TuringDayCountTypes.ACT_ACT_ICMA
@@ -130,7 +130,7 @@ def test_FinBondEmbeddedOptionQUANTLIB():
     # Set up the call and put times and prices
     ###########################################################################
 
-    nextCallDate = TuringDate(15, 9, 2016)
+    nextCallDate = TuringDate(2016, 9, 15)
     callDates = [nextCallDate]
     callPrices = [100.0]
 

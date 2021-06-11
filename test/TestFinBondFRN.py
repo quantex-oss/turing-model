@@ -169,7 +169,7 @@ def buildIborCurve(valuationDate):
                                        depos,
                                        fras,
                                        swaps)
-    
+
     if 1 == 0:
         import numpy as np
         numSteps = 40
@@ -199,8 +199,8 @@ def test_FinBondFRN():
     ##########################################################################
 
     testCases.banner("BLOOMBERG CITIGROUP FRN EXAMPLE")
-    issueDate = TuringDate(10, 11, 2010)
-    maturityDate = TuringDate(10, 11, 2021)
+    issueDate = TuringDate(2010, 11, 10)
+    maturityDate = TuringDate(2021, 11, 10)
     quotedMargin = 0.0025
     freqType = TuringFrequencyTypes.QUARTERLY
     accrualType = TuringDayCountTypes.THIRTY_E_360
@@ -219,7 +219,7 @@ def test_FinBondFRN():
     currentIbor = 0.0120534
     futureIbors = 0.0130522
 
-    settlementDate = TuringDate(21, 7, 2017)
+    settlementDate = TuringDate(2017, 7, 21)
 
     dm = bond.discountMargin(settlementDate,
                              resetIbor,
@@ -308,9 +308,9 @@ def test_FinBondFRN():
 ##########################################################################
 
     testCases.banner("BLOOMBERG CITIGROUP FRN EXAMPLE II")
-    issueDate = TuringDate(28, 3, 2000)
-    settlementDate = TuringDate(28, 3, 2014)
-    maturityDate = TuringDate(3, 2, 2021)
+    issueDate = TuringDate(2000, 3, 28)
+    settlementDate = TuringDate(2014, 3, 28)
+    maturityDate = TuringDate(2021, 2, 3)
     quotedMargin = 0.0020
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     accrualType = TuringDayCountTypes.THIRTY_E_360_ISDA
@@ -336,7 +336,7 @@ def test_FinBondFRN():
                              cleanPrice)
 
     testCases.print("Discount Margin (bp) = ", dm * 10000)
-    
+
     fullPrice = bond.fullPriceFromDM(settlementDate,
                                      resetIbor,
                                      currentIbor,

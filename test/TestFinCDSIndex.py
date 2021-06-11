@@ -99,7 +99,7 @@ def buildIssuerCurve(tradeDate, liborCurve):
     cdsMarketContracts = []
 
     cdsCoupon = 0.0048375
-    maturityDate = TuringDate(20, 6, 2010)
+    maturityDate = TuringDate(2010, 6, 20)
     cds = TuringCDS(valuationDate, maturityDate, cdsCoupon)
     cdsMarketContracts.append(cds)
 
@@ -117,12 +117,12 @@ def buildIssuerCurve(tradeDate, liborCurve):
 def test_valueCDSIndex():
 
     # We treat an index as a CDS contract with a flat CDS curve
-    tradeDate = TuringDate(7, 2, 2006)
+    tradeDate = TuringDate(2006, 2, 7)
     liborCurve = buildIborCurve(tradeDate)
     issuerCurve = buildIssuerCurve(tradeDate, liborCurve)
     stepInDate = tradeDate.addDays(1)
     valuationDate = stepInDate
-    maturityDate = TuringDate(20, 6, 2010)
+    maturityDate = TuringDate(2010, 6, 20)
 
     cdsRecovery = 0.40
     notional = 10.0 * ONE_MILLION

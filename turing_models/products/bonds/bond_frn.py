@@ -69,7 +69,7 @@ class TuringBondFRN(object):
         self._flowDates = []
         self._flowAmounts = []
 
-        self._settlementDate = TuringDate(1, 1, 1900)
+        self._settlementDate = TuringDate(1900, 1, 1)
         self._accruedInterest = None
         self._accruedDays = 0.0
 

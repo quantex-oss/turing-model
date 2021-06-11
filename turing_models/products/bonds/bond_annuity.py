@@ -45,7 +45,7 @@ class TuringBondAnnuity(object):
         self._par = 100.0
 
         self._flowDates = []
-        self._settlementDate = TuringDate(1, 1, 1900)
+        self._settlementDate = TuringDate(1900, 1, 1)
         self._accruedInterest = None
         self._accruedDays = 0.0
         self._alpha = 0.0
@@ -141,7 +141,7 @@ class TuringBondAnnuity(object):
 
         (accFactor, num, _) = dc.yearFrac(self._pcd,
                                           settlementDate,
-                                          self._ncd, 
+                                          self._ncd,
                                           self._frequency)
 
         self._alpha = 1.0 - accFactor * self._frequency

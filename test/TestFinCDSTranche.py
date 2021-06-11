@@ -171,7 +171,7 @@ def loadHeterogeneousSpreadCurves(valuationDate, liborCurve):
 
 def test_FinCDSTranche():
 
-    tradeDate = TuringDate(1, 3, 2007)
+    tradeDate = TuringDate(2007, 3, 1)
     stepInDate = tradeDate.addDays(1)
     valuationDate = tradeDate.addDays(1)
 
@@ -182,7 +182,7 @@ def test_FinCDSTranche():
 
     liborCurve = buildIborCurve(tradeDate)
 
-    trancheMaturity = TuringDate(20, 12, 2011)
+    trancheMaturity = TuringDate(2011, 12, 20)
     tranche1 = TuringCDSTranche(valuationDate, trancheMaturity, 0.00, 0.03)
     tranche2 = TuringCDSTranche(valuationDate, trancheMaturity, 0.03, 0.06)
     tranche3 = TuringCDSTranche(valuationDate, trancheMaturity, 0.06, 0.09)

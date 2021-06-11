@@ -84,7 +84,7 @@ def test_FinIborDepositsAndSwaps(valuationDate):
 
 def test_FinIborCapFloor():
 
-    todayDate = TuringDate(20, 6, 2019)
+    todayDate = TuringDate(2019, 6, 20)
     valuationDate = todayDate
     startDate = todayDate.addWeekDays(2)
     maturityDate = startDate.addTenor("1Y")
@@ -178,7 +178,7 @@ def test_FinIborCapFloorVolCurve():
     demonstrate they are the same - NOT SURE THAT HULLS BOOKS FORMULA WORKS FOR
     OPTIONS. '''
 
-    todayDate = TuringDate(20, 6, 2019)
+    todayDate = TuringDate(2019, 6, 20)
     valuationDate = todayDate
     maturityDate = valuationDate.addTenor("3Y")
     dayCountType = TuringDayCountTypes.THIRTY_E_360
@@ -260,7 +260,7 @@ def test_FinIborCapFloorVolCurve():
 def test_FinIborCapletHull():
 
     #  Hull Page 703, example 29.3
-    todayDate = TuringDate(20, 6, 2019)
+    todayDate = TuringDate(2019, 6, 20)
     valuationDate = todayDate
     maturityDate = valuationDate.addTenor("2Y")
     liborCurve = TuringDiscountCurveFlat(valuationDate,
@@ -301,13 +301,13 @@ def test_FinIborCapletHull():
 
 def test_FinIborCapFloorQLExample():
 
-    valuationDate = TuringDate(14, 6, 2016)
+    valuationDate = TuringDate(2016, 6, 14)
 
-    dates = [TuringDate(14, 6, 2016), TuringDate(14, 9, 2016),
-             TuringDate(14, 12, 2016), TuringDate(14, 6, 2017),
-             TuringDate(14, 6, 2019), TuringDate(14, 6, 2021),
-             TuringDate(15, 6, 2026), TuringDate(16, 6, 2031),
-             TuringDate(16, 6, 2036), TuringDate(14, 6, 2046)]
+    dates = [TuringDate(2016, 6, 14), TuringDate(2016, 9, 14),
+             TuringDate(2016, 12, 14), TuringDate(2017, 6, 14),
+             TuringDate(2019, 6, 14), TuringDate(2021, 6, 14),
+             TuringDate(2026, 6, 15), TuringDate(2031, 6, 16),
+             TuringDate(2036, 6, 16), TuringDate(2046, 6, 14)]
 
     rates = [0.000000, 0.006616, 0.007049, 0.007795,
              0.009599, 0.011203, 0.015068, 0.017583,
@@ -323,8 +323,8 @@ def test_FinIborCapFloorQLExample():
                                              dayCountType,
                                              TuringInterpTypes.LINEAR_ZERO_RATES)
 
-    startDate = TuringDate(14, 6, 2016)
-    endDate = TuringDate(14, 6, 2026)
+    startDate = TuringDate(2016, 6, 14)
+    endDate = TuringDate(2026, 6, 14)
     calendarType = TuringCalendarTypes.UNITED_STATES
     busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
     freqType = TuringFrequencyTypes.QUARTERLY

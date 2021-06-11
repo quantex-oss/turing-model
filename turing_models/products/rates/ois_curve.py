@@ -21,7 +21,7 @@ swaptol = 1e-10
 
 
 def _fois(oir, *args):
-    ''' Extract the implied overnight index rate assuming it is flat over 
+    ''' Extract the implied overnight index rate assuming it is flat over
     period in question. '''
 
     targetOISRate = args[0]
@@ -38,7 +38,7 @@ def _fois(oir, *args):
         df = df * (1.0 + oir * yearFrac)
 
     period = dayCounter.yearFrac(startDate, endDate)
-    
+
     OISRate = (df - 1.0) / period
     diff = OISRate - targetOISRate
     return diff
@@ -54,8 +54,8 @@ def _f(df, *args):
     numPoints = len(curve._times)
     curve._dfs[numPoints - 1] = df
 
-    # For curves that need a fit function, we fit it now 
-    curve._interpolator.fit(curve._times, curve._dfs)     
+    # For curves that need a fit function, we fit it now
+    curve._interpolator.fit(curve._times, curve._dfs)
     v_swap = swap.value(valueDate, curve, None)
     notional = swap._fixedLeg._notional
     v_swap /= notional
@@ -72,8 +72,8 @@ def _g(df, *args):
     numPoints = len(curve._times)
     curve._dfs[numPoints - 1] = df
 
-    # For curves that need a fit function, we fit it now 
-    curve._interpolator.fit(curve._times, curve._dfs)     
+    # For curves that need a fit function, we fit it now
+    curve._interpolator.fit(curve._times, curve._dfs)
     v_fra = fra.value(valueDate, curve)
     v_fra /= fra._notional
     return v_fra
@@ -88,8 +88,8 @@ class TuringOISCurve(TuringDiscountCurve):
     curve date. Typically it is the date on which an amount of 1 unit paid
     has a present value of 1. This class inherits from TuringDiscountCurve
     and so it has all of the methods that that class has.
-    
-    The construction of the curve is assumed to depend on just the OIS curve, 
+
+    The construction of the curve is assumed to depend on just the OIS curve,
     i.e. it does not include information from Ibor-OIS basis swaps. For this
     reason I call it a one-curve.
     '''
@@ -126,7 +126,7 @@ class TuringOISCurve(TuringDiscountCurve):
 
     def _buildCurve(self):
         ''' Build curve based on interpolation. '''
-            
+
         self._buildCurveUsing1DSolver()
 
 ###############################################################################
@@ -181,7 +181,7 @@ class TuringOISCurve(TuringDiscountCurve):
                     raise TuringError("Deposits must be in increasing maturity")
                 prevDt = nextDt
 
-        # REMOVED THIS AS WE WANT TO ANCHOR CURVE AT VALUATION DATE 
+        # REMOVED THIS AS WE WANT TO ANCHOR CURVE AT VALUATION DATE
         # USE A SYNTHETIC DEPOSIT TO BRIDGE GAP FROM VALUE DATE TO SETTLEMENT DATE
         # Ensure that valuation date is on or after first deposit start date
         # Ensure that valuation date is on or after first deposit start date
@@ -249,9 +249,9 @@ class TuringOISCurve(TuringDiscountCurve):
         # Now we have ensure they are in order check for overlaps and the like
         #######################################################################
 
-        lastDepositMaturityDate = TuringDate(1, 1, 1900)
-        firstFRAMaturityDate = TuringDate(1, 1, 1900)
-        lastFRAMaturityDate = TuringDate(1, 1, 1900)
+        lastDepositMaturityDate = TuringDate(1900, 1, 1)
+        firstFRAMaturityDate = TuringDate(1900, 1, 1)
+        lastFRAMaturityDate = TuringDate(1900, 1, 1)
 
         if numDepos > 0:
             lastDepositMaturityDate = oisDeposits[-1]._maturityDate
@@ -567,7 +567,7 @@ class TuringOISCurve(TuringDiscountCurve):
     #         pv01 = 0.0
     #         df = 1.0
 
-    #         for nextDt in flowDates[1:]:                
+    #         for nextDt in flowDates[1:]:
     #             if nextDt > settlementDate:
     #                 df = self.df(nextDt) / dfValuationDate
     #                 alpha = dayCounter.yearFrac(prevDt, nextDt)[0]

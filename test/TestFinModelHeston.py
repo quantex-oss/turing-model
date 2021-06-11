@@ -18,8 +18,8 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 def testAnalyticalModels():
 
     # Reference see table 4.1 of Rouah book
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 4, 2015)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2015, 4, 1)
     v0 = 0.05  # initial variance of volatility
     theta = 0.05  # long term variance
     kappa = 2.0  # speed of variance reversion
@@ -91,8 +91,8 @@ def testMonteCarlo():
     import time
 
     # Reference see table 4.1 of Rouah book
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 1, 2016)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2016, 1, 1)
     v0 = 0.04  # initial variance of volatility
     theta = 0.04  # long term variance
     kappa = 2.0  # speed of variance reversion

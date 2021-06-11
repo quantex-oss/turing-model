@@ -29,7 +29,7 @@ def test_FinBondYieldCurve():
 
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     accrualType = TuringDayCountTypes.ACT_ACT_ICMA
-    settlement = TuringDate(19, 9, 2012)
+    settlement = TuringDate(2012, 9, 19)
 
     bonds = []
     ylds = []
@@ -39,7 +39,7 @@ def test_FinBondYieldCurve():
         dateString = bond['maturity']
         matDatetime = dt.datetime.strptime(dateString, '%d-%b-%y')
         maturityDt = fromDatetime(matDatetime)
-        issueDt = TuringDate(maturityDt._d, maturityDt._m, 2000)
+        issueDt = TuringDate(2000, maturityDt._m, maturityDt._d)
         coupon = bond['coupon']/100.0
         cleanPrice = bond['mid']
         bond = TuringBond(issueDt, maturityDt, coupon, freqType, accrualType)
@@ -87,7 +87,7 @@ def test_FinBondYieldCurve():
 
 ###############################################################################
 
-    maturityDate = TuringDate(19, 9, 2030)
+    maturityDate = TuringDate(2030, 9, 19)
     interpolatedYield = fittedCurve5.interpolatedYield(maturityDate)
     testCases.print(maturityDate, interpolatedYield)
 

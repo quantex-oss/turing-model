@@ -47,7 +47,7 @@ def getCorrelationMatrix(numFwds, beta, dt):
 
 """ def getVolCurve(numFwds, dt, flatVol=None):
 
-    valuationDate = TuringDate(1, 1, 2020)
+    valuationDate = TuringDate(2020, 1, 1)
 
     capVolDates = []
     capletVolTenor = "1Y"
@@ -144,7 +144,7 @@ def getForwardCurve(numFwds, r):
 #         swapVolSim1F = LMMSimSwaptionVol(a, b, fwd0, fwds1F, taus)
 #         swapVolSimNF = LMMSimSwaptionVol(a, b, fwd0, fwdsNF, taus)
 
-#         valuationDate = TuringDate(1, 1, 2010)
+#         valuationDate = TuringDate(2010, 1, 1)
 #         liborCurve = TuringDiscountCurveFlat(valuationDate, r,
 #                                           TuringFrequencyTypes.QUARTERLY)
 
@@ -175,7 +175,7 @@ def getForwardCurve(numFwds, r):
 #         model = TuringModelBlack(swaptionVol)
 #         blackSwaptionPrice = swaption.value(valuationDate, liborCurve, model)
 
-#         print("K:%6.5f texp:%8.2f FwdVol:%9.5f SimVol1F:%9.5f SimVolNF:%9.5f RebVol:%9.5f SimPx1F:%9.5f SimPxNF:%9.5f Black Px:%9.5f" 
+#         print("K:%6.5f texp:%8.2f FwdVol:%9.5f SimVol1F:%9.5f SimVolNF:%9.5f RebVol:%9.5f SimPx1F:%9.5f SimPxNF:%9.5f Black Px:%9.5f"
 #               % (strike, texp, fwdRateVol, swapVolSim1F, swapVolSimNF, swaptionVol,
 #                  swaptionPrice1F, swaptionPriceNF, blackSwaptionPrice))
 

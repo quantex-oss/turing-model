@@ -16,8 +16,8 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinFXBarrierOption():
 
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 1, 2016)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2016, 1, 1)
     spotFXRate = 100.0
     currencyPair = "USDJPY"
     volatility = 0.20

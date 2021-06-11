@@ -14,7 +14,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 def test_FinCalendar():
 
     setDateFormatType(TuringDateFormatTypes.US_LONGEST)
-    endDate = TuringDate(31, 12, 2030)
+    endDate = TuringDate(2030, 12, 31)
 
     for calendarType in TuringCalendarTypes:
 
@@ -25,11 +25,11 @@ def test_FinCalendar():
         testCases.print("STARTING", calendarType)
 
         cal = TuringCalendar(calendarType)
-        nextDate = TuringDate(31, 12, 2020)
+        nextDate = TuringDate(2020, 12, 31)
 
         while nextDate < endDate:
             nextDate = nextDate.addDays(1)
-            
+
             if nextDate._d == 1 and nextDate._m == 1:
                 testCases.banner("================================")
 #                print("=========================")

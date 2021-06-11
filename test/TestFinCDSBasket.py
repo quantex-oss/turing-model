@@ -176,13 +176,13 @@ def loadHeterogeneousSpreadCurves(valuationDate, liborCurve):
 
 def test_FinCDSBasket():
 
-    tradeDate = TuringDate(1, 3, 2007)
+    tradeDate = TuringDate(2007, 3, 1)
     stepInDate = tradeDate.addDays(1)
     valuationDate = tradeDate.addDays(1)
 
     liborCurve = buildIborCurve(tradeDate)
 
-    basketMaturity = TuringDate(20, 12, 2011)
+    basketMaturity = TuringDate(2011, 12, 20)
 
     cdsIndex = TuringCDSIndexPortfolio()
 

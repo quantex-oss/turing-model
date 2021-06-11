@@ -7,7 +7,6 @@ from tunny import model
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField, Context
 from fundamental.base import ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
-from fundamental.turing_db.utils import to_turing_date
 from turing_models.instrument.common import AssetClass, AssetType
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption, TuringEquityAsianOption, \
@@ -135,7 +134,7 @@ class OptionModel:
             self.knock_out_price,
             self.knock_in_price,
             self.notional,
-            self.coupon_rate,
+            self.rebate,
             self.option_type_turing,
             self.coupon_annualized_flag,
             self.knock_in_type_turing,
@@ -148,9 +147,9 @@ class OptionModel:
             self.expiration_date,
             self.strike_price,
             self.knock_out_type_turing,
-            self.knock_out_price,
-            self.coupon_rate,
-            self.coupon_annualized_flag,
+            self.barrier,
+            self.rebate,
+            True,
             self.notional,
             self.participation_rate)
 
@@ -246,7 +245,6 @@ class Option(Priceable):
     method_of_settlement = StringField("method_of_settlement")
     knock_out_price: float = FloatField("knock_out_price")  # yapi无值
     knock_in_price: float = FloatField("knock_in_price")  # yapi无值
-    coupon_rate: float = FloatField("coupon_rate")  # yapi无值
     coupon_annualized_flag: bool = BoolField("coupon_annualized_flag")  # yapi无值
     knock_out_type = StringField("knock_out_type")  # yapi无值
     knock_in_type = StringField("knock_in_type")  # yapi无值
@@ -266,7 +264,7 @@ class EqOption(OptionModel):
         支持多种参数传入方式
         Examples:
         1.
-        # >>> eq = EqOption(asset_id='123', option_type='call', product_type='European', expiration_date=TuringDate(12, 2, 2021), strike_price=90, multiplier=10000)
+        # >>> eq = EqOption(asset_id='123', option_type='call', product_type='European', expiration_date=TuringDate(2021, 2, 12), strike_price=90, multiplier=10000)
         # >>> eq.from_json()
         # >>> eq.price()
         2.
@@ -306,21 +304,19 @@ class EqOption(OptionModel):
     method_of_settlement: str = None
     knock_out_price: float = None  # yapi无值
     knock_in_price: float = None  # yapi无值
-    coupon_rate: float = None  # yapi无值
     coupon_annualized_flag: bool = None  # yapi无值
     knock_out_type: str = None  # yapi无值
     knock_in_type: str = None  # yapi无值
     knock_in_strike1: float = None  # yapi无值
     knock_in_strike2: float = None  # yapi无值
     name: str = None  # 对象标识名
-    value_date: str = None  # 估值日期
+    value_date: str = TuringDate(*tuple(datetime.date.today().timetuple()[:3]))  # 估值日期
     stock_price: float = None  # 股票价格
     volatility: float = 0.1  # 波动率
     interest_rate: float = 0.02  # 无风险利率
     dividend_yield: float = 0.01  # 股息率
     accrued_average: float = 0.1  # 应计平均价
     ctx: Context = ctx
-    obj: Optional[Option] = None
 
     def __post_init__(self):
         super(EqOption, self).__init__()
@@ -333,31 +329,18 @@ class EqOption(OptionModel):
         self._interest_rate = self.interest_rate
         self._dividend_yield = self.dividend_yield
         self._accrued_average = self.accrued_average
-        self._value_date = to_turing_date(self.value_date) \
-            if self.value_date and isinstance(self.value_date, str) \
-            else TuringDate(*tuple(reversed(datetime.date.today().timetuple()[:3])))
+        self._value_date = self.value_date
         self._stock_price = self.stock_price
-        self.convert_date()
-
-    def convert_date(self):
-        date_fields = ["start_date", "end_date", "start_averaging_date",
-                       "expiration_date", "premium_payment_date", "value_date"]
-        for field in date_fields:
-            setattr(self, field, to_turing_date(getattr(self, field, None))
-            if getattr(self, field, None)
-               and isinstance(getattr(self, field, None), str) else getattr(self, field, None))
 
     def _set_by_dict(self, tmp_dict):
         for k, v in tmp_dict.items():
             setattr(self, k, v)
 
-
-    def resolve(self, expand_dict=None):
+    def resolve(self, expand_dict):
         if expand_dict:
             self._set_by_dict(expand_dict)
-        else:
-            self._set_by_dict(self.obj)
         self.set_param()
+
 
 if __name__ == '__main__':
     eq = EqOption(asset_id='123', option_type='call',

@@ -17,7 +17,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinDiscountCurveZeros():
 
-    startDate = TuringDate(1, 1, 2018)
+    startDate = TuringDate(2018, 1, 1)
     times = np.linspace(1.0, 10.0, 10)
     dates = startDate.addYears(times)
     zeroRates = np.linspace(5.0, 6.0, 10)/100
@@ -51,11 +51,11 @@ def test_FinDiscountCurveZeros():
         freqType = TuringFrequencyTypes.ANNUAL
         dayCountType = TuringDayCountTypes.ACT_ACT_ISDA
 
-        dates = [TuringDate(14, 6, 2016), TuringDate(14, 9, 2016),
-                 TuringDate(14, 12, 2016), TuringDate(14, 6, 2017),
-                 TuringDate(14, 6, 2019), TuringDate(14, 6, 2021),
-                 TuringDate(15, 6, 2026), TuringDate(16, 6, 2031),
-                 TuringDate(16, 6, 2036), TuringDate(14, 6, 2046)]
+        dates = [TuringDate(2016, 6, 14), TuringDate(2016, 9, 14),
+                 TuringDate(2016, 12, 14), TuringDate(2017, 6, 14),
+                 TuringDate(2019, 6, 14), TuringDate(2021, 6, 14),
+                 TuringDate(2026, 6, 15), TuringDate(2031, 6, 16),
+                 TuringDate(2036, 6, 16), TuringDate(2046, 6, 14)]
 
         zeroRates = [0.000000, 0.006616, 0.007049, 0.007795,
                      0.009599, 0.011203, 0.015068, 0.017583,

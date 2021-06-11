@@ -31,7 +31,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_CDSFastApproximation():
 
-    valueDate = TuringDate(20, 6, 2018)
+    valueDate = TuringDate(2018, 6, 20)
     # I build a discount curve that requires no bootstrap
     times = np.linspace(0, 10.0, 11)
     r = 0.05
@@ -83,7 +83,7 @@ def test_CDSFastApproximation():
 
 def test_CDSCurveRepricing():
 
-    valuationDate = TuringDate(20, 6, 2018)
+    valuationDate = TuringDate(2018, 6, 20)
     recoveryRate = 0.40
 
     cdsContracts, issuerCurve = test_IssuerCurveBuild()
@@ -116,7 +116,7 @@ def test_IssuerCurveBuild():
     ''' Test issuer curve build with simple libor curve to isolate cds
     curve building time cost. '''
 
-    valuationDate = TuringDate(20, 6, 2018)
+    valuationDate = TuringDate(2018, 6, 20)
 
     times = np.linspace(0.0, 10.0, 11)
     r = 0.05
@@ -175,7 +175,7 @@ def buildFullIssuerCurve1(mktSpreadBump, irBump):
     # https://www.markit.com/markit.jsp?jsppage=pv.jsp
     # YIELD CURVE 8-AUG-2019 SNAP AT 1600
 
-    tradeDate = TuringDate(9, 8, 2019)
+    tradeDate = TuringDate(2019, 8, 9)
     valuationDate = tradeDate.addDays(1)
 
     m = 1.0  # 0.00000000000
@@ -378,11 +378,11 @@ def test_fullPriceCDS1():
     liborCurve, issuerCurve = buildFullIssuerCurve1(0.0, 0.0)
 
     # This is the 10 year contract at an off market coupon
-    maturityDate = TuringDate(20, 6, 2029)
+    maturityDate = TuringDate(2029, 6, 20)
     cdsCoupon = 0.0150
     notional = ONE_MILLION
     longProtection = True
-    tradeDate = TuringDate(9, 8, 2019)
+    tradeDate = TuringDate(2019, 8, 9)
     valuationDate = tradeDate.addDays(1)
     effectiveDate = valuationDate
 
@@ -409,7 +409,7 @@ def test_fullPriceCDS1():
     testCases.print("CLEAN_PRICE", p)
 
     # MARKIT PRICE IS 168517
-    
+
     accruedDays = cdsContract.accruedDays()
     testCases.print("ACCRUED_DAYS", accruedDays)
 
@@ -466,8 +466,8 @@ def buildFullIssuerCurve2(mktSpreadBump, irBump):
 
     m = 1.0
 
-    valuationDate = TuringDate(24, 8, 2020)
-    settlementDate = TuringDate(24, 8, 2020)
+    valuationDate = TuringDate(2020, 8, 24)
+    settlementDate = TuringDate(2020, 8, 24)
     dcType = TuringDayCountTypes.ACT_360
     depos = []
 
@@ -541,7 +541,7 @@ def buildFullIssuerCurve2(mktSpreadBump, irBump):
     cdsCoupon = 0.01 + mktSpreadBump
 
     cdsMarketContracts = []
-    effectiveDate = TuringDate(21, 8, 2020)
+    effectiveDate = TuringDate(2020, 8, 21)
     cds = TuringCDS(effectiveDate, "6M", cdsCoupon)
     cdsMarketContracts.append(cds)
 
@@ -593,12 +593,12 @@ def test_fullPriceCDSModelCheck():
     liborCurve, issuerCurve = buildFullIssuerCurve2(0.0, 0.0)
 
     # This is the 10 year contract at an off market coupon
-    maturityDate = TuringDate(20, 6, 2025)
+    maturityDate = TuringDate(2025, 6, 20)
     cdsCoupon = 0.050
     notional = ONE_MILLION
     longProtection = True
-    tradeDate = TuringDate(20, 8, 2020)
-    effectiveDate = TuringDate(21, 8, 2020)
+    tradeDate = TuringDate(2020, 8, 20)
+    effectiveDate = TuringDate(2020, 8, 21)
     valuationDate = tradeDate
 
     cdsContract = TuringCDS(effectiveDate,
@@ -671,11 +671,11 @@ def test_fullPriceCDSConvergence():
     _, issuerCurve = buildFullIssuerCurve1(0.0, 0.0)
 
     # This is the 10 year contract at an off market coupon
-    maturityDate = TuringDate(20, 6, 2029)
+    maturityDate = TuringDate(2029, 6, 20)
     cdsCoupon = 0.0150
     notional = ONE_MILLION
     longProtection = False
-    tradeDate = TuringDate(9, 8, 2019)
+    tradeDate = TuringDate(2019, 8, 9)
     valuationDate = tradeDate.addDays(1)
 
     cdsContract = TuringCDS(valuationDate,
@@ -698,10 +698,10 @@ def test_fullPriceCDSConvergence():
 def test_CDSDateGeneration():
 
     # This is the 10 year contract at an off market coupon
-    maturityDate = TuringDate(20, 6, 2029)
+    maturityDate = TuringDate(2029, 6, 20)
     cdsCoupon = 0.0100
 
-    tradeDate = TuringDate(9, 8, 2019)
+    tradeDate = TuringDate(2019, 8, 9)
     valuationDate = tradeDate.addDays(1)
 
     cdsContract = TuringCDS(valuationDate,

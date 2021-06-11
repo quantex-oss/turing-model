@@ -31,7 +31,7 @@ PLOT_GRAPHS = False
 def test_FinDiscountCurves():
 
     # Create a curve from times and discount factors
-    valuationDate = TuringDate(1, 1, 2018)
+    valuationDate = TuringDate(2018, 1, 1)
     years = [1.0, 2.0, 3.0, 4.0, 5.0]
     dates = valuationDate.addYears(years)
     years2 = []

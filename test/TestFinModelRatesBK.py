@@ -29,8 +29,8 @@ def test_BKExampleOne():
     zeros = np.array(zeros)
     dfs = np.exp(-zeros*times)
 
-    startDate = TuringDate(1, 12, 2019)
-    endDate = TuringDate(1, 6, 2021)
+    startDate = TuringDate(2019, 12, 1)
+    endDate = TuringDate(2021, 6, 1)
     sigma = 0.25
     a = 0.22
     numTimeSteps = 3
@@ -56,8 +56,8 @@ def test_BKExampleTwo():
     # This follows example in Fig 28.11 of John Hull's book but does not
     # have the exact same dt so there are some differences
 
-    settlementDate = TuringDate(1, 12, 2019)
-    issueDate = TuringDate(1, 12, 2018)
+    settlementDate = TuringDate(2019, 12, 1)
+    issueDate = TuringDate(2018, 12, 1)
     expiryDate = settlementDate.addTenor("18m")
     maturityDate = settlementDate.addTenor("10Y")
     coupon = 0.05

@@ -15,8 +15,8 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 ###############################################################################
 
 def test_FinEquityLookBackOption():
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 1, 2016)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2016, 1, 1)
     stockPrice = 100.0
     volatility = 0.3
     numPathsRange = [10000]

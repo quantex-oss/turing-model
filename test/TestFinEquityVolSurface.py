@@ -23,16 +23,16 @@ PLOT_GRAPHS = False
 
 def test_FinEquityVolSurface(verboseCalibration):
 
-    valueDate = TuringDate(11, 1, 2021)
+    valueDate = TuringDate(2021, 1, 11)
 
     stockPrice = 3800.0 # Check
 
-    expiryDates = [TuringDate(11, 2, 2021), TuringDate(11, 3, 2021),
-                   TuringDate(11, 4, 2021), TuringDate(11, 7, 2021),
-                   TuringDate(11, 10, 2021), TuringDate(11, 1, 2022),
-                   TuringDate(11, 1, 2023)]
+    expiryDates = [TuringDate(2021, 2, 11), TuringDate(2021, 3, 11),
+                   TuringDate(2021, 4, 11), TuringDate(2021, 7, 11),
+                   TuringDate(2021, 10, 11), TuringDate(2022, 1, 11),
+                   TuringDate(2023, 1, 11)]
 
-    strikes = np.array([3037, 3418, 3608, 3703, 3798, 
+    strikes = np.array([3037, 3418, 3608, 3703, 3798,
                         3893, 3988, 4178, 4557])
 
     volSurface = [[42.94, 31.30, 25.88, 22.94, 19.72, 16.90, 15.31, 17.54, 25.67],
@@ -42,7 +42,7 @@ def test_FinEquityVolSurface(verboseCalibration):
          [29.91, 25.58, 23.21, 22.01, 20.83, 19.70, 18.62, 16.63, 14.94],
          [29.26, 25.24, 23.03, 21.91, 20.81, 19.73, 18.69, 16.76, 14.63],
          [27.59, 24.33, 22.72, 21.93, 21.17, 20.43, 19.71, 18.36, 16.26]]
-        
+
     volSurface = np.array(volSurface)
     volSurface = volSurface / 100.0
 
@@ -103,9 +103,9 @@ if __name__ == '__main__':
     verboseCalibration = False
 
     test_FinEquityVolSurface(verboseCalibration)
-    
+
     end = time.time()
-    
+
     elapsed = end - start
     print("Elapsed Time:", elapsed)
     testCases.compareTestCases()

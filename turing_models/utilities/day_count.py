@@ -39,15 +39,15 @@ def isLastDayOfFeb(dt: TuringDate):
 #    ACT_360 = 8
 #    ACT_365L = 9  # the 29 Feb is counted if it is in the date range
 ###############################################################################
-        
+
 class TuringDayCountTypes(Enum):
-    THIRTY_360_BOND = 1  
-    THIRTY_E_360 = 2  
-    THIRTY_E_360_ISDA = 3  
-    THIRTY_E_PLUS_360 = 4  
-    ACT_ACT_ISDA = 5  
-    ACT_ACT_ICMA = 6  
-    ACT_365F = 7  
+    THIRTY_360_BOND = 1
+    THIRTY_E_360 = 2
+    THIRTY_E_360_ISDA = 3
+    THIRTY_E_PLUS_360 = 4
+    ACT_ACT_ISDA = 5
+    ACT_ACT_ICMA = 6
+    ACT_365F = 7
     ACT_360 = 8
     ACT_365L = 9
     SIMPLE = 10 # actual divided by gDaysInYear
@@ -88,10 +88,10 @@ class TuringDayCount(object):
         coupon frequency for some conventions.
 
         Note that if the date is intraday, i.e. hh,mm and ss do not equal zero
-        then that is used in the calculation of the year frac. This avoids 
+        then that is used in the calculation of the year frac. This avoids
         discontinuities for short dated intra day products. It should not
         affect normal dates for which hh=mm=ss=0.
-        
+
         This seems like a useful source:
         https://www.eclipsesoftware.biz/DayCountConventions.html
         Wikipedia also has a decent survey of the conventions
@@ -119,7 +119,7 @@ class TuringDayCount(object):
             if d1 == 31:
                 d1 = 30
 
-            if d2 == 31 and d1 == 30: 
+            if d2 == 31 and d1 == 30:
                 d2 = 30
 
             num = 360 * (y2 - y1) + 30 * (m2 - m1) + (d2 - d1)
@@ -199,8 +199,8 @@ class TuringDayCount(object):
                 accFactor = (dt2 - dt1) / denom1
                 return (accFactor, num, den)
             else:
-                daysYear1 = datediff(dt1, TuringDate(1, 1, y1 + 1))
-                daysYear2 = datediff(TuringDate(1, 1, y2), dt2)
+                daysYear1 = datediff(dt1, TuringDate(y1 + 1, 1, 1))
+                daysYear2 = datediff(TuringDate(y2, 1, 1), dt2)
                 accFactor1 = daysYear1 / denom1
                 accFactor2 = daysYear2 / denom2
                 yearDiff = y2 - y1 - 1.0
@@ -253,11 +253,11 @@ class TuringDayCount(object):
             den = 365
 
             if isLeapYear(y1):
-                feb29 = TuringDate(29, 2, y1)
+                feb29 = TuringDate(y1, 2, 29)
             elif isLeapYear(y3):
-                feb29 = TuringDate(29, 2, y3)
+                feb29 = TuringDate(y3, 2, 29)
             else:
-                feb29 = TuringDate(1, 1, 1900)
+                feb29 = TuringDate(1900, 1, 1)
 
             if freq == 1:
                 if feb29 > dt1 and feb29 <= dt3:
@@ -270,7 +270,7 @@ class TuringDayCount(object):
             return (accFactor, num, den)
 
         elif self._type == TuringDayCountTypes.SIMPLE:
-            
+
             num = dt2 - dt1
             den = gDaysInYear
             accFactor = num / den

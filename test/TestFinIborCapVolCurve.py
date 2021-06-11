@@ -16,7 +16,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 def test_FinCapVolCurve():
 
     # Reproduces example in Table 32.1 of Hull Book
-    valuationDate = TuringDate(1, 1, 2020)
+    valuationDate = TuringDate(2020, 1, 1)
 
     capVolDates = []
     capletVolTenor = "1Y"

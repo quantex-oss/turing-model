@@ -29,7 +29,7 @@ PLOT_GRAPHS = False
 def test_FinOISFRAsOnly():
 
     # TO DO FIX THIS
-    valuationDate = TuringDate(23, 2, 2018)
+    valuationDate = TuringDate(2018, 2, 23)
 
     spotDays = 0
     settleDt = valuationDate.addWeekDays(spotDays)
@@ -76,7 +76,7 @@ def test_FinOISFRAsOnly():
 
 def test_FinOISDepositsFRAsSwaps():
 
-    valuationDate = TuringDate(18, 9, 2019)
+    valuationDate = TuringDate(2019, 9, 18)
 
     dccType = TuringDayCountTypes.THIRTY_E_360_ISDA
     depos = []
@@ -95,7 +95,7 @@ def test_FinOISDepositsFRAsSwaps():
     depo = TuringIborDeposit(settleDt, maturityDate, depositRate,
                              depoDCCType, notional, calendarType)
     depos.append(depo)
-    
+
     fras = []
     # 1 x 4 FRA
     fraRate = 0.04
@@ -255,8 +255,8 @@ def futureToFRARate(price, convexity):
 
 def test_FinOISDepositsFuturesSwaps():
 
-    
-    spotDate = TuringDate(6, 6, 2018)
+
+    spotDate = TuringDate(2018, 6, 6)
     spotDays = 0
     settleDt = spotDate.addWeekDays(spotDays)
     depoDCCType = TuringDayCountTypes.THIRTY_E_360_ISDA
@@ -356,7 +356,7 @@ def test_FinOISDepositsFuturesSwaps():
         df = liborCurve.df(endDate)
         print(endDate, df)
 
-        endDate = TuringDate(20, 6, 2018)
+        endDate = TuringDate(2018, 6, 20)
         df = liborCurve.df(endDate)
         print(endDate, df)
 
@@ -380,7 +380,7 @@ def test_FinOISDepositsFuturesSwaps():
 
 def test_derivativePricingExample():
 
-    valuationDate = TuringDate(10, 11, 2011)
+    valuationDate = TuringDate(2011, 11, 10)
 
     # We do the O/N rate which settles on trade date
     spotDays = 0
@@ -393,7 +393,7 @@ def test_derivativePricingExample():
 #    dayCountType = TuringDayCountTypes.ACT_360
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     fixedLegType = FinfixedLegTypes.PAY
-    
+
     swapRate = 0.0058
     swap = TuringOIS(settleDt, "1Y", fixedLegType, swapRate, freqType, dayCountType)
     swaps.append(swap)
@@ -458,7 +458,7 @@ def test_bloombergPricingExample():
     https://github.com/vilen22/curve-building/blob/master/Bloomberg%20Curve%20Building%20Replication.xlsx
     '''
 
-    valuationDate = TuringDate(6, 6, 2018)
+    valuationDate = TuringDate(2018, 6, 6)
 
     # We do the O/N rate which settles on trade date
     spotDays = 0
@@ -467,7 +467,7 @@ def test_bloombergPricingExample():
 
     depo = TuringIborDeposit(settleDt, "1D", 1.712 / 100.0, accrual)
     depos = [depo]
-    
+
     futs = []
     fut = TuringIborFuture(valuationDate, 1); futs.append(fut)
     fut = TuringIborFuture(valuationDate, 2); futs.append(fut)
@@ -514,7 +514,7 @@ def test_bloombergPricingExample():
 
 #    swaps[0]._fixedLeg.printValuation()
 #    swaps[0]._floatLeg.printValuation()
-    
+
     # The valuation of 53714.55 is very close to the spreadsheet value 53713.96
     principal = 0.0
 

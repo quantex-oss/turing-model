@@ -17,9 +17,9 @@ setDateFormatType(TuringDateFormatTypes.UK_LONGEST)
 
 def test_FinDate():
 
-    startDate = TuringDate(1, 1, 2018)
+    startDate = TuringDate(2018, 1, 1)
 
-    assert TuringDate(1, 1, 2018) == TuringDate.fromString('1-1-2018', '%d-%m-%Y')
+    assert TuringDate(2018, 1, 1) == TuringDate.fromString('1-1-2018', '%d-%m-%Y')
 
     testCases.header("DATE", "MONTHS", "CDS DATE")
 
@@ -27,7 +27,7 @@ def test_FinDate():
         nextCDSDate = startDate.nextCDSDate(numMonths)
         testCases.print(str(startDate), numMonths, str(nextCDSDate))
 
-    startDate = TuringDate(1, 1, 2018)
+    startDate = TuringDate(2018, 1, 1)
 
     testCases.header("STARTDATE", "MONTHS", "CDS DATE")
 
@@ -41,7 +41,7 @@ def test_FinDate():
 
 def test_FinDateTenors():
 
-    startDate = TuringDate(23, 2, 2018)
+    startDate = TuringDate(2018, 2, 23)
 
     testCases.header("TENOR", "DATE")
     tenor = "5d"
@@ -79,7 +79,7 @@ def test_FinDateTenors():
 
 def test_FinDateRange():
 
-    startDate = TuringDate(1, 1, 2010)
+    startDate = TuringDate(2010, 1, 1)
 
     testCases.header("Tenor", "Dates")
 
@@ -106,7 +106,7 @@ def test_FinDateRange():
 
 def test_FinDateAddMonths():
 
-    startDate = TuringDate(1, 1, 2010)
+    startDate = TuringDate(2010, 1, 1)
 
     testCases.header("Months", "Dates")
 
@@ -124,7 +124,7 @@ def test_FinDateAddMonths():
 
 def test_FinDateAddYears():
 
-    startDate = TuringDate(1, 1, 2010)
+    startDate = TuringDate(2010, 1, 1)
 
     testCases.header("Years", "Dates")
 
@@ -160,7 +160,7 @@ def test_FinDateSpeed():
     start = time.time()
     dateList = []
     for _ in range(0, numSteps):
-        startDate = TuringDate(1, 1, 2010)
+        startDate = TuringDate(2010, 1, 1)
         dateList.append(startDate)
     end = time.time()
     elapsed = end - start
@@ -177,11 +177,11 @@ def test_FinDateSpeed():
 
 def test_FinDateFormat():
 
-    dt = TuringDate(20, 10, 2019)
+    dt = TuringDate(2019, 10, 20)
     testCases.header("FORMAT", "DATE")
 
     for formatType in TuringDateFormatTypes:
-        setDateFormatType(formatType) 
+        setDateFormatType(formatType)
         testCases.print(formatType.name, dt)
 
 ###############################################################################
@@ -190,32 +190,32 @@ def test_FinDateFormat():
 def test_IntraDay():
 
     testCases.header("Date1", "Date2", "Diff")
-    d1 = TuringDate(20, 10, 2019, 0, 0, 0)
-    d2 = TuringDate(25, 10, 2019, 0, 0, 0)
+    d1 = TuringDate(2019, 10, 20, 0, 0, 0)
+    d2 = TuringDate(2019, 10, 25, 0, 0, 0)
     diff = d2 - d1
     testCases.print(d1, d2, diff)
     testCases.print(d1._excelDate, d2._excelDate, diff)
 
     ###########################################################################
 
-    d1 = TuringDate(20, 10, 2019, 10, 0, 0)
-    d2 = TuringDate(25, 10, 2019, 10, 25, 0)
+    d1 = TuringDate(2019, 10, 20, 10, 0, 0)
+    d2 = TuringDate(2019, 10, 25, 10, 25, 0)
     diff = d2 - d1
     testCases.print(d1, d2, diff)
     testCases.print(d1._excelDate, d2._excelDate, diff)
 
     ###########################################################################
 
-    d1 = TuringDate(20, 10, 2019, 10, 0, 0)
-    d2 = TuringDate(20, 10, 2019, 10, 25, 30)
+    d1 = TuringDate(2019, 10, 20, 10, 0, 0)
+    d2 = TuringDate(2019, 10, 20, 10, 25, 30)
     diff = d2 - d1
     testCases.print(d1, d2, diff)
     testCases.print(d1._excelDate, d2._excelDate, diff)
 
     ###########################################################################
 
-    d1 = TuringDate(19, 10, 2019, 10, 0, 0)
-    d2 = TuringDate(20, 10, 2019, 10, 25, 40)
+    d1 = TuringDate(2019, 10, 19, 10, 0, 0)
+    d2 = TuringDate(2019, 10, 20, 10, 25, 40)
     diff = d2 - d1
     testCases.print(d1, d2, diff)
     testCases.print(d1._excelDate, d2._excelDate, diff)
@@ -224,56 +224,56 @@ def test_IntraDay():
 
 def test_FinDateEOM():
 
-    dt = TuringDate(29, 2, 2000)
+    dt = TuringDate(2000, 2, 29)
     assert(dt.isEOM() == True)
 
-    dt = TuringDate(28, 2, 2001)
+    dt = TuringDate(2001, 2, 28)
     assert(dt.isEOM() == True)
 
-    dt = TuringDate(29, 2, 2004)
+    dt = TuringDate(2004, 2, 29)
     assert(dt.isEOM() == True)
 
-    dt = TuringDate(28, 2, 2005)
+    dt = TuringDate(2005, 2, 28)
     assert(dt.isEOM() == True)
 
-    dt = TuringDate(31, 3, 2003)
+    dt = TuringDate(2003, 3, 31)
     assert(dt.isEOM() == True)
 
-    dt = TuringDate(30, 4, 2004)
+    dt = TuringDate(2004, 4, 30)
     assert(dt.isEOM() == True)
 
-    dt = TuringDate(31, 5, 2004)
+    dt = TuringDate(2004, 5, 31)
     assert(dt.isEOM() == True)
 
-    dt = TuringDate(31, 12, 2010)
+    dt = TuringDate(2010, 12, 31)
     assert(dt.isEOM() == True)
 
-    dt = TuringDate(2, 2, 2000)
+    dt = TuringDate(2000, 2, 2)
     assert(dt.EOM().isEOM() == True)
 
-    dt = TuringDate(24, 2, 2001)
+    dt = TuringDate(2001, 2, 24)
     assert(dt.EOM().isEOM() == True)
 
-    dt = TuringDate(22, 2, 2004)
+    dt = TuringDate(2004, 2, 22)
     assert(dt.EOM().isEOM() == True)
 
-    dt = TuringDate(1, 2, 2005)
+    dt = TuringDate(2005, 2, 1)
     assert(dt.EOM().isEOM() == True)
 
-    dt = TuringDate(1, 3, 2003)
+    dt = TuringDate(2003, 3, 1)
     assert(dt.EOM().isEOM() == True)
 
-    dt = TuringDate(3, 4, 2004)
+    dt = TuringDate(2004, 4, 3)
     assert(dt.EOM().isEOM() == True)
 
-    dt = TuringDate(5, 5, 2004)
+    dt = TuringDate(2004, 5, 5)
     assert(dt.EOM().isEOM() == True)
 
-    dt = TuringDate(7, 12, 2010)
+    dt = TuringDate(2010, 12, 7)
     assert(dt.EOM().isEOM() == True)
 
 ###############################################################################
-    
+
 start = time.time()
 
 test_FinDate()
