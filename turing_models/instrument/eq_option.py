@@ -71,9 +71,9 @@ class OptionModel:
             else self._accrued_average
 
     def option_name(self):
-        knock_in_type = '_' + getattr(self, 'knock_in_type', '') if getattr(self, 'knock_in_type', '') else ''
-        knock_out_type = '_' + getattr(self, 'knock_out_type', '') if getattr(self, 'knock_out_type', '') else ''
-        option_ident = getattr(self, 'option_type', '') + '_' + getattr(self, 'product_type',
+        knock_in_type = '-' + getattr(self, 'knock_in_type', '') if getattr(self, 'knock_in_type', '') else ''
+        knock_out_type = '-' + getattr(self, 'knock_out_type', '') if getattr(self, 'knock_out_type', '') else ''
+        option_ident = getattr(self, 'option_type', '') + '-' + getattr(self, 'product_type',
                                                                         '') + knock_in_type + knock_out_type
 
         op = option_type_dict.get(option_ident, None)
@@ -83,7 +83,7 @@ class OptionModel:
             self.knock_in_type_turing = op.get('knock_in_type')
             return op.get('option_name')
         else:
-            raise Exception(f"{option_ident.split('_')}类型组合不存在")
+            raise Exception(f"{option_ident.split('-')}类型组合不存在")
 
     def option(self, *args, **kwgs):
         return getattr(self, f'option_{getattr(self, "option_name")()[0]}')(*args, **kwgs)
@@ -179,9 +179,9 @@ class OptionModel:
 
     @property
     def run_mutiplier(self):
-        return self.product_type == 'European' \
-               or self.product_type == 'American' \
-               or self.product_type == 'Asian'
+        return self.product_type == 'EUROPEAN' \
+               or self.product_type == 'AMERICAN' \
+               or self.product_type == 'ASIAN'
 
     def price(self) -> float:
         if self.run_mutiplier:
@@ -264,7 +264,7 @@ class EqOption(OptionModel):
         支持多种参数传入方式
         Examples:
         1.
-        # >>> eq = EqOption(asset_id='123', option_type='call', product_type='European', expiration_date=TuringDate(2021, 2, 12), strike_price=90, multiplier=10000)
+        # >>> eq = EqOption(asset_id='123', option_type='CALL', product_type='European', expiration_date=TuringDate(2021, 2, 12), strike_price=90, multiplier=10000)
         # >>> eq.from_json()
         # >>> eq.price()
         2.
@@ -276,7 +276,7 @@ class EqOption(OptionModel):
         3.
         # >>> _option = Option()
         # >>> _option.resolve(_resource=somedict)
-        # >>> eq = EqOption(option_type='call',product_type='European', notional=1.00, obj=_option)
+        # >>> eq = EqOption(option_type='CALL',product_type='European', notional=1.00, obj=_option)
         # >>> eq.resolve()
         # >>> eq.price()
     """
@@ -343,7 +343,7 @@ class EqOption(OptionModel):
 
 
 if __name__ == '__main__':
-    eq = EqOption(asset_id='123', option_type='call',
+    eq = EqOption(asset_id='123', option_type='CALL',
                   product_type='European', stock_price=511.11,
                   expiration_date="20211121",
                   strike_price=90, multiplier=1000)

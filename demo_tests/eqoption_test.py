@@ -4,8 +4,8 @@ from fundamental import PricingContext
 from turing_models.instrument.eq_option import EqOption
 
 
-european_option = EqOption(option_type='call',
-                           product_type='European',
+european_option = EqOption(option_type='CALL',
+                           product_type='EUROPEAN',
                            expiration_date=TuringDate(2021, 9, 3),
                            strike_price=5.3,
                            quantity=2,
@@ -17,8 +17,8 @@ european_option = EqOption(option_type='call',
                            dividend_yield=0)
 
 
-american_option = EqOption(option_type='call',
-                           product_type='American',
+american_option = EqOption(option_type='CALL',
+                           product_type='AMERICAN',
                            expiration_date=TuringDate(2021, 2, 12),
                            strike_price=90,
                            quantity=2,
@@ -29,8 +29,8 @@ american_option = EqOption(option_type='call',
                            interest_rate=0.02,
                            dividend_yield=0)
 
-asian_option = EqOption(option_type='call',
-                        product_type='Asian',
+asian_option = EqOption(option_type='CALL',
+                        product_type='ASIAN',
                         expiration_date=TuringDate(2021, 2, 12),
                         start_averaging_date=TuringDate(2020, 2, 15),
                         strike_price=90,
@@ -42,8 +42,8 @@ asian_option = EqOption(option_type='call',
                         interest_rate=0.02,
                         dividend_yield=0)
 
-snowball_option = EqOption(option_type='call',
-                           product_type='Snowball',
+snowball_option = EqOption(option_type='CALL',
+                           product_type='SNOWBALL',
                            expiration_date=TuringDate(2021, 2, 12),
                            participation_rate=1.0,
                            barrier=120,
@@ -59,8 +59,8 @@ snowball_option = EqOption(option_type='call',
                            interest_rate=0.02,
                            dividend_yield=0)
 #
-knockout_option = EqOption(option_type='call',
-                           product_type='Knockout',
+knockout_option = EqOption(option_type='CALL',
+                           product_type='KNOCK_OUT',
                            knock_out_type='up_and_out',
                            expiration_date=TuringDate(2021, 2, 12),
                            strike_price=90,
