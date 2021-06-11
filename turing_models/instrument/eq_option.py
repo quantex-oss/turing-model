@@ -131,7 +131,7 @@ class OptionModel:
     def option_snowball(self) -> TuringEquitySnowballOption:
         return TuringEquitySnowballOption(
             self.expiration_date,
-            self.knock_out_price,
+            self.barrier,
             self.knock_in_price,
             self.notional,
             self.rebate,
@@ -185,37 +185,37 @@ class OptionModel:
 
     def price(self) -> float:
         if self.run_mutiplier:
-            return self.option().value(*self.params()) * self.multiplier
+            return self.option().value(*self.params()) * self.multiplier * self.quantity
         return self.option().value(*self.params())
 
     def delta(self) -> float:
         if self.run_mutiplier:
-            return self.option().delta(*self.params()) * self.multiplier
+            return self.option().delta(*self.params()) * self.multiplier * self.quantity
         return self.option().delta(*self.params())
 
     def gamma(self) -> float:
         if self.run_mutiplier:
-            return self.option().gamma(*self.params()) * self.multiplier
+            return self.option().gamma(*self.params()) * self.multiplier * self.quantity
         return self.option().gamma(*self.params())
 
     def vega(self) -> float:
         if self.run_mutiplier:
-            return self.option().vega(*self.params()) * self.multiplier
+            return self.option().vega(*self.params()) * self.multiplier * self.quantity
         return self.option().vega(*self.params())
 
     def theta(self) -> float:
         if self.run_mutiplier:
-            return self.option().theta(*self.params()) * self.multiplier
+            return self.option().theta(*self.params()) * self.multiplier * self.quantity
         return self.option().theta(*self.params())
 
     def rho(self) -> float:
         if self.run_mutiplier:
-            return self.option().rho(*self.params()) * self.multiplier
+            return self.option().rho(*self.params()) * self.multiplier * self.quantity
         return self.option().rho(*self.params())
 
     def rho_q(self) -> float:
         if self.run_mutiplier:
-            return self.option().rho_q(*self.params()) * self.multiplier
+            return self.option().rho_q(*self.params()) * self.multiplier * self.quantity
         return self.option().rho_q(*self.params())
 
 
@@ -228,7 +228,7 @@ class Option(Priceable):
     underlier = StringField("underlier")
     notional: float = FloatField('notional')
     initial_spot = FloatField("initial_spot")
-    number_of_options = FloatField("number_of_options")
+    quantity = FloatField("quantity")
     start_date: TuringDate = DateField("start_date")
     end_date: TuringDate = DateField("end_date")
     start_averaging_date: TuringDate = DateField("start_averaging_date")
@@ -243,7 +243,7 @@ class Option(Priceable):
     premium = FloatField("premium")
     premium_payment_date: TuringDate = DateField("premium_payment_date")
     method_of_settlement = StringField("method_of_settlement")
-    knock_out_price: float = FloatField("knock_out_price")  # yapi无值
+    barrier: float = FloatField("barrier")  # yapi无值
     knock_in_price: float = FloatField("knock_in_price")  # yapi无值
     coupon_annualized_flag: bool = BoolField("coupon_annualized_flag")  # yapi无值
     knock_out_type = StringField("knock_out_type")  # yapi无值
@@ -287,7 +287,7 @@ class EqOption(OptionModel):
     underlier: str = None
     notional: float = None
     initial_spot: float = None
-    number_of_options: float = None
+    quantity: float = None
     start_date: str = None
     end_date: str = None
     start_averaging_date: str = None
@@ -302,7 +302,7 @@ class EqOption(OptionModel):
     premium: float = None
     premium_payment_date: str = None
     method_of_settlement: str = None
-    knock_out_price: float = None  # yapi无值
+    barrier: float = None  # yapi无值
     knock_in_price: float = None  # yapi无值
     coupon_annualized_flag: bool = None  # yapi无值
     knock_out_type: str = None  # yapi无值
@@ -310,7 +310,7 @@ class EqOption(OptionModel):
     knock_in_strike1: float = None  # yapi无值
     knock_in_strike2: float = None  # yapi无值
     name: str = None  # 对象标识名
-    value_date: str = TuringDate(*tuple(datetime.date.today().timetuple()[:3]))  # 估值日期
+    value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))  # 估值日期
     stock_price: float = None  # 股票价格
     volatility: float = 0.1  # 波动率
     interest_rate: float = 0.02  # 无风险利率
