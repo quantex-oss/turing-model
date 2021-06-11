@@ -136,7 +136,7 @@ class OptionModel:
             self.notional,
             self.rebate,
             self.option_type_turing,
-            self.coupon_annualized_flag,
+            True,
             self.knock_in_type_turing,
             self.knock_in_strike1,
             self.knock_in_strike2,
@@ -239,11 +239,9 @@ class Option(Priceable):
     rebate: float = FloatField("rebate")
     coupon: float = FloatField("coupon")
     multiplier: float = FloatField("multiplier")
-    settlement_currency = StringField("settlement_currency")
+    currency = StringField("currency")
     premium = FloatField("premium")
-    premium_payment_date: TuringDate = DateField("premium_payment_date")
-    method_of_settlement = StringField("method_of_settlement")
-    barrier: float = FloatField("barrier")  # yapi无值
+    premium_date: TuringDate = DateField("premium_date")
     knock_in_price: float = FloatField("knock_in_price")  # yapi无值
     coupon_annualized_flag: bool = BoolField("coupon_annualized_flag")  # yapi无值
     knock_out_type = StringField("knock_out_type")  # yapi无值
@@ -298,11 +296,9 @@ class EqOption(OptionModel):
     rebate: float = None
     coupon: float = None
     multiplier: float = None
-    settlement_currency: str = None
+    currency: str = None
     premium: float = None
-    premium_payment_date: str = None
-    method_of_settlement: str = None
-    barrier: float = None  # yapi无值
+    premium_date: str = None
     knock_in_price: float = None  # yapi无值
     coupon_annualized_flag: bool = None  # yapi无值
     knock_out_type: str = None  # yapi无值
