@@ -1,6 +1,6 @@
 from turing_models.utilities.turing_date import TuringDate
 from tool import print_result
-from fundamental import PricingContext
+from fundamental.pricing_context import PricingContext
 from turing_models.instrument.eq_option import EqOption
 
 
@@ -8,7 +8,7 @@ european_option = EqOption(option_type='CALL',
                            product_type='EUROPEAN',
                            expiration_date=TuringDate(2021, 9, 3),
                            strike_price=5.3,
-                           quantity=2,
+                           quantity_of_underlier=2,
                            multiplier=10000,
                            value_date=TuringDate(2021, 6, 4),
                            stock_price=5.262,
@@ -21,7 +21,7 @@ american_option = EqOption(option_type='CALL',
                            product_type='AMERICAN',
                            expiration_date=TuringDate(2021, 2, 12),
                            strike_price=90,
-                           quantity=2,
+                           quantity_of_underlier=2,
                            multiplier=10000,
                            value_date = TuringDate(2020, 2, 12),
                            stock_price=100,
@@ -34,7 +34,7 @@ asian_option = EqOption(option_type='CALL',
                         expiration_date=TuringDate(2021, 2, 12),
                         start_averaging_date=TuringDate(2020, 2, 15),
                         strike_price=90,
-                        quantity=2,
+                        quantity_of_underlier=2,
                         value_date = TuringDate(2020, 2, 12),
                         multiplier=10000,
                         stock_price=100,
