@@ -1,6 +1,8 @@
+import datetime
 from dataclasses import dataclass
 
 from fundamental.base import Priceable, StringField, FloatField, DateField
+from fundamental.base import ctx
 from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.utilities import TuringDate
 from turing_models.products.bonds.bond import TuringBond, TuringFrequencyTypes, \
@@ -10,6 +12,24 @@ from turing_models.products.bonds.bond_frn import TuringBondFRN
 from turing_models.utilities.error import TuringError
 
 
+class BondOrm(Priceable):
+    """bond orm定义,取数据用"""
+    asset_id = StringField('asset_id')
+    bond_type = StringField('bond_type')
+    coupon: float = FloatField("coupon_rate")
+    interest_accrued: float = FloatField("interest_accrued")
+    bond_term_year: float = FloatField("bond_term_year")
+    bond_term_day: float = FloatField("bond_term_day")
+    maturity_date: TuringDate = DateField("due_date")
+    zero_dates: list = None
+    zero_rates: list = None
+    ytm: float = FloatField("ytm")
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.ctx = ctx
+
+
 @dataclass
 class Bond:
     asset_id: str = None
@@ -17,28 +37,24 @@ class Bond:
     issue_date: TuringDate = None
     maturity_date: TuringDate = None
     coupon: float = None
-    quoted_margin: float = None
+    # quoted_margin: float = None
     freq_type: str = None
     accrual_type: str = None
     face_amount: float = None
     name: str = None
-    settlement_date: TuringDate = None
-    yield_to_maturity: float = None
-    convention: str = None
+    settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
+    ytm: float = None
     zero_dates: list = None
     zero_rates: list = None
     clean_price: float = None
-    next_coupon: float = None
-    current_ibor: float = None
-    future_ibor: float = None
-    discount_margin: float = None
-    value_date: TuringDate = None
+    # next_coupon: float = None
+    # current_ibor: float = None
+    # future_ibor: float = None
+    # discount_margin: float = None
 
     def __post_init__(self):
         self.name = 'No name'
-        if self.freq_type == 'simple':
-            self.freq_type = TuringFrequencyTypes.SIMPLE
-        elif self.freq_type == 'annual':
+        if self.freq_type == 'annual':
             self.freq_type = TuringFrequencyTypes.ANNUAL
         elif self.freq_type == 'semi_annual':
             self.freq_type = TuringFrequencyTypes.SEMI_ANNUAL
@@ -48,8 +64,6 @@ class Bond:
             self.freq_type = TuringFrequencyTypes.QUARTERLY
         elif self.freq_type == 'monthly':
             self.freq_type = TuringFrequencyTypes.MONTHLY
-        elif self.freq_type == 'continuous':
-            self.freq_type = TuringFrequencyTypes.CONTINUOUS
         else:
             raise TuringError('Please check the input of freq_type')
 
@@ -76,16 +90,9 @@ class Bond:
         else:
             raise TuringError('Please check the input of accrual_type')
 
-        if self.convention == 'uk_dmo':
-            self.convention = TuringYTMCalcType.UK_DMO
-        elif self.convention == 'us_street':
-            self.convention = TuringYTMCalcType.US_STREET
-        elif self.convention == 'us_treasury':
-            self.convention = TuringYTMCalcType.US_TREASURY
-        else:
-            raise TuringError('Please check the input of convention')
+        self.zero_dates = self.settlement_date.addYears(self.zero_dates)
 
-        if self.bond_type == 'basal':
+        if self.bond_type == 'BOND':
             self.bond = TuringBond(self.issue_date,
                                    self.maturity_date,
                                    self.coupon,
@@ -102,15 +109,25 @@ class Bond:
 
     @property
     def discount_curve(self):
-        return TuringDiscountCurveZeros(self.value_date,
+        return TuringDiscountCurveZeros(self.settlement_date,
                                         self.zero_dates,
                                         self.zero_rates)
 
+    def dv01(self):
+        if self.bond_type == 'BOND':
+            return self.bond.dv01(self.settlement_date,
+                                  self.ytm)
+        elif self.bond_type == 'frn':
+            return self.bond.dv01(self.settlement_date,
+                                  self.next_coupon,
+                                  self.current_ibor,
+                                  self.future_ibor,
+                                  self.discount_margin)
+
     def full_price_from_ytm(self):
-        if self.bond_type == 'basal':
+        if self.bond_type == 'BOND':
             return self.bond.fullPriceFromYTM(self.settlement_date,
-                                              self.yield_to_maturity,
-                                              self.convention)
+                                              self.ytm)
         else:
             raise TuringError('Please check the input of bond_type')
 
@@ -125,10 +142,9 @@ class Bond:
             raise TuringError('Please check the input of bond_type')
 
     def principal(self):
-        if self.bond_type == 'basal':
+        if self.bond_type == 'BOND':
             return self.bond.principal(self.settlement_date,
-                                       self.yield_to_maturity,
-                                       self.convention)
+                                       self.ytm)
         elif self.bond_type == 'frn':
             return self.bond.principal(self.settlement_date,
                                        self.next_coupon,
@@ -137,10 +153,9 @@ class Bond:
                                        self.discount_margin)
 
     def dollar_duration(self):
-        if self.bond_type == 'basal':
+        if self.bond_type == 'BOND':
             return self.bond.dollarDuration(self.settlement_date,
-                                            self.yield_to_maturity,
-                                            self.convention)
+                                            self.ytm)
         elif self.bond_type == 'frn':
             return self.bond.dollarDuration(self.settlement_date,
                                             self.next_coupon,
@@ -150,23 +165,19 @@ class Bond:
 
     def macauley_duration(self):
         return self.bond.macauleyDuration(self.settlement_date,
-                                          self.yield_to_maturity,
-                                          self.convention)
+                                          self.ytm)
 
     def modified_duration(self):
         return self.bond.modifiedDuration(self.settlement_date,
-                                          self.yield_to_maturity,
-                                          self.convention)
+                                          self.ytm)
 
     def convexity_from_ytm(self):
         return self.bond.convexityFromYTM(self.settlement_date,
-                                          self.yield_to_maturity,
-                                          self.convention)
+                                          self.ytm)
 
     def clean_price_from_ytm(self):
         return self.bond.cleanPriceFromYTM(self.settlement_date,
-                                           self.yield_to_maturity,
-                                           self.convention)
+                                           self.ytm)
 
     def clean_price_from_discount_curve(self):
         return self.bond.cleanPriceFromDiscountCurve(self.settlement_date,
@@ -181,11 +192,10 @@ class Bond:
 
     def yield_to_maturity(self):
         return self.bond.yieldToMaturity(self.settlement_date,
-                                         self.clean_price,
-                                         self.convention)
+                                         self.clean_price)
 
     def calc_accrued_interest(self):
-        if self.bond_type == 'basal':
+        if self.bond_type == 'BOND':
             return self.bond.calcAccruedInterest(self.settlement_date)
         elif self.bond_type == 'frn':
             return self.bond.calcAccruedInterest(self.settlement_date,

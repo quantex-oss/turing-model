@@ -190,6 +190,29 @@ class TuringBondFRN(object):
         durn = (p2 - p0) / dy / 2.0
         return durn
 
+    def dv01(self,
+             settlementDate: TuringDate,
+             nextCoupon: float,
+             currentIbor: float,
+             futureIbor: float,
+             dm: float):
+
+        dy = 0.0001 # 1 basis point
+        p0 = self.fullPriceFromDM(settlementDate,
+                                  nextCoupon,
+                                  currentIbor + dy,
+                                  futureIbor,
+                                  dm)
+
+        p2 = self.fullPriceFromDM(settlementDate,
+                                  nextCoupon,
+                                  currentIbor - dy,
+                                  futureIbor,
+                                  dm)
+
+        dv = (p2 - p0) / 2.0
+        return dv
+
 ###############################################################################
 
     def dollarCreditDuration(self,

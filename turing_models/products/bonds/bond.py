@@ -59,7 +59,7 @@ def _f(y, *args):
     settlementDate = args[1]
     price = args[2]
     convention = args[3]
-    px = bond.fullPriceFromYTM(settlementDate, y, convention)
+    px = bond.fullPriceFromYTM(settlementDate, y)
     objFn = px - price
     return objFn
 
@@ -90,7 +90,8 @@ class TuringBond(object):
                  coupon: float,  # Annualised bond coupon
                  freqType: TuringFrequencyTypes,
                  accrualType: TuringDayCountTypes,
-                 faceAmount: float = 100.0):
+                 faceAmount: float = 100.0,
+                 convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
         ''' Create TuringBond object by providing the issue date, maturity Date,
         coupon frequency, annualised coupon, the accrual convention type, face
         amount and the number of ex-dividend days. '''
@@ -107,6 +108,11 @@ class TuringBond(object):
         self._accrualType = accrualType
         self._frequency = TuringFrequency(freqType)
         self._faceAmount = faceAmount  # This is the bond holding size
+
+        if convention not in TuringYTMCalcType:
+            raise TuringError("Yield convention unknown." + str(convention))
+
+        self._convention = convention
         self._par = 100.0  # This is how price is quoted and amount at maturity
         self._redemption = 1.0 # This is amount paid at maturity
 
@@ -153,14 +159,10 @@ class TuringBond(object):
 
     def fullPriceFromYTM(self,
                          settlementDate: TuringDate,
-                         ytm: float,
-                         convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+                         ytm: float):
         ''' Calculate the full price of bond from its yield to maturity. This
         function is vectorised with respect to the yield input. It implements
         a number of standard conventions for calculating the YTM. '''
-
-        if convention not in TuringYTMCalcType:
-            raise TuringError("Yield convention unknown." + str(convention))
 
         self.calcAccruedInterest(settlementDate)
 
@@ -181,7 +183,7 @@ class TuringBond(object):
         if n < 0:
             raise TuringError("No coupons left")
 
-        if convention == TuringYTMCalcType.UK_DMO:
+        if self._convention == TuringYTMCalcType.UK_DMO:
             if n == 0:
                 fp = (v**(self._alpha))*(self._redemption + c/f)
             else:
@@ -190,7 +192,7 @@ class TuringBond(object):
                 term3 = (c/f)*v*v*(1.0-v**(n-1))/(1.0-v)
                 term4 = self._redemption * (v**n)
                 fp = (v**(self._alpha))*(term1 + term2 + term3 + term4)
-        elif convention == TuringYTMCalcType.US_TREASURY:
+        elif self._convention == TuringYTMCalcType.US_TREASURY:
             if n == 0:
                 fp = (v**(self._alpha))*(self._redemption + c/f)
             else:
@@ -200,7 +202,7 @@ class TuringBond(object):
                 term4 = self._redemption * (v**n)
                 vw = 1.0 / (1.0 + self._alpha * ytm/f)
                 fp = (vw)*(term1 + term2 + term3 + term4)
-        elif convention == TuringYTMCalcType.US_STREET:
+        elif self._convention == TuringYTMCalcType.US_STREET:
             vw = 1.0 / (1.0 + self._alpha * ytm/f)
             if n == 0:
                 vw = 1.0 / (1.0 + self._alpha * ytm/f)
@@ -220,13 +222,12 @@ class TuringBond(object):
 
     def principal(self,
                   settlementDate: TuringDate,
-                  ytm: float,
-                  convention: TuringYTMCalcType):
+                  ytm: float):
         ''' Calculate the principal value of the bond based on the face
         amount from its discount margin and making assumptions about the
         future Ibor rates. '''
 
-        fullPrice = self.fullPriceFromYTM(settlementDate, ytm, convention)
+        fullPrice = self.fullPriceFromYTM(settlementDate, ytm)
 
         principal = fullPrice * self._faceAmount / self._par
         principal = principal - self._accruedInterest
@@ -236,36 +237,45 @@ class TuringBond(object):
 
     def dollarDuration(self,
                        settlementDate: TuringDate,
-                       ytm: float,
-                       convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+                       ytm: float):
         ''' Calculate the risk or dP/dy of the bond by bumping. This is also
         known as the DV01 in Bloomberg. '''
 
         dy = 0.0001 # 1 basis point
-        p0 = self.fullPriceFromYTM(settlementDate, ytm - dy, convention)
-        p2 = self.fullPriceFromYTM(settlementDate, ytm + dy, convention)
+        p0 = self.fullPriceFromYTM(settlementDate, ytm - dy)
+        p2 = self.fullPriceFromYTM(settlementDate, ytm + dy)
         durn = -(p2 - p0) / dy / 2.0
         return durn
 
+    def dv01(self,
+             settlementDate: TuringDate,
+             ytm: float):
+        ''' Calculate the risk or dP/dy of the bond by bumping. This is also
+        known as the DV01 in Bloomberg. '''
+
+        dy = 0.0001  # 1 basis point
+        p0 = self.fullPriceFromYTM(settlementDate, ytm - dy)
+        p2 = self.fullPriceFromYTM(settlementDate, ytm + dy)
+        dv = -(p2 - p0) / 2.0
+        return dv
+
 ###############################################################################
 
-    def macauleyDuration(self,
-                         settlementDate: TuringDate,
-                         ytm: float,
-                         convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+    def macauleyDuration_approx(self,
+                                settlementDate: TuringDate,
+                                ytm: float):
         ''' Calculate the Macauley duration of the bond on a settlement date
         given its yield to maturity. '''
 
-        dd = self.dollarDuration(settlementDate, ytm, convention)
-        fp = self.fullPriceFromYTM(settlementDate, ytm, convention)
+        dd = self.dollarDuration(settlementDate, ytm)
+        fp = self.fullPriceFromYTM(settlementDate, ytm)
         md = dd * (1.0 + ytm / self._frequency) / fp
         return md
 
 ###############################################################################
-    def macauleyDuration_new(self,
-                             settlementDate: TuringDate,
-                             ytm: float,
-                             convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+    def macauleyDuration(self,
+                         settlementDate: TuringDate,
+                         ytm: float):
         ''' Calculate the Macauley duration of the bond on a settlement date
         given its yield to maturity. '''
 
@@ -298,52 +308,48 @@ class TuringBond(object):
         return dmac
 ###############################################################################
 
-    def modifiedDuration_new(self,
-                             settlementDate: TuringDate,
-                             ytm: float,
-                             convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+    def modifiedDuration(self,
+                         settlementDate: TuringDate,
+                         ytm: float):
         ''' Calculate the modified duration of the bond on a settlement date
         given its yield to maturity. '''
 
-        dmac = self.macauleyDuration_new(settlementDate, ytm, convention)
+        dmac = self.macauleyDuration(settlementDate, ytm)
         md = dmac / (1.0 + ytm / self._frequency)
         return md
 
 ###############################################################################
-    def modifiedDuration(self,
-                         settlementDate: TuringDate,
-                         ytm: float,
-                         convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+    def modifiedDuration_approx(self,
+                                settlementDate: TuringDate,
+                                ytm: float):
         ''' Calculate the modified duration of the bond on a settlement date
         given its yield to maturity. '''
 
-        dd = self.dollarDuration(settlementDate, ytm, convention)
-        fp = self.fullPriceFromYTM(settlementDate, ytm, convention)
+        dd = self.dollarDuration(settlementDate, ytm)
+        fp = self.fullPriceFromYTM(settlementDate, ytm)
         md = dd / fp
         return md
 
 ###############################################################################
 
-    def convexityFromYTM(self,
-                         settlementDate: TuringDate,
-                         ytm: float,
-                         convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+    def convexityFromYTM_approx(self,
+                                settlementDate: TuringDate,
+                                ytm: float):
         ''' Calculate the bond convexity from the yield to maturity. This
         function is vectorised with respect to the yield input. '''
 
         dy = 0.0001
-        p0 = self.fullPriceFromYTM(settlementDate, ytm - dy, convention)
-        p1 = self.fullPriceFromYTM(settlementDate, ytm, convention)
-        p2 = self.fullPriceFromYTM(settlementDate, ytm + dy, convention)
+        p0 = self.fullPriceFromYTM(settlementDate, ytm - dy)
+        p1 = self.fullPriceFromYTM(settlementDate, ytm)
+        p2 = self.fullPriceFromYTM(settlementDate, ytm + dy)
         conv = ((p2 + p0) - 2.0 * p1) / dy / dy / p1
         return conv
 
 ###############################################################################
 
-    def convexityFromYTM_new(self,
-                             settlementDate: TuringDate,
-                             ytm: float,
-                             convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+    def convexityFromYTM(self,
+                         settlementDate: TuringDate,
+                         ytm: float):
         ''' Calculate the bond convexity from the yield to maturity. This
         function is vectorised with respect to the yield input. '''
 
@@ -379,12 +385,11 @@ class TuringBond(object):
 
     def cleanPriceFromYTM(self,
                           settlementDate: TuringDate,
-                          ytm: float,
-                          convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+                          ytm: float):
         ''' Calculate the bond clean price from the yield to maturity. This
         function is vectorised with respect to the yield input. '''
 
-        fullPrice = self.fullPriceFromYTM(settlementDate, ytm, convention)
+        fullPrice = self.fullPriceFromYTM(settlementDate, ytm)
         accruedAmount = self._accruedInterest * self._par / self._faceAmount
         cleanPrice = fullPrice - accruedAmount
         return cleanPrice
@@ -453,12 +458,11 @@ class TuringBond(object):
 
     def yieldToMaturity(self,
                         settlementDate: TuringDate,
-                        cleanPrice: float,
-                        convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO):
+                        cleanPrice: float):
         ''' Calculate the bond's yield to maturity by solving the price
         yield relationship using a one-dimensional root solver. '''
 
-        if type(cleanPrice) is float or type(cleanPrice) is np.float64:
+        if type(cleanPrice) is float or type(cleanPrice) is int or type(cleanPrice) is np.float64:
             cleanPrices = np.array([cleanPrice])
         elif type(cleanPrice) is list or type(cleanPrice) is np.ndarray:
             cleanPrices = np.array(cleanPrice)
@@ -473,7 +477,7 @@ class TuringBond(object):
 
         for fullPrice in fullPrices:
 
-            argtuple = (self, settlementDate, fullPrice, convention)
+            argtuple = (self, settlementDate, fullPrice, self._convention)
 
             ytm = optimize.newton(_f,
                                   x0=0.05,  # guess initial value of 10%
@@ -522,9 +526,9 @@ class TuringBond(object):
         exDividendDate = cal.addBusinessDays(self._ncd, -numExDividendDays)
 
         (accFactor, num, _) = dc.yearFrac(self._pcd,
-                                            settlementDate,
-                                            self._ncd,
-                                            self._freqType)
+                                          settlementDate,
+                                          self._ncd,
+                                          self._freqType)
 
         if settlementDate > exDividendDate:
             accFactor = accFactor - 1.0 / self._frequency
