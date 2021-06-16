@@ -23,38 +23,38 @@ option = EqOption(option_type=TuringOptionTypes.EUROPEAN_CALL,
                   dividend_yield=0.01111)
 
 print(option.price())
-print(option.delta())
-print(option.gamma())
-print(option.vega())
-print(option.theta())
-print(option.rho())
+print(option.eq_delta())
+print(option.eq_gamma())
+print(option.eq_vega())
+print(option.eq_theta())
+print(option.eq_rho())
 
 print("-" * 100)
 
 with PricingContext(interest_rate=0.04):
     print(option.price())
-    print(option.delta())
-    print(option.gamma())
-    print(option.vega())
-    print(option.theta())
-    print(option.rho())
+    print(option.eq_delta())
+    print(option.eq_gamma())
+    print(option.eq_vega())
+    print(option.eq_theta())
+    print(option.eq_rho())
 
 print("-" * 100)
 
 with PricingContext(interest_rate=0.04):
     print(option.price())
-    print(option.delta())
-    print(option.gamma())
-    print(option.vega())
-    print(option.theta())
-    print(option.rho())
+    print(option.eq_delta())
+    print(option.eq_gamma())
+    print(option.eq_vega())
+    print(option.eq_theta())
+    print(option.eq_rho())
 
 print("-" * 100)
 
 with PricingContext(interest_rate=0.06):
     print(option.price())
-    print(option.delta())
-    print(option.gamma())
-    print(option.vega())
-    print(option.theta())
-    print(option.rho())
+    print(option.eq_delta())
+    print(option.eq_gamma())
+    print(option.eq_vega())
+    print(option.eq_theta())
+    print(option.eq_rho())

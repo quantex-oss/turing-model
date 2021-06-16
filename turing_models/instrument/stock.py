@@ -19,6 +19,7 @@ class Stock(Priceable):
     cusip = StringField('cusip')
     quantity: float = FloatField('quantity')  # 股数
     stock_price: float = FloatField('stock_price')
+    volatility: float = FloatField('volatility')
 
     def __init__(self, **kw):
         super(Stock, self).__init__(**kw)
@@ -27,20 +28,20 @@ class Stock(Priceable):
         """"计算持仓股票的现价"""
         return self.stock_price * self.quantity
 
-    def delta(self):
+    def eq_delta(self):
         return self.quantity
 
-    def gamma(self):
+    def eq_gamma(self):
         return 0
 
-    def vega(self):
+    def eq_vega(self):
         return 0
 
-    def theta(self):
+    def eq_theta(self):
         return 0
 
-    def rho(self):
+    def eq_rho(self):
         return 0
 
-    def rho_q(self):
+    def eq_rho_q(self):
         return 0
