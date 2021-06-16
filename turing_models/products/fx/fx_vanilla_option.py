@@ -67,11 +67,11 @@ def fvega(volatility, *args):
 
     model = TuringModelBlackScholes(volatility)
 
-    fprime = self.eq_vega(valueDate,
-                          spotFXRate,
-                          domDiscountCurve,
-                          forDiscountCurve,
-                          model)
+    fprime = self.vega(valueDate,
+                       spotFXRate,
+                       domDiscountCurve,
+                       forDiscountCurve,
+                       model)
 
     return fprime
 
@@ -280,7 +280,7 @@ class TuringFXVanillaOption():
             elif type(model) == TuringModelSABR:
                 volatility = volFunctionSABR(model.alpha,
                                              model.beta,
-                                             model.eq_rho,
+                                             model.rho,
                                              model.nu,
                                              F0T, K, tdel)
 

@@ -121,6 +121,16 @@ class Bond:
                                   self.future_ibor,
                                   self.discount_margin)
 
+    def duration(self):
+        """modified duration"""
+        return self.bond.modifiedDuration(self.settlement_date,
+                                          self.ytm)
+
+    def convexity(self):
+        """convexity from ytm"""
+        return self.bond.convexityFromYTM(self.settlement_date,
+                                          self.ytm)
+
     def full_price_from_ytm(self):
         if self.bond_type == 'BOND':
             return self.bond.fullPriceFromYTM(self.settlement_date,
@@ -162,14 +172,6 @@ class Bond:
 
     def macauley_duration(self):
         return self.bond.macauleyDuration(self.settlement_date,
-                                          self.ytm)
-
-    def modified_duration(self):
-        return self.bond.modifiedDuration(self.settlement_date,
-                                          self.ytm)
-
-    def convexity_from_ytm(self):
-        return self.bond.convexityFromYTM(self.settlement_date,
                                           self.ytm)
 
     def clean_price_from_ytm(self):

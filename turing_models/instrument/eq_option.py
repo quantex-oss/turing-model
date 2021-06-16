@@ -217,15 +217,6 @@ class OptionModel:
             return self.option().rho_q(*self.params()) * self.multiplier * self.quantity_of_underlier
         return self.option().rho_q(*self.params())
 
-    def dv01(self):
-        return 0.00
-
-    def duration(self):
-        return 0.00
-
-    def convexity(self):
-        return 0.00
-
 
 class Option(Priceable):
     """eqoption orm定义,取数据用"""
