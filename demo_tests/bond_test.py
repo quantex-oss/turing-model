@@ -8,17 +8,17 @@ from turing_models.instrument.bond import Bond
 dates = [0.083, 0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10]
 rates = [1.8124, 1.8848, 2.0986, 2.3175, 2.4012, 2.5515, 2.7018, 2.7638, 2.8259, 2.867, 2.9081, 2.9499, 2.9917, 3.0246,
          3.0575, 3.091, 3.1244, 3.1235, 3.1226, 3.122, 3.1213, 3.1209, 3.1204]
-zero_rates = np.array(rates)
+# zero_rates = np.array(rates)
 bond = Bond(bond_type='BOND',
             issue_date=TuringDate(2021, 1, 1),
             maturity_date=TuringDate(2026, 1, 1),
             coupon=0.03,
-            freq_type='semi_annual',
-            accrual_type='30_360_bond',
+            freq_type='每年付息',
+            accrual_type='30/360',
             face_amount=100,
             ytm=0.05,
             zero_dates=dates,
-            zero_rates=zero_rates,
+            zero_rates=rates,
             clean_price=98)
 
 print('dv01:', bond.dv01())

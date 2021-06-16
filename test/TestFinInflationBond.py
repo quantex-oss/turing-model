@@ -41,7 +41,8 @@ def test_FinInflationBondBBG():
                                freqType,
                                accrualType,
                                face,
-                               baseCPIValue)
+                               baseCPIValue,
+                               convention=TuringYTMCalcType.UK_DMO)
 
     testCases.header("FIELD", "VALUE")
     cleanPrice = 104.03502
@@ -54,20 +55,35 @@ def test_FinInflationBondBBG():
     ###########################################################################
 
     ytm = bond.yieldToMaturity(settlementDate,
-                               cleanPrice,
-                               TuringYTMCalcType.UK_DMO)
+                               cleanPrice)
 
     testCases.print("UK DMO REAL Yield To Maturity = ", ytm)
 
+    bond = TuringInflationBond(issueDate,
+                               maturityDate,
+                               coupon,
+                               freqType,
+                               accrualType,
+                               face,
+                               baseCPIValue,
+                               convention=TuringYTMCalcType.US_STREET)
+
     ytm = bond.yieldToMaturity(settlementDate,
-                               cleanPrice,
-                               TuringYTMCalcType.US_STREET)
+                               cleanPrice)
 
     testCases.print("US STREET REAL Yield To Maturity = ", ytm)
 
+    bond = TuringInflationBond(issueDate,
+                               maturityDate,
+                               coupon,
+                               freqType,
+                               accrualType,
+                               face,
+                               baseCPIValue,
+                               convention=TuringYTMCalcType.US_TREASURY)
+
     ytm = bond.yieldToMaturity(settlementDate,
-                               cleanPrice,
-                               TuringYTMCalcType.US_TREASURY)
+                               cleanPrice)
 
     testCases.print("US TREASURY REAL Yield To Maturity = ", ytm)
 
@@ -102,15 +118,13 @@ def test_FinInflationBondBBG():
     lastCpnCPIValue = 244.61839
 
     cleanPrice = bond.flatPriceFromYieldToMaturity(settlementDate, ytm,
-                                                   lastCpnCPIValue,
-                                                   TuringYTMCalcType.US_TREASURY)
+                                                   lastCpnCPIValue)
 
     testCases.print("Flat Price from Real YTM = ", cleanPrice)
 
     principal = bond.inflationPrincipal(settlementDate,
                                         ytm,
-                                        refCPIValue,
-                                        TuringYTMCalcType.US_TREASURY)
+                                        refCPIValue)
 
     testCases.print("Inflation Principal = ", principal)
 
@@ -263,21 +277,45 @@ def test_FinInflationBondStack():
     # Inherited functions that just calculate real yield without CPI adjustments
     ###########################################################################
 
+    bond = TuringInflationBond(issueDate,
+                               maturityDate,
+                               coupon,
+                               freqType,
+                               accrualType,
+                               face,
+                               baseCPIValue,
+                               convention=TuringYTMCalcType.UK_DMO)
+
     ytm = bond.yieldToMaturity(settlementDate,
-                               cleanPrice,
-                               TuringYTMCalcType.UK_DMO)
+                               cleanPrice)
 
     testCases.print("UK DMO REAL Yield To Maturity = ", ytm)
 
+    bond = TuringInflationBond(issueDate,
+                               maturityDate,
+                               coupon,
+                               freqType,
+                               accrualType,
+                               face,
+                               baseCPIValue,
+                               convention=TuringYTMCalcType.US_STREET)
+
     ytm = bond.yieldToMaturity(settlementDate,
-                               cleanPrice,
-                               TuringYTMCalcType.US_STREET)
+                               cleanPrice)
 
     testCases.print("US STREET REAL Yield To Maturity = ", ytm)
 
+    bond = TuringInflationBond(issueDate,
+                               maturityDate,
+                               coupon,
+                               freqType,
+                               accrualType,
+                               face,
+                               baseCPIValue,
+                               convention=TuringYTMCalcType.US_TREASURY)
+
     ytm = bond.yieldToMaturity(settlementDate,
-                               cleanPrice,
-                               TuringYTMCalcType.US_TREASURY)
+                               cleanPrice)
 
     testCases.print("US TREASURY REAL Yield To Maturity = ", ytm)
 
@@ -313,15 +351,13 @@ def test_FinInflationBondStack():
     lastCpnCPIValue = 244.61839
 
     cleanPrice = bond.flatPriceFromYieldToMaturity(settlementDate, ytm,
-                                                   lastCpnCPIValue,
-                                                   TuringYTMCalcType.US_TREASURY)
+                                                   lastCpnCPIValue)
 
     testCases.print("Flat Price from Real YTM = ", cleanPrice)
 
     principal = bond.inflationPrincipal(settlementDate,
                                         ytm,
-                                        refCPIValue,
-                                        TuringYTMCalcType.US_TREASURY)
+                                        refCPIValue)
 
     testCases.print("Inflation Principal = ", principal)
 

@@ -27,7 +27,8 @@ class TuringInflationBond(TuringBond):
                  accrualType: TuringDayCountTypes,
                  faceAmount: float,
                  baseCPIValue: float,
-                 numExDividendDays: int = 0): # Value of CPI index at bond issue date
+                 numExDividendDays: int = 0,
+                 convention: TuringYTMCalcType = TuringYTMCalcType.UK_DMO): # Value of CPI index at bond issue date
         ''' Create TuringInflationBond object by providing Maturity, Frequency,
         coupon, frequency and the accrual convention type. You must also supply
         the base CPI used for all coupon and principal related calculations.
@@ -49,6 +50,10 @@ class TuringInflationBond(TuringBond):
         self._par = 100.0  # This is how price is quoted
         self._redemption = 1.0 # Amount paid at maturity
         self._numExDividendDays = numExDividendDays
+        if convention not in TuringYTMCalcType:
+            raise TuringError("Yield convention unknown." + str(convention))
+
+        self._convention = convention
 
         self._flowDates = []
         self._flowAmounts = []
@@ -66,13 +71,12 @@ class TuringInflationBond(TuringBond):
     def inflationPrincipal(self,
                            settlementDate: TuringDate,
                            ytm: float,
-                           referenceCPI: float,
-                           convention: TuringYTMCalcType):
+                           referenceCPI: float):
         ''' Calculate the principal value of the bond based on the face
         amount and the CPI growth. '''
 
         indexRatio = referenceCPI / self._baseCPIValue
-        fullPrice = self.fullPriceFromYTM(settlementDate, ytm, convention)
+        fullPrice = self.fullPriceFromYTM(settlementDate, ytm)
         principal = fullPrice * self._faceAmount / self._par
         principal = principal - self._accruedInterest
         principal *= indexRatio
@@ -83,13 +87,12 @@ class TuringInflationBond(TuringBond):
     def flatPriceFromYieldToMaturity(self,
                                      settlementDate: TuringDate,
                                      ytm: float,
-                                     lastCpnCPI: float,
-                                     convention: TuringYTMCalcType):
+                                     lastCpnCPI: float):
         ''' Calculate the flat clean price value of the bond based on the clean
         price amount and the CPI growth to the last coupon date. '''
 
         indexRatio = lastCpnCPI / self._baseCPIValue
-        cleanPrice = self.cleanPriceFromYTM(settlementDate, ytm, convention)
+        cleanPrice = self.cleanPriceFromYTM(settlementDate, ytm)
         flatPrice = cleanPrice * self._faceAmount / self._par
         flatPrice *= indexRatio
         return flatPrice

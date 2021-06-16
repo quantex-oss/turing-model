@@ -95,7 +95,7 @@ def buildIborCurve(valuationDate):
         swapRate,
         fixedFreqType,
         fixedDCCType)
-    
+
 #    print(swap1._fixedLeg._paymentDates)
 
     swaps.append(swap1)
@@ -112,7 +112,7 @@ def buildIborCurve(valuationDate):
 
 #    print(swap2._fixedLeg._paymentDates)
 
-    
+
     maturityDate = settlementDate.addMonths(48)
     swap3 = TuringIborSwap(
         settlementDate,
@@ -361,7 +361,8 @@ def test_FinBond():
                       coupon,
                       freqType,
                       accrualType,
-                      face)
+                      face,
+                      convention=TuringYTMCalcType.UK_DMO)
 
     testCases.header("FIELD", "VALUE")
     cleanPrice = 99.7808417
@@ -369,16 +370,29 @@ def test_FinBond():
     yld = bond.currentYield(cleanPrice)
     testCases.print("Current Yield = ", yld)
 
-    ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               TuringYTMCalcType.UK_DMO)
+    ytm = bond.yieldToMaturity(settlementDate, cleanPrice)
     testCases.print("UK DMO Yield To Maturity = ", ytm)
 
-    ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               TuringYTMCalcType.US_STREET)
+    bond = TuringBond(issueDate,
+                      maturityDate,
+                      coupon,
+                      freqType,
+                      accrualType,
+                      face,
+                      convention=TuringYTMCalcType.US_STREET)
+
+    ytm = bond.yieldToMaturity(settlementDate, cleanPrice)
     testCases.print("US STREET Yield To Maturity = ", ytm)
 
-    ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               TuringYTMCalcType.US_TREASURY)
+    bond = TuringBond(issueDate,
+                      maturityDate,
+                      coupon,
+                      freqType,
+                      accrualType,
+                      face,
+                      convention=TuringYTMCalcType.US_TREASURY)
+
+    ytm = bond.yieldToMaturity(settlementDate, cleanPrice)
     testCases.print("US TREASURY Yield To Maturity = ", ytm)
 
     fullPrice = bond.fullPriceFromYTM(settlementDate, ytm)
@@ -419,7 +433,8 @@ def test_FinBond():
     face = 100.0
 
     bond = TuringBond(issueDate, maturityDate,
-                      coupon, freqType, accrualType, face)
+                      coupon, freqType, accrualType, face,
+                      TuringYTMCalcType.UK_DMO)
 
     testCases.header("FIELD", "VALUE")
     cleanPrice = 101.581564
@@ -427,16 +442,21 @@ def test_FinBond():
     yld = bond.currentYield(cleanPrice)
     testCases.print("Current Yield", yld)
 
-    ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               TuringYTMCalcType.UK_DMO)
+    ytm = bond.yieldToMaturity(settlementDate, cleanPrice)
     testCases.print("UK DMO Yield To Maturity", ytm)
 
-    ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               TuringYTMCalcType.US_STREET)
+    bond = TuringBond(issueDate, maturityDate,
+                      coupon, freqType, accrualType, face,
+                      TuringYTMCalcType.US_STREET)
+
+    ytm = bond.yieldToMaturity(settlementDate, cleanPrice)
     testCases.print("US STREET Yield To Maturity", ytm)
 
-    ytm = bond.yieldToMaturity(settlementDate, cleanPrice,
-                               TuringYTMCalcType.US_TREASURY)
+    bond = TuringBond(issueDate, maturityDate,
+                      coupon, freqType, accrualType, face,
+                      TuringYTMCalcType.US_TREASURY)
+
+    ytm = bond.yieldToMaturity(settlementDate, cleanPrice)
     testCases.print("US TREASURY Yield To Maturity", ytm)
 
     fullPrice = bond.fullPriceFromYTM(settlementDate, ytm)

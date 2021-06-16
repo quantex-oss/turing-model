@@ -43,8 +43,7 @@ def testConvergence():
     asianOption = TuringEquityAsianOption(startAveragingDate,
                                           expiryDate,
                                           K,
-                                          TuringOptionTypes.EUROPEAN_CALL,
-                                          numObservations)
+                                          TuringOptionTypes.EUROPEAN_CALL)
 
     testCases.header(
         "K",
@@ -155,8 +154,7 @@ def testTimeEvolution():
     asianOption = TuringEquityAsianOption(startAveragingDate,
                                           expiryDate,
                                           K,
-                                          TuringOptionTypes.EUROPEAN_CALL,
-                                          numObservations)
+                                          TuringOptionTypes.EUROPEAN_CALL)
 
     testCases.header(
         "Date",
@@ -283,8 +281,7 @@ def testMCTimings():
     asianOption = TuringEquityAsianOption(startAveragingDate,
                                           expiryDate,
                                           K,
-                                          TuringOptionTypes.EUROPEAN_CALL,
-                                          numObservations)
+                                          TuringOptionTypes.EUROPEAN_CALL)
 
     testCases.header(
         "NUMPATHS",
