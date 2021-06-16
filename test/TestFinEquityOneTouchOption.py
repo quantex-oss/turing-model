@@ -17,8 +17,8 @@ def test_FinEquityOneTouchOption():
     # Examples Haug Page 180 Table 4-22
     # Agreement not exact at t is not exactly 0.50
 
-    valueDate = TuringDate(1, 1, 2016)
-    expiryDate = TuringDate(2, 7, 2016)
+    valueDate = TuringDate(2016, 1, 1)
+    expiryDate = TuringDate(2016, 7, 2)
     interestRate = 0.10
     volatility = 0.20
     barrierLevel = 100.0  # H

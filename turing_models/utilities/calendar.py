@@ -602,7 +602,7 @@ class TuringCalendar(object):
             # for previous first business day one day at a time
             # TODO: I could speed this up by starting it at initial date
             if dt._m != m_start:
-                dt = TuringDate(d_start, m_start, y_start)
+                dt = TuringDate(y_start, m_start, d_start)
                 while self.isBusinessDay(dt) is False:
                     dt = dt.addDays(-1)
 
@@ -631,7 +631,7 @@ class TuringCalendar(object):
             # for previous first business day one day at a time
             # I could speed this up by starting it at initial date
             if dt._m != m_start:
-                dt = TuringDate(d_start, m_start, y_start)
+                dt = TuringDate(y_start, m_start, d_start)
                 while self.isBusinessDay(dt) is False:
                     dt = dt.addDays(+1)
 
@@ -660,7 +660,7 @@ class TuringCalendar(object):
         d = dt.day
         m = dt.month
         y = dt.year
-        newDt = TuringDate(d, m, y)
+        newDt = TuringDate(y, m, d)
 
         s = +1
         if numDays < 0:
@@ -672,7 +672,7 @@ class TuringCalendar(object):
             d = dt.day
             m = dt.month
             y = dt.year
-            newDt = TuringDate(d, m, y)
+            newDt = TuringDate(y, m, d)
 
             if self.isBusinessDay(newDt) is True:
                 numDays -= 1
@@ -704,7 +704,7 @@ class TuringCalendar(object):
         calendar. Weekends are not holidays unless the holiday falls on a
         weekend date. '''
 
-        startDate = TuringDate(1, 1, dt._y)
+        startDate = TuringDate(dt._y, 1, 1)
         dayInYear = dt._excelDate - startDate._excelDate + 1
         weekday = dt._weekday
 
@@ -1521,8 +1521,8 @@ class TuringCalendar(object):
                        year: float):
         ''' generates a list of holidays in a specific year for the specified
         calendar. Useful for diagnostics. '''
-        startDate = TuringDate(1, 1, year)
-        endDate = TuringDate(1, 1, year + 1)
+        startDate = TuringDate(year, 1, 1)
+        endDate = TuringDate(year + 1, 1, 1)
         holidayList = []
         while startDate < endDate:
             if self.isBusinessDay(startDate) is False and \
@@ -1545,7 +1545,7 @@ class TuringCalendar(object):
                 "Unable to determine Easter monday in year " + str(year))
 
         emDays = easterMondayDay[year - 1901]
-        startDate = TuringDate(1, 1, year)
+        startDate = TuringDate(year, 1, 1)
         em = startDate.addDays(emDays-1)
         return em
 

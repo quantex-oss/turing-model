@@ -104,7 +104,7 @@ def buildFlatIssuerCurve(tradeDate, liborCurve, spread, recoveryRate):
 
     cdsMarketContracts = []
 
-    maturityDate = TuringDate(29, 6, 2010)
+    maturityDate = TuringDate(2010, 6, 29)
     cds = TuringCDS(valuationDate, maturityDate, spread)
     cdsMarketContracts.append(cds)
 
@@ -120,7 +120,7 @@ def buildFlatIssuerCurve(tradeDate, liborCurve, spread, recoveryRate):
 
 def test_fullPriceCDSIndexOption():
 
-    tradeDate = TuringDate(1, 8, 2007)
+    tradeDate = TuringDate(2007, 8, 1)
     stepInDate = tradeDate.addDays(1)
     valuationDate = stepInDate
 
@@ -164,10 +164,10 @@ def test_fullPriceCDSIndexOption():
     ##########################################################################
 
     indexUpfronts = [0.0, 0.0, 0.0, 0.0]
-    indexMaturityDates = [TuringDate(20, 12, 2009),
-                          TuringDate(20, 12, 2011),
-                          TuringDate(20, 12, 2013),
-                          TuringDate(20, 12, 2016)]
+    indexMaturityDates = [TuringDate(2009, 12, 20),
+                          TuringDate(2011, 12, 20),
+                          TuringDate(2013, 12, 20),
+                          TuringDate(2016, 12, 20)]
     indexRecovery = 0.40
 
     testCases.banner(
@@ -175,8 +175,8 @@ def test_fullPriceCDSIndexOption():
 
     indexCoupon = 0.004
     volatility = 0.50
-    expiryDate = TuringDate(1, 2, 2008)
-    maturityDate = TuringDate(20, 12, 2011)
+    expiryDate = TuringDate(2008, 2, 1)
+    maturityDate = TuringDate(2011, 12, 20)
     notional = 10000.0
     tolerance = 1e-6
 

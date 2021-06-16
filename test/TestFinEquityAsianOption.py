@@ -24,9 +24,9 @@ testMCTimings = True
 
 def testConvergence():
 
-    valueDate = TuringDate(1, 1, 2014)
-    startAveragingDate = TuringDate(1, 6, 2014)
-    expiryDate = TuringDate(1, 1, 2015)
+    valueDate = TuringDate(2014, 1, 1)
+    startAveragingDate = TuringDate(2014, 6, 1)
+    expiryDate = TuringDate(2015, 1, 1)
     stockPrice = 100.0
     volatility = 0.20
     interestRate = 0.30
@@ -139,8 +139,8 @@ def testConvergence():
 
 def testTimeEvolution():
 
-    startAveragingDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 1, 2016)
+    startAveragingDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2016, 1, 1)
     stockPrice = 100.0
     volatility = 0.20
     interestRate = 0.30
@@ -173,13 +173,13 @@ def testTimeEvolution():
     valuesMC_CV = []
 
     valueDates = []
-    valueDates.append(TuringDate(1, 4, 2014))
-    valueDates.append(TuringDate(1, 6, 2014))
-    valueDates.append(TuringDate(1, 8, 2014))
-    valueDates.append(TuringDate(1, 2, 2015))
-    valueDates.append(TuringDate(1, 4, 2015))
-    valueDates.append(TuringDate(1, 6, 2015))
-    valueDates.append(TuringDate(1, 8, 2015))
+    valueDates.append(TuringDate(2014, 4, 1))
+    valueDates.append(TuringDate(2014, 6, 1))
+    valueDates.append(TuringDate(2014, 8, 1))
+    valueDates.append(TuringDate(2015, 2, 1))
+    valueDates.append(TuringDate(2015, 4, 1))
+    valueDates.append(TuringDate(2015, 6, 1))
+    valueDates.append(TuringDate(2015, 8, 1))
 
     numPaths = 10000
 
@@ -264,9 +264,9 @@ def testTimeEvolution():
 
 def testMCTimings():
 
-    valueDate = TuringDate(1, 1, 2014)
-    startAveragingDate = TuringDate(1, 6, 2014)
-    expiryDate = TuringDate(1, 1, 2015)
+    valueDate = TuringDate(2014, 1, 1)
+    startAveragingDate = TuringDate(2014, 6, 1)
+    expiryDate = TuringDate(2015, 1, 1)
     stockPrice = 100.0
     volatility = 0.20
     interestRate = 0.30

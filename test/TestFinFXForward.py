@@ -19,7 +19,7 @@ def test_FinFXForward():
     #  https://stackoverflow.com/questions/48778712
     #  /fx-vanilla-call-price-in-quantlib-doesnt-match-bloomberg
 
-    valuationDate = TuringDate(13, 2, 2018)
+    valuationDate = TuringDate(2018, 2, 13)
     expiryDate = valuationDate.addMonths(12)
     # Forward is on EURUSD which is expressed as number of USD per EUR
     # ccy1 = EUR and ccy2 = USD

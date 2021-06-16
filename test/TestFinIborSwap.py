@@ -101,34 +101,34 @@ def buildIborSingleCurve(valuationDate):
     ###########################################################################
     ###########################################################################
     ###########################################################################
-    
+
     fixedFreq = TuringFrequencyTypes.ANNUAL
     dcType = TuringDayCountTypes.THIRTY_E_360
     fixedLegType = TuringSwapTypes.PAY
 
     #######################################
-    maturityDate = settlementDate.addMonths(24) 
-    swapRate = -0.001506    
+    maturityDate = settlementDate.addMonths(24)
+    swapRate = -0.001506
     swap1 = TuringIborSwap(settlementDate, maturityDate, fixedLegType,
                            swapRate, fixedFreq, dcType)
     swaps.append(swap1)
 
     #######################################
     maturityDate = settlementDate.addMonths(36)
-    swapRate = -0.000185 
+    swapRate = -0.000185
     swap2 = TuringIborSwap(settlementDate, maturityDate, fixedLegType,
                            swapRate, fixedFreq, dcType)
     swaps.append(swap2)
 
     #######################################
-    maturityDate = settlementDate.addMonths(48)   
+    maturityDate = settlementDate.addMonths(48)
     swapRate = 0.001358
     swap3 = TuringIborSwap(settlementDate, maturityDate, fixedLegType,
                            swapRate, fixedFreq, dcType)
     swaps.append(swap3)
 
     #######################################
-    maturityDate = settlementDate.addMonths(60)   
+    maturityDate = settlementDate.addMonths(60)
     swapRate = 0.0027652
     swap4 = TuringIborSwap(settlementDate, maturityDate, fixedLegType,
                            swapRate, fixedFreq, dcType)
@@ -238,9 +238,9 @@ def buildIborSingleCurve(valuationDate):
     swap19 = TuringIborSwap(settlementDate, maturityDate, fixedLegType,
                             swapRate, fixedFreq, dcType)
     swaps.append(swap19)
-    
+
     ########################################
-    
+
     liborCurve = TuringIborSingleCurve(valuationDate, depos, fras, swaps)
 
     testCases.header("LABEL", "DATE", "VALUE")
@@ -253,7 +253,7 @@ def buildIborSingleCurve(valuationDate):
     for fra in fras:
         v = fra.value(settlementDate, liborCurve)
         testCases.print("FRA VALUE:", fra._maturityDate, v)
-    
+
     for swap in swaps:
         v = swap.value(settlementDate, liborCurve)
         testCases.print("SWAP VALUE:", swap._maturityDate, v)
@@ -267,8 +267,8 @@ def test_LiborSwap():
 
     # I have tried to reproduce the example from the blog by Ioannis Rigopoulos
     # https://blog.deriscope.com/index.php/en/excel-interest-rate-swap-price-dual-bootstrapping-curve
-    startDate = TuringDate(27, 12, 2017)
-    endDate = TuringDate(27, 12, 2067)
+    startDate = TuringDate(2017, 12, 27)
+    endDate = TuringDate(2067, 12, 27)
 
     fixedCoupon = 0.015
     fixedFreqType = TuringFrequencyTypes.ANNUAL
@@ -283,7 +283,7 @@ def test_LiborSwap():
     busDayAdjustType = TuringBusDayAdjustTypes.FOLLOWING
     dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
     fixedLegType = TuringSwapTypes.RECEIVE
-    
+
     notional = 10.0 * ONE_MILLION
 
     swap = TuringIborSwap(startDate,
@@ -304,7 +304,7 @@ def test_LiborSwap():
     same curve being used for discounting and working out the implied
     future Libor rates. '''
 
-    valuationDate = TuringDate(30, 11, 2018)
+    valuationDate = TuringDate(2018, 11, 30)
     settlementDate = valuationDate.addDays(2)
     liborCurve = buildIborSingleCurve(valuationDate)
     v = swap.value(settlementDate, liborCurve, liborCurve, firstFixing)
@@ -322,8 +322,8 @@ def test_dp_example():
 
     #  http://www.derivativepricing.com/blogpage.asp?id=8
 
-    startDate = TuringDate(14, 11, 2011)
-    endDate = TuringDate(14, 11, 2016)
+    startDate = TuringDate(2011, 11, 14)
+    endDate = TuringDate(2016, 11, 14)
     fixedFreqType = TuringFrequencyTypes.SEMI_ANNUAL
     swapCalendarType = TuringCalendarTypes.TARGET
     busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
@@ -348,10 +348,10 @@ def test_dp_example():
 
 #    swap.printFixedLegFlows()
 
-    dts = [TuringDate(14, 11, 2011), TuringDate(14, 5, 2012), TuringDate(14, 11, 2012),
-           TuringDate(14, 5, 2013), TuringDate(14, 11, 2013), TuringDate(14, 5, 2014),
-           TuringDate(14, 11, 2014), TuringDate(14, 5, 2015), TuringDate(16, 11, 2015),
-           TuringDate(16, 5, 2016), TuringDate(14, 11, 2016)]
+    dts = [TuringDate(2011, 11, 14), TuringDate(2012, 5, 14), TuringDate(2012, 11, 14),
+           TuringDate(2013, 5, 14), TuringDate(2013, 11, 14), TuringDate(2014, 5, 14),
+           TuringDate(2014, 11, 14), TuringDate(2015, 5, 14), TuringDate(2015, 11, 16),
+           TuringDate(2016, 5, 16), TuringDate(2016, 11, 14)]
 
     dfs = [0.9999843, 0.9966889, 0.9942107, 0.9911884, 0.9880738, 0.9836490,
            0.9786276, 0.9710461, 0.9621778, 0.9514315, 0.9394919]

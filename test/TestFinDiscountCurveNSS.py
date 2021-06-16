@@ -21,7 +21,7 @@ def test_FinNelsonSiegelSvenssonCurve():
     tau1 = 2.0
     tau2 = 0.5
     times = np.linspace(0.0, 10.0, 5)
-    startDate = TuringDate(1, 1, 2020)
+    startDate = TuringDate(2020, 1, 1)
     dates = startDate.addYears(times)
 
     curve1 = TuringDiscountCurveNSS(startDate, 1., 0., 0., 0., tau1, tau2)

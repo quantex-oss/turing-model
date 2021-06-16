@@ -18,7 +18,7 @@ def test_FinDayCount():
 
     for dayCountMethod in TuringDayCountTypes:
 
-        startDate = TuringDate(1, 1, 2019)
+        startDate = TuringDate(2019, 1, 1)
         nextDate = startDate
         numDays = 20
         dayCount = TuringDayCount(dayCountMethod)

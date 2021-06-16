@@ -19,9 +19,9 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinBondConvertible():
 
-    settlementDate = TuringDate(31, 12, 2003)
-    startConvertDate = TuringDate(31, 12, 2003)
-    maturityDate = TuringDate(15, 3, 2022)
+    settlementDate = TuringDate(2003, 12, 31)
+    startConvertDate = TuringDate(2003, 12, 31)
+    maturityDate = TuringDate(2022, 3, 15)
     conversionRatio = 38.4615  # adjust for face
     coupon = 0.0575
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
@@ -29,15 +29,15 @@ def test_FinBondConvertible():
     face = 1000.0
 
     callPrice = 1100
-    callDates = [TuringDate(20, 3, 2007),
-                 TuringDate(15, 3, 2012),
-                 TuringDate(15, 3, 2017)]
+    callDates = [TuringDate(2007, 3, 20),
+                 TuringDate(2012, 3, 15),
+                 TuringDate(2017, 3, 15)]
     callPrices = np.array([callPrice, callPrice, callPrice])
 
     putPrice = 90
-    putDates = [TuringDate(20, 3, 2007),
-                TuringDate(15, 3, 2012),
-                TuringDate(15, 3, 2017)]
+    putDates = [TuringDate(2007, 3, 20),
+                TuringDate(2012, 3, 15),
+                TuringDate(2017, 3, 15)]
     putPrices = np.array([putPrice, putPrice, putPrice])
 
     bond = TuringBondConvertible(maturityDate,
@@ -53,22 +53,22 @@ def test_FinBondConvertible():
                                  face)
 #    print(bond)
 
-    dividendDates = [TuringDate(20, 3, 2007),
-                     TuringDate(15, 3, 2008),
-                     TuringDate(15, 3, 2009),
-                     TuringDate(15, 3, 2010),
-                     TuringDate(15, 3, 2011),
-                     TuringDate(15, 3, 2012),
-                     TuringDate(15, 3, 2013),
-                     TuringDate(15, 3, 2014),
-                     TuringDate(15, 3, 2015),
-                     TuringDate(15, 3, 2016),
-                     TuringDate(15, 3, 2017),
-                     TuringDate(15, 3, 2018),
-                     TuringDate(15, 3, 2019),
-                     TuringDate(15, 3, 2020),
-                     TuringDate(15, 3, 2021),
-                     TuringDate(15, 3, 2022)]
+    dividendDates = [TuringDate(2007, 3, 20),
+                     TuringDate(2008, 3, 15),
+                     TuringDate(2009, 3, 15),
+                     TuringDate(2010, 3, 15),
+                     TuringDate(2011, 3, 15),
+                     TuringDate(2012, 3, 15),
+                     TuringDate(2013, 3, 15),
+                     TuringDate(2014, 3, 15),
+                     TuringDate(2015, 3, 15),
+                     TuringDate(2016, 3, 15),
+                     TuringDate(2017, 3, 15),
+                     TuringDate(2018, 3, 15),
+                     TuringDate(2019, 3, 15),
+                     TuringDate(2020, 3, 15),
+                     TuringDate(2021, 3, 15),
+                     TuringDate(2022, 3, 15)]
 
     dividendYields = [0.00] * 16
     stockPrice = 28.5

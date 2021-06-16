@@ -228,7 +228,7 @@ def test_FinBond():
     bondDataFrame['mid'] = 0.5*(bondDataFrame['bid'] + bondDataFrame['ask'])
 
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
-    settlementDate = TuringDate(19, 9, 2012)
+    settlementDate = TuringDate(2012, 9, 19)
     face = ONE_MILLION
 
     for accrualType in TuringDayCountTypes:
@@ -241,7 +241,7 @@ def test_FinBond():
             dateString = bond['maturity']
             matDatetime = dt.datetime.strptime(dateString, '%d-%b-%y')
             maturityDt = fromDatetime(matDatetime)
-            issueDt = TuringDate(maturityDt._d, maturityDt._m, 2000)
+            issueDt = TuringDate(2000, maturityDt._m, maturityDt._d)
 
             coupon = bond['coupon']/100.0
             cleanPrice = bond['mid']
@@ -261,9 +261,9 @@ def test_FinBond():
 
     accrualConvention = TuringDayCountTypes.ACT_ACT_ICMA
     y = 0.062267
-    settlementDate = TuringDate(19, 4, 1994)
-    issueDate = TuringDate(15, 7, 1990)
-    maturityDate = TuringDate(15, 7, 1997)
+    settlementDate = TuringDate(1994, 4, 19)
+    issueDate = TuringDate(1990, 7, 15)
+    maturityDate = TuringDate(1997, 7, 15)
     coupon = 0.085
     face = ONE_MILLION
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
@@ -348,9 +348,9 @@ def test_FinBond():
 ##########################################################################
 
     testCases.banner("BLOOMBERG US TREASURY EXAMPLE")
-    settlementDate = TuringDate(21, 7, 2017)
-    issueDate = TuringDate(15, 5, 2010)
-    maturityDate = TuringDate(15, 5, 2027)
+    settlementDate = TuringDate(2017, 7, 21)
+    issueDate = TuringDate(2010, 5, 15)
+    maturityDate = TuringDate(2027, 5, 15)
     coupon = 0.02375
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     accrualType = TuringDayCountTypes.ACT_ACT_ICMA
@@ -410,9 +410,9 @@ def test_FinBond():
 ##########################################################################
 
     testCases.banner("BLOOMBERG APPLE CORP BOND EXAMPLE")
-    settlementDate = TuringDate(21, 7, 2017)
-    issueDate = TuringDate(13, 5, 2012)
-    maturityDate = TuringDate(13, 5, 2022)
+    settlementDate = TuringDate(2017, 7, 21)
+    issueDate = TuringDate(2012, 5, 13)
+    maturityDate = TuringDate(2022, 5, 13)
     coupon = 0.027
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     accrualType = TuringDayCountTypes.THIRTY_E_360_ISDA
@@ -468,8 +468,8 @@ def test_FinBond():
 
 def test_FinBondExDividend():
 
-    issueDate = TuringDate(7, 9, 2000)
-    maturityDate = TuringDate(7, 9, 2020)
+    issueDate = TuringDate(2000, 9, 7)
+    maturityDate = TuringDate(2020, 9, 7)
     coupon = 0.05
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     accrualType = TuringDayCountTypes.ACT_ACT_ICMA
@@ -480,7 +480,7 @@ def test_FinBondExDividend():
     calendarType = TuringCalendarTypes.UNITED_KINGDOM
     bond = TuringBond(issueDate, maturityDate, coupon,
                       freqType, accrualType, face)
-    settlementDate = TuringDate(7, 9, 2003)
+    settlementDate = TuringDate(2003, 9, 7)
     accrued = bond.calcAccruedInterest(settlementDate, exDivDays, calendarType)
     testCases.print("SettlementDate:", settlementDate)
     testCases.print("Accrued:", accrued)
@@ -489,8 +489,8 @@ def test_FinBondExDividend():
     testCases.banner("=======================================================")
     testCases.header("SETTLEMENT", "ACCRUED")
 
-    issueDate = TuringDate(7, 9, 2000)
-    maturityDate = TuringDate(7, 9, 2020)
+    issueDate = TuringDate(2000, 9, 7)
+    maturityDate = TuringDate(2020, 9, 7)
     coupon = 0.05
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     accrualType = TuringDayCountTypes.ACT_ACT_ICMA
@@ -501,7 +501,7 @@ def test_FinBondExDividend():
     bond = TuringBond(issueDate, maturityDate, coupon,
                       freqType, accrualType, face)
 
-    settlementDate = TuringDate(25, 8, 2010)
+    settlementDate = TuringDate(2010, 8, 25)
 
     for _ in range(0, 13):
         settlementDate = settlementDate.addDays(1)

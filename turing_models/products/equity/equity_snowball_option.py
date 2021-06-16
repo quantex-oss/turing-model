@@ -23,7 +23,7 @@ class TuringEquitySnowballOption:
                  knock_out_price: float,
                  knock_in_price: float,
                  notional: float,
-                 coupon_rate: float,
+                 rebate: float,
                  option_type: TuringOptionTypes,
                  coupon_annualized_flag: bool = True,
                  knock_in_type: TuringKnockInTypes = TuringKnockInTypes.RETURN,
@@ -50,7 +50,7 @@ class TuringEquitySnowballOption:
         self._k1 = knock_out_price
         self._k2 = knock_in_price
         self._notional = notional
-        self._coupon_rate = coupon_rate
+        self._rebate = rebate
         self._option_type = option_type
         self._flag = coupon_annualized_flag
         self._knock_in_type = knock_in_type
@@ -148,9 +148,9 @@ class TuringEquitySnowballOption:
 
         if self._option_type == TuringOptionTypes.SNOWBALL_CALL:
 
-            payoff = out_call_sign * ((self._notional * self._coupon_rate * (out_call_index / num_ann_obs)**self._flag) *
+            payoff = out_call_sign * ((self._notional * self._rebate * (out_call_index / num_ann_obs)**self._flag) *
                      np.exp(-r * out_call_index / num_ann_obs)) + not_out_call_sign * not_in_call_sign * \
-                     ((self._notional * self._coupon_rate * texp**self._flag) * np.exp(-r * texp))
+                     ((self._notional * self._rebate * texp**self._flag) * np.exp(-r * texp))
 
             if self._knock_in_type == TuringKnockInTypes.RETURN:
                 payoff += not_out_call_sign * in_call_sign * \
@@ -169,9 +169,9 @@ class TuringEquitySnowballOption:
 
         elif self._option_type == TuringOptionTypes.SNOWBALL_PUT:
 
-            payoff = out_put_sign * ((self._notional * self._coupon_rate * (out_put_index / num_ann_obs)**self._flag) *
+            payoff = out_put_sign * ((self._notional * self._rebate * (out_put_index / num_ann_obs)**self._flag) *
                      np.exp(-r * out_put_index / num_ann_obs)) + not_out_put_sign * not_in_put_sign * \
-                     ((self._notional * self._coupon_rate * texp**self._flag) * np.exp(-r * texp))
+                     ((self._notional * self._rebate * texp**self._flag) * np.exp(-r * texp))
 
             if self._knock_in_type == TuringKnockInTypes.RETURN:
                 payoff += not_out_put_sign * in_put_sign * \

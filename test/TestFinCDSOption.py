@@ -211,12 +211,12 @@ def buildFullIssuerCurve(valuationDate):
 def test_fullPriceCDSwaption():
 
     # This reproduces example on page 38 of Open Gamma note on CDS Option
-    tradeDate = TuringDate(5, 2, 2014)
+    tradeDate = TuringDate(2014, 2, 5)
     _, issuerCurve = buildFullIssuerCurve(tradeDate)
     stepInDate = tradeDate.addDays(1)
     valuationDate = stepInDate
-    expiryDate = TuringDate(20, 3, 2014)
-    maturityDate = TuringDate(20, 6, 2019)
+    expiryDate = TuringDate(2014, 3, 20)
+    maturityDate = TuringDate(2019, 6, 20)
 
     cdsRecovery = 0.40
     notional = 100.0

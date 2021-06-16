@@ -16,8 +16,8 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinDateAdjust():
 
-    startDate = TuringDate(28, 2, 2008)
-    endDate = TuringDate(28, 2, 2011)
+    startDate = TuringDate(2008, 2, 28)
+    endDate = TuringDate(2011, 2, 28)
 
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.NONE
@@ -77,8 +77,8 @@ def test_FinDateAdjust():
     busDayAdjustType = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
     dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
 
-    startDate = TuringDate(4, 7, 2008)
-    endDate = TuringDate(4, 7, 2011)
+    startDate = TuringDate(2008, 7, 4)
+    endDate = TuringDate(2011, 7, 4)
 
     schedule = TuringSchedule(startDate,
                               endDate,

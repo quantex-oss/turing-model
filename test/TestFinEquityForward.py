@@ -14,7 +14,7 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinEquityForward():
 
-    valueDate = TuringDate(13, 2, 2018)
+    valueDate = TuringDate(2018, 2, 13)
     expiryDate = valueDate.addMonths(12)
 
     stockPrice = 130.0
@@ -39,12 +39,12 @@ def test_FinEquityForward():
 
     fwdPrice = equityForward.forward(valueDate,
                                      stockPrice,
-                                     discountCurve, 
+                                     discountCurve,
                                      dividendCurve)
 
     fwdValue = equityForward.value(valueDate,
                                    stockPrice,
-                                   discountCurve, 
+                                   discountCurve,
                                    dividendCurve)
 
 #    print(stockPrice, fwdPrice, fwdValue)

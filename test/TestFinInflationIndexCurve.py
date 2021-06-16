@@ -12,14 +12,14 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 def test_FinInflationIndexCurve():
 
     # Create a curve from times and discount factors
-    indexDates = [TuringDate(15, 1, 2008), TuringDate(1, 4, 2008), TuringDate(1, 5, 2008)]
+    indexDates = [TuringDate(2008, 1, 15), TuringDate(2008, 4, 1), TuringDate(2008, 5, 1)]
     indexValues = [209.49645, 214.823, 216.632]
     lag = 3 # months
 
     curve = TuringInflationIndexCurve(indexDates, indexValues, lag)
 
-    refDate = TuringDate(22, 7, 2008)
-    
+    refDate = TuringDate(2008, 7, 22)
+
     testCases.header("LABEL", "VALUE")
 
     value = curve.indexValue(refDate)

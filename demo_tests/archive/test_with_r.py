@@ -25,10 +25,10 @@ from turing_models.utilities.turing_date import TuringDate
 
 option = EqOption(option_type=TuringOptionTypes.EUROPEAN_CALL,
                   number_of_options=100,
-                  expiration_date=TuringDate(25, 7, 2021),
+                  expiration_date=TuringDate(2021, 7, 25),
                   strike_price=500.0,
-                  start_averaging_date=TuringDate(25, 4, 2021),
-                  value_date=TuringDate(25, 4, 2021),
+                  start_averaging_date=TuringDate(2021, 4, 25),
+                  value_date=TuringDate(2021, 4, 25),
                   stock_price=510.0,
                   volatility=0.02,
                   interest_rate=0.03,

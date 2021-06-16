@@ -25,7 +25,7 @@ from turing_models.utilities.mathematics import N
 from turing_models.products.equity.equity_snowball_option import TuringEquitySnowballOption
 
 
-expiry_date = TuringDate(12, 2, 2021)
+expiry_date = TuringDate(2021, 2, 12)
 knock_out_price = 120
 knock_in_price = 90
 notional = 1000000
@@ -45,7 +45,7 @@ snowball_option = TuringEquitySnowballOption(expiry_date,
                                              knock_in_strike1,
                                              knock_in_strike2)
 
-value_date = TuringDate(12, 2, 2020)
+value_date = TuringDate(2020, 2, 12)
 stock_price = 100
 interest_rate = 0.02
 dividend_yield = 0
@@ -201,8 +201,8 @@ c = _valueMC_fast_NUMBA(K1 = 120,
                         K2 = 90,  # 敲入价格
                         obs_freq = TuringFrequencyTypes.MONTHLY, # 敲出观察日
                         notional = 1000000,
-                        valueDate = TuringDate(12,2,2020),
-                        expiryDate = TuringDate(12,2,2021),
+                        valueDate = TuringDate(2020,2,12),
+                        expiryDate = TuringDate(2021,2,12),
                         stockPrice = 100,
                         interestRate = 0.02,
                         dividendYield = 0,

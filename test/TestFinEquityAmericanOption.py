@@ -16,8 +16,8 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def testFinEquityAmericanOption():
 
-    valueDate = TuringDate(1, 1, 2016)
-    expiryDate = TuringDate(1, 1, 2017)
+    valueDate = TuringDate(2016, 1, 1)
+    expiryDate = TuringDate(2017, 1, 1)
     stockPrice = 50.0
     interestRate = 0.06
     dividendYield = 0.04
@@ -118,7 +118,7 @@ def testFinEquityAmericanOption():
                                         TuringModelBlackScholesTypes.CRR_TREE,
                                         numSteps)
         start = time.time()
-        results = option.value(valueDate, stockPrice, discountCurve, 
+        results = option.value(valueDate, stockPrice, discountCurve,
                                dividendCurve, model)
         end = time.time()
         duration = end - start
@@ -143,7 +143,7 @@ def testFinEquityAmericanOption():
 
         start = time.time()
 
-        results = option.value(valueDate, stockPrice, discountCurve, 
+        results = option.value(valueDate, stockPrice, discountCurve,
                                dividendCurve, model)
 
         end = time.time()

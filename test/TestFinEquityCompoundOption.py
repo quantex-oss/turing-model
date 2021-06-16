@@ -15,9 +15,9 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinEquityCompoundOption():
 
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate1 = TuringDate(1, 1, 2017)
-    expiryDate2 = TuringDate(1, 1, 2018)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate1 = TuringDate(2017, 1, 1)
+    expiryDate2 = TuringDate(2018, 1, 1)
     k1 = 5.0
     k2 = 95.0
     stockPrice = 85.0
@@ -48,13 +48,13 @@ def test_FinEquityCompoundOption():
                                                     expiryDate2, optionType2, k2)
 
             for numSteps in numStepsList:
-        
+
                 value = cmpdOption.value(valueDate, stockPrice, discountCurve,
                                          dividendCurve, model)
 
                 values = cmpdOption._valueTree(valueDate, stockPrice, discountCurve,
                                                dividendCurve, model, numSteps)
-        
+
                 testCases.print(optionType1, optionType2, k1, k2, stockPrice,
                                 numSteps, value, values[0])
 
@@ -75,13 +75,13 @@ def test_FinEquityCompoundOption():
                                                     expiryDate2, optionType2, k2)
 
             for numSteps in numStepsList:
-        
+
                 value = cmpdOption.value(valueDate, stockPrice, discountCurve,
                                          dividendCurve, model, numSteps)
 
                 values = cmpdOption._valueTree(valueDate, stockPrice, discountCurve,
                                                dividendCurve, model, numSteps)
-        
+
                 testCases.print(optionType1, optionType2, k1, k2, stockPrice,
                                 numSteps, value, values[0])
 

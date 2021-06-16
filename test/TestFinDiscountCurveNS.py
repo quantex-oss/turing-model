@@ -20,7 +20,7 @@ def test_FinNelsonSiegelCurve():
 
     tau = 2.0
     times = np.linspace(0.0, 10.0, 5)
-    curveDate = TuringDate(6, 6, 2019)
+    curveDate = TuringDate(2019, 6, 6)
     dates = curveDate.addYears(times)
 
     curve1 = TuringDiscountCurveNS(curveDate, 1, 0, 0, tau)

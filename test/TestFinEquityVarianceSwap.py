@@ -23,13 +23,13 @@ def volSkew(K, atmVol, atmK, skew):
 
 def test_FinEquityVarianceSwap():
 
-    startDate = TuringDate(20, 3, 2018)
+    startDate = TuringDate(2018, 3, 20)
     tenor = "3M"
     strike = 0.3*0.3
 
     volSwap = TuringEquityVarianceSwap(startDate, tenor, strike)
 
-    valuationDate = TuringDate(20, 3, 2018)
+    valuationDate = TuringDate(2018, 3, 20)
     stockPrice = 100.0
     dividendYield = 0.0
     dividendCurve = TuringDiscountCurveFlat(valuationDate, dividendYield)

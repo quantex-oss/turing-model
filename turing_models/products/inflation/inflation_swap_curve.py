@@ -199,9 +199,9 @@ class TuringInflationSwapCurve(TuringDiscountCurve):
         # Now we have ensure they are in order check for overlaps and the like
         #######################################################################
 
-        lastDepositMaturityDate = TuringDate(1, 1, 1900)
-        firstFRAMaturityDate = TuringDate(1, 1, 1900)
-        lastFRAMaturityDate = TuringDate(1, 1, 1900)
+        lastDepositMaturityDate = TuringDate(1900, 1, 1)
+        firstFRAMaturityDate = TuringDate(1900, 1, 1)
+        lastFRAMaturityDate = TuringDate(1900, 1, 1)
 
         if numDepos > 0:
             lastDepositMaturityDate = iborDeposits[-1]._maturityDate

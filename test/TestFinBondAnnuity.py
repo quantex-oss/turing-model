@@ -19,13 +19,13 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinBondAnnuity():
 
-    settlementDate = TuringDate(20, 6, 2018)
+    settlementDate = TuringDate(2018, 6, 20)
 
     #   print("==============================================================")
     #   print("SEMI-ANNUAL FREQUENCY")
     #   print("==============================================================")
 
-    maturityDate = TuringDate(20, 6, 2019)
+    maturityDate = TuringDate(2019, 6, 20)
     coupon = 0.05
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
@@ -57,7 +57,7 @@ def test_FinBondAnnuity():
 #    print("QUARTERLY FREQUENCY")
 #    print("===============================================================")
 
-    maturityDate = TuringDate(20, 6, 2028)
+    maturityDate = TuringDate(2028, 6, 20)
     coupon = 0.05
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
@@ -88,7 +88,7 @@ def test_FinBondAnnuity():
 #    print("MONTHLY FREQUENCY")
 #    print("==================================================================")
 
-    maturityDate = TuringDate(20, 6, 2028)
+    maturityDate = TuringDate(2028, 6, 20)
     coupon = 0.05
     freqType = TuringFrequencyTypes.MONTHLY
     calendarType = TuringCalendarTypes.WEEKEND
@@ -119,7 +119,7 @@ def test_FinBondAnnuity():
 #    print("FORWARD GEN")
 #    print("==================================================================")
 
-    maturityDate = TuringDate(20, 6, 2028)
+    maturityDate = TuringDate(2028, 6, 20)
     coupon = 0.05
     freqType = TuringFrequencyTypes.ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
@@ -150,7 +150,7 @@ def test_FinBondAnnuity():
 #    print("BACKWARD GEN WITH SHORT END STUB")
 #    print("==================================================================")
 
-    maturityDate = TuringDate(20, 6, 2028)
+    maturityDate = TuringDate(2028, 6, 20)
     coupon = 0.05
     freqType = TuringFrequencyTypes.ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND
@@ -181,7 +181,7 @@ def test_FinBondAnnuity():
 #    print("FORWARD GEN WITH LONG END STUB")
 #    print("==================================================================")
 
-    maturityDate = TuringDate(20, 6, 2028)
+    maturityDate = TuringDate(2028, 6, 20)
     coupon = 0.05
     freqType = TuringFrequencyTypes.SEMI_ANNUAL
     calendarType = TuringCalendarTypes.WEEKEND

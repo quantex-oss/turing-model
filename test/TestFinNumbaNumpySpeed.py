@@ -19,8 +19,8 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinNumbaNumpySpeed(useSobol):
 
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 7, 2015)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2015, 7, 1)
     stockPrice = 100
     volatility = 0.30
     interestRate = 0.05
@@ -249,8 +249,8 @@ def test_FinNumbaNumpySpeed(useSobol):
 
 def test_FinNumbaNumbaParallel(useSobol):
 
-    valueDate = TuringDate(1, 1, 2015)
-    expiryDate = TuringDate(1, 7, 2015)
+    valueDate = TuringDate(2015, 1, 1)
+    expiryDate = TuringDate(2015, 7, 1)
     stockPrice = 100
     volatility = 0.30
     interestRate = 0.05

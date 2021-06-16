@@ -16,8 +16,8 @@ testCases = TuringTestCases(__file__, globalTestCaseMode)
 
 def test_FinEquityCliquetOption():
 
-    startDate = TuringDate(1, 1, 2014)
-    finalExpiryDate = TuringDate(1, 1, 2017)
+    startDate = TuringDate(2014, 1, 1)
+    finalExpiryDate = TuringDate(2017, 1, 1)
     freqType = TuringFrequencyTypes.QUARTERLY
     optionType = TuringOptionTypes.EUROPEAN_CALL
 
@@ -26,7 +26,7 @@ def test_FinEquityCliquetOption():
                                               optionType,
                                               freqType)
 
-    valueDate = TuringDate(1, 1, 2015)
+    valueDate = TuringDate(2015, 1, 1)
     stockPrice = 100.0
     volatility = 0.20
     interestRate = 0.05
