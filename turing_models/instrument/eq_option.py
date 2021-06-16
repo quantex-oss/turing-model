@@ -1,6 +1,5 @@
 import datetime
 from dataclasses import dataclass
-from typing import Optional
 
 from tunny import model
 
@@ -188,35 +187,44 @@ class OptionModel:
             return self.option().value(*self.params()) * self.multiplier * self.quantity_of_underlier
         return self.option().value(*self.params())
 
-    def delta(self) -> float:
+    def eq_delta(self) -> float:
         if self.run_mutiplier:
             return self.option().delta(*self.params()) * self.multiplier * self.quantity_of_underlier
         return self.option().delta(*self.params())
 
-    def gamma(self) -> float:
+    def eq_gamma(self) -> float:
         if self.run_mutiplier:
             return self.option().gamma(*self.params()) * self.multiplier * self.quantity_of_underlier
         return self.option().gamma(*self.params())
 
-    def vega(self) -> float:
+    def eq_vega(self) -> float:
         if self.run_mutiplier:
             return self.option().vega(*self.params()) * self.multiplier * self.quantity_of_underlier
         return self.option().vega(*self.params())
 
-    def theta(self) -> float:
+    def eq_theta(self) -> float:
         if self.run_mutiplier:
             return self.option().theta(*self.params()) * self.multiplier * self.quantity_of_underlier
         return self.option().theta(*self.params())
 
-    def rho(self) -> float:
+    def eq_rho(self) -> float:
         if self.run_mutiplier:
             return self.option().rho(*self.params()) * self.multiplier * self.quantity_of_underlier
         return self.option().rho(*self.params())
 
-    def rho_q(self) -> float:
+    def eq_rho_q(self) -> float:
         if self.run_mutiplier:
             return self.option().rho_q(*self.params()) * self.multiplier * self.quantity_of_underlier
         return self.option().rho_q(*self.params())
+
+    def dv01(self):
+        return 0.00
+
+    def duration(self):
+        return 0.00
+
+    def convexity(self):
+        return 0.00
 
 
 class Option(Priceable):
