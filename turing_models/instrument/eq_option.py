@@ -184,37 +184,37 @@ class OptionModel:
 
     def price(self) -> float:
         if self.run_mutiplier:
-            return self.option().value(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().value(*self.params()) * self.multiplier * self.number_of_options
         return self.option().value(*self.params())
 
     def eq_delta(self) -> float:
         if self.run_mutiplier:
-            return self.option().delta(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().delta(*self.params()) * self.multiplier * self.number_of_options
         return self.option().delta(*self.params())
 
     def eq_gamma(self) -> float:
         if self.run_mutiplier:
-            return self.option().gamma(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().gamma(*self.params()) * self.multiplier * self.number_of_options
         return self.option().gamma(*self.params())
 
     def eq_vega(self) -> float:
         if self.run_mutiplier:
-            return self.option().vega(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().vega(*self.params()) * self.multiplier * self.number_of_options
         return self.option().vega(*self.params())
 
     def eq_theta(self) -> float:
         if self.run_mutiplier:
-            return self.option().theta(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().theta(*self.params()) * self.multiplier * self.number_of_options
         return self.option().theta(*self.params())
 
     def eq_rho(self) -> float:
         if self.run_mutiplier:
-            return self.option().rho(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().rho(*self.params()) * self.multiplier * self.number_of_options
         return self.option().rho(*self.params())
 
     def eq_rho_q(self) -> float:
         if self.run_mutiplier:
-            return self.option().rho_q(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().rho_q(*self.params()) * self.multiplier * self.number_of_options
         return self.option().rho_q(*self.params())
 
 
@@ -227,7 +227,7 @@ class Option(Priceable):
     underlier = StringField("underlier")
     notional: float = FloatField('notional')
     initial_spot = FloatField("initial_spot")
-    quantity_of_underlier = FloatField("quantity_of_underlier")
+    number_of_options = FloatField("number_of_options")
     start_date: TuringDate = DateField("start_date")
     end_date: TuringDate = DateField("end_date")
     start_averaging_date: TuringDate = DateField("start_averaging_date")
@@ -284,11 +284,11 @@ class EqOption(OptionModel):
     underlier: str = None
     notional: float = None
     initial_spot: float = None
-    quantity_of_underlier: float = None
-    start_date: TuringDate = None
-    end_date: TuringDate = None
-    start_averaging_date: TuringDate = None
-    expiration_date: TuringDate = None
+    number_of_options: float = None
+    start_date: str = None
+    end_date: str = None
+    start_averaging_date: str = None
+    expiration_date: str = None
     participation_rate: float = None
     strike_price: float = None
     barrier: float = None
@@ -297,7 +297,7 @@ class EqOption(OptionModel):
     multiplier: float = None
     currency: str = None
     premium: float = None
-    premium_date: TuringDate = None
+    premium_date: str = None
     knock_in_price: float = None  # yapi无值
     coupon_annualized_flag: bool = None  # yapi无值
     knock_out_type: str = None  # yapi无值---
@@ -337,14 +337,8 @@ class EqOption(OptionModel):
 
 
 if __name__ == '__main__':
-    eq = EqOption(asset_id='OPTIONCN00000002', option_type='CALL', product_type='KNOCK_OUT',
-                  underlier='STOCKCN00000007', notional=100000000.0, initial_spot=3.0, quantity_of_underlier='',
-                  start_date=TuringDate(2021, 4, 14), end_date=TuringDate(2021,7,14), start_averaging_date='',
-                  expiration_date=TuringDate(2021, 7, 14), participation_rate=1.0, strike_price=3.3, barrier=3.9,
-                  rebate=0.01, coupon=0.0, multiplier=100.0, currency='CNY', premium=200.0,
-                  premium_date=TuringDate(2021, 7, 14), knock_in_price='', coupon_annualized_flag='',
-                  knock_out_type='up_and_out', knock_in_type='', knock_in_strike1='', knock_in_strike2='',
-                  name='No name', value_date=TuringDate(2021, 6, 16), stock_price=5.0, volatility=0.2,
-                  interest_rate=0.05, dividend_yield=0.01, accrued_average=0.1)
-
+    eq = EqOption(asset_id='123', option_type='CALL',
+                  product_type='European', stock_price=511.11,
+                  expiration_date="20211121",
+                  strike_price=90, multiplier=1000)
     print(eq.price())
