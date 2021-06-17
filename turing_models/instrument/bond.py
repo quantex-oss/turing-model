@@ -256,3 +256,10 @@ class Bond:
                                             self.current_ibor,
                                             self.future_ibor,
                                             self.clean_price)
+
+    def _set_by_dict(self, tmp_dict):
+        for k, v in tmp_dict.items():
+            setattr(self, k, v)
+
+    def resolve(self, expand_dict):
+        self._set_by_dict(expand_dict)
