@@ -184,37 +184,37 @@ class OptionModel:
 
     def price(self) -> float:
         if self.run_mutiplier:
-            return self.option().value(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().value(*self.params()) * self.multiplier * self.number_of_options
         return self.option().value(*self.params())
 
     def eq_delta(self) -> float:
         if self.run_mutiplier:
-            return self.option().delta(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().delta(*self.params()) * self.multiplier * self.number_of_options
         return self.option().delta(*self.params())
 
     def eq_gamma(self) -> float:
         if self.run_mutiplier:
-            return self.option().gamma(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().gamma(*self.params()) * self.multiplier * self.number_of_options
         return self.option().gamma(*self.params())
 
     def eq_vega(self) -> float:
         if self.run_mutiplier:
-            return self.option().vega(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().vega(*self.params()) * self.multiplier * self.number_of_options
         return self.option().vega(*self.params())
 
     def eq_theta(self) -> float:
         if self.run_mutiplier:
-            return self.option().theta(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().theta(*self.params()) * self.multiplier * self.number_of_options
         return self.option().theta(*self.params())
 
     def eq_rho(self) -> float:
         if self.run_mutiplier:
-            return self.option().rho(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().rho(*self.params()) * self.multiplier * self.number_of_options
         return self.option().rho(*self.params())
 
     def eq_rho_q(self) -> float:
         if self.run_mutiplier:
-            return self.option().rho_q(*self.params()) * self.multiplier * self.quantity_of_underlier
+            return self.option().rho_q(*self.params()) * self.multiplier * self.number_of_options
         return self.option().rho_q(*self.params())
 
 
@@ -227,7 +227,7 @@ class Option(Priceable):
     underlier = StringField("underlier")
     notional: float = FloatField('notional')
     initial_spot = FloatField("initial_spot")
-    quantity_of_underlier = FloatField("quantity_of_underlier")
+    number_of_options = FloatField("number_of_options")
     start_date: TuringDate = DateField("start_date")
     end_date: TuringDate = DateField("end_date")
     start_averaging_date: TuringDate = DateField("start_averaging_date")
@@ -284,7 +284,7 @@ class EqOption(OptionModel):
     underlier: str = None
     notional: float = None
     initial_spot: float = None
-    quantity_of_underlier: float = None
+    number_of_options: float = None
     start_date: str = None
     end_date: str = None
     start_averaging_date: str = None
