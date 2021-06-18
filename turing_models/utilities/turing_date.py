@@ -757,7 +757,6 @@ class TuringDate():
         ''' returns a formatted string of the date '''
 
         global gDateFormatType
-
         dayNameStr = shortDayNames[self._weekday]
 
         if self._d < 10:
@@ -783,7 +782,7 @@ class TuringDate():
 
         elif gDateFormatType == TuringDateFormatTypes.UK_LONG:
 
-            sep = ""
+            sep = "-"  # pricing service: used by xiaoliang
             dateStr = longYearStr  + sep + shortMonthStr + sep + dayStr
             return dateStr
 
