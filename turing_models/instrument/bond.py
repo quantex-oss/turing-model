@@ -26,6 +26,7 @@ class BondOrm(Priceable):
     accrual_type = StringField('accrual_type')
     face_amount: float = FloatField("face_amount")
     clean_price: float = FloatField("clean_price")
+    curve_code = StringField('curve_code')
     ytm: float = FloatField("ytm")
     zero_dates: list = None
     zero_rates: list = None
@@ -47,6 +48,7 @@ class Bond:
     accrual_type: str = None
     face_amount: float = None
     clean_price: float = None
+    curve_code: str = None
     name: str = None
     settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
     ytm: float = None
