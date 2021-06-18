@@ -259,7 +259,8 @@ class Bond:
 
     def _set_by_dict(self, tmp_dict):
         for k, v in tmp_dict.items():
-            setattr(self, k, v)
+            if v:
+                setattr(self, k, v)
 
     def resolve(self, expand_dict):
         self._set_by_dict(expand_dict)
