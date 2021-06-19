@@ -23,27 +23,33 @@ class OptionModel:
 
     @property
     def value_date_(self):
-        return getattr(self.ctx.path, 'value_date') \
+        return getattr(self.ctx.path, 'pricing_date') \
             if (hasattr(self, "ctx") and
                 hasattr(self.ctx, "path") and
-                getattr(self.ctx.path, 'value_date', None)) \
+                getattr(self.ctx.path, 'pricing_date', None)) \
             else self._value_date
 
     @property
     def stock_price_(self) -> float:
-        return getattr(self.ctx.path, 'stock_price') \
-            if (hasattr(self, "ctx") and
+        if (hasattr(self, "ctx") and
                 hasattr(self.ctx, "path") and
-                getattr(self.ctx.path, 'stock_price', None)) \
-            else self._stock_price
+                getattr(self.ctx.path, 'spot_context', None)):
+            for k, v in getattr(self.ctx.path, 'spot_context').items():
+                if k == self.underlier:
+                    return v
+        else:
+            return self._stock_price
 
     @property
     def volatility_(self) -> float:
-        return getattr(self.ctx.path, 'volatility') \
-            if (hasattr(self, "ctx") and
+        if (hasattr(self, "ctx") and
                 hasattr(self.ctx, "path") and
-                getattr(self.ctx.path, 'volatility', None)) \
-            else self._volatility
+                getattr(self.ctx.path, 'volatility_context', None)):
+            for k, v in getattr(self.ctx.path, 'volatility_context').items():
+                if k == self.underlier:
+                    return v
+        else:
+            return self._volatility
 
     @property
     def interest_rate_(self) -> float:
@@ -240,6 +246,7 @@ class Option(Priceable):
     multiplier: float = FloatField("multiplier")
     currency = StringField("currency")
     premium = FloatField("premium")
+    quantity = FloatField("quantity")
     premium_date: TuringDate = DateField("premium_date")
     knock_in_price: float = FloatField("knock_in_price")  # yapi无值
     coupon_annualized_flag: bool = BoolField("coupon_annualized_flag")  # yapi无值
@@ -337,7 +344,7 @@ class EqOption(OptionModel):
 
 
 if __name__ == '__main__':
-    eq = EqOption(asset_id='123', option_type='CALL',
+    eq = EqOption(asset_id='123', option_type='CALL', knock_out_type="up_and_out",
                   product_type='European', stock_price=511.11,
                   expiration_date="20211121",
                   strike_price=90, multiplier=1000)
