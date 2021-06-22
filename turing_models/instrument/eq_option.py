@@ -23,57 +23,47 @@ class OptionModel:
 
     @property
     def value_date_(self):
-        return getattr(self.ctx.path, 'pricing_date') \
-            if (hasattr(self, "ctx") and
-                hasattr(self.ctx, "path") and
-                getattr(self.ctx.path, 'pricing_date', None)) \
-            else self._value_date
+        if "pricing_date" in self.ctx:
+            return self.ctx.pricing_date
+        else:
+            return self._value_date
 
     @property
     def stock_price_(self) -> float:
-        if (hasattr(self, "ctx") and
-                hasattr(self.ctx, "path") and
-                getattr(self.ctx.path, 'spot_context', None)):
-            for k, v in getattr(self.ctx.path, 'spot_context').items():
-                if k == self.underlier:
-                    return v
+        stock_underlier = f"spot_{self.underlier}"
+        if stock_underlier in self.ctx:
+            return getattr(self.ctx, stock_underlier)
         else:
             return self._stock_price
 
     @property
     def volatility_(self) -> float:
-        if (hasattr(self, "ctx") and
-                hasattr(self.ctx, "path") and
-                getattr(self.ctx.path, 'volatility_context', None)):
-            for k, v in getattr(self.ctx.path, 'volatility_context').items():
-                if k == self.underlier:
-                    return v
+        vol_underlier = f"volatility_{self.underlier}"
+        if vol_underlier in self.ctx:
+            return getattr(self.ctx, vol_underlier)
         else:
             return self._volatility
 
     @property
     def interest_rate_(self) -> float:
-        return getattr(self.ctx.path, 'interest_rate') \
-            if (hasattr(self, "ctx") and
-                hasattr(self.ctx, "path") and
-                getattr(self.ctx.path, 'interest_rate', None)) \
-            else self._interest_rate
+        if 'interest_rate' in self.ctx:
+            return self.ctx.interest_rate
+        else:
+            return self.interest_rate
 
     @property
     def dividend_yield_(self) -> float:
-        return getattr(self.ctx.path, 'dividend_yield') \
-            if (hasattr(self, "ctx") and
-                hasattr(self.ctx, "path") and
-                getattr(self.ctx.path, 'dividend_yield', None)) \
-            else self._dividend_yield
+        if "dividend_yield" in self.ctx:
+            return self.ctx.dividend_yield
+        else:
+            return self._dividend_yield
 
     @property
     def accrued_average_(self) -> float:
-        return getattr(self.ctx.path, 'accrued_average') \
-            if (hasattr(self, "ctx") and
-                hasattr(self.ctx, "path") and
-                getattr(self.ctx.path, 'accrued_average', None)) \
-            else self._accrued_average
+        if "accrued_average" in self.ctx:
+            return self.ctx.accrued_average
+        else:
+            return self._accrued_average
 
     def option_name(self):
         knock_in_type = '-' + getattr(self, 'knock_in_type', '') if getattr(self, 'knock_in_type', '') else ''
