@@ -347,6 +347,21 @@ class TuringBond(object):
 
 ###############################################################################
 
+    def dollar_convexity(self,
+                         settlementDate: TuringDate,
+                         ytm: float):
+        ''' Calculate the dollar convexity from the yield to maturity. This
+        function is vectorised with respect to the yield input. '''
+
+        dy = 0.0001
+        p0 = self.fullPriceFromYTM(settlementDate, ytm - dy)
+        p1 = self.fullPriceFromYTM(settlementDate, ytm)
+        p2 = self.fullPriceFromYTM(settlementDate, ytm + dy)
+        dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
+        return dollar_conv
+
+###############################################################################
+
     def convexityFromYTM(self,
                          settlementDate: TuringDate,
                          ytm: float):
