@@ -123,15 +123,29 @@ class Bond:
                                   self.future_ibor,
                                   self.discount_margin)
 
-    def duration(self):
-        """modified duration"""
-        return self.bond.modifiedDuration(self.settlement_date,
-                                          self.ytm)
+    def dollar_duration(self):
+        """dollar duration"""
+        if self.bond_type == 'BOND':
+            return self.bond.dollarDuration(self.settlement_date,
+                                            self.ytm)
+        elif self.bond_type == 'frn':
+            return self.bond.dollarDuration(self.settlement_date,
+                                            self.next_coupon,
+                                            self.current_ibor,
+                                            self.future_ibor,
+                                            self.discount_margin)
 
-    def convexity(self):
-        """convexity from ytm"""
-        return self.bond.convexityFromYTM(self.settlement_date,
-                                          self.ytm)
+    def dollar_convexity(self):
+        """dollar convexity"""
+        if self.bond_type == 'BOND':
+            return self.bond.dollar_convexity(self.settlement_date,
+                                              self.ytm)
+        elif self.bond_type == 'frn':
+            return self.bond.dollar_convexity(self.settlement_date,
+                                              self.next_coupon,
+                                              self.current_ibor,
+                                              self.future_ibor,
+                                              self.discount_margin)
 
     def full_price_from_ytm(self):
         if self.bond_type == 'BOND':
@@ -160,17 +174,6 @@ class Bond:
                                        self.current_ibor,
                                        self.future_ibor,
                                        self.discount_margin)
-
-    def dollar_duration(self):
-        if self.bond_type == 'BOND':
-            return self.bond.dollarDuration(self.settlement_date,
-                                            self.ytm)
-        elif self.bond_type == 'frn':
-            return self.bond.dollarDuration(self.settlement_date,
-                                            self.next_coupon,
-                                            self.current_ibor,
-                                            self.future_ibor,
-                                            self.discount_margin)
 
     def macauley_duration(self):
         return self.bond.macauleyDuration(self.settlement_date,
@@ -201,7 +204,6 @@ class Bond:
         elif self.bond_type == 'frn':
             return self.bond.calcAccruedInterest(self.settlement_date,
                                                  self.next_coupon)
-
 
     def dollar_credit_duration(self):
         if self.bond_type == 'frn':

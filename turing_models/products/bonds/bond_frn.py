@@ -368,6 +368,44 @@ class TuringBondFRN(object):
 
 ###############################################################################
 
+    def dollar_convexity(self,
+                         settlementDate: TuringDate,
+                         nextCoupon: float,
+                         currentIbor: float,
+                         futureIbor: float,
+                         dm: float):
+        ''' Calculate the bond convexity from the discount margin (DM) using a
+        standard model based on assumptions about future Ibor rates. The
+        next Ibor payment which has reset is entered, so to is the current
+        Ibor rate from settlement to the next coupon date (NCD). Finally there
+        is the level of subsequent future Ibor payments and the discount
+        margin. '''
+
+        dy = 0.0001
+
+        p0 = self.fullPriceFromDM(settlementDate,
+                                  nextCoupon,
+                                  currentIbor - dy,
+                                  futureIbor,
+                                  dm)
+
+        p1 = self.fullPriceFromDM(settlementDate,
+                                  nextCoupon,
+                                  currentIbor,
+                                  futureIbor,
+                                  dm)
+
+        p2 = self.fullPriceFromDM(settlementDate,
+                                  nextCoupon,
+                                  currentIbor + dy,
+                                  futureIbor,
+                                  dm)
+
+        conv = ((p2 + p0) - 2.0 * p1) / dy / dy
+        return conv
+
+###############################################################################
+
     def cleanPriceFromDM(self,
                          settlementDate: TuringDate,
                          nextCoupon: float,
