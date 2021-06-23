@@ -23,47 +23,27 @@ class OptionModel:
 
     @property
     def value_date_(self):
-        if self.ctx.pricing_date:
-            return self.ctx.pricing_date
-        else:
-            return self._value_date
+        return self.ctx.pricing_date or self._value_date
 
     @property
     def stock_price_(self) -> float:
-        stock_underlier = f"spot_{self.underlier}"
-        if getattr(self.ctx, stock_underlier):
-            return getattr(self.ctx, stock_underlier)
-        else:
-            return self._stock_price
+        return getattr(self.ctx, f"spot_{self.underlier}") or self._stock_price
 
     @property
     def volatility_(self) -> float:
-        vol_underlier = f"volatility_{self.underlier}"
-        if getattr(self.ctx, vol_underlier):
-            return getattr(self.ctx, vol_underlier)
-        else:
-            return self._volatility
+        return getattr(self.ctx, f"volatility_{self.underlier}") or self._volatility
 
     @property
     def interest_rate_(self) -> float:
-        if self.ctx.interest_rate:
-            return self.ctx.interest_rate
-        else:
-            return self.interest_rate
+        return self.ctx.interest_rate or self.interest_rate
 
     @property
     def dividend_yield_(self) -> float:
-        if self.ctx.dividend_yield:
-            return self.ctx.dividend_yield
-        else:
-            return self._dividend_yield
+        return self.ctx.dividend_yield or self._dividend_yield
 
     @property
     def accrued_average_(self) -> float:
-        if self.ctx.accrued_average:
-            return self.ctx.accrued_average
-        else:
-            return self._accrued_average
+        return self.ctx.accrued_average or self._accrued_average
 
     def option_name(self):
         knock_in_type = '-' + getattr(self, 'knock_in_type', '') if getattr(self, 'knock_in_type', '') else ''
