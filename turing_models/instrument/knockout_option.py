@@ -7,16 +7,19 @@ from fundamental.base import Context, ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
 
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.global_variables import gDaysInYear, gNumObsInYear
+from turing_models.utilities.global_types import TuringKnockOutTypes
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.models.model_black_scholes_analytical import bsValue, bsDelta, \
-     bsVega, bsGamma, bsRho, bsPsi, bsTheta
+from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
+     TuringGBMNumericalScheme
+
+
+bump = 1e-4
 
 
 @model
 @dataclass
-class EuropeanOption:
+class KnockOutOption:
     """
         Instrument definition for equity option
         支持多种参数传入方式
@@ -61,7 +64,7 @@ class EuropeanOption:
     premium: float = None
     premium_date: str = None
     knock_in_price: float = None
-    coupon_annualized_flag: bool = True
+    annualized_flag: bool = True
     knock_out_type: str = None
     knock_in_type: str = None
     knock_in_strike1: float = None
@@ -77,6 +80,9 @@ class EuropeanOption:
     def __post_init__(self):
         self.ctx = ctx
         self.set_param()
+        self.num_ann_obs = gNumObsInYear
+        self.num_paths = 100000
+        self.seed = 4242
 
     def set_param(self):
         self._value_date = self.value_date
@@ -146,37 +152,113 @@ class EuropeanOption:
         return self.model._volatility
 
     @property
-    def option_type_(self) -> TuringOptionTypes:
-        return TuringOptionTypes.EUROPEAN_CALL if self.option_type == 'CALL' else TuringOptionTypes.EUROPEAN_PUT
-
-    def params(self) -> list:
-        return [
-            self.stock_price_,
-            self.texp,
-            self.strike_price,
-            self.r,
-            self.q,
-            self.v,
-            self.option_type_.value
-        ]
+    def knock_out_type_(self) -> TuringKnockOutTypes:
+        return TuringKnockOutTypes.UP_AND_OUT_CALL if self.knock_out_type == 'up_and_out' \
+            else TuringKnockOutTypes.DOWN_AND_OUT_PUT
 
     def price(self) -> float:
-        return bsValue(*self.params()) * self.multiplier * self.number_of_options
+        s0 = self.stock_price_
+        k = self.strike_price
+        b = self.barrier
+        r = self.r
+        q = self.q
+        vol = self.v
+        rebate = self.rebate
+        notional = self.notional
+        texp = self.texp
+        knock_out_type = self.knock_out_type_
+        flag = self.annualized_flag
+        participation_rate = self.participation_rate
+        num_ann_obs = self.num_ann_obs
+        num_paths = self.num_paths
+        seed = self.seed
+
+        if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL and s0 >= b:
+            return rebate * texp**flag * notional * np.exp(-r * texp)
+        elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT and s0 <= b:
+            return rebate * texp**flag * notional * np.exp(-r * texp)
+
+        process = TuringProcessSimulator()
+        process_type = TuringProcessTypes.GBM
+        scheme = TuringGBMNumericalScheme.ANTITHETIC
+        model_params = (s0, r-q, vol, scheme)
+
+        Sall = process.getProcess(process_type, texp, model_params,
+                                  num_ann_obs, num_paths, seed)
+
+        (num_paths, _) = Sall.shape
+
+        if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
+            barrierCrossedFromBelow = [False] * num_paths
+            for p in range(0, num_paths):
+                barrierCrossedFromBelow[p] = np.any(Sall[p] >= b)
+        elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
+            barrierCrossedFromAbove = [False] * num_paths
+            for p in range(0, num_paths):
+                barrierCrossedFromAbove[p] = np.any(Sall[p] <= b)
+
+        payoff = np.zeros(num_paths)
+        ones = np.ones(num_paths)
+
+        if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
+            payoff = np.maximum((Sall[:, -1] - k) / s0, 0.0) * \
+                        participation_rate * (ones - barrierCrossedFromBelow) + \
+                        rebate * texp**flag * (ones * barrierCrossedFromBelow)
+        elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
+            payoff = np.maximum((k - Sall[:, -1]) / s0, 0.0) * \
+                        participation_rate * (ones - barrierCrossedFromAbove) + \
+                        rebate * texp**flag * (ones * barrierCrossedFromAbove)
+
+        return payoff.mean() * np.exp(- r * texp) * notional
 
     def eq_delta(self) -> float:
-        return bsDelta(*self.params()) * self.multiplier * self.number_of_options
+        p0 = self.price()
+        self.stock_price_ += bump
+        p_up = self.price()
+        self.stock_price_ -= bump
+        delta = (p_up - p0) / bump
+        return delta
 
     def eq_gamma(self) -> float:
-        return bsGamma(*self.params()) * self.multiplier * self.number_of_options
+        p0 = self.price()
+        self.stock_price_ -= bump
+        p_down = self.price()
+        self.stock_price_ += 2*bump
+        p_up = self.price()
+        self.stock_price_ -= bump
+        gamma = (p_up - 2.0 * p0 + p_down) / bump / bump
+        return gamma
 
     def eq_vega(self) -> float:
-        return bsVega(*self.params()) * self.multiplier * self.number_of_options
+        p0 = self.price()
+        self.v += bump
+        p_up = self.price()
+        self.v -= bump
+        vega = (p_up - p0) / bump
+        return vega
 
     def eq_theta(self) -> float:
-        return bsTheta(*self.params()) * self.multiplier * self.number_of_options
+        p0 = self.price()
+        self.value_date_ = self.value_date_.addDays(1)
+        p_up = self.price()
+        self.value_date_ = self.value_date_.addDays(-1)
+        theta = (p_up - p0) / bump
+        return theta
 
     def eq_rho(self) -> float:
-        return bsRho(*self.params()) * self.multiplier * self.number_of_options
+        discount_curve = self.discount_curve
+        p0 = self.price()
+        self.discount_curve = self.discount_curve.bump(bump)
+        p1 = self.price()
+        self.discount_curve = discount_curve
+        rho = (p1 - p0) / bump
+        return rho
 
     def eq_rho_q(self) -> float:
-        return bsPsi(*self.params()) * self.multiplier * self.number_of_options
+        dividend_curve = self.dividend_curve
+        p0 = self.price()
+        self.dividend_curve = self.dividend_curve.bump(bump)
+        p1 = self.price()
+        self.dividend_curve = dividend_curve
+        rho_q = (p1 - p0) / bump
+        return rho_q
