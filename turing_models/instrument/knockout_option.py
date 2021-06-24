@@ -76,6 +76,13 @@ class KnockOutOption:
     interest_rate: float = 0.02
     dividend_yield: float = 0
     ctx: Context = ctx
+    __property_data = {
+        "value_date": None,
+        "stock_price": None,
+        "v": None,
+        "discount_curve": None,
+        "dividend_curve": None
+    }
 
     def __post_init__(self):
         self.ctx = ctx
@@ -101,11 +108,21 @@ class KnockOutOption:
 
     @property
     def value_date_(self):
-        return self.ctx.pricing_date or self._value_date
+        self.__property_data["value_date"] = self.ctx.pricing_date or self._value_date
+        return self.__property_data["value_date"]
+
+    @value_date_.setter
+    def value_date_(self, value: TuringDate):
+        self.__property_data["value_date"] = value
 
     @property
     def stock_price_(self) -> float:
-        return getattr(self.ctx, f"spot_{self.underlier}") or self._stock_price
+        self.__property_data["stock_price"] = getattr(self.ctx, f"spot_{self.underlier}") or self._stock_price
+        return self.__property_data["stock_price"]
+
+    @stock_price_.setter
+    def stock_price_(self, value: float):
+        self.__property_data["stock_price"] = value
 
     @property
     def volatility_(self) -> float:
@@ -125,13 +142,23 @@ class KnockOutOption:
 
     @property
     def discount_curve(self) -> TuringDiscountCurveFlat:
-        return TuringDiscountCurveFlat(
+        self.__property_data["discount_curve"] = TuringDiscountCurveFlat(
             self.value_date_, self.interest_rate_)
+        return self.__property_data["discount_curve"]
+
+    @discount_curve.setter
+    def discount_curve(self, value: TuringDiscountCurveFlat):
+        self.__property_data["discount_curve"] = value
 
     @property
     def dividend_curve(self) -> TuringDiscountCurveFlat:
-        return TuringDiscountCurveFlat(
+        self.__property_data["dividend_curve"] = TuringDiscountCurveFlat(
             self.value_date_, self.dividend_yield_)
+        return self.__property_data["dividend_curve"]
+
+    @dividend_curve.setter
+    def dividend_curve(self, value: TuringDiscountCurveFlat):
+        self.__property_data["dividend_curve"] = value
 
     @property
     def texp(self) -> float:
@@ -149,7 +176,12 @@ class KnockOutOption:
 
     @property
     def v(self) -> float:
-        return self.model._volatility
+        self.__property_data["v"] = self.model._volatility
+        return self.__property_data["v"]
+
+    @v.setter
+    def v(self, value: float):
+        self.__property_data["v"] = value
 
     @property
     def knock_out_type_(self) -> TuringKnockOutTypes:
@@ -213,27 +245,27 @@ class KnockOutOption:
 
     def eq_delta(self) -> float:
         p0 = self.price()
-        self.stock_price_ += bump
+        self.stock_price_ = self.stock_price_ + bump
         p_up = self.price()
-        self.stock_price_ -= bump
+        self.stock_price_ = self.stock_price_ - bump
         delta = (p_up - p0) / bump
         return delta
 
     def eq_gamma(self) -> float:
         p0 = self.price()
-        self.stock_price_ -= bump
+        self.stock_price_ = self.stock_price_ - bump
         p_down = self.price()
-        self.stock_price_ += 2*bump
+        self.stock_price_ = self.stock_price_ + 2*bump
         p_up = self.price()
-        self.stock_price_ -= bump
+        self.stock_price_ = self.stock_price_ - bump
         gamma = (p_up - 2.0 * p0 + p_down) / bump / bump
         return gamma
 
     def eq_vega(self) -> float:
         p0 = self.price()
-        self.v += bump
+        self.v = self.v + bump
         p_up = self.price()
-        self.v -= bump
+        self.v = self.v - bump
         vega = (p_up - p0) / bump
         return vega
 
