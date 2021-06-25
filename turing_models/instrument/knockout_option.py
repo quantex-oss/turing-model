@@ -92,7 +92,7 @@ class KnockOutOption:
     def __post_init__(self):
         self.set_param()
         self.num_ann_obs = gNumObsInYear
-        self.num_paths = 100000
+        self.num_paths = 10000
         self.seed = 4242
 
     def set_param(self):
@@ -263,53 +263,66 @@ class KnockOutOption:
         return payoff.mean() * np.exp(- r * texp) * notional
 
     def eq_delta(self) -> float:
-        p0 = self.price()
-        self.stock_price_ = self.stock_price_ + bump
-        p_up = self.price()
-        self.stock_price_ = None
-        delta = (p_up - p0) / bump
-        return delta
+        return greek(self, self.price, "stock_price_")
 
     def eq_gamma(self) -> float:
-        p0 = self.price()
-        self.stock_price_ = self.stock_price_ - bump
-        p_down = self.price()
-        self.stock_price_ = self.stock_price_ + 2*bump
-        p_up = self.price()
-        self.stock_price_ = None
-        gamma = (p_up - 2.0 * p0 + p_down) / bump / bump
-        return gamma
+        return greek(self, self.price, "stock_price_", order=2)
 
     def eq_vega(self) -> float:
-        p0 = self.price()
-        self.v = self.v + bump
-        p_up = self.price()
-        self.v = None
-        vega = (p_up - p0) / bump
-        return vega
+        return greek(self, self.price, "v")
 
     def eq_theta(self) -> float:
         day_diff = 1
-        p0 = self.price()
-        self.value_date_ = self.value_date_.addDays(day_diff)
-        p_up = self.price()
-        self.value_date_ = None
         bump_local = day_diff / gDaysInYear
-        theta = (p_up - p0) / bump_local
-        return theta
+        return greek(self, self.price, "value_date_", bump=bump_local,
+                     cus_inc=(self.value_date_.addDays, day_diff))
 
     def eq_rho(self) -> float:
-        p0 = self.price()
-        self.discount_curve = self.discount_curve.bump(bump)
-        p1 = self.price()
-        self.discount_curve = None
-        rho = (p1 - p0) / bump
-        return rho
+        return greek(self, self.price, "discount_curve",
+                     cus_inc=(self.discount_curve.bump, bump))
 
     def eq_rho_q(self) -> float:
-        p0 = self.price()
-        self.dividend_curve = self.dividend_curve.bump(bump)
-        p1 = self.price()
-        self.dividend_curve = None
-        rho_q = (p1 - p0) / bump
-        return rho_q
+        return greek(self, self.price, "dividend_curve",
+                     cus_inc=(self.dividend_curve.bump, bump))
+
+
+def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
+    """
+    如果要传cus_inc，格式须为(函数名, 函数参数值)
+    """
+    cus_func = args = None
+    attr_value = getattr(obj, attr)
+    if cus_inc:
+        cus_func, args = cus_inc
+
+    def increment(_attr_value, count=1):
+        if cus_func:
+            _attr_value = cus_func(args*count)
+        else:
+            _attr_value += count * bump
+        setattr(obj, attr, _attr_value)
+
+    def decrement(_attr_value, count=1):
+        if cus_func:
+            _attr_value = cus_func(-args*count)
+        else:
+            _attr_value -= count * bump
+        setattr(obj, attr, _attr_value)
+
+    def clear():
+        setattr(obj, attr, None)
+
+    if order == 1:
+        p0 = price()
+        increment(attr_value)
+        p_up = price()
+        clear()
+        return (p_up - p0) / bump
+    elif order == 2:
+        p0 = price()
+        decrement(attr_value)
+        p_down = price()
+        increment(attr_value)
+        p_up = price()
+        clear()
+        return (p_up - 2.0 * p0 + p_down) / bump / bump
