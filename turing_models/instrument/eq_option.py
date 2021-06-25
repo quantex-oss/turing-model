@@ -86,26 +86,26 @@ class OptionModel:
 
     def option_european(self) -> TuringEquityVanillaOption:
         return TuringEquityVanillaOption(
-            self.expiration_date,
+            self.expiry,
             self.strike_price,
             self.option_type_turing)
 
     def option_american(self) -> TuringEquityAmericanOption:
         return TuringEquityAmericanOption(
-            self.expiration_date,
+            self.expiry,
             self.strike_price,
             self.option_type_turing)
 
     def option_asian(self) -> TuringEquityAsianOption:
         return TuringEquityAsianOption(
             self.start_averaging_date,
-            self.expiration_date,
+            self.expiry,
             self.strike_price,
             self.option_type_turing)
 
     def option_snowball(self) -> TuringEquitySnowballOption:
         return TuringEquitySnowballOption(
-            self.expiration_date,
+            self.expiry,
             self.barrier,
             self.knock_in_price,
             self.notional,
@@ -119,7 +119,7 @@ class OptionModel:
 
     def option_knockout(self) -> TuringEquityKnockoutOption:
         return TuringEquityKnockoutOption(
-            self.expiration_date,
+            self.expiry,
             self.strike_price,
             self.knock_out_type_turing,
             self.barrier,
@@ -207,7 +207,7 @@ class Option(Priceable):
     start_date: TuringDate = DateField("start_date")
     end_date: TuringDate = DateField("end_date")
     start_averaging_date: TuringDate = DateField("start_averaging_date")
-    expiration_date: TuringDate = DateField("expiry")
+    expiry: TuringDate = DateField("expiry")
     participation_rate: float = FloatField("participation_rate")
     strike_price: float = FloatField("strike")
     barrier: float = FloatField("barrier")
@@ -238,7 +238,7 @@ class EqOption(OptionModel):
         支持多种参数传入方式
         Examples:
         1.
-        # >>> eq = EqOption(asset_id='123', option_type='CALL', product_type='European', expiration_date=TuringDate(2021, 2, 12), strike_price=90, multiplier=10000)
+        # >>> eq = EqOption(asset_id='123', option_type='CALL', product_type='European', expiry=TuringDate(2021, 2, 12), strike_price=90, multiplier=10000)
         # >>> eq.from_json()
         # >>> eq.price()
         2.
@@ -265,7 +265,7 @@ class EqOption(OptionModel):
     start_date: str = None
     end_date: str = None
     start_averaging_date: str = None
-    expiration_date: str = None
+    expiry: str = None
     participation_rate: float = None
     strike_price: float = None
     barrier: float = None
@@ -316,6 +316,6 @@ class EqOption(OptionModel):
 if __name__ == '__main__':
     eq = EqOption(asset_id='123', option_type='CALL', knock_out_type="up_and_out",
                   product_type='European', stock_price=511.11,
-                  expiration_date="20211121",
+                  expiry="20211121",
                   strike_price=90, multiplier=1000)
     print(eq.price())

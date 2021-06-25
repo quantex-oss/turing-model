@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 
 import numpy as np
-from tunny import model
+from tunny import model, compute
 from fundamental.base import Context, ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
 
@@ -78,14 +78,18 @@ class KnockOutOption:
     ctx: Context = ctx
     __property_data = {
         "value_date": None,
+        "_value_date": None,
         "stock_price": None,
+        "_stock_price": None,
         "v": None,
+        "_v": None,
         "discount_curve": None,
-        "dividend_curve": None
+        "_discount_curve": None,
+        "dividend_curve": None,
+        "_dividend_curve": None
     }
 
     def __post_init__(self):
-        self.ctx = ctx
         self.set_param()
         self.num_ann_obs = gNumObsInYear
         self.num_paths = 100000
@@ -109,20 +113,26 @@ class KnockOutOption:
     @property
     def value_date_(self):
         self.__property_data["value_date"] = self.ctx.pricing_date or self._value_date
-        return self.__property_data["value_date"]
+        if self.__property_data["_value_date"] is None:
+            return self.__property_data["value_date"]
+        else:
+            return self.__property_data["_value_date"]
 
     @value_date_.setter
     def value_date_(self, value: TuringDate):
-        self.__property_data["value_date"] = value
+        self.__property_data["_value_date"] = value
 
     @property
     def stock_price_(self) -> float:
         self.__property_data["stock_price"] = getattr(self.ctx, f"spot_{self.underlier}") or self._stock_price
-        return self.__property_data["stock_price"]
+        if self.__property_data["_stock_price"] is None:
+            return self.__property_data["stock_price"]
+        else:
+            return self.__property_data["_stock_price"]
 
     @stock_price_.setter
     def stock_price_(self, value: float):
-        self.__property_data["stock_price"] = value
+        self.__property_data["_stock_price"] = value
 
     @property
     def volatility_(self) -> float:
@@ -144,21 +154,27 @@ class KnockOutOption:
     def discount_curve(self) -> TuringDiscountCurveFlat:
         self.__property_data["discount_curve"] = TuringDiscountCurveFlat(
             self.value_date_, self.interest_rate_)
-        return self.__property_data["discount_curve"]
+        if self.__property_data["_discount_curve"] is None:
+            return self.__property_data["discount_curve"]
+        else:
+            return self.__property_data["_discount_curve"]
 
     @discount_curve.setter
     def discount_curve(self, value: TuringDiscountCurveFlat):
-        self.__property_data["discount_curve"] = value
+        self.__property_data["_discount_curve"] = value
 
     @property
     def dividend_curve(self) -> TuringDiscountCurveFlat:
         self.__property_data["dividend_curve"] = TuringDiscountCurveFlat(
             self.value_date_, self.dividend_yield_)
-        return self.__property_data["dividend_curve"]
+        if self.__property_data["_dividend_curve"] is None:
+            return self.__property_data["dividend_curve"]
+        else:
+            return self.__property_data["_dividend_curve"]
 
     @dividend_curve.setter
     def dividend_curve(self, value: TuringDiscountCurveFlat):
-        self.__property_data["dividend_curve"] = value
+        self.__property_data["_dividend_curve"] = value
 
     @property
     def texp(self) -> float:
@@ -177,11 +193,14 @@ class KnockOutOption:
     @property
     def v(self) -> float:
         self.__property_data["v"] = self.model._volatility
-        return self.__property_data["v"]
+        if self.__property_data["_v"] is None:
+            return self.__property_data["v"]
+        else:
+            return self.__property_data["_v"]
 
     @v.setter
     def v(self, value: float):
-        self.__property_data["v"] = value
+        self.__property_data["_v"] = value
 
     @property
     def knock_out_type_(self) -> TuringKnockOutTypes:
@@ -247,7 +266,7 @@ class KnockOutOption:
         p0 = self.price()
         self.stock_price_ = self.stock_price_ + bump
         p_up = self.price()
-        self.stock_price_ = self.stock_price_ - bump
+        self.stock_price_ = None
         delta = (p_up - p0) / bump
         return delta
 
@@ -257,7 +276,7 @@ class KnockOutOption:
         p_down = self.price()
         self.stock_price_ = self.stock_price_ + 2*bump
         p_up = self.price()
-        self.stock_price_ = self.stock_price_ - bump
+        self.stock_price_ = None
         gamma = (p_up - 2.0 * p0 + p_down) / bump / bump
         return gamma
 
@@ -265,32 +284,32 @@ class KnockOutOption:
         p0 = self.price()
         self.v = self.v + bump
         p_up = self.price()
-        self.v = self.v - bump
+        self.v = None
         vega = (p_up - p0) / bump
         return vega
 
     def eq_theta(self) -> float:
+        day_diff = 1
         p0 = self.price()
-        self.value_date_ = self.value_date_.addDays(1)
+        self.value_date_ = self.value_date_.addDays(day_diff)
         p_up = self.price()
-        self.value_date_ = self.value_date_.addDays(-1)
-        theta = (p_up - p0) / bump
+        self.value_date_ = None
+        bump_local = day_diff / gDaysInYear
+        theta = (p_up - p0) / bump_local
         return theta
 
     def eq_rho(self) -> float:
-        discount_curve = self.discount_curve
         p0 = self.price()
         self.discount_curve = self.discount_curve.bump(bump)
         p1 = self.price()
-        self.discount_curve = discount_curve
+        self.discount_curve = None
         rho = (p1 - p0) / bump
         return rho
 
     def eq_rho_q(self) -> float:
-        dividend_curve = self.dividend_curve
         p0 = self.price()
         self.dividend_curve = self.dividend_curve.bump(bump)
         p1 = self.price()
-        self.dividend_curve = dividend_curve
+        self.dividend_curve = None
         rho_q = (p1 - p0) / bump
         return rho_q
