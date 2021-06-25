@@ -6,7 +6,7 @@ from tunny import model
 from fundamental.base import Priceable, StringField, FloatField, DateField, BoolField, Context
 from fundamental.base import ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
-from turing_models.instrument.common import AssetClass, AssetType
+# from turing_models.instrument.common import AssetClass, AssetType
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption, TuringEquityAsianOption, \
     TuringEquityAmericanOption, TuringEquityVanillaOption, TuringAsianOptionValuationMethods, \
@@ -128,15 +128,15 @@ class OptionModel:
             self.notional,
             self.participation_rate)
 
-    @property
-    def asset_class(self) -> AssetClass:
-        """Equity"""
-        return AssetClass.Equity
+    # @property
+    # def asset_class(self) -> AssetClass:
+    #     """Equity"""
+    #     return AssetClass.Equity
 
-    @property
-    def asset_type(self) -> AssetType:
-        """Option"""
-        return AssetType.Option
+    # @property
+    # def asset_type(self) -> AssetType:
+    #     """Option"""
+    #     return AssetType.Option
 
     @property
     def model(self) -> TuringModelBlackScholes:
