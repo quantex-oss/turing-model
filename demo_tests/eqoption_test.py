@@ -8,7 +8,7 @@ from fundamental.pricing_context import PricingContext
 from turing_models.instrument.eq_option import EqOption
 # #
 # #
-european_option = EqOption(option_type='CALL',
+european_option = EuropeanOption(option_type='CALL',
                                  product_type='EUROPEAN',
                                  expiry=TuringDate(2021, 9, 3),
                                  strike_price=5.3,
@@ -80,7 +80,7 @@ knockout_option = EqOption(option_type='CALL',
 # #
 # #
 time_start = time.time()
-print_result(knockout_option)
+print_result(european_option)
 time_end = time.time()
 print('耗时：', time_end - time_start)
 # print_result(european_option)
