@@ -1,7 +1,5 @@
 import time
-from tunny.switch import set_switch
 
-set_switch(1)
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instrument.european_option import EuropeanOption
 from turing_models.instrument.knockout_option import KnockOutOption
