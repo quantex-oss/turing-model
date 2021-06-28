@@ -8,7 +8,7 @@ from turing_models.utilities.mathematics import covar
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 
-from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.global_types import TuringOptionTypes, TuringAsianOptionValuationMethods
 from turing_models.utilities.helper_functions import checkArgumentTypes, labelToString
 from turing_models.utilities.turing_date import TuringDate
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
@@ -19,16 +19,9 @@ from turing_models.utilities.mathematics import N
 
 ###############################################################################
 
-from enum import Enum
-
 
 bump = 1e-4
 
-
-class TuringAsianOptionValuationMethods(Enum):
-    GEOMETRIC = 1,
-    TURNBULL_WAKEMAN = 2,
-    CURRAN = 3
 
 ###############################################################################
 
@@ -81,7 +74,7 @@ def _valueMC_NUMBA(t0,
 
     # Start pricing here
     np.random.seed(seed)
-    multiplier = 1.0
+    multiple = 1.0
 
     if t0 < 0.0:  # we are in the averaging period
 
@@ -91,7 +84,7 @@ def _valueMC_NUMBA(t0,
         # we adjust the strike to account for the accrued coupon
         K = (K * tau + accruedAverage * t0) / t
         # the number of options is rescaled also
-        multiplier = t / tau
+        multiple = t / tau
         # there is no pre-averaging time
         t0 = 0.0
         # the number of observations is scaled and floored at 1
@@ -142,7 +135,7 @@ def _valueMC_NUMBA(t0,
             return None
 
     v_a = payoff_a * np.exp(-interestRate * t) / numPaths / 2.0
-    v_a = v_a * multiplier
+    v_a = v_a * multiple
     return v_a
 
 ###############################################################################
@@ -170,7 +163,7 @@ def _valueMC_fast_NUMBA(t0: float,
     r = interestRate
     numPaths = int(numPaths)
 
-    multiplier = 1.0
+    multiple = 1.0
 
     if t0 < 0.0:  # we are in the averaging period
 
@@ -180,7 +173,7 @@ def _valueMC_fast_NUMBA(t0: float,
         # we adjust the strike to account for the accrued coupon
         K = (K * tau + accruedAverage * t0) / t
         # the number of options is rescaled also
-        multiplier = t / tau
+        multiple = t / tau
         # there is no pre-averaging time
         t0 = 0.0
         # the number of observations is scaled and floored at 1
@@ -230,7 +223,7 @@ def _valueMC_fast_NUMBA(t0: float,
         raise TuringError("Unknown option type.")
 
     payoff_a = np.mean(payoff_a_1) + np.mean(payoff_a_2)
-    v_a = multiplier * payoff_a * np.exp(- r * t) / 2.0
+    v_a = multiple * payoff_a * np.exp(- r * t) / 2.0
     return v_a
 
 ###############################################################################
@@ -247,7 +240,7 @@ def _valueMC_fast_CV_NUMBA(t0, t, tau, K, n, optionType, stockPrice,
     dt = (t - t0) / n
     r = interestRate
 
-    multiplier = 1.0
+    multiple = 1.0
 
     if t0 < 0:  # we are in the averaging period
 
@@ -257,7 +250,7 @@ def _valueMC_fast_CV_NUMBA(t0, t, tau, K, n, optionType, stockPrice,
         # we adjust the strike to account for the accrued coupon
         K = (K * tau + accruedAverage * t0) / t
         # the number of options is rescaled also
-        multiplier = t / tau
+        multiple = t / tau
         # there is no pre-averaging time
         t0 = 0.0
         # the number of observations is scaled and floored at 1
@@ -327,8 +320,8 @@ def _valueMC_fast_CV_NUMBA(t0, t, tau, K, n, optionType, stockPrice,
     payoff_a_mean = np.mean(payoff_a)
     payoff_g_mean = np.mean(payoff_g)
 
-    v_a = payoff_a_mean * np.exp(-r * t) * multiplier
-    v_g = payoff_g_mean * np.exp(-r * t) * multiplier
+    v_a = payoff_a_mean * np.exp(-r * t) * multiple
+    v_g = payoff_g_mean * np.exp(-r * t) * multiple
 
     epsilon = v_g_exact - v_g
     v_a_cv = v_a + lam * epsilon
@@ -450,7 +443,7 @@ class TuringEquityAsianOption():
         n = self._numObservations
         S0 = stockPrice
 
-        multiplier = 1.0
+        multiple = 1.0
 
         if t0 < 0:  # we are in the averaging period
 
@@ -460,7 +453,7 @@ class TuringEquityAsianOption():
             # we adjust the strike to account for the accrued coupon
             K = (K * tau + accruedAverage * t0) / texp
             # the number of options is rescaled also
-            multiplier = texp / tau
+            multiple = texp / tau
             # there is no pre-averaging time
             t0 = 0.0
             # the number of observations is scaled
@@ -485,7 +478,7 @@ class TuringEquityAsianOption():
         else:
             raise TuringError("Unknown option type " + str(self._optionType))
 
-        v = v * multiplier
+        v = v * multiple
         return v
 
 ###############################################################################
@@ -502,7 +495,7 @@ class TuringEquityAsianOption():
         texp = (self._expiryDate - valueDate) / gDaysInYear
         tau = (self._expiryDate - self._startAveragingDate) / gDaysInYear
 
-        multiplier = 1.0
+        multiple = 1.0
 
         r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
@@ -524,7 +517,7 @@ class TuringEquityAsianOption():
             # we adjust the strike to account for the accrued coupon
             K = (K * tau + accruedAverage * t0) / texp
             # the number of options is rescaled also
-            multiplier = texp / tau
+            multiple = texp / tau
             # there is no pre-averaging time
             t0 = 0.0
             # the number of observations is scaled and floored at 1
@@ -550,7 +543,7 @@ class TuringEquityAsianOption():
         else:
             return None
 
-        v = v * multiplier
+        v = v * multiple
         return v
 
 ###############################################################################
@@ -569,7 +562,7 @@ class TuringEquityAsianOption():
         tau = (self._expiryDate - self._startAveragingDate) / gDaysInYear
 
         K = self._strikePrice
-        multiplier = 1.0
+        multiple = 1.0
         n = self._numObservations
 
         r = discountCurve.ccRate(self._expiryDate)
@@ -585,7 +578,7 @@ class TuringEquityAsianOption():
             # we adjust the strike to account for the accrued coupon
             K = (K * tau + accruedAverage * t0) / texp
             # the number of options is rescaled also
-            multiplier = texp / tau
+            multiple = texp / tau
             # there is no pre-averaging time
             t0 = 0.0
             # the number of observations is scaled and floored at 1
@@ -627,7 +620,7 @@ class TuringEquityAsianOption():
         else:
             return None
 
-        v = v * multiplier
+        v = v * multiple
         return v
 
 ###############################################################################

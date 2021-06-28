@@ -27,7 +27,7 @@ class TuringModelBlackScholes(TuringModel):
     def __init__(self,
                  volatility: (float, np.ndarray),
                  implementationType: TuringModelBlackScholesTypes = TuringModelBlackScholesTypes.DEFAULT,
-                 numStepsPerYear: int = 100):
+                 numStepsPerYear: int = 252):
 
         checkArgumentTypes(self.__init__, locals())
 
@@ -83,9 +83,9 @@ class TuringModelBlackScholes(TuringModel):
                 elif optionType == TuringOptionTypes.AMERICAN_PUT:
                     phi = -1
 
-                v =  bawValue(spotPrice, timeToExpiry, strikePrice,
-                              riskFreeRate, dividendRate, self._volatility,
-                              phi)
+                v = bawValue(spotPrice, timeToExpiry, strikePrice,
+                             riskFreeRate, dividendRate, self._volatility,
+                             phi)
 
                 return v
 

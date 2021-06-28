@@ -48,10 +48,10 @@ class SnowballOption:
     notional: float = None
     initial_spot: float = None
     number_of_options: float = None
-    start_date: str = None
-    end_date: str = None
+    start_date: TuringDate = None
+    end_date: TuringDate = None
     expiry: str = None
-    start_averaging_date: str = None
+    start_averaging_date: TuringDate = None
     participation_rate: float = None
     strike_price: float = None
     barrier: float = None
@@ -60,7 +60,7 @@ class SnowballOption:
     multiplier: float = None
     currency: str = None
     premium: float = None
-    premium_date: str = None
+    premium_date: TuringDate = None
     knock_in_price: float = None
     annualized_flag: bool = True
     knock_out_type: str = None

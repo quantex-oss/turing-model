@@ -63,11 +63,18 @@ class TuringKnockInTypes(Enum):
     VANILLA = 1
     SPREADS = 2
 
+
 class TuringKnockOutTypes(Enum):
     DOWN_AND_OUT_CALL = 1
     UP_AND_OUT_CALL = 2
     UP_AND_OUT_PUT = 3
     DOWN_AND_OUT_PUT = 4
+
+
+class TuringAsianOptionValuationMethods(Enum):
+    GEOMETRIC = 1,
+    TURNBULL_WAKEMAN = 2,
+    CURRAN = 3
 
 
 option_type_dict = {
