@@ -75,7 +75,6 @@ class EuropeanOption:
     ctx: Context = ctx
 
     def __post_init__(self):
-        self.ctx = ctx
         self.set_param()
 
     def set_param(self):
