@@ -7,11 +7,8 @@ from fundamental.base import Context, ctx
 from fundamental.market.curves import TuringDiscountCurveFlat
 
 from turing_models.instrument.common import greek, bump
-from turing_models.utilities.mathematics import N
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.global_types import TuringOptionTypes, \
-    TuringAsianOptionValuationMethods
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 
 
@@ -53,19 +50,11 @@ class EqOption:
     expiry: str = None
     participation_rate: float = None
     strike_price: float = None
-    barrier: float = None
-    rebate: float = None
-    coupon: float = None
     multiplier: float = None
     currency: str = None
     premium: float = None
     premium_date: TuringDate = None
-    knock_in_price: float = None
     annualized_flag: bool = True
-    knock_out_type: str = None
-    knock_in_type: str = None
-    knock_in_strike1: float = None
-    knock_in_strike2: float = None
     value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))  # 估值日期
     stock_price: float = None
     volatility: float = 0.1

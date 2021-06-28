@@ -19,7 +19,6 @@ class AsianOption(EqOption):
     valuation_method: str = "curran"
 
     def __post_init__(self):
-        super().__init__()
         super().__post_init__()
         self.num_obs = int(self.expiry - self.start_averaging_date)
 
