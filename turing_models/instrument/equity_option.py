@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import numpy as np
 from tunny import model
 from fundamental.base import Context, ctx
-from fundamental.market.curves import TuringDiscountCurveFlat
+from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
 
 from turing_models.instrument.common import greek, bump
 from turing_models.utilities.turing_date import TuringDate
@@ -58,7 +58,9 @@ class EqOption:
     value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))  # 估值日期
     stock_price: float = None
     volatility: float = 0.1
-    interest_rate: float = 0.02
+    interest_rate: float = 0
+    zero_dates: list = None
+    zero_rates: list = None
     dividend_yield: float = 0
     ctx: Context = ctx
     __property_data = {
@@ -133,16 +135,25 @@ class EqOption:
         return TuringModelBlackScholes(self.volatility_)
 
     @property
-    def discount_curve(self) -> TuringDiscountCurveFlat:
-        self.__property_data["discount_curve"] = TuringDiscountCurveFlat(
-            self.value_date_, self.interest_rate_)
+    def zero_dates_(self):
+        return self.value_date_.addYears(self.zero_dates)
+
+    @property
+    def discount_curve(self) -> TuringDiscountCurveZeros:
+        if self.interest_rate_:
+            self.__property_data["discount_curve"] = TuringDiscountCurveFlat(
+                self.value_date_, self.interest_rate_)
+        else:
+            self.__property_data["discount_curve"] = TuringDiscountCurveZeros(
+                self.value_date_, self.zero_dates_, self.zero_rates)
+
         if self.__property_data["_discount_curve"] is None:
             return self.__property_data["discount_curve"]
         else:
             return self.__property_data["_discount_curve"]
 
     @discount_curve.setter
-    def discount_curve(self, value: TuringDiscountCurveFlat):
+    def discount_curve(self, value: TuringDiscountCurveZeros):
         self.__property_data["_discount_curve"] = value
 
     @property
@@ -164,8 +175,7 @@ class EqOption:
 
     @property
     def r(self) -> float:
-        df = self.discount_curve.df(self.expiry)
-        return -np.log(df) / self.texp
+        return self.discount_curve.zeroRate(self.expiry)
 
     @property
     def q(self) -> float:
