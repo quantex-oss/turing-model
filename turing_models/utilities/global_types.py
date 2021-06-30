@@ -77,6 +77,12 @@ class TuringAsianOptionValuationMethods(Enum):
     CURRAN = 3
 
 
+class TuringYTMCalcType(Enum):
+    UK_DMO = 1,
+    US_STREET = 2,
+    US_TREASURY = 3
+
+
 option_type_dict = {
         'CALL-EUROPEAN': {'type': TuringOptionTypes.EUROPEAN_CALL, 'knock_out_type': None, 'knock_in_type': None, 'option_name': ["european", "generic"]},
         'CALL-AMERICAN': {'type': TuringOptionTypes.AMERICAN_CALL, 'knock_out_type': None, 'knock_in_type': None, 'option_name': ["american", "generic"]},
