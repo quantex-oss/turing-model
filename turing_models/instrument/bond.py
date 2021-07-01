@@ -54,10 +54,9 @@ class BondOrm(Priceable):
         except:
             return None
 
-    def put_zero_dates(self, curve_code_list):
+    def put_zero_dates(self,):
         zero_dates = []
-        curve = self.fetch_yield_curve(curve_code_list)
-        logger.debug(f" self.curve_code: {self.curve_code}")
+        curve = self.fetch_yield_curve([self.curve_code])
         if curve:
             for code in to_snake(curve):
                 logger.debug(f"{code.get('curve_code')}")
@@ -67,9 +66,9 @@ class BondOrm(Priceable):
         self.zero_dates = zero_dates
         return zero_dates
 
-    def put_zero_rates(self, curve_code_list):
+    def put_zero_rates(self):
         zero_rates = []
-        curve = self.fetch_yield_curve(curve_code_list)
+        curve = self.fetch_yield_curve([self.curve_code])
         if curve:
             for code in to_snake(curve):
                 if code.get("curve_code") == self.curve_code:
@@ -112,12 +111,7 @@ class Bond:
             self.zero_dates = self.settlement_date.addYears(self.zero_dates)
 
         if self.issue_date:
-            self.bond = TuringBond(self.issue_date,
-                                   self.maturity_date,
-                                   self.coupon,
-                                   self.freq_type,
-                                   self.accrual_type,
-                                   self.face_amount)
+            self.new_bond()
 
     def dv01(self):
         return self.bond.dv01(self.settlement_date,
@@ -146,7 +140,7 @@ class Bond:
                       self.freq_type,
                       self.accrual_type,
                       self.face_amount))
-        if self.freq_type:
+        if self.freq_type and not isinstance(self.freq_type, TuringFrequencyTypes):
             if self.freq_type == '每年付息':
                 self.freq_type = TuringFrequencyTypes.ANNUAL
             elif self.freq_type == '半年付息':
@@ -159,7 +153,7 @@ class Bond:
                 self.freq_type = TuringFrequencyTypes.MONTHLY
             else:
                 raise TuringError('Please check the input of freq_type')
-        if self.accrual_type:
+        if self.accrual_type and not isinstance(self.accrual_type, TuringDayCountTypes):
             if self.accrual_type == 'ACT/365':
                 self.accrual_type = TuringDayCountTypes.ACT_365L
             elif self.accrual_type == 'ACT/ACT':
