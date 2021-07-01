@@ -56,11 +56,11 @@ class Bond:
     zero_dates: list = None
     zero_rates: list = None
     # 以下字段在浮息债中用到
-    # quoted_margin: float = None
-    # next_coupon: float = None
-    # current_ibor: float = None
-    # future_ibor: float = None
-    # discount_margin: float = None
+    quoted_margin: float = None
+    next_coupon: float = None
+    current_ibor: float = None
+    future_ibor: float = None
+    discount_margin: float = None
 
     def __post_init__(self):
         self.name = 'No name'
@@ -91,7 +91,8 @@ class Bond:
         else:
             raise TuringError('Please check the input of accrual_type')
 
-        self.zero_dates = self.settlement_date.addYears(self.zero_dates)
+        if self.zero_dates:
+            self.zero_dates = self.settlement_date.addYears(self.zero_dates)
 
         if self.bond_type == 'BOND':
             self.bond = TuringBond(self.issue_date,

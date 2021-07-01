@@ -24,17 +24,17 @@ from turing_models.instrument.eq_option import EqOption
 #                                  dividend_yield=0)
 # #
 # #
-# american_option = EqOption(option_type='CALL',
-#                            product_type='AMERICAN',
-#                            expiry=TuringDate(2021, 9, 3),
-#                            strike_price=5.3,
-#                            number_of_options=2,
-#                            multiplier=100,
-#                            value_date=TuringDate(2021, 2, 3),
-#                            stock_price=5.262,
-#                            volatility=0.1,
-#                            interest_rate=0.02,
-#                            dividend_yield=0)
+american_option = EqOption(option_type='CALL',
+                           product_type='AMERICAN',
+                           expiry=TuringDate(2021, 9, 3),
+                           strike_price=5.3,
+                           number_of_options=2,
+                           multiplier=100,
+                           value_date=TuringDate(2021, 2, 3),
+                           stock_price=5.262,
+                           volatility=0.1,
+                           interest_rate=0.02,
+                           dividend_yield=0)
 
 # asian_option = EqOption(option_type='CALL',
 #                         product_type='ASIAN',
@@ -114,25 +114,25 @@ from turing_models.instrument.eq_option import EqOption
 #                                  interest_rate=0.02,
 #                                  dividend_yield=0)
 
-knockout_option = KnockOutOption(option_type='PUT',
-                                 product_type='KNOCK_OUT',
-                                 knock_out_type='down_and_out',
-                                 expiry=TuringDate(2021, 9, 3),
-                                 strike_price=5.1,
-                                 participation_rate=1.0,
-                                 barrier=5.0,
-                                 notional=1000000,
-                                 rebate=0.2,
-                                 value_date=TuringDate(2021, 2, 3),
-                                 multiplier=100,
-                                 stock_price=5.262,
-                                 volatility=0.1,
-                                 interest_rate=0.02,
-                                 dividend_yield=0)
+# knockout_option = KnockOutOption(option_type='PUT',
+#                                  product_type='KNOCK_OUT',
+#                                  knock_out_type='down_and_out',
+#                                  expiry=TuringDate(2021, 9, 3),
+#                                  strike_price=5.1,
+#                                  participation_rate=1.0,
+#                                  barrier=5.0,
+#                                  notional=1000000,
+#                                  rebate=0.2,
+#                                  value_date=TuringDate(2021, 2, 3),
+#                                  multiplier=100,
+#                                  stock_price=5.262,
+#                                  volatility=0.1,
+#                                  interest_rate=0.02,
+#                                  dividend_yield=0)
 # #
 # #
 time_start = time.time()
-print_result(knockout_option)
+print_result(american_option)
 # print(asian_option.price())
 # print_result(asian_option)
 # print_result(snowball_option)
