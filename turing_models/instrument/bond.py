@@ -1,5 +1,6 @@
 import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List, Any
 
 from loguru import logger
 
@@ -31,8 +32,8 @@ class BondOrm(Priceable):
     curve_code = StringField('curve_code')
     ytm: float = FloatField("ytm")
     quantity: float = FloatField("quantity")
-    zero_dates: list = None
-    zero_rates: list = None
+    zero_dates: List[Any] = field(default_factory=list)
+    zero_rates: List[Any] = field(default_factory=list)
 
     def __init__(self, **kw):
         super().__init__(**kw)
@@ -54,7 +55,7 @@ class BondOrm(Priceable):
         except:
             return None
 
-    def put_zero_dates(self,):
+    def put_zero_dates(self, ):
         zero_dates = []
         curve = self.fetch_yield_curve([self.curve_code])
         if curve:
@@ -100,8 +101,8 @@ class Bond:
     name: str = None
     settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
     ytm: float = None
-    zero_dates: list = None
-    zero_rates: list = None
+    zero_dates: List[Any] = field(default_factory=list)
+    zero_rates: List[Any] = field(default_factory=list)
 
     def __post_init__(self):
         self.name = 'No name'
@@ -172,8 +173,6 @@ class Bond:
                                self.freq_type,
                                self.accrual_type,
                                self.face_amount)
-        logger.debug(self.bond)
-
 
     def resolve(self, expand_dict):
 
