@@ -1,6 +1,28 @@
 from enum import Enum
 
 
+class RiskMeasure(Enum):
+    Price = "price"
+    Delta = "delta"
+    Gamma = "gamma"
+    Vega = "vega"
+    Theta = "theta"
+    Rho = "rho"
+    RhoQ = "rho_q"
+    EqDelta = "eq_delta"
+    EqGamma = "eq_gamma"
+    EqVega = "eq_vega"
+    EqTheta = "eq_theta"
+    EqRho = "eq_rho"
+    EqRhoQ = "eq_rho_q"
+    Dv01 = "dv01"
+    DollarDuration = "dollar_duration"
+    DollarConvexity = "dollar_convexity"
+
+    def __repr__(self):
+        return self.value
+
+
 class BuySell(Enum):
     """Buy or Sell side of contract"""
 

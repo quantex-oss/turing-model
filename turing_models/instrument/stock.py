@@ -28,5 +28,5 @@ class Stock(Priceable):
         """"计算持仓股票的现价"""
         return self.stock_price
 
-    def eq_delta(self):
+    def delta(self):
         return 1
