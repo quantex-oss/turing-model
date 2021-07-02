@@ -1,277 +1,110 @@
 import datetime
 from dataclasses import dataclass
 
-from fundamental.base import Priceable, StringField, FloatField, DateField
-from fundamental.base import ctx
-from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.utilities import TuringDate
-from turing_models.products.bonds.bond import TuringBond, TuringFrequencyTypes, \
-     TuringDayCountTypes, TuringYTMCalcType
-from turing_models.products.bonds.bond_frn import TuringBondFRN
-
-from turing_models.utilities.error import TuringError
-
-
-class BondOrm(Priceable):
-    """bond orm定义,取数据用"""
-    asset_id = StringField('asset_id')
-    bond_type = StringField('bond_type')
-    coupon: float = FloatField("coupon_rate")
-    interest_accrued: float = FloatField("interest_accrued")
-    bond_term_year: float = FloatField("bond_term_year")
-    bond_term_day: float = FloatField("bond_term_day")
-    due_date: TuringDate = DateField("due_date")
-    issue_date: TuringDate = DateField("issue_date")
-    freq_type = StringField('freq_type')
-    accrual_type = StringField('accrual_type')
-    par: float = FloatField("par")
-    clean_price: float = FloatField("clean_price")
-    curve_code = StringField('curve_code')
-    ytm: float = FloatField("ytm")
-    zero_dates: list = None
-    zero_rates: list = None
+from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.schedule import TuringSchedule
+from turing_models.utilities.global_types import TuringYTMCalcType
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
+from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
+     TuringDateGenRuleTypes
+from turing_models.instrument.core import Instrument
 
 
-    def __init__(self, **kw):
-        super().__init__(**kw)
-        self.ctx = ctx
+dy = 0.0001
 
 
 @dataclass
-class Bond:
+class Bond(Instrument):
     asset_id: str = None
     quantity: float = None
     bond_type: str = None
-    coupon: float = None
-    due_date: TuringDate = None
+    interest_accrued: float = None
     issue_date: TuringDate = None
+    due_date: TuringDate = None
+    bond_term_year: float = None
+    bond_term_day: float = None
     freq_type: str = None
     accrual_type: str = None
     par: float = None
     clean_price: float = None
-    curve_code: str = None
     name: str = None
     settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
-    ytm: float = None
-    zero_dates: list = None
-    zero_rates: list = None
-    # 以下字段在浮息债中用到
-    quoted_margin: float = None
-    next_coupon: float = None
-    current_ibor: float = None
-    future_ibor: float = None
-    discount_margin: float = None
 
     def __post_init__(self):
-        self.name = 'No name'
+        self.set_param()
         self.face_amount = self.par * self.quantity
-        if self.freq_type == '每年付息':
-            self.freq_type = TuringFrequencyTypes.ANNUAL
-        elif self.freq_type == '半年付息':
-            self.freq_type = TuringFrequencyTypes.SEMI_ANNUAL
-        elif self.freq_type == '4个月一次':
-            self.freq_type = TuringFrequencyTypes.TRI_ANNUAL
-        elif self.freq_type == '按季付息':
-            self.freq_type = TuringFrequencyTypes.QUARTERLY
-        elif self.freq_type == '按月付息':
-            self.freq_type = TuringFrequencyTypes.MONTHLY
-        else:
-            raise TuringError('Please check the input of freq_type')
+        self.calendar_type = TuringCalendarTypes.WEEKEND
+        self.frequency = TuringFrequency(self.freq_type_)
+        self.convention = TuringYTMCalcType.UK_DMO
 
-        if self.accrual_type == 'ACT/365':
-            self.accrual_type = TuringDayCountTypes.ACT_365L
-        elif self.accrual_type == 'ACT/ACT':
-            self.accrual_type = TuringDayCountTypes.ACT_ACT_ISDA
-        elif self.accrual_type == 'ACT/360':
-            self.accrual_type = TuringDayCountTypes.ACT_360
-        elif self.accrual_type == '30/360':
-            self.accrual_type = TuringDayCountTypes.THIRTY_E_360
-        elif self.accrual_type == 'ACT/365F':
-            self.accrual_type = TuringDayCountTypes.ACT_365F
-        else:
-            raise TuringError('Please check the input of accrual_type')
+        self._redemption = 1.0  # This is amount paid at maturity
+        self._flow_dates = []
+        self._flow_amounts = []
 
-        if self.zero_dates:
-            self.zero_dates = self.settlement_date.addYears(self.zero_dates)
+        self._accrued_interest = None
+        self._accrued_days = 0.0
 
-        if self.bond_type == 'BOND':
-            self.bond = TuringBond(self.issue_date,
-                                   self.due_date,
-                                   self.coupon,
-                                   self.freq_type,
-                                   self.accrual_type,
-                                   self.face_amount)
-        elif self.bond_type == 'frn':
-            self.bond = TuringBondFRN(self.issue_date,
-                                      self.due_date,
-                                      self.quoted_margin,
-                                      self.freq_type,
-                                      self.accrual_type,
-                                      self.face_amount)
+        self._calculate_flow_dates()
+
+    def set_param(self):
+        self._settlement_date = self.settlement_date
 
     @property
-    def discount_curve(self):
-        return TuringDiscountCurveZeros(self.settlement_date,
-                                        self.zero_dates,
-                                        self.zero_rates)
+    def freq_type_(self):
+        if self.freq_type == '每年付息':
+            return TuringFrequencyTypes.ANNUAL
+        elif self.freq_type == '半年付息':
+            return TuringFrequencyTypes.SEMI_ANNUAL
+        elif self.freq_type == '4个月一次':
+            return TuringFrequencyTypes.TRI_ANNUAL
+        elif self.freq_type == '按季付息':
+            return TuringFrequencyTypes.QUARTERLY
+        elif self.freq_type == '按月付息':
+            return TuringFrequencyTypes.MONTHLY
+        else:
+            raise Exception('Please check the input of freq_type')
+
+    @property
+    def accrual_type_(self):
+        if self.accrual_type == 'ACT/365':
+            return TuringDayCountTypes.ACT_365L
+        elif self.accrual_type == 'ACT/ACT':
+            return TuringDayCountTypes.ACT_ACT_ISDA
+        elif self.accrual_type == 'ACT/360':
+            return TuringDayCountTypes.ACT_360
+        elif self.accrual_type == '30/360':
+            return TuringDayCountTypes.THIRTY_E_360
+        elif self.accrual_type == 'ACT/365F':
+            return TuringDayCountTypes.ACT_365F
+        else:
+            raise Exception('Please check the input of accrual_type')
+
+    @property
+    def settlement_date_(self):
+        return self.ctx.pricing_date or self._settlement_date
+
+    def _calculate_flow_dates(self):
+        """ Determine the bond cashflow payment dates."""
+
+        calendar_type = TuringCalendarTypes.NONE
+        bus_day_rule_type = TuringBusDayAdjustTypes.NONE
+        date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
+
+        self._flow_dates = TuringSchedule(self.issue_date,
+                                          self.due_date,
+                                          self.freq_type_,
+                                          calendar_type,
+                                          bus_day_rule_type,
+                                          date_gen_rule_type)._generate()
 
     def dv01(self):
-        if self.bond_type == 'BOND':
-            return self.bond.dv01(self.settlement_date,
-                                  self.ytm)
-        elif self.bond_type == 'frn':
-            return self.bond.dv01(self.settlement_date,
-                                  self.next_coupon,
-                                  self.current_ibor,
-                                  self.future_ibor,
-                                  self.discount_margin)
+        print("You should not be here!")
+        return 0.0
 
     def dollar_duration(self):
-        """dollar duration"""
-        if self.bond_type == 'BOND':
-            return self.bond.dollarDuration(self.settlement_date,
-                                            self.ytm)
-        elif self.bond_type == 'frn':
-            return self.bond.dollarDuration(self.settlement_date,
-                                            self.next_coupon,
-                                            self.current_ibor,
-                                            self.future_ibor,
-                                            self.discount_margin)
+        return self.dv01() / dy
 
     def dollar_convexity(self):
-        """dollar convexity"""
-        if self.bond_type == 'BOND':
-            return self.bond.dollar_convexity(self.settlement_date,
-                                              self.ytm)
-        elif self.bond_type == 'frn':
-            return self.bond.dollar_convexity(self.settlement_date,
-                                              self.next_coupon,
-                                              self.current_ibor,
-                                              self.future_ibor,
-                                              self.discount_margin)
-
-    def full_price_from_ytm(self):
-        if self.bond_type == 'BOND':
-            return self.bond.fullPriceFromYTM(self.settlement_date,
-                                              self.ytm)
-        else:
-            raise TuringError('Please check the input of bond_type')
-
-    def full_price_from_dm(self):
-        if self.bond_type == 'frn':
-            return self.bond.fullPriceFromDM(self.settlement_date,
-                                             self.next_coupon,
-                                             self.current_ibor,
-                                             self.future_ibor,
-                                             self.discount_margin)
-        else:
-            raise TuringError('Please check the input of bond_type')
-
-    def principal(self):
-        if self.bond_type == 'BOND':
-            return self.bond.principal(self.settlement_date,
-                                       self.ytm)
-        elif self.bond_type == 'frn':
-            return self.bond.principal(self.settlement_date,
-                                       self.next_coupon,
-                                       self.current_ibor,
-                                       self.future_ibor,
-                                       self.discount_margin)
-
-    def modified_duration(self):
-        return self.bond.modifiedDuration(self.settlement_date,
-                                          self.ytm)
-
-    def macauley_duration(self):
-        return self.bond.macauleyDuration(self.settlement_date,
-                                          self.ytm)
-
-    def clean_price_from_ytm(self):
-        return self.bond.cleanPriceFromYTM(self.settlement_date,
-                                           self.ytm)
-
-    def clean_price_from_discount_curve(self):
-        return self.bond.cleanPriceFromDiscountCurve(self.settlement_date,
-                                                     self.discount_curve)
-
-    def full_price_from_discount_curve(self):
-        return self.bond.fullPriceFromDiscountCurve(self.settlement_date,
-                                                    self.discount_curve)
-
-    def current_yield(self):
-        return self.bond.currentYield(self.clean_price)
-
-    def yield_to_maturity(self):
-        return self.bond.yieldToMaturity(self.settlement_date,
-                                         self.clean_price)
-
-    def calc_accrued_interest(self):
-        if self.bond_type == 'BOND':
-            return self.bond.calcAccruedInterest(self.settlement_date)
-        elif self.bond_type == 'frn':
-            return self.bond.calcAccruedInterest(self.settlement_date,
-                                                 self.next_coupon)
-
-    def dollar_credit_duration(self):
-        if self.bond_type == 'frn':
-            return self.bond.dollarCreditDuration(self.settlement_date,
-                                                  self.next_coupon,
-                                                  self.current_ibor,
-                                                  self.future_ibor,
-                                                  self.discount_margin)
-
-    def macauley_rate_duration(self):
-        if self.bond_type == 'frn':
-            return self.bond.macauleyRateDuration(self.settlement_date,
-                                                  self.next_coupon,
-                                                  self.current_ibor,
-                                                  self.future_ibor,
-                                                  self.discount_margin)
-
-    def modified_rate_duration(self):
-        if self.bond_type == 'frn':
-            return self.bond.modifiedRateDuration(self.settlement_date,
-                                                  self.next_coupon,
-                                                  self.current_ibor,
-                                                  self.future_ibor,
-                                                  self.discount_margin)
-
-    def modified_credit_duration(self):
-        if self.bond_type == 'frn':
-            return self.bond.modifiedCreditDuration(self.settlement_date,
-                                                    self.next_coupon,
-                                                    self.current_ibor,
-                                                    self.future_ibor,
-                                                    self.discount_margin)
-
-    def convexity_from_dm(self):
-        if self.bond_type == 'frn':
-            return self.bond.convexityFromDM(self.settlement_date,
-                                             self.next_coupon,
-                                             self.current_ibor,
-                                             self.future_ibor,
-                                             self.discount_margin)
-
-    def clean_price_from_dm(self):
-        if self.bond_type == 'frn':
-            return self.bond.cleanPriceFromDM(self.settlement_date,
-                                              self.next_coupon,
-                                              self.current_ibor,
-                                              self.future_ibor,
-                                              self.discount_margin)
-
-    def discount_margin(self):
-        if self.bond_type == 'frn':
-            return self.bond.discountMargin(self.settlement_date,
-                                            self.next_coupon,
-                                            self.current_ibor,
-                                            self.future_ibor,
-                                            self.clean_price)
-
-    def _set_by_dict(self, tmp_dict):
-        for k, v in tmp_dict.items():
-            if v:
-                setattr(self, k, v)
-
-    def resolve(self, expand_dict):
-        self._set_by_dict(expand_dict)
+        print("You should not be here!")
+        return 0.0

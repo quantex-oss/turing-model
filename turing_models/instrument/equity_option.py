@@ -2,8 +2,8 @@ import datetime
 from dataclasses import dataclass
 
 import numpy as np
-from fundamental.base import Context, ctx
-from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
+from fundamental.market.curves import TuringDiscountCurveFlat, \
+     TuringDiscountCurveZeros
 
 from turing_models.instrument.common import greek, bump
 from turing_models.utilities.turing_date import TuringDate
@@ -61,7 +61,6 @@ class EqOption(Instrument):
     zero_dates: list = None
     zero_rates: list = None
     dividend_yield: float = 0
-    ctx: Context = ctx
     __property_data = {
         "value_date": None,
         "_value_date": None,

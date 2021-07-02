@@ -8,7 +8,7 @@ from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCur
 from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.calendar import TuringCalendar
-from turing_models.instrument.bond_common import Bond, dy
+from turing_models.instrument.bond import Bond, dy
 
 
 def _f(y, *args):

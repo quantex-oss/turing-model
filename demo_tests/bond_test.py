@@ -4,8 +4,10 @@ from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZe
 
 from turing_models.utilities.turing_date import TuringDate
 from fundamental.pricing_context import PricingContext
-from turing_models.instrument.bond import Bond
+from turing_models.instrument.archive.bond import Bond
 from turing_models.instrument.bond_fixed_rate import BondFixedRate as Bond1
+from turing_models.instrument.bond_floating_rate import BondFloatingRate as Bond2
+from turing_models.instrument.common import RiskMeasure
 
 
 dates = [0.083, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13.0, 13.5, 14.0, 14.5, 15.0, 15.5, 16.0, 16.5, 17.0, 17.5, 18.0, 18.5, 19.0, 19.5, 20.0, 20.5, 21.0, 21.5, 22.0, 22.5, 23.0, 23.5, 24.0, 24.5, 25.0, 25.5, 26.0, 26.5, 27.0, 27.5, 28.0, 28.5, 29.0, 29.5, 30.0, 30.5, 31.0, 31.5, 32.0, 32.5, 33.0, 33.5, 34.0, 34.5, 35.0, 35.5, 36.0, 36.5, 37.0, 37.5, 38.0, 38.5, 39.0, 39.5, 40.0, 40.5, 41.0, 41.5, 42.0, 42.5, 43.0, 43.5, 44.0, 44.5, 45.0, 45.5, 46.0, 46.5, 47.0, 47.5, 48.0, 48.5, 49.0, 49.5, 50.0]
@@ -32,11 +34,12 @@ bond = Bond1(quantity=2,
 # print('full_price_from_ytm:', bond.full_price_from_ytm())
 # print('principal:', bond.principal())
 
-print('dv01:', bond.dv01())
-print('dollar_duration:', bond.dollar_duration())
+print('dv01:', bond.calc(RiskMeasure.Dv01))
+print('dollar_duration:', bond.calc(RiskMeasure.DollarDuration))
+print('dollar_convexity:', bond.calc(RiskMeasure.DollarConvexity))
+
 print('macauley_duration:', bond.macauley_duration())
 print('modified_duration:', bond.modified_duration())
-print('dollar_convexity:', bond.dollar_convexity())
 print('principal:', bond.principal())
 print('full_price_from_ytm:', bond.full_price_from_ytm())
 print('clean_price_from_ytm:', bond.clean_price_from_ytm())
@@ -46,7 +49,7 @@ print('current_yield:', bond.current_yield())
 print('yield_to_maturity:', bond.yield_to_maturity())
 print('calc_accrued_interest:', bond.calc_accrued_interest())
 
-# bond = Bond(quantity=2,
+# bond = Bond2(quantity=2,
 #              bond_type='frn',
 #              quoted_margin=0.01,
 #              issue_date=TuringDate(2015, 11, 13),
@@ -57,7 +60,7 @@ print('calc_accrued_interest:', bond.calc_accrued_interest())
 #              next_coupon=0.045,
 #              current_ibor=0.047,
 #              future_ibor=0.048,
-#              discount_margin=0.01)
+#              dm=0.01)
 #
 # print('dv01:', bond.dv01())
 # print('dollar_duration:', bond.dollar_duration())
