@@ -2,7 +2,6 @@ import datetime
 from dataclasses import dataclass
 
 import numpy as np
-from tunny import model
 from fundamental.base import Context, ctx
 from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
 
@@ -10,11 +9,11 @@ from turing_models.instrument.common import greek, bump
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
+from turing_models.instrument.core import Instrument
 
 
-@model
 @dataclass
-class EqOption:
+class EqOption(Instrument):
     """
         Instrument definition for equity option
         支持多种参数传入方式
@@ -85,14 +84,6 @@ class EqOption:
         self._volatility = self.volatility
         self._interest_rate = self.interest_rate
         self._dividend_yield = self.dividend_yield
-
-    def _set_by_dict(self, tmp_dict):
-        for k, v in tmp_dict.items():
-            setattr(self, k, v)
-
-    def resolve(self, expand_dict):
-        self._set_by_dict(expand_dict)
-        self.set_param()
 
     @property
     def value_date_(self):

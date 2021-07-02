@@ -1,7 +1,6 @@
 import datetime
 from dataclasses import dataclass
 
-from tunny import model
 from fundamental.base import Context, ctx
 
 from turing_models.utilities.turing_date import TuringDate
@@ -11,14 +10,14 @@ from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
      TuringDateGenRuleTypes
+from turing_models.instrument.core import Instrument
 
 
 dy = 0.0001
 
 
-@model
 @dataclass
-class Bond:
+class Bond(Instrument):
     asset_id: str = None
     quantity: float = None
     bond_type: str = None
@@ -53,15 +52,6 @@ class Bond:
 
     def set_param(self):
         self._settlement_date = self.settlement_date
-
-    def _set_by_dict(self, tmp_dict):
-        for k, v in tmp_dict.items():
-            if v:
-                setattr(self, k, v)
-
-    def resolve(self, expand_dict):
-        self._set_by_dict(expand_dict)
-        self.set_param()
 
     @property
     def freq_type_(self):
