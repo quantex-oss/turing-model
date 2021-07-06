@@ -14,27 +14,6 @@ from turing_models.instrument.core import Instrument
 
 @dataclass
 class EqOption(Instrument):
-    """
-        Instrument definition for equity option
-        支持多种参数传入方式
-        Examples:
-        1.
-        # >>> eq = EqOption(asset_id='123', option_type='CALL', product_type='European', expiry=TuringDate(2021, 2, 12), strike_price=90, multiplier=10000)
-        # >>> eq.from_json()
-        # >>> eq.price()
-        2.
-        # >>> _option = Option()
-        # >>> _option.resolve(_resource=somedict)
-        # >>> eq = EqOption(obj=_option)
-        # >>> eq.resolve()
-        # >>> eq.price()
-        3.
-        # >>> _option = Option()
-        # >>> _option.resolve(_resource=somedict)
-        # >>> eq = EqOption(option_type='CALL',product_type='European', notional=1.00, obj=_option)
-        # >>> eq.resolve()
-        # >>> eq.price()
-    """
 
     asset_id: str = None
     quantity: float = None
