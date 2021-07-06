@@ -16,14 +16,13 @@ class Instrument:
 
         try:
             if not isinstance(risk_measure, Iterable):
-                result = getattr(self, "_" + risk_measure.value)()
+                result = getattr(self, risk_measure.value)()
                 result = self._calc(result)
                 self.__row__(risk_measure.value, round(result, 2) if result else "-")
                 return result
             for risk in risk_measure:
-                res = getattr(self, "_" + risk.value)()
+                res = getattr(self, risk.value)()
                 res = self._calc(res)
-                setattr(self, risk.value, res)
                 result.append(res)
                 self.__row__(risk.value, round(res, 2) if res else "-")
             return result
