@@ -15,7 +15,7 @@ def _f(y, *args):
     """ Function used to do root search in price to yield calculation. """
     bond = args[0]
     price = args[1]
-    bond.ytm_ = y
+    bond.__ytm__ = y
     px = bond.full_price_from_ytm()
     obj_fn = px - price
     return obj_fn
@@ -46,11 +46,11 @@ class BondFixedRate(Bond):
         self._ytm = self.ytm
 
     @property
-    def ytm_(self):
-        return self.__ytm or self.ctx.ytm or self._ytm
+    def __ytm__(self):
+        return self.__ytm or self.ctx.ytm or self._ytm or self.yield_to_maturity()
 
-    @ytm_.setter
-    def ytm_(self, value: float):
+    @__ytm__.setter
+    def __ytm__(self, value: float):
         self.__ytm = value
 
     @property
@@ -68,7 +68,7 @@ class BondFixedRate(Bond):
     @property
     def discount_curve_flat(self):
         return TuringDiscountCurveFlat(self.settlement_date_,
-                                       self.ytm_)
+                                       self.__ytm__)
 
     def _calculate_flow_amounts(self):
         """ Determine the bond cashflow payment amounts without principal """
@@ -80,12 +80,12 @@ class BondFixedRate(Bond):
             self._flow_amounts.append(cpn)
 
     def dv01(self):
-        ytm = self.ytm_
-        self.ytm_ = ytm - dy
+        ytm = self.__ytm__
+        self.__ytm__ = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.ytm_ = ytm + dy
+        self.__ytm__ = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.ytm_ = None
+        self.__ytm__ = None
         dv = -(p2 - p0) / 2.0
         return dv
 
@@ -130,18 +130,18 @@ class BondFixedRate(Bond):
         given its yield to maturity. """
 
         dmac = self.macauley_duration()
-        md = dmac / (1.0 + self.ytm_ / self.frequency)
+        md = dmac / (1.0 + self.__ytm__ / self.frequency)
         return md
 
     def dollar_convexity(self):
-        ytm = self.ytm_
-        self.ytm_ = ytm - dy
+        ytm = self.__ytm__
+        self.__ytm__ = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.ytm_ = ytm
+        self.__ytm__ = ytm
         p1 = self.full_price_from_ytm()
-        self.ytm_ = ytm + dy
+        self.__ytm__ = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.ytm_ = None
+        self.__ytm__ = None
         dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
         return dollar_conv
 
@@ -160,7 +160,7 @@ class BondFixedRate(Bond):
 
         self.calc_accrued_interest()
 
-        ytm = np.array(self.ytm_)  # VECTORIZED
+        ytm = np.array(self.__ytm__)  # VECTORIZED
         ytm = ytm + 0.000000000012345  # SNEAKY LOW-COST TRICK TO AVOID y=0
 
         f = self.frequency
@@ -301,7 +301,7 @@ class BondFixedRate(Bond):
                                   fprime2=None)
 
             ytms.append(ytm)
-            self.ytm_ = None
+            self.__ytm__ = None
 
         if len(ytms) == 1:
             return ytms[0]
