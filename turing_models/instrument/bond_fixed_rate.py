@@ -47,7 +47,7 @@ class BondFixedRate(Bond):
 
     @property
     def ytm_(self):
-        return self.__ytm or self.ctx.ytm or self._ytm
+        return self.__ytm or self.ctx.ytm or self._ytm or self.yield_to_maturity()
 
     @ytm_.setter
     def ytm_(self, value: float):
