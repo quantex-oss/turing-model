@@ -1,7 +1,6 @@
 import numpy as np
 
 from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-
 from turing_models.utilities.turing_date import TuringDate
 # from fundamental.pricing_context import PricingContext
 # from turing_models.instrument.archive.bond import Bond
@@ -22,6 +21,7 @@ bond = Bond1(quantity=2,
              accrual_type='ACT/365',
              par=100,
              clean_price=99,
+             ytm=0.05,
              zero_dates=dates,
              zero_rates=rates)
 
@@ -34,7 +34,7 @@ bond = Bond1(quantity=2,
 # print(zero_dates[0], curve.zeroRate(zero_dates[0]))
 # print('full_price_from_ytm:', bond.full_price_from_ytm())
 # print('principal:', bond.principal())
-
+# print("123")
 print('dv01:', bond.calc(RiskMeasure.Dv01))
 print('dollar_duration:', bond.calc(RiskMeasure.DollarDuration))
 print('dollar_convexity:', bond.calc(RiskMeasure.DollarConvexity))
