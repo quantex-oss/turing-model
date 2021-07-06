@@ -27,7 +27,7 @@ class BondOrm(Priceable):
     issue_date: TuringDate = DateField("issue_date")
     freq_type = StringField('freq_type')
     accrual_type = StringField('accrual_type')
-    face_amount: float = FloatField("face_amount")
+    face_amount: float = FloatField("par_value_iss")
     clean_price: float = FloatField("clean_price")
     curve_code = StringField('curve_code')
     ytm: float = FloatField("ytm")
