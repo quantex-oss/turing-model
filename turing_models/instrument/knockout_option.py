@@ -4,6 +4,8 @@ import numpy as np
 
 from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.utilities.global_types import TuringKnockOutTypes
+from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
+     TuringGBMNumericalScheme
 from turing_models.instrument.equity_option import EqOption
 from turing_models.utilities.mathematics import N
 
@@ -18,6 +20,8 @@ class KnockOutOption(EqOption):
     def __post_init__(self):
         super().__post_init__()
         self.num_ann_obs = gNumObsInYear
+        self.num_paths = 10000
+        self.seed = 4242
 
     @property
     def knock_out_type_(self) -> TuringKnockOutTypes:
@@ -88,7 +92,7 @@ class KnockOutOption(EqOption):
                 c_ui = s0 * dq * N(x1) - k * df * N(x1 - sigma_root_t) \
                        - s0 * dq * pow(h_over_s, 2.0 * l) * (N(-y) - N(-y1)) \
                        + k * df * pow(h_over_s, 2.0 * l - 2.0) * (N(-y + sigma_root_t) - N(-y1 + sigma_root_t))
-                price = c - c_ui + rebate * texp ** flag * s0 * df * (
+                price = participation_rate * (c - c_ui) + rebate * texp ** flag * s0 * df * (
                         1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
             else:
                 price = rebate * texp ** flag * s0 * df * (
@@ -103,7 +107,7 @@ class KnockOutOption(EqOption):
                        + k * df * N(-x1 + sigma_root_t) \
                        + s0 * dq * pow(h_over_s, 2.0 * l) * (N(y) - N(y1)) \
                        - k * df * pow(h_over_s, 2.0 * l - 2.0) * (N(y - sigma_root_t) - N(y1 - sigma_root_t))
-                price = p - p_di + rebate * texp ** flag * s0 * df * (
+                price = participation_rate * (p - p_di) + rebate * texp ** flag * s0 * df * (
                         1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
         else:
             raise Exception("Unknown barrier option type." +
@@ -111,4 +115,60 @@ class KnockOutOption(EqOption):
 
         v = price * notional / s0
         return v
+
+    def price_mc(self) -> float:
+        s0 = self.stock_price_
+        k = self.strike_price
+        b = self.barrier
+        r = self.r
+        q = self.q
+        vol = self.v
+        rebate = self.rebate
+        notional = self.notional
+        texp = self.texp
+        knock_out_type = self.knock_out_type_
+        flag = self.annualized_flag
+        participation_rate = self.participation_rate
+        num_ann_obs = self.num_ann_obs
+        num_paths = self.num_paths
+        seed = self.seed
+
+        if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL and s0 >= b:
+            return rebate * texp**flag * notional * np.exp(-r * texp)
+        elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT and s0 <= b:
+            return rebate * texp**flag * notional * np.exp(-r * texp)
+
+        process = TuringProcessSimulator()
+        process_type = TuringProcessTypes.GBM
+        scheme = TuringGBMNumericalScheme.ANTITHETIC
+        model_params = (s0, r-q, vol, scheme)
+
+        Sall = process.getProcess(process_type, texp, model_params,
+                                  num_ann_obs, num_paths, seed)
+
+        (num_paths, _) = Sall.shape
+
+        if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
+            barrierCrossedFromBelow = [False] * num_paths
+            for p in range(0, num_paths):
+                barrierCrossedFromBelow[p] = np.any(Sall[p] >= b)
+        elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
+            barrierCrossedFromAbove = [False] * num_paths
+            for p in range(0, num_paths):
+                barrierCrossedFromAbove[p] = np.any(Sall[p] <= b)
+
+        payoff = np.zeros(num_paths)
+        ones = np.ones(num_paths)
+
+        if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
+            payoff = np.maximum((Sall[:, -1] - k) / s0, 0.0) * \
+                        participation_rate * (ones - barrierCrossedFromBelow) + \
+                        rebate * texp**flag * (ones * barrierCrossedFromBelow)
+        elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
+            payoff = np.maximum((k - Sall[:, -1]) / s0, 0.0) * \
+                        participation_rate * (ones - barrierCrossedFromAbove) + \
+                        rebate * texp**flag * (ones * barrierCrossedFromAbove)
+
+        return payoff.mean() * np.exp(- r * texp) * notional
+
 
