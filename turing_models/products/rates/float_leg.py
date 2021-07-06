@@ -54,7 +54,7 @@ class TuringFloatLeg(object):
         self._freqType = freqType
         self._paymentLag = paymentLag
         self._notional = notional
-        self._principal = 0.0
+        self._principal = principal
         self._spread = spread
 
         self._dayCountType = dayCountType
