@@ -1,15 +1,14 @@
 import datetime
 from dataclasses import dataclass
 
-from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.schedule import TuringSchedule
-from turing_models.utilities.global_types import TuringYTMCalcType
+from turing_models.instrument.core import Instrument
+from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
+    TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
-from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
-     TuringDateGenRuleTypes
-from turing_models.instrument.core import Instrument
-
+from turing_models.utilities.global_types import TuringYTMCalcType
+from turing_models.utilities.schedule import TuringSchedule
+from turing_models.utilities.turing_date import TuringDate
 
 dy = 0.0001
 
@@ -32,23 +31,23 @@ class Bond(Instrument):
     settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
 
     def __post_init__(self):
-        self.set_param()
-        self.face_amount = self.par * self.quantity
-        self.calendar_type = TuringCalendarTypes.WEEKEND
-        self.frequency = TuringFrequency(self.freq_type_)
         self.convention = TuringYTMCalcType.UK_DMO
-
         self._redemption = 1.0  # This is amount paid at maturity
         self._flow_dates = []
         self._flow_amounts = []
-
         self._accrued_interest = None
         self._accrued_days = 0.0
-
-        self._calculate_flow_dates()
+        self._settlement_date = self.settlement_date
+        self.set_param()
 
     def set_param(self):
         self._settlement_date = self.settlement_date
+        self._calculate_flow_dates()
+        if self.par:
+            self.face_amount = self.par * self.quantity
+        self.calendar_type = TuringCalendarTypes.WEEKEND
+        if self.freq_type_:
+            self.frequency = TuringFrequency(self.freq_type_)
 
     @property
     def freq_type_(self):

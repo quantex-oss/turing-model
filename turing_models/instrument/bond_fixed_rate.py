@@ -1,14 +1,14 @@
-from typing import Union
 from dataclasses import dataclass
+from typing import Union
 
 import numpy as np
 from scipy import optimize
-from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
 
-from turing_models.utilities.global_types import TuringYTMCalcType
-from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
-from turing_models.utilities.calendar import TuringCalendar
+from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
 from turing_models.instrument.bond import Bond, dy
+from turing_models.utilities.calendar import TuringCalendar
+from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
+from turing_models.utilities.global_types import TuringYTMCalcType
 
 
 def _f(y, *args):
@@ -32,18 +32,16 @@ class BondFixedRate(Bond):
 
     def __post_init__(self):
         super().__post_init__()
-
-        self._discount_curve = TuringDiscountCurveZeros(
-            self.settlement_date_, self.zero_dates_, self.zero_rates)
-
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
 
-        self._calculate_flow_amounts()
-
     def set_param(self):
-        super().set_param()
         self._ytm = self.ytm
+        if self.zero_dates_:
+            self._discount_curve = TuringDiscountCurveZeros(
+                self.settlement_date_, self.zero_dates_, self.zero_rates)
+        if self.coupon:
+            self._calculate_flow_amounts()
 
     @property
     def __ytm__(self):
@@ -165,7 +163,7 @@ class BondFixedRate(Bond):
 
         f = self.frequency
         c = self.coupon
-        v = 1.0 / (1.0 + ytm/f)
+        v = 1.0 / (1.0 + ytm / f)
 
         # n is the number of flows after the next coupon
         n = 0
@@ -179,34 +177,34 @@ class BondFixedRate(Bond):
 
         if self.convention == TuringYTMCalcType.UK_DMO:
             if n == 0:
-                fp = (v**(self._alpha))*(self._redemption + c/f)
+                fp = (v ** (self._alpha)) * (self._redemption + c / f)
             else:
-                term1 = (c/f)
-                term2 = (c/f)*v
-                term3 = (c/f)*v*v*(1.0-v**(n-1))/(1.0-v)
-                term4 = self._redemption * (v**n)
-                fp = (v**(self._alpha))*(term1 + term2 + term3 + term4)
+                term1 = (c / f)
+                term2 = (c / f) * v
+                term3 = (c / f) * v * v * (1.0 - v ** (n - 1)) / (1.0 - v)
+                term4 = self._redemption * (v ** n)
+                fp = (v ** (self._alpha)) * (term1 + term2 + term3 + term4)
         elif self.convention == TuringYTMCalcType.US_TREASURY:
             if n == 0:
-                fp = (v**(self._alpha))*(self._redemption + c/f)
+                fp = (v ** (self._alpha)) * (self._redemption + c / f)
             else:
-                term1 = (c/f)
-                term2 = (c/f)*v
-                term3 = (c/f)*v*v*(1.0-v**(n-1))/(1.0-v)
-                term4 = self._redemption * (v**n)
-                vw = 1.0 / (1.0 + self._alpha * ytm/f)
-                fp = (vw)*(term1 + term2 + term3 + term4)
+                term1 = (c / f)
+                term2 = (c / f) * v
+                term3 = (c / f) * v * v * (1.0 - v ** (n - 1)) / (1.0 - v)
+                term4 = self._redemption * (v ** n)
+                vw = 1.0 / (1.0 + self._alpha * ytm / f)
+                fp = (vw) * (term1 + term2 + term3 + term4)
         elif self.convention == TuringYTMCalcType.US_STREET:
-            vw = 1.0 / (1.0 + self._alpha * ytm/f)
+            vw = 1.0 / (1.0 + self._alpha * ytm / f)
             if n == 0:
-                vw = 1.0 / (1.0 + self._alpha * ytm/f)
-                fp = vw*(self._redemption + c/f)
+                vw = 1.0 / (1.0 + self._alpha * ytm / f)
+                fp = vw * (self._redemption + c / f)
             else:
-                term1 = (c/f)
-                term2 = (c/f)*v
-                term3 = (c/f)*v*v*(1.0-v**(n-1)) / (1.0-v)
-                term4 = self._redemption * (v**n)
-                fp = (v**(self._alpha))*(term1 + term2 + term3 + term4)
+                term1 = (c / f)
+                term2 = (c / f) * v
+                term3 = (c / f) * v * v * (1.0 - v ** (n - 1)) / (1.0 - v)
+                term4 = self._redemption * (v ** n)
+                fp = (v ** (self._alpha)) * (term1 + term2 + term3 + term4)
         else:
             raise Exception("Unknown yield convention")
 
@@ -273,7 +271,7 @@ class BondFixedRate(Bond):
 
         clean_price = self.clean_price
         if type(clean_price) is float \
-            or type(clean_price) is int \
+                or type(clean_price) is int \
                 or type(clean_price) is np.float64:
             clean_prices = np.array([clean_price])
         elif type(clean_price) is list \
@@ -289,7 +287,6 @@ class BondFixedRate(Bond):
         ytms = []
 
         for full_price in full_prices:
-
             argtuple = (self, full_price)
 
             ytm = optimize.newton(_f,
@@ -318,7 +315,7 @@ class BondFixedRate(Bond):
         for i_flow in range(1, num_flows):
             # coupons paid on a settlement date are paid
             if self._flow_dates[i_flow] >= self.settlement_date_:
-                self._pcd = self._flow_dates[i_flow-1]
+                self._pcd = self._flow_dates[i_flow - 1]
                 self._ncd = self._flow_dates[i_flow]
                 break
 
