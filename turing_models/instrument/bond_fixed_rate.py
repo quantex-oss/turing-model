@@ -36,6 +36,7 @@ class BondFixedRate(Bond):
         self._alpha = 0.0
 
     def set_param(self):
+        super().set_param()
         self._ytm = self.ytm
         if self.zero_dates:
             self._discount_curve = TuringDiscountCurveZeros(
