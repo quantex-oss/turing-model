@@ -5,7 +5,7 @@ import sys
 sys.path.append("..")
 
 from turing_models.utilities.global_types import TuringSwapTypes
-from turing_models.products.bonds.bond import TuringYTMCalcType
+from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.products.bonds.bond import TuringBond
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit

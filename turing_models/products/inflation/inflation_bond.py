@@ -9,7 +9,8 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
-from ..bonds.bond import TuringBond, TuringYTMCalcType
+from turing_models.utilities.global_types import TuringYTMCalcType
+from ..bonds.bond import TuringBond
 
 ###############################################################################
 

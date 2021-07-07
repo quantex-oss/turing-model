@@ -3,5 +3,6 @@
 gDaysInYear = 365.0 #.242
 gSmall = 1e-12
 gNotebookMode = False
+gNumObsInYear = 252
 
 ###############################################################################

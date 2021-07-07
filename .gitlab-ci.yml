@@ -42,3 +42,5 @@ Sync_Latest_Models:
     - master
   tags:
     - turing-ide
+  retry:
+    max: 2

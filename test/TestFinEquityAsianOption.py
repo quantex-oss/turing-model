@@ -3,9 +3,8 @@ import time
 import sys
 sys.path.append("..")
 
-from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.global_types import TuringOptionTypes, TuringAsianOptionValuationMethods
 from turing_models.products.equity.equity_asian_option import TuringEquityAsianOption
-from turing_models.products.equity.equity_asian_option import TuringAsianOptionValuationMethods
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.turing_date import TuringDate

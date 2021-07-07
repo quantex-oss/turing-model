@@ -1,32 +1,33 @@
-from fundamental.base import Priceable, StringField, FloatField
-from turing_models.instrument.quotes import Quotes
+from dataclasses import dataclass
+
+from turing_models.instrument.core import Instrument
 
 
-class Stock(Priceable):
-    asset_id = StringField('asset_id')
-    type = StringField('type')
-    asset_type = StringField('assetType')
-    symbol = StringField('symbol')
-    name_cn = StringField('nameCn')
-    name_en = StringField('nameEn')
-    exchange_code = StringField('exchangeCode')
-    currency = StringField('currency')
-    bbid = StringField('bbid')
-    ric = StringField('ric')
-    isin = StringField('isin')
-    wind_id = StringField('windId')
-    sedol = StringField('sedol')
-    cusip = StringField('cusip')
-    quantity: float = FloatField('quantity')  # 股数
-    stock_price: float = FloatField('stock_price')
-    volatility: float = FloatField('volatility')
+@dataclass
+class Stock(Instrument):
+    asset_id: str = None
+    quantity: float = None  # 股数
+    asset_type: str = None
+    symbol: str = None
+    name_cn: str = None
+    name_en: str = None
+    exchange_code: str = None
+    currency: str = None
+    name: str = None
+    stock_price: float = None
 
-    def __init__(self, **kw):
-        super(Stock, self).__init__(**kw)
+    def __post_init__(self):
+        self.set_param()
+
+    def set_param(self):
+        self._stock_price = self.stock_price
+
+    @property
+    def stock_price_(self) -> float:
+        return getattr(self.ctx, f"spot_{self.asset_id}") or self._stock_price
 
     def price(self):
-        """"计算持仓股票的现价"""
-        return self.stock_price
+        return self.stock_price_
 
     def delta(self):
         return 1

@@ -1,6 +1,5 @@
 from scipy import optimize
 
-
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
@@ -428,7 +427,7 @@ class TuringBondFRN(object):
                                          futureIbor,
                                          dm)
 
-        accrued = self._accruedInterest(settlementDate, nextCoupon)
+        accrued = self.calcAccruedInterest(settlementDate, nextCoupon)
         accrued = accrued * self._par / self._faceAmount
 
         cleanPrice = fullPrice - accrued
