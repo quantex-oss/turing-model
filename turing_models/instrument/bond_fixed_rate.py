@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Union
+from dataclasses import dataclass, field
+from typing import Union, List, Any
 
 import numpy as np
 from scipy import optimize
@@ -23,11 +23,11 @@ def _f(y, *args):
 
 @dataclass
 class BondFixedRate(Bond):
-    coupon: float = None
+    coupon: float = 0.0
     curve_code: str = None
     ytm: float = None
-    zero_dates: list = None
-    zero_rates: list = None
+    zero_dates: List[Any] = field(default_factory=list)
+    zero_rates: List[Any] = field(default_factory=list)
     __ytm: float = None
 
     def __post_init__(self):

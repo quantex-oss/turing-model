@@ -1,7 +1,7 @@
 import datetime
 from dataclasses import dataclass
 
-from turing_models.instrument.core import Instrument
+from turing_models.instrument.core import Instrument, InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
@@ -14,9 +14,9 @@ dy = 0.0001
 
 
 @dataclass
-class Bond(Instrument):
+class Bond(Instrument,InstrumentBase):
     asset_id: str = None
-    quantity: float = None
+    quantity: float = 1.0
     bond_type: str = None
     interest_accrued: float = None
     issue_date: TuringDate = None
@@ -42,11 +42,12 @@ class Bond(Instrument):
 
     def set_param(self):
         self._settlement_date = self.settlement_date
-        self._calculate_flow_dates()
+        if self.freq_type:
+            self._calculate_flow_dates()
         if self.par:
             self.face_amount = self.par * self.quantity
         self.calendar_type = TuringCalendarTypes.WEEKEND
-        if self.freq_type_:
+        if self.freq_type:
             self.frequency = TuringFrequency(self.freq_type_)
 
     @property
@@ -89,7 +90,6 @@ class Bond(Instrument):
         calendar_type = TuringCalendarTypes.NONE
         bus_day_rule_type = TuringBusDayAdjustTypes.NONE
         date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
-
         self._flow_dates = TuringSchedule(self.issue_date,
                                           self.due_date,
                                           self.freq_type_,

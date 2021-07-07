@@ -1,5 +1,6 @@
 import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List, Any
 
 import numpy as np
 from fundamental.market.curves import TuringDiscountCurveFlat, \
@@ -9,14 +10,14 @@ from turing_models.instrument.common import greek, bump
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.instrument.core import Instrument
+from turing_models.instrument.core import Instrument, InstrumentBase
 
 
 @dataclass
-class EqOption(Instrument):
+class EqOption(Instrument, InstrumentBase):
 
     asset_id: str = None
-    quantity: float = None
+    quantity: float = 1
     underlier: str = None
     product_type: str = None
     option_type: str = None
@@ -37,8 +38,8 @@ class EqOption(Instrument):
     stock_price: float = None
     volatility: float = 0.1
     interest_rate: float = 0
-    zero_dates: list = None
-    zero_rates: list = None
+    zero_dates: List[Any] = field(default_factory=list)
+    zero_rates: List[Any] = field(default_factory=list)
     dividend_yield: float = 0
     __property_data = {
         "value_date": None,
@@ -93,7 +94,7 @@ class EqOption(Instrument):
 
     @property
     def interest_rate_(self) -> float:
-        return self.ctx.interest_rate or self.interest_rate
+        return self.ctx.interest_rate or self._interest_rate
 
     @property
     def dividend_yield_(self) -> float:

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from turing_models.instrument.core import Instrument
+from turing_models.instrument.core import Instrument, InstrumentBase
 
 
 @dataclass
-class Stock(Instrument):
+class Stock(Instrument,InstrumentBase):
     asset_id: str = None
     quantity: float = None  # 股数
     asset_type: str = None
