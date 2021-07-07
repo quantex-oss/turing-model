@@ -1,15 +1,17 @@
 import traceback
+from dataclasses import dataclass
 from typing import Union, List, Iterable
 
 from loguru import logger
 
 from fundamental import ctx
+from fundamental.base import Context
 from turing_models.instrument.common import RiskMeasure
 
 
+@dataclass
 class Instrument:
-    def __init__(self):
-        self.ctx = ctx
+    ctx: Context = ctx
 
     def set_param(self):
         pass
