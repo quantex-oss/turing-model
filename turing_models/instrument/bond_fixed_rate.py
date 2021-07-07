@@ -37,7 +37,7 @@ class BondFixedRate(Bond):
 
     def set_param(self):
         self._ytm = self.ytm
-        if self.zero_dates_:
+        if self.zero_dates:
             self._discount_curve = TuringDiscountCurveZeros(
                 self.settlement_date_, self.zero_dates_, self.zero_rates)
         if self.coupon:
