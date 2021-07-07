@@ -4,7 +4,6 @@ from turing_models.instrument.stock import Stock
 from turing_models.instrument.common import RiskMeasure
 
 stock = Stock(asset_id="STOCKCN00000007",
-              quantity=2,
               stock_price=5.23)
 
 print(stock.calc(RiskMeasure.Delta))
