@@ -9,7 +9,8 @@ class TuringModel():
     def __init__(implementationType,
                  parameterDict: dict):
  
-        self._implementationType = implementationType
-        self._parameterDist = parameterDict
+        # self._implementationType = implementationType
+        # self._parameterDist = parameterDict
+        pass
 
 ###############################################################################

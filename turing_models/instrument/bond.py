@@ -1,180 +1,109 @@
 import datetime
 from dataclasses import dataclass
 
-from loguru import logger
+from turing_models.instrument.core import Instrument, InstrumentBase
+from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
+    TuringDateGenRuleTypes
+from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
+from turing_models.utilities.global_types import TuringYTMCalcType
+from turing_models.utilities.schedule import TuringSchedule
+from turing_models.utilities.turing_date import TuringDate
 
-from fundamental.base import Priceable, StringField, FloatField, DateField
-from fundamental.base import ctx
-from fundamental.turing_db.data import Turing
-from fundamental.turing_db.utils import to_snake
-from turing_models.products.bonds.bond import TuringBond, TuringFrequencyTypes, \
-    TuringDayCountTypes
-from turing_models.utilities import TuringDate
-from turing_models.utilities.error import TuringError
-
-
-class BondOrm(Priceable):
-    """bond orm定义,取数据用"""
-    asset_id = StringField('asset_id')
-    name = StringField('name')
-    bond_type = StringField('bond_type')
-    coupon: float = FloatField("coupon_rate")
-    interest_accrued: float = FloatField("interest_accrued")
-    bond_term_year: float = FloatField("bond_term_year")
-    bond_term_day: float = FloatField("bond_term_day")
-    maturity_date: TuringDate = DateField("due_date")
-    issue_date: TuringDate = DateField("issue_date")
-    freq_type = StringField('freq_type')
-    accrual_type = StringField('accrual_type')
-    face_amount: float = FloatField("face_amount")
-    clean_price: float = FloatField("clean_price")
-    curve_code = StringField('curve_code')
-    ytm: float = FloatField("ytm")
-    quantity: float = FloatField("quantity")
-    zero_dates: list = None
-    zero_rates: list = None
-
-    def __init__(self, **kw):
-        super().__init__(**kw)
-        self.ctx = ctx
-        self.curve_code_list = []
-
-    def fetch_yield_curve(self, curve_code_list):
-        """根据asset_ids的集合为参数,取行情"""
-        logger.debug(f"self.bond.curve_code: {curve_code_list}")
-        try:
-            return Turing.get_yieldcurve(curve_code_list)
-        except:
-            return None
-
-    def fetch_quotes(self, ids):
-        """根据asset_ids的集合为参数,取行情"""
-        try:
-            return Turing.get_bond_markets(ids)
-        except:
-            return None
-
-    def put_zero_dates(self,):
-        zero_dates = []
-        curve = self.fetch_yield_curve([self.curve_code])
-        if curve:
-            for code in to_snake(curve):
-                logger.debug(f"{code.get('curve_code')}")
-                if code.get("curve_code") == self.curve_code:
-                    for cu in code.get('curve_data'):
-                        zero_dates.append(cu.get('term'))
-        self.zero_dates = zero_dates
-        return zero_dates
-
-    def put_zero_rates(self):
-        zero_rates = []
-        curve = self.fetch_yield_curve([self.curve_code])
-        if curve:
-            for code in to_snake(curve):
-                if code.get("curve_code") == self.curve_code:
-                    for cu in code.get('curve_data'):
-                        zero_rates.append(cu.get('spot_rate'))
-        self.zero_rates = zero_rates
-        return zero_rates
-
-    def put_ytm(self, quotes_dict, asset_id):
-        for quote in quotes_dict:
-            if quote.get("asset_id") == asset_id:
-                if quote.get("ytm", None):
-                    return quote.get("ytm", None)
-        return None
+dy = 0.0001
 
 
 @dataclass
-class Bond:
+class Bond(Instrument,InstrumentBase):
     asset_id: str = None
+    quantity: float = 1.0
     bond_type: str = None
-    coupon: float = 0.0
-    maturity_date: TuringDate = None
+    interest_accrued: float = None
     issue_date: TuringDate = None
-    freq_type: (str, TuringFrequencyTypes) = None
-    accrual_type: (str, TuringFrequencyTypes) = None
-    face_amount: float = None
+    due_date: TuringDate = None
+    bond_term_year: float = None
+    bond_term_day: float = None
+    freq_type: str = None
+    accrual_type: str = None
+    par: float = None
     clean_price: float = None
-    curve_code: str = None
     name: str = None
     settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
-    ytm: float = None
-    zero_dates: list = None
-    zero_rates: list = None
 
     def __post_init__(self):
-        self.name = 'No name'
-        self.bond = None
+        self.convention = TuringYTMCalcType.UK_DMO
+        self._redemption = 1.0  # This is amount paid at maturity
+        self._flow_dates = []
+        self._flow_amounts = []
+        self._accrued_interest = None
+        self._accrued_days = 0.0
+        self._settlement_date = self.settlement_date
+        self.set_param()
 
-        if self.zero_dates:
-            self.zero_dates = self.settlement_date.addYears(self.zero_dates)
+    def set_param(self):
+        self._settlement_date = self.settlement_date
+        if self.freq_type:
+            self._calculate_flow_dates()
+        if self.par:
+            self.face_amount = self.par * self.quantity
+        self.calendar_type = TuringCalendarTypes.WEEKEND
+        if self.freq_type:
+            self.frequency = TuringFrequency(self.freq_type_)
 
-        if self.issue_date:
-            self.new_bond()
+    @property
+    def freq_type_(self):
+        if self.freq_type == '每年付息':
+            return TuringFrequencyTypes.ANNUAL
+        elif self.freq_type == '半年付息':
+            return TuringFrequencyTypes.SEMI_ANNUAL
+        elif self.freq_type == '4个月一次':
+            return TuringFrequencyTypes.TRI_ANNUAL
+        elif self.freq_type == '按季付息':
+            return TuringFrequencyTypes.QUARTERLY
+        elif self.freq_type == '按月付息':
+            return TuringFrequencyTypes.MONTHLY
+        else:
+            raise Exception('Please check the input of freq_type')
+
+    @property
+    def accrual_type_(self):
+        if self.accrual_type == 'ACT/365':
+            return TuringDayCountTypes.ACT_365L
+        elif self.accrual_type == 'ACT/ACT':
+            return TuringDayCountTypes.ACT_ACT_ISDA
+        elif self.accrual_type == 'ACT/360':
+            return TuringDayCountTypes.ACT_360
+        elif self.accrual_type == '30/360':
+            return TuringDayCountTypes.THIRTY_E_360
+        elif self.accrual_type == 'ACT/365F':
+            return TuringDayCountTypes.ACT_365F
+        else:
+            raise Exception('Please check the input of accrual_type')
+
+    @property
+    def settlement_date_(self):
+        return self.ctx.pricing_date or self._settlement_date
+
+    def _calculate_flow_dates(self):
+        """ Determine the bond cashflow payment dates."""
+
+        calendar_type = TuringCalendarTypes.NONE
+        bus_day_rule_type = TuringBusDayAdjustTypes.NONE
+        date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
+        self._flow_dates = TuringSchedule(self.issue_date,
+                                          self.due_date,
+                                          self.freq_type_,
+                                          calendar_type,
+                                          bus_day_rule_type,
+                                          date_gen_rule_type)._generate()
 
     def dv01(self):
-        return self.bond.dv01(self.settlement_date,
-                              self.ytm)
+        print("You should not be here!")
+        return 0.0
 
     def dollar_duration(self):
-        """dollar duration"""
-        return self.bond.dollarDuration(self.settlement_date,
-                                        self.ytm)
+        return self.dv01() / dy
 
     def dollar_convexity(self):
-        """dollar convexity"""
-        return self.bond.dollar_convexity(self.settlement_date,
-                                          self.ytm)
-
-    def _set_by_dict(self, tmp_dict):
-        for k, v in tmp_dict.items():
-            if v:
-                setattr(self, k, v)
-        self.new_bond()
-
-    def new_bond(self):
-        logger.debug((self.issue_date,
-                      self.maturity_date,
-                      self.coupon,
-                      self.freq_type,
-                      self.accrual_type,
-                      self.face_amount))
-        if self.freq_type and not isinstance(self.freq_type, TuringFrequencyTypes):
-            if self.freq_type == '每年付息':
-                self.freq_type = TuringFrequencyTypes.ANNUAL
-            elif self.freq_type == '半年付息':
-                self.freq_type = TuringFrequencyTypes.SEMI_ANNUAL
-            elif self.freq_type == '4个月一次':
-                self.freq_type = TuringFrequencyTypes.TRI_ANNUAL
-            elif self.freq_type == '按季付息':
-                self.freq_type = TuringFrequencyTypes.QUARTERLY
-            elif self.freq_type == '按月付息':
-                self.freq_type = TuringFrequencyTypes.MONTHLY
-            else:
-                raise TuringError('Please check the input of freq_type')
-        if self.accrual_type and not isinstance(self.accrual_type, TuringDayCountTypes):
-            if self.accrual_type == 'ACT/365':
-                self.accrual_type = TuringDayCountTypes.ACT_365L
-            elif self.accrual_type == 'ACT/ACT':
-                self.accrual_type = TuringDayCountTypes.ACT_ACT_ISDA
-            elif self.accrual_type == 'ACT/360':
-                self.accrual_type = TuringDayCountTypes.ACT_360
-            elif self.accrual_type == '30/360':
-                self.accrual_type = TuringDayCountTypes.THIRTY_E_360
-            elif self.accrual_type == 'ACT/365F':
-                self.accrual_type = TuringDayCountTypes.ACT_365F
-            else:
-                raise TuringError('Please check the input of accrual_type')
-        self.bond = TuringBond(self.issue_date,
-                               self.maturity_date,
-                               self.coupon,
-                               self.freq_type,
-                               self.accrual_type,
-                               self.face_amount)
-        logger.debug(self.bond)
-
-
-    def resolve(self, expand_dict):
-
-        self._set_by_dict(expand_dict)
+        print("You should not be here!")
+        return 0.0

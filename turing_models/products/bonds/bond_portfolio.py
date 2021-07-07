@@ -6,7 +6,7 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
-from .bond import TuringYTMCalcType
+from turing_models.utilities.global_types import TuringYTMCalcType
 
 ###############################################################################
 
@@ -32,7 +32,7 @@ class TuringBondPortfolio(object):
         for _ in self._flowDates[1:]:
            cpn = self._coupon / self._frequency
            self._flowAmounts.append(cpn)
-    
+
 ###############################################################################
 
     def dollarDuration(self,
@@ -152,7 +152,7 @@ class TuringBondPortfolio(object):
                             settlementDate: TuringDate,
                             numExDividendDays: int = 0,
                             calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND):
- 
+
         return self._accruedInterest
 
 ###############################################################################
@@ -181,16 +181,16 @@ class TuringBondPortfolio(object):
                                    recoveryRate: float):
         ''' Calculate discounted present value of flows assuming default model.
         The survival curve treats the coupons as zero recovery payments while
-        the recovery fraction of the par amount is paid at default. For the 
+        the recovery fraction of the par amount is paid at default. For the
         defaulting principal we discretise the time steps using the coupon
         payment times. A finer discretisation may handle the time value with
         more accuracy. I reduce any error by averaging period start and period
-        end payment present values. ''' 
+        end payment present values. '''
 
         f = self._frequency
         c = self._coupon
 
-        pv = 0.0        
+        pv = 0.0
         prevQ = 1.0
         prevDf = 1.0
 
@@ -198,14 +198,14 @@ class TuringBondPortfolio(object):
         defaultingPrincipalPVPayEnd = 0.0
 
         for dt in self._flowDates[1:]:
-            
+
             # coupons paid on a settlement date are included
             if dt >= settlementDate:
 
                 df = discountCurve.df(dt)
                 q = survivalCurve.survProb(dt)
 
-                # Add PV of coupon conditional on surviving to payment date  
+                # Add PV of coupon conditional on surviving to payment date
                 # Any default results in all subsequent coupons being lost
                 # with zero recovery
 
@@ -234,7 +234,7 @@ class TuringBondPortfolio(object):
                                     recoveryRate: float):
         ''' Calculate clean price value of flows assuming default model.
         The survival curve treats the coupons as zero recovery payments while
-        the recovery fraction of the par amount is paid at default. ''' 
+        the recovery fraction of the par amount is paid at default. '''
 
         self.calcAccruedInterest(settlementDate)
 
@@ -242,14 +242,14 @@ class TuringBondPortfolio(object):
                                                     discountCurve,
                                                     survivalCurve,
                                                     recoveryRate)
-        
+
         cleanPrice = fullPrice - self._accruedInterest
         return cleanPrice
-    
+
 ###############################################################################
 
     def __repr__(self):
-        
+
         s = labelToString("OBJECT TYPE", type(self).__name__)
         s += labelToString("ISSUE DATE", self._issueDate)
         s += labelToString("MATURITY DATE", self._maturityDate)

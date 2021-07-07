@@ -23,6 +23,7 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
+from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.calendar import TuringCalendar
@@ -38,18 +39,6 @@ from scipy import optimize
 # References https://www.dmo.gov.uk/media/15011/yldeqns_v1.pdf
 # DO TRUE YIELD
 # JAPANESE SIMPLE YIELD
-
-###############################################################################
-
-
-from enum import Enum
-
-
-class TuringYTMCalcType(Enum):
-    UK_DMO = 1,
-    US_STREET = 2,
-    US_TREASURY = 3
-
 ###############################################################################
 
 
@@ -223,9 +212,9 @@ class TuringBond(object):
     def principal(self,
                   settlementDate: TuringDate,
                   ytm: float):
-        ''' Calculate the principal value of the bond based on the face
+        """ Calculate the principal value of the bond based on the face
         amount from its discount margin and making assumptions about the
-        future Ibor rates. '''
+        future Ibor rates. """
 
         fullPrice = self.fullPriceFromYTM(settlementDate, ytm)
 
@@ -287,6 +276,8 @@ class TuringBond(object):
         px = 0.0
         df = 1.0
         dfSettle = discount_curve.df(settlementDate)
+        # print(discount_curve)
+        # print(dfSettle)
         dc = TuringDayCount(TuringDayCountTypes.ACT_ACT_ISDA)
 
         for dt in self._flowDates[1:]:
@@ -304,6 +295,7 @@ class TuringBond(object):
 
         fp = self.fullPriceFromDiscountCurve(settlementDate, discount_curve)
         dmac = px / fp
+        # print(settlementDate, discount_curve)
 
         return dmac
 ###############################################################################
@@ -463,8 +455,8 @@ class TuringBond(object):
 ###############################################################################
 
     def currentYield(self, cleanPrice):
-        ''' Calculate the current yield of the bond which is the
-        coupon divided by the clean price (not the full price)'''
+        """ Calculate the current yield of the bond which is the
+        coupon divided by the clean price (not the full price)"""
 
         y = self._coupon * self._par / cleanPrice
         return y
