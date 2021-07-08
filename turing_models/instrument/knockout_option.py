@@ -170,5 +170,3 @@ class KnockOutOption(EqOption):
                         rebate * texp**flag * (ones * barrierCrossedFromAbove)
 
         return payoff.mean() * np.exp(- r * texp) * notional
-
-

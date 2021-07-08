@@ -32,12 +32,12 @@ class Bond(Instrument,InstrumentBase):
 
     def __post_init__(self):
         self.convention = TuringYTMCalcType.UK_DMO
+        self.calendar_type = TuringCalendarTypes.WEEKEND
         self._redemption = 1.0  # This is amount paid at maturity
         self._flow_dates = []
         self._flow_amounts = []
         self._accrued_interest = None
         self._accrued_days = 0.0
-        self._settlement_date = self.settlement_date
         self.set_param()
 
     def set_param(self):
@@ -46,7 +46,6 @@ class Bond(Instrument,InstrumentBase):
             self._calculate_flow_dates()
         if self.par:
             self.face_amount = self.par * self.quantity
-        self.calendar_type = TuringCalendarTypes.WEEKEND
         if self.freq_type:
             self.frequency = TuringFrequency(self.freq_type_)
 

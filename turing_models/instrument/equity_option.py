@@ -26,7 +26,7 @@ class EqOption(Instrument, InstrumentBase):
     number_of_options: float = None
     start_date: TuringDate = None
     end_date: TuringDate = None
-    expiry: str = None
+    expiry: TuringDate = None
     participation_rate: float = None
     strike_price: float = None
     multiplier: float = None
@@ -63,6 +63,8 @@ class EqOption(Instrument, InstrumentBase):
         self._volatility = self.volatility
         self._interest_rate = self.interest_rate
         self._dividend_yield = self.dividend_yield
+        self._number_of_options = self.number_of_options or 1
+        self._multiplier = self.multiplier or 1
 
     @property
     def value_date_(self):

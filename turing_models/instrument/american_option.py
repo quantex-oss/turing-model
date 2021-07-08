@@ -29,4 +29,4 @@ class AmericanOption(EqOption):
         v = crrTreeValAvg(s0, r, q, vol, self.num_ann_obs,
                           self.texp, option_type.value, k)['value']
 
-        return v * self.multiplier * self.number_of_options
+        return v * self._multiplier * self._number_of_options

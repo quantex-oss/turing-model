@@ -38,9 +38,6 @@ class BondFixedRate(Bond):
     def set_param(self):
         super().set_param()
         self._ytm = self.ytm
-        if self.zero_dates:
-            self._discount_curve = TuringDiscountCurveZeros(
-                self.settlement_date_, self.zero_dates_, self.zero_rates)
         if self.coupon:
             self._calculate_flow_amounts()
 
@@ -55,6 +52,11 @@ class BondFixedRate(Bond):
     @property
     def zero_dates_(self):
         return self.settlement_date_.addYears(self.zero_dates)
+
+    @property
+    def _discount_curve(self):
+        return TuringDiscountCurveZeros(
+            self.settlement_date_, self.zero_dates_, self.zero_rates)
 
     @property
     def discount_curve(self):
