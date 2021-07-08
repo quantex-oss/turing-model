@@ -18,3 +18,7 @@ irs = IRS(effective_date=TuringDate(2021, 6, 1),
           float_day_count_type='ACT/ACT',
           zero_dates1=dates,
           zero_rates1=rates)
+
+print(irs.price())
+print(irs.pv01())
+print(irs.swap_rate())

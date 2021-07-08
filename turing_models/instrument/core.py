@@ -8,14 +8,14 @@ from fundamental import ctx
 from fundamental.base import Context
 
 from turing_models.instrument.common import RiskMeasure
-from turing_models.instrument.decorator import concurrent
+# from turing_models.instrument.decorator import concurrent
 
 
 @dataclass
 class Instrument:
     ctx: Context = ctx
 
-    @concurrent
+    # @concurrent
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):
         result: Union[float, List] = []
 

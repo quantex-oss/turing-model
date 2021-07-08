@@ -173,7 +173,7 @@ class IRS(Instrument):
     def index_curve(self):
         if self.__index_curve:
             return self.__index_curve
-        elif self.zero_dates2_ and self.zero_rates2:
+        elif self.zero_dates2 and self.zero_rates2:
             return TuringDiscountCurveZeros(
                 self.value_date_, self.zero_dates2_, self.zero_rates2)
         else:
