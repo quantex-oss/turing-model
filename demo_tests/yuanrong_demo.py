@@ -13,7 +13,7 @@ from turing_models.instrument.common import RiskMeasure
 
 yuanrong.init(
     package_ref='sn:cn:yrk:12345678901234561234567890123456:function:0-turing-model:$latest',
-    logging_level='INFO', cluster_server_addr='123.60.18.80'
+    logging_level='INFO', cluster_server_addr='123.60.60.83'
 )
 
 
@@ -22,6 +22,7 @@ def get_result(call):
         return call
     else:
         if isinstance(call, list):
+            print(call)
             return yuanrong.get(call)
         return yuanrong.get([call])[0]
 
@@ -576,4 +577,3 @@ with scenario_extreme:
     time_end = time.time()
     print("耗时：", time_end - time_start)
     print_result(result)
-
