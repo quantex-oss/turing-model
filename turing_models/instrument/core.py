@@ -6,8 +6,9 @@ from loguru import logger
 
 from fundamental import ctx
 from fundamental.base import Context
-
 from turing_models.instrument.common import RiskMeasure
+
+
 # from turing_models.instrument.decorator import concurrent
 
 
@@ -29,7 +30,7 @@ class Instrument:
                 res = getattr(self, risk.value)()
                 res = self._calc(res)
                 result.append(res)
-                self.__row__(risk.value, round(res, 2) if res else "-")
+                self.__row__(risk.value, round(res, 2) if res and not isinstance(res, Iterable) else "-")
             return result
         except Exception as e:
             logger.error(str(traceback.format_exc()))
