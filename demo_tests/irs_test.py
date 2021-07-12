@@ -330,8 +330,10 @@ def test_LiborSwap():
     valuationDate = TuringDate(2018, 11, 30)
     liborCurve = buildIborSingleCurve(valuationDate)
     v = swap.value(valuationDate, liborCurve, liborCurve, firstFixing)
+    pv01 = swap.pv01(valuationDate, liborCurve)
+    swap_rate = swap.swapRate(valuationDate, liborCurve)
 
-    print(v)
+    print(v, pv01, swap_rate)
 
 
 # test_LiborSwap()
@@ -362,3 +364,6 @@ irs = IRS(effective_date=TuringDate(2017, 12, 27),
           fixed_day_count_type_curve='30/360',
           fixed_leg_type_curve='PAY')
 print(irs.price())
+print(irs.pv01())
+print(irs.swap_rate())
+

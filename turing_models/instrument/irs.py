@@ -65,7 +65,7 @@ class IRS(Instrument):
     effective_date: TuringDate = None
     termination_date: TuringDate = None
     fixed_leg_type: str = None
-    fixed_coupon: float = None
+    fixed_coupon: float = -100000
     fixed_freq_type: str = None
     fixed_day_count_type: str = None
     notional: float = 1000000.0
@@ -133,16 +133,35 @@ class IRS(Instrument):
                                             self.calendar_type,
                                             self.bus_day_adjust_type,
                                             self.date_gen_rule_type)
+
         if self.deposit_day_count_type:
             self.deposit_day_count_type_ = modify_day_count_type(self.deposit_day_count_type)
             self.fixed_freq_type_curve_ = modify_freq_type(self.fixed_freq_type_curve)
             self.fixed_day_count_type_curve_ = modify_day_count_type(self.fixed_day_count_type_curve)
             self.fixed_leg_type_curve_ = modify_leg_type(self.fixed_leg_type_curve)
 
+            self.fixed_leg = TuringFixedLeg(self.effective_date,
+                                            self.termination_date,
+                                            self.fixed_leg_type_,
+                                            self.fixed_coupon_,
+                                            self.fixed_freq_type_,
+                                            self.fixed_day_count_type_,
+                                            self.notional,
+                                            self.principal,
+                                            self.payment_lag,
+                                            self.calendar_type,
+                                            self.bus_day_adjust_type,
+                                            self.date_gen_rule_type)
+
     @property
     def float_leg_type(self):
         return TuringSwapTypes.RECEIVE if self.fixed_leg_type == 'PAY' \
             else TuringSwapTypes.PAY
+
+    @property
+    def fixed_coupon_(self):
+        return self.swap_rate() if self.fixed_coupon == -100000 \
+            else self.fixed_coupon
 
     @property
     def value_date_(self):
@@ -229,7 +248,7 @@ class IRS(Instrument):
         return fixed_leg_value + float_leg_value
     
     def dv01(self):
-        ''' Calculate the value of 1 basis point coupon on the fixed leg. '''
+        """ Calculate the value of 1 basis point coupon on the fixed leg. """
 
         pv = self.price()
         libor_curve = self.libor_curve
@@ -241,7 +260,7 @@ class IRS(Instrument):
         return dv01
 
     def pv01(self):
-        ''' Calculate the value of 1 basis point coupon on the fixed leg. '''
+        """ Calculate the value of 1 basis point coupon on the fixed leg. """
 
         pv = self.fixed_leg.value(self.value_date_,
                                   self.libor_curve)
@@ -252,14 +271,14 @@ class IRS(Instrument):
         return pv01
 
     def swap_rate(self):
-        ''' Calculate the fixed leg coupon that makes the swap worth zero.
+        """ Calculate the fixed leg coupon that makes the swap worth zero.
         If the valuation date is before the swap payments start then this
         is the forward swap rate as it starts in the future. The swap rate
         is then a forward swap rate and so we use a forward discount
         factor. If the swap fixed leg has begun then we have a spot
         starting swap. The swap rate can also be calculated in a dual curve
         approach but in this case the first fixing on the floating leg is
-        needed. '''
+        needed. """
 
         pv01 = self.pv01()
 
