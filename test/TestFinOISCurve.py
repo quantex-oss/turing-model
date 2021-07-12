@@ -225,8 +225,8 @@ def test_FinOISDepositsFRAsSwaps():
     testCases.header("DATE", "DF")
 
     for deposit in depos:
-        df = liborCurve.df(deposit._maturityDate)
-        testCases.print(str(deposit._maturityDate), df)
+        df = liborCurve.df(deposit.maturity_date)
+        testCases.print(str(deposit.maturity_date), df)
 
     for swap in swaps:
         df = liborCurve.df(swap._maturityDate)

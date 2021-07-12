@@ -124,17 +124,17 @@ class TuringIborBermudanSwaption(object):
         cpnFlows = [0.0]
 
         # The first flow is the expiry date
-        numFlows = len(self._underlyingSwap._fixedLeg._paymentDates)
+        numFlows = len(self._underlyingSwap.fixed_leg._paymentDates)
 
         swap = self._underlyingSwap
 
         for iFlow in range(0, numFlows):
 
-            flowDate = self._underlyingSwap._fixedLeg._paymentDates[iFlow]
+            flowDate = self._underlyingSwap.fixed_leg._paymentDates[iFlow]
 
             if flowDate > self._exerciseDate:
                 cpnTime = (flowDate - valuationDate) / gDaysInYear
-                cpnFlow = swap._fixedLeg._payments[iFlow-1] / self._notional
+                cpnFlow = swap.fixed_leg._payments[iFlow - 1] / self._notional
                 cpnTimes.append(cpnTime)
                 cpnFlows.append(cpnFlow)
 

@@ -251,7 +251,7 @@ class TuringCDSIndexPortfolio():
 
         cdsMaturityDates = []
         for cds in issuerCurves[0]._cdsContracts:
-            cdsDates = cds._maturityDate
+            cdsDates = cds.maturity_date
             cdsMaturityDates.append(cdsDates)
 
         numCDSMaturityPoints = len(cdsMaturityDates)

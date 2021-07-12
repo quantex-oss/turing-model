@@ -63,10 +63,10 @@ class TuringIborSwap(object):
             self.termination_date = effectiveDate.addTenor(terminationDateOrTenor)
 
         calendar = TuringCalendar(calendarType)
-        self._maturityDate = calendar.adjust(self.termination_date,
+        self.maturity_date = calendar.adjust(self.termination_date,
                                              busDayAdjustType)
 
-        if effectiveDate > self._maturityDate:
+        if effectiveDate > self.maturity_date:
             raise TuringError("Start date after maturity date")
 
         self.effective_date = effectiveDate
@@ -78,7 +78,7 @@ class TuringIborSwap(object):
         paymentLag = 0
         principal = 0.0
 
-        self._fixedLeg = TuringFixedLeg(effectiveDate,
+        self.fixed_leg = TuringFixedLeg(effectiveDate,
                                         self.termination_date,
                                         fixedLegType,
                                         fixedCoupon,
@@ -117,7 +117,7 @@ class TuringIborSwap(object):
         if indexCurve is None:
             indexCurve = discountCurve
 
-        fixedLegValue = self._fixedLeg.value(valuationDate,
+        fixedLegValue = self.fixed_leg.value(valuationDate,
                                              discountCurve)
 
         floatLegValue = self._floatLeg.value(valuationDate,
@@ -133,11 +133,11 @@ class TuringIborSwap(object):
     def pv01(self, valuationDate, discountCurve):
         ''' Calculate the value of 1 basis point coupon on the fixed leg. '''
 
-        pv = self._fixedLeg.value(valuationDate, discountCurve)
+        pv = self.fixed_leg.value(valuationDate, discountCurve)
 
         # Needs to be positive even if it is a payer leg
         pv = np.abs(pv)
-        pv01 = pv / self._fixedLeg._coupon / self._fixedLeg._notional
+        pv01 = pv / self.fixed_leg._coupon / self.fixed_leg._notional
         return pv01
 
 ###############################################################################
@@ -169,7 +169,7 @@ class TuringIborSwap(object):
         floatLegPV = 0.0
 
         if indexCurve is None:
-            dfT = discountCurve.df(self._maturityDate)
+            dfT = discountCurve.df(self.maturity_date)
             floatLegPV = (df0 - dfT)
         else:
             floatLegPV = self._floatLeg.value(valuationDate,
@@ -177,7 +177,7 @@ class TuringIborSwap(object):
                                               indexCurve,
                                               firstFixing)
 
-            floatLegPV /= self._fixedLeg._notional
+            floatLegPV /= self.fixed_leg._notional
 
         cpn = floatLegPV / pv01
         return cpn
@@ -201,7 +201,7 @@ class TuringIborSwap(object):
         ''' The swap may have started in the past but we can only value
         payments that have occurred after the valuation date. '''
         startIndex = 0
-        while self._fixedLeg._paymentDates[startIndex] < valuationDate:
+        while self.fixed_leg._paymentDates[startIndex] < valuationDate:
             startIndex += 1
 
         ''' If the swap has yet to settle then we do not include the
@@ -214,7 +214,7 @@ class TuringIborSwap(object):
         df = 1.0
         alpha = 1.0 / m
 
-        for _ in self._fixedLeg._paymentDates[startIndex:]:
+        for _ in self.fixed_leg._paymentDates[startIndex:]:
             df = df / (1.0 + alpha * flatSwapRate)
             flatPV01 += df * alpha
 
@@ -226,7 +226,7 @@ class TuringIborSwap(object):
         ''' Prints the fixed leg amounts without any valuation details. Shows
         the dates and sizes of the promised fixed leg flows. '''
 
-        self._fixedLeg.printValuation()
+        self.fixed_leg.printValuation()
 
 ###############################################################################
 
@@ -242,7 +242,7 @@ class TuringIborSwap(object):
         ''' Prints the fixed leg amounts without any valuation details. Shows
         the dates and sizes of the promised fixed leg flows. '''
 
-        self._fixedLeg.printPayments()
+        self.fixed_leg.printPayments()
         self._floatLeg.printPayments()
 
 ##########################################################################
@@ -250,7 +250,7 @@ class TuringIborSwap(object):
     def __repr__(self):
 
         s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += self._fixedLeg.__repr__()
+        s += self.fixed_leg.__repr__()
         s += "\n"
         s += self._floatLeg.__repr__()
         return s

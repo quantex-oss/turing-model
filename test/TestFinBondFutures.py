@@ -148,7 +148,7 @@ def test_FinBondFuture():
                                                futuresPrice)
 
     testCases.header("CTD MATURITY", "CTD COUPON")
-    testCases.print(str(ctd._maturityDate), ctd._coupon)
+    testCases.print(str(ctd.maturity_date), ctd._coupon)
 
 ##########################################################################
 

@@ -46,7 +46,7 @@ class TuringBondYieldCurve():
 
         yearsToMaturities = []
         for bond in bonds:
-            maturityYears = (bond._maturityDate-settlementDate)/gDaysInYear
+            maturityYears = (bond.maturity_date - settlementDate) / gDaysInYear
             yearsToMaturities.append(maturityYears)
         self._yearsToMaturity = np.array(yearsToMaturities)
 

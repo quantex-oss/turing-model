@@ -428,7 +428,7 @@ class TuringCDS(object):
         for fra in newIssuerCurve._liborCurve._usedFRAs:
             fra._fraRate += bump
         for swap in newIssuerCurve._liborCurve._usedSwaps:
-            swap._fixedLeg._coupon += bump
+            swap.fixed_leg._coupon += bump
 
         newIssuerCurve._liborCurve._buildCurve()
 
