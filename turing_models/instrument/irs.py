@@ -19,6 +19,9 @@ from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instrument.core import Instrument
 
 
+bump = 1e-4
+
+
 def modify_day_count_type(day_count_type):
     if day_count_type == 'ACT/365':
         return TuringDayCountTypes.ACT_365L
@@ -174,13 +177,13 @@ class IRS(Instrument):
 
     @property
     def libor_curve(self):
-        return self.__index_curve or self.build_ibor_single_curve()
+        return self.__libor_curve or self.build_ibor_single_curve(0)
 
     @libor_curve.setter
     def libor_curve(self, value):
-        self.__index_curve = value
+        self.__libor_curve = value
 
-    def build_ibor_single_curve(self):
+    def build_ibor_single_curve(self, dx):
         value_date = self.value_date_
 
         depos = []
@@ -198,7 +201,7 @@ class IRS(Instrument):
             swap = IRS(effective_date=value_date,
                        termination_date=self.zero_dates1_[i],
                        fixed_leg_type=self.fixed_leg_type_curve,
-                       fixed_coupon=self.zero_rates1[i],
+                       fixed_coupon=self.zero_rates1[i] + dx,
                        fixed_freq_type=self.fixed_freq_type_curve,
                        fixed_day_count_type=self.fixed_day_count_type_curve,
                        value_date=value_date)
@@ -212,18 +215,30 @@ class IRS(Instrument):
         """ Value the interest rate swap on a value date given a single Ibor
         discount curve. """
 
-        # if self.index_curve is None:
-        #     self.index_curve = self.discount_curve
+        if self.index_curve is None:
+            self.index_curve = self.libor_curve
 
         fixed_leg_value = self.fixed_leg.value(self.value_date_,
                                                self.libor_curve)
 
         float_leg_value = self.float_leg.value(self.value_date_,
                                                self.libor_curve,
-                                               self.libor_curve,
+                                               self.index_curve,
                                                self.first_fixing_rate)
 
         return fixed_leg_value + float_leg_value
+    
+    def dv01(self):
+        ''' Calculate the value of 1 basis point coupon on the fixed leg. '''
+
+        pv = self.price()
+        libor_curve = self.libor_curve
+        self.libor_curve = self.build_ibor_single_curve(bump) 
+        pv_bumped = self.price()
+       
+        dv01 = pv_bumped - pv
+        self.libor_curve = libor_curve
+        return dv01
 
     def pv01(self):
         ''' Calculate the value of 1 basis point coupon on the fixed leg. '''
@@ -251,12 +266,12 @@ class IRS(Instrument):
         if abs(pv01) < gSmall:
             raise Exception("PV01 is zero. Cannot compute swap rate.")
 
-        # if self.index_curve is None:
-        #     self.index_curve = self.discount_curve
+        if self.index_curve is None:
+            self.index_curve = self.libor_curve
 
         float_leg_pv = self.float_leg.value(self.value_date_,
                                             self.libor_curve,
-                                            self.libor_curve,
+                                            self.index_curve,
                                             self.first_fixing_rate)
 
         float_leg_pv /= self.fixed_leg._notional
