@@ -13,7 +13,7 @@ from turing_models.utilities.turing_date import TuringDate
 dy = 0.0001
 
 
-@dataclass
+@dataclass(eq=False, order=False, unsafe_hash=True)
 class Bond(Instrument,InstrumentBase):
     asset_id: str = None
     quantity: float = 1.0
@@ -31,6 +31,7 @@ class Bond(Instrument,InstrumentBase):
     settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
 
     def __post_init__(self):
+        super().__init__()
         self.convention = TuringYTMCalcType.UK_DMO
         self.calendar_type = TuringCalendarTypes.WEEKEND
         self._redemption = 1.0  # This is amount paid at maturity
