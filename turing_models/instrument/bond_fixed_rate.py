@@ -21,7 +21,7 @@ def _f(y, *args):
     return obj_fn
 
 
-@dataclass
+@dataclass(eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
     coupon: float = 0.0
     curve_code: str = None
@@ -340,3 +340,5 @@ class BondFixedRate(Bond):
         self._accrued_days = num
 
         return self._accrued_interest
+
+

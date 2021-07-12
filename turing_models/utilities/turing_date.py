@@ -1,4 +1,6 @@
 import datetime
+from dataclasses import dataclass
+
 from turing_models.utilities.error import TuringError
 from numba import njit, boolean, int64
 import numpy as np
@@ -180,7 +182,7 @@ def weekDay(dayCount):
 
 ###############################################################################
 
-
+@dataclass(eq=False, order=False, unsafe_hash=True)
 class TuringDate():
     ''' A date class to manage dates that is simple to use and includes a
     number of useful date functions used frequently in Finance. '''

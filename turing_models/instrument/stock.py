@@ -17,6 +17,7 @@ class Stock(Instrument,InstrumentBase):
     stock_price: float = None
 
     def __post_init__(self):
+        super().__init__()
         self.set_param()
 
     def set_param(self):

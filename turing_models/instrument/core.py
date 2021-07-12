@@ -1,5 +1,4 @@
 import traceback
-from dataclasses import dataclass
 from typing import Union, List, Iterable
 
 from loguru import logger
@@ -12,9 +11,9 @@ from turing_models.instrument.common import RiskMeasure
 # from turing_models.instrument.decorator import concurrent
 
 
-@dataclass
 class Instrument:
-    ctx: Context = ctx
+    def __init__(self):
+        self.ctx: Context = ctx
 
     # @concurrent
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):

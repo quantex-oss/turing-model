@@ -55,6 +55,7 @@ class EqOption(Instrument, InstrumentBase):
     }
 
     def __post_init__(self):
+        super().__init__()
         self.set_param()
 
     def set_param(self):
