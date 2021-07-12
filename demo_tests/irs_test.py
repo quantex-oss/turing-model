@@ -1,3 +1,6 @@
+from tunny.switch import set_switch
+set_switch(0)
+
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instrument.irs import IRS
 

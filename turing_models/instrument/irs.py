@@ -200,7 +200,8 @@ class IRS(Instrument):
                        fixed_leg_type=self.fixed_leg_type_curve,
                        fixed_coupon=self.zero_rates1[i],
                        fixed_freq_type=self.fixed_freq_type_curve,
-                       fixed_day_count_type=self.fixed_day_count_type_curve)
+                       fixed_day_count_type=self.fixed_day_count_type_curve,
+                       value_date=value_date)
             swaps.append(swap)
 
         libor_curve = TuringIborSingleCurve(value_date, depos, fras, swaps)

@@ -35,7 +35,7 @@ def _f(df, *args):
 
     # For curves that need a fit function, we fit it now
     curve._interpolator.fit(curve._times, curve._dfs)
-    swap.index_curve = curve
+    swap.libor_curve = curve
     # v_swap = swap.value(valueDate, curve, curve, None)
     v_swap = swap.price()
     notional = swap.fixed_leg._notional
@@ -411,7 +411,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
             dfMat = optimize.newton(_f, x0=dfMat, fprime=None, args=argtuple,
                                     tol=swaptol, maxiter=50, fprime2=None,
                                     full_output=False)
-            swap.index_curve = None
+            # swap.index_curve = None
 
         if self._checkRefit is True:
             self._checkRefits(1e-10, swaptol, 1e-5)
