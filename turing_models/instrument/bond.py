@@ -1,6 +1,9 @@
 import datetime
+import traceback
 from dataclasses import dataclass
 
+from fundamental.turing_db.data import Turing
+from fundamental.turing_db.utils import to_snake
 from turing_models.instrument.core import Instrument, InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes
@@ -14,7 +17,7 @@ dy = 0.0001
 
 
 @dataclass(eq=False, order=False, unsafe_hash=True)
-class Bond(Instrument,InstrumentBase):
+class Bond(Instrument, InstrumentBase):
     asset_id: str = None
     quantity: float = 1.0
     bond_type: str = None
@@ -107,3 +110,51 @@ class Bond(Instrument,InstrumentBase):
     def dollar_convexity(self):
         print("You should not be here!")
         return 0.0
+
+    def fetch_yield_curve(self, curve_code_list):
+        """根据asset_ids的集合为参数,取行情"""
+        try:
+            return Turing.get_yieldcurve(_ids=curve_code_list)
+        except Exception:
+            traceback.print_exc()
+            return None
+
+    def fetch_quotes(self, ids):
+        """根据asset_ids的集合为参数,取行情"""
+        try:
+            res = Turing.get_bond_markets(_ids=ids)
+            return res
+        except Exception as e:
+            traceback.print_exc()
+            return None
+
+    def put_zero_dates(self, curve_code_list):
+        zero_dates = []
+        curve = self.fetch_yield_curve(curve_code_list)
+        if curve:
+            for code in to_snake(curve):
+                if code.get("curve_code") == curve_code_list[0]:
+                    for cu in code.get('curve_data'):
+                        zero_dates.append(cu.get('term'))
+        self.zero_dates = zero_dates
+        return zero_dates
+
+    def put_zero_rates(self, curve_code_list):
+        zero_rates = []
+        curve = self.fetch_yield_curve(curve_code_list)
+        if curve:
+            for code in to_snake(curve):
+                if code.get("curve_code") == curve_code_list[0]:
+                    for cu in code.get('curve_data'):
+                        zero_rates.append(cu.get('spot_rate'))
+        self.zero_rates = zero_rates
+        return zero_rates
+
+    def put_ytm(self, quotes_dict, asset_id):
+        if quotes_dict:
+            for quote in quotes_dict:
+                if quote.get("asset_id") == asset_id:
+                    ytm_ = quote.get("ytm", None)
+                    if ytm_:
+                        return ytm_
+        return None

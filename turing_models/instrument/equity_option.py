@@ -203,7 +203,6 @@ class EqOption(Instrument, InstrumentBase):
             for code in to_snake(curve):
                 for cu in code.get('curve_data'):
                     zero_dates.append(cu.get('term'))
-        logger.warning(f"zero_dates: {zero_dates}")
         self.zero_dates = zero_dates
         return zero_dates
 
