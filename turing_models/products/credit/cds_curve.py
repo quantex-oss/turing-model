@@ -78,13 +78,13 @@ class TuringCDSCurve():
         if len(cdsContracts) == 0:
             raise TuringError("No CDS contracts have been supplied.")
 
-        maturityDate = cdsContracts[0]._maturityDate
+        maturityDate = cdsContracts[0].maturity_date
 
         for cds in cdsContracts[1:]:
-            if cds._maturityDate <= maturityDate:
+            if cds.maturity_date <= maturityDate:
                 raise TuringError("CDS contracts not in increasing maturity.")
 
-            maturityDate = cds._maturityDate
+            maturityDate = cds.maturity_date
 
 ###############################################################################
 
@@ -149,7 +149,7 @@ class TuringCDSCurve():
 
         for i in range(0, numTimes):
 
-            maturityDate = self._cdsContracts[i]._maturityDate
+            maturityDate = self._cdsContracts[i].maturity_date
 
             argtuple = (self, self._valuationDate, self._cdsContracts[i])
             tmat = (maturityDate - self._valuationDate) / gDaysInYear

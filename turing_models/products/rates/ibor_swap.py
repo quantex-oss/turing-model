@@ -26,12 +26,12 @@ class TuringIborSwap(object):
     a start date to a specified maturity date.
 
     The floating rate is not known fully until the end of the preceding payment
-    period. It is set in advance and paid in arrears. 
-    
+    period. It is set in advance and paid in arrears.
+
     The value of the contract is the NPV of the two coupon streams. Discounting
     is done on a supplied discount curve which is separate from the curve from
     which the implied index rates are extracted. '''
-    
+
     def __init__(self,
                  effectiveDate: TuringDate,  # Date interest starts to accrue
                  terminationDateOrTenor: (TuringDate, str),  # Date contract ends
@@ -58,28 +58,28 @@ class TuringIborSwap(object):
         checkArgumentTypes(self.__init__, locals())
 
         if type(terminationDateOrTenor) == TuringDate:
-            self._terminationDate = terminationDateOrTenor
+            self.termination_date = terminationDateOrTenor
         else:
-            self._terminationDate = effectiveDate.addTenor(terminationDateOrTenor)
+            self.termination_date = effectiveDate.addTenor(terminationDateOrTenor)
 
         calendar = TuringCalendar(calendarType)
-        self._maturityDate = calendar.adjust(self._terminationDate,
+        self.maturity_date = calendar.adjust(self.termination_date,
                                              busDayAdjustType)
 
-        if effectiveDate > self._maturityDate:
+        if effectiveDate > self.maturity_date:
             raise TuringError("Start date after maturity date")
 
-        self._effectiveDate = effectiveDate
+        self.effective_date = effectiveDate
 
         floatLegType = TuringSwapTypes.PAY
         if fixedLegType == TuringSwapTypes.PAY:
             floatLegType = TuringSwapTypes.RECEIVE
-        
+
         paymentLag = 0
         principal = 0.0
 
-        self._fixedLeg = TuringFixedLeg(effectiveDate,
-                                        self._terminationDate,
+        self.fixed_leg = TuringFixedLeg(effectiveDate,
+                                        self.termination_date,
                                         fixedLegType,
                                         fixedCoupon,
                                         fixedFreqType,
@@ -92,7 +92,7 @@ class TuringIborSwap(object):
                                         dateGenRuleType)
 
         self._floatLeg = TuringFloatLeg(effectiveDate,
-                                        self._terminationDate,
+                                        self.termination_date,
                                         floatLegType,
                                         floatSpread,
                                         floatFreqType,
@@ -103,7 +103,7 @@ class TuringIborSwap(object):
                                         calendarType,
                                         busDayAdjustType,
                                         dateGenRuleType)
-            
+
 ###############################################################################
 
     def value(self,
@@ -117,7 +117,7 @@ class TuringIborSwap(object):
         if indexCurve is None:
             indexCurve = discountCurve
 
-        fixedLegValue = self._fixedLeg.value(valuationDate,
+        fixedLegValue = self.fixed_leg.value(valuationDate,
                                              discountCurve)
 
         floatLegValue = self._floatLeg.value(valuationDate,
@@ -133,11 +133,11 @@ class TuringIborSwap(object):
     def pv01(self, valuationDate, discountCurve):
         ''' Calculate the value of 1 basis point coupon on the fixed leg. '''
 
-        pv = self._fixedLeg.value(valuationDate, discountCurve)
-        
+        pv = self.fixed_leg.value(valuationDate, discountCurve)
+
         # Needs to be positive even if it is a payer leg
         pv = np.abs(pv)
-        pv01 = pv / self._fixedLeg._coupon / self._fixedLeg._notional
+        pv01 = pv / self.fixed_leg._coupon / self.fixed_leg._notional
         return pv01
 
 ###############################################################################
@@ -152,7 +152,7 @@ class TuringIborSwap(object):
         is the forward swap rate as it starts in the future. The swap rate
         is then a forward swap rate and so we use a forward discount
         factor. If the swap fixed leg has begun then we have a spot
-        starting swap. The swap rate can also be calculated in a dual curve 
+        starting swap. The swap rate can also be calculated in a dual curve
         approach but in this case the first fixing on the floating leg is
         needed. '''
 
@@ -161,27 +161,27 @@ class TuringIborSwap(object):
         if abs(pv01) < gSmall:
             raise TuringError("PV01 is zero. Cannot compute swap rate.")
 
-        if valuationDate < self._effectiveDate:
-            df0 = discountCurve.df(self._effectiveDate)
+        if valuationDate < self.effective_date:
+            df0 = discountCurve.df(self.effective_date)
         else:
             df0 = discountCurve.df(valuationDate)
 
         floatLegPV = 0.0
 
         if indexCurve is None:
-            dfT = discountCurve.df(self._maturityDate)
-            floatLegPV = (df0 - dfT) 
+            dfT = discountCurve.df(self.maturity_date)
+            floatLegPV = (df0 - dfT)
         else:
             floatLegPV = self._floatLeg.value(valuationDate,
                                               discountCurve,
-                                              indexCurve, 
+                                              indexCurve,
                                               firstFixing)
 
-            floatLegPV /= self._fixedLeg._notional
+            floatLegPV /= self.fixed_leg._notional
 
-        cpn = floatLegPV / pv01           
+        cpn = floatLegPV / pv01
         return cpn
-    
+
 ##########################################################################
 
     def cashSettledPV01(self,
@@ -201,12 +201,12 @@ class TuringIborSwap(object):
         ''' The swap may have started in the past but we can only value
         payments that have occurred after the valuation date. '''
         startIndex = 0
-        while self._fixedLeg._paymentDates[startIndex] < valuationDate:
+        while self.fixed_leg._paymentDates[startIndex] < valuationDate:
             startIndex += 1
 
         ''' If the swap has yet to settle then we do not include the
         start date of the swap as a coupon payment date. '''
-        if valuationDate <= self._effectiveDate:
+        if valuationDate <= self.effective_date:
             startIndex = 1
 
         ''' Now PV fixed leg flows. '''
@@ -214,7 +214,7 @@ class TuringIborSwap(object):
         df = 1.0
         alpha = 1.0 / m
 
-        for _ in self._fixedLeg._paymentDates[startIndex:]:
+        for _ in self.fixed_leg._paymentDates[startIndex:]:
             df = df / (1.0 + alpha * flatSwapRate)
             flatPV01 += df * alpha
 
@@ -226,7 +226,7 @@ class TuringIborSwap(object):
         ''' Prints the fixed leg amounts without any valuation details. Shows
         the dates and sizes of the promised fixed leg flows. '''
 
-        self._fixedLeg.printValuation()
+        self.fixed_leg.printValuation()
 
 ###############################################################################
 
@@ -242,7 +242,7 @@ class TuringIborSwap(object):
         ''' Prints the fixed leg amounts without any valuation details. Shows
         the dates and sizes of the promised fixed leg flows. '''
 
-        self._fixedLeg.printPayments()
+        self.fixed_leg.printPayments()
         self._floatLeg.printPayments()
 
 ##########################################################################
@@ -250,7 +250,7 @@ class TuringIborSwap(object):
     def __repr__(self):
 
         s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += self._fixedLeg.__repr__()
+        s += self.fixed_leg.__repr__()
         s += "\n"
         s += self._floatLeg.__repr__()
         return s

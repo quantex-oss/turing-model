@@ -21,7 +21,7 @@ def _f(y, *args):
     return obj_fn
 
 
-@dataclass
+@dataclass(eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
     coupon: float = 0.0
     curve_code: str = None
@@ -29,6 +29,7 @@ class BondFixedRate(Bond):
     zero_dates: List[Any] = field(default_factory=list)
     zero_rates: List[Any] = field(default_factory=list)
     __ytm: float = None
+    __discount_curve = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -38,9 +39,6 @@ class BondFixedRate(Bond):
     def set_param(self):
         super().set_param()
         self._ytm = self.ytm
-        if self.zero_dates:
-            self._discount_curve = TuringDiscountCurveZeros(
-                self.settlement_date_, self.zero_dates_, self.zero_rates)
         if self.coupon:
             self._calculate_flow_amounts()
 
@@ -57,12 +55,17 @@ class BondFixedRate(Bond):
         return self.settlement_date_.addYears(self.zero_dates)
 
     @property
+    def _discount_curve(self):
+        return TuringDiscountCurveZeros(
+            self.settlement_date_, self.zero_dates_, self.zero_rates)
+
+    @property
     def discount_curve(self):
-        return self._discount_curve
+        return self.__discount_curve or self._discount_curve
 
     @discount_curve.setter
     def discount_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
-        self._discount_curve = value
+        self.__discount_curve = value
 
     @property
     def discount_curve_flat(self):
@@ -337,3 +340,5 @@ class BondFixedRate(Bond):
         self._accrued_days = num
 
         return self._accrued_interest
+
+

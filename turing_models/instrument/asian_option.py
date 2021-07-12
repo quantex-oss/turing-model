@@ -47,7 +47,7 @@ class AsianOption(EqOption):
         elif valuation_method == TuringAsianOptionValuationMethods.CURRAN:
             v = self._value_curran()
 
-        return v * self.multiplier * self.number_of_options
+        return v * self._multiplier * self._number_of_options
 
     def _value_geometric(self):
         # the years to the start of the averaging period

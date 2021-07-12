@@ -54,7 +54,7 @@ class TuringBondZeroCurve(TuringDiscountCurve):
 
         times = []
         for bond in self._bonds:
-            tmat = (bond._maturityDate - self._settlementDate)/gDaysInYear
+            tmat = (bond.maturity_date - self._settlementDate) / gDaysInYear
             times.append(tmat)
 
         times = np.array(times)
@@ -75,7 +75,7 @@ class TuringBondZeroCurve(TuringDiscountCurve):
 
         for i in range(0, len(self._bonds)):
             bond = self._bonds[i]
-            maturityDate = bond._maturityDate
+            maturityDate = bond.maturity_date
             cleanPrice = self._cleanPrices[i]
             tmat = (maturityDate - self._settlementDate) / gDaysInYear
             argtuple = (self, self._settlementDate, bond, cleanPrice)

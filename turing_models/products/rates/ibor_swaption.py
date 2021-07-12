@@ -142,17 +142,17 @@ class TuringIborSwaption():
         cpnFlows = [0.0]
 
         # The first flow is on the day after the expiry date
-        numFlows = len(swap._fixedLeg._paymentDates)
+        numFlows = len(swap.fixed_leg._paymentDates)
 
         for iFlow in range(0, numFlows):
             
-            flowDate = swap._fixedLeg._paymentDates[iFlow]
+            flowDate = swap.fixed_leg._paymentDates[iFlow]
 
             # Only flows occurring after option expiry are counted. 
             # Flows on the expiry date are not included
             if flowDate > self._exerciseDate:
                 cpnTime = (flowDate - valuationDate) / gDaysInYear
-                cpnFlow = swap._fixedLeg._payments[iFlow] / self._notional
+                cpnFlow = swap.fixed_leg._payments[iFlow] / self._notional
                 cpnTimes.append(cpnTime)
                 cpnFlows.append(cpnFlow)
 

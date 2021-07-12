@@ -6,7 +6,7 @@ from turing_models.models.model_black_scholes_analytical import bsValue, bsDelta
 from turing_models.instrument.equity_option import EqOption
 
 
-@dataclass
+@dataclass(eq=False, order=False, unsafe_hash=True)
 class EuropeanOption(EqOption):
 
     def __post_init__(self):
@@ -29,22 +29,22 @@ class EuropeanOption(EqOption):
         ]
 
     def price(self) -> float:
-        return bsValue(*self.params()) * self.multiplier * self.number_of_options
+        return bsValue(*self.params()) * self._multiplier * self._number_of_options
 
     def eq_delta(self) -> float:
-        return bsDelta(*self.params()) * self.multiplier * self.number_of_options
+        return bsDelta(*self.params()) * self._multiplier * self._number_of_options
 
     def eq_gamma(self) -> float:
-        return bsGamma(*self.params()) * self.multiplier * self.number_of_options
+        return bsGamma(*self.params()) * self._multiplier * self._number_of_options
 
     def eq_vega(self) -> float:
-        return bsVega(*self.params()) * self.multiplier * self.number_of_options
+        return bsVega(*self.params()) * self._multiplier * self._number_of_options
 
     def eq_theta(self) -> float:
-        return bsTheta(*self.params()) * self.multiplier * self.number_of_options
+        return bsTheta(*self.params()) * self._multiplier * self._number_of_options
 
     def eq_rho(self) -> float:
-        return bsRho(*self.params()) * self.multiplier * self.number_of_options
+        return bsRho(*self.params()) * self._multiplier * self._number_of_options
 
     def eq_rho_q(self) -> float:
-        return bsPsi(*self.params()) * self.multiplier * self.number_of_options
+        return bsPsi(*self.params()) * self._multiplier * self._number_of_options

@@ -57,7 +57,7 @@ def _f(df, *args):
     # For curves that need a fit function, we fit it now
     curve._interpolator.fit(curve._times, curve._dfs)
     v_swap = swap.value(valueDate, curve, None)
-    notional = swap._fixedLeg._notional
+    notional = swap.fixed_leg._notional
     v_swap /= notional
     return v_swap
 
@@ -167,16 +167,16 @@ class TuringOISCurve(TuringDiscountCurve):
 
             for depo in oisDeposits:
                 startDt = depo._startDate
-                endDt = depo._maturityDate
+                endDt = depo.maturity_date
                 if startDt >= endDt:
                     raise TuringError("First deposit ends on or before it begins")
 
         # Ensure order of depos
         if numDepos > 1:
 
-            prevDt = oisDeposits[0]._maturityDate
+            prevDt = oisDeposits[0].maturity_date
             for depo in oisDeposits[1:]:
-                nextDt = depo._maturityDate
+                nextDt = depo.maturity_date
                 if nextDt <= prevDt:
                     raise TuringError("Deposits must be in increasing maturity")
                 prevDt = nextDt
@@ -201,16 +201,16 @@ class TuringOISCurve(TuringDiscountCurve):
                     raise TuringError("FRAs starts before valuation date")
 
         if numFRAs > 1:
-            prevDt = oisFRAs[0]._maturityDate
+            prevDt = oisFRAs[0].maturity_date
             for fra in oisFRAs[1:]:
-                nextDt = fra._maturityDate
+                nextDt = fra.maturity_date
                 if nextDt <= prevDt:
                     raise TuringError("FRAs must be in increasing maturity")
                 prevDt = nextDt
 
         if numSwaps > 0:
 
-            swapStartDate = oisSwaps[0]._effectiveDate
+            swapStartDate = oisSwaps[0].effective_date
 
             for swap in oisSwaps:
 
@@ -227,9 +227,9 @@ class TuringOISCurve(TuringDiscountCurve):
         if numSwaps > 1:
 
             # Swaps must be increasing in tenor/maturity
-            prevDt = oisSwaps[0]._maturityDate
+            prevDt = oisSwaps[0].maturity_date
             for swap in oisSwaps[1:]:
-                nextDt = swap._maturityDate
+                nextDt = swap.maturity_date
                 if nextDt <= prevDt:
                     raise TuringError("Swaps must be in increasing maturity")
                 prevDt = nextDt
@@ -254,14 +254,14 @@ class TuringOISCurve(TuringDiscountCurve):
         lastFRAMaturityDate = TuringDate(1900, 1, 1)
 
         if numDepos > 0:
-            lastDepositMaturityDate = oisDeposits[-1]._maturityDate
+            lastDepositMaturityDate = oisDeposits[-1].maturity_date
 
         if numFRAs > 0:
-            firstFRAMaturityDate = oisFRAs[0]._maturityDate
-            lastFRAMaturityDate = oisFRAs[-1]._maturityDate
+            firstFRAMaturityDate = oisFRAs[0].maturity_date
+            lastFRAMaturityDate = oisFRAs[-1].maturity_date
 
         if numSwaps > 0:
-            firstSwapMaturityDate = oisSwaps[0]._maturityDate
+            firstSwapMaturityDate = oisSwaps[0].maturity_date
 
         if numFRAs > 0 and numSwaps > 0:
             if firstSwapMaturityDate <= lastFRAMaturityDate:
@@ -288,7 +288,7 @@ class TuringOISCurve(TuringDiscountCurve):
                     print("Inserting synthetic deposit")
                     syntheticDeposit = copy.deepcopy(firstDepo)
                     syntheticDeposit._startDate = self._valuationDate
-                    syntheticDeposit._maturityDate = firstDepo._startDate
+                    syntheticDeposit.maturity_date = firstDepo._startDate
                     oisDeposits.insert(0, syntheticDeposit)
                     numDepos += 1
 
@@ -320,7 +320,7 @@ class TuringOISCurve(TuringDiscountCurve):
         for depo in self._usedDeposits:
             dfSettle = self.df(depo._startDate)
             dfMat = depo._maturityDf() * dfSettle
-            tmat = (depo._maturityDate - self._valuationDate) / gDaysInYear
+            tmat = (depo.maturity_date - self._valuationDate) / gDaysInYear
             self._times = np.append(self._times, tmat)
             self._dfs = np.append(self._dfs, dfMat)
             self._interpolator.fit(self._times, self._dfs)
@@ -330,7 +330,7 @@ class TuringOISCurve(TuringDiscountCurve):
         for fra in self._usedFRAs:
 
             tset = (fra._startDate - self._valuationDate) / gDaysInYear
-            tmat = (fra._maturityDate - self._valuationDate) / gDaysInYear
+            tmat = (fra.maturity_date - self._valuationDate) / gDaysInYear
 
             # if both dates are after the previous FRA/FUT then need to
             # solve for 2 discount factors simultaneously using root search
@@ -350,7 +350,7 @@ class TuringOISCurve(TuringDiscountCurve):
         for swap in self._usedSwaps:
             # I use the lastPaymentDate in case a date has been adjusted fwd
             # over a holiday as the maturity date is usually not adjusted CHECK
-            maturityDate = swap._fixedLeg._paymentDates[-1]
+            maturityDate = swap.fixed_leg._paymentDates[-1]
             tmat = (maturityDate - self._valuationDate) / gDaysInYear
 
             self._times = np.append(self._times, tmat)
@@ -386,7 +386,7 @@ class TuringOISCurve(TuringDiscountCurve):
         for depo in self._usedDeposits:
             dfSettle = self.df(depo._startDate)
             dfMat = depo._maturityDf() * dfSettle
-            tmat = (depo._maturityDate - self._valuationDate) / gDaysInYear
+            tmat = (depo.maturity_date - self._valuationDate) / gDaysInYear
             self._times = np.append(self._times, tmat)
             self._dfs = np.append(self._dfs, dfMat)
             self._interpolator.fit(self._times, self._dfs)
@@ -396,7 +396,7 @@ class TuringOISCurve(TuringDiscountCurve):
         for fra in self._usedFRAs:
 
             tset = (fra._startDate - self._valuationDate) / gDaysInYear
-            tmat = (fra._maturityDate - self._valuationDate) / gDaysInYear
+            tmat = (fra.maturity_date - self._valuationDate) / gDaysInYear
 
             # if both dates are after the previous FRA/FUT then need to
             # solve for 2 discount factors simultaneously using root search
@@ -429,10 +429,10 @@ class TuringOISCurve(TuringDiscountCurve):
         foundStart = False
         lastDate = self._valuationDate
         if len(self._usedDeposits) != 0:
-            lastDate = self._usedDeposits[-1]._maturityDate
+            lastDate = self._usedDeposits[-1].maturity_date
 
         if len(self._usedFRAs) != 0:
-            lastDate = self._usedFRAs[-1]._maturityDate
+            lastDate = self._usedFRAs[-1].maturity_date
 
         # We use the longest swap assuming it has a superset of ALL of the
         # swap flow dates used in the curve construction
@@ -521,10 +521,10 @@ class TuringOISCurve(TuringDiscountCurve):
 
         for swap in self._usedSwaps:
             # We value it as of the start date of the swap
-            v = swap.value(swap._effectiveDate, self, self, None, principal=0.0)
+            v = swap.value(swap.effective_date, self, self, None, principal=0.0)
             v = v / swap._notional
             if abs(v) > swapTol:
-                print("Swap with maturity " + str(swap._maturityDate)
+                print("Swap with maturity " + str(swap.maturity_date)
                       + " Not Repriced. Has Value", v)
                 swap.printFixedLegPV()
                 swap.printFloatLegPV()

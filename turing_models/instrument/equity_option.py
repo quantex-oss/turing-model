@@ -3,8 +3,11 @@ from dataclasses import dataclass, field
 from typing import List, Any
 
 import numpy as np
+from loguru import logger
+
 from fundamental.market.curves import TuringDiscountCurveFlat, \
      TuringDiscountCurveZeros
+from fundamental.turing_db.utils import to_snake
 
 from turing_models.instrument.common import greek, bump
 from turing_models.utilities.turing_date import TuringDate
@@ -13,7 +16,7 @@ from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.instrument.core import Instrument, InstrumentBase
 
 
-@dataclass
+@dataclass(eq=False, order=False, unsafe_hash=True)
 class EqOption(Instrument, InstrumentBase):
 
     asset_id: str = None
@@ -26,7 +29,7 @@ class EqOption(Instrument, InstrumentBase):
     number_of_options: float = None
     start_date: TuringDate = None
     end_date: TuringDate = None
-    expiry: str = None
+    expiry: TuringDate = None
     participation_rate: float = None
     strike_price: float = None
     multiplier: float = None
@@ -55,6 +58,7 @@ class EqOption(Instrument, InstrumentBase):
     }
 
     def __post_init__(self):
+        super().__init__()
         self.set_param()
 
     def set_param(self):
@@ -63,6 +67,8 @@ class EqOption(Instrument, InstrumentBase):
         self._volatility = self.volatility
         self._interest_rate = self.interest_rate
         self._dividend_yield = self.dividend_yield
+        self._number_of_options = self.number_of_options or 1
+        self._multiplier = self.multiplier or 1
 
     @property
     def value_date_(self):
@@ -190,3 +196,21 @@ class EqOption(Instrument, InstrumentBase):
     def eq_rho_q(self) -> float:
         return greek(self, self.price, "dividend_curve",
                      cus_inc=(self.dividend_curve.bump, bump))
+
+    def put_zero_dates(self, curve):
+        zero_dates = []
+        if curve:
+            for code in to_snake(curve):
+                for cu in code.get('curve_data'):
+                    zero_dates.append(cu.get('term'))
+        self.zero_dates = zero_dates
+        return zero_dates
+
+    def put_zero_rates(self, curve):
+        zero_rates = []
+        if curve:
+            for code in to_snake(curve):
+                for cu in code.get('curve_data'):
+                    zero_rates.append(cu.get('spot_rate'))
+        self.zero_rates = zero_rates
+        return zero_rates

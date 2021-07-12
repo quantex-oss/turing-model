@@ -1,5 +1,4 @@
 import traceback
-from dataclasses import dataclass
 from typing import Union, List, Iterable
 
 from loguru import logger
@@ -9,10 +8,14 @@ from fundamental.base import Context
 from turing_models.instrument.common import RiskMeasure
 
 
-@dataclass
-class Instrument:
-    ctx: Context = ctx
+# from turing_models.instrument.decorator import concurrent
 
+
+class Instrument:
+    def __init__(self):
+        self.ctx: Context = ctx
+
+    # @concurrent
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):
         result: Union[float, List] = []
 
@@ -26,7 +29,7 @@ class Instrument:
                 res = getattr(self, risk.value)()
                 res = self._calc(res)
                 result.append(res)
-                self.__row__(risk.value, round(res, 2) if res else "-")
+                self.__row__(risk.value, round(res, 2) if res and not isinstance(res, Iterable) else "-")
             return result
         except Exception as e:
             logger.error(str(traceback.format_exc()))

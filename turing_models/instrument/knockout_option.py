@@ -10,7 +10,7 @@ from turing_models.instrument.equity_option import EqOption
 from turing_models.utilities.mathematics import N
 
 
-@dataclass
+@dataclass(eq=False, order=False, unsafe_hash=True)
 class KnockOutOption(EqOption):
 
     barrier: float = None
@@ -171,5 +171,3 @@ class KnockOutOption(EqOption):
                         rebate * texp**flag * (ones * barrierCrossedFromAbove)
 
         return payoff.mean() * np.exp(- r * texp) * notional
-
-

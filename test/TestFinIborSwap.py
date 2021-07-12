@@ -248,7 +248,7 @@ def buildIborSingleCurve(valuationDate):
     ''' Check calibration '''
     for depo in depos:
         v = depo.value(settlementDate, liborCurve)
-        testCases.print("DEPO VALUE:", depo._maturityDate, v)
+        testCases.print("DEPO VALUE:", depo.maturity_date, v)
 
     for fra in fras:
         v = fra.value(settlementDate, liborCurve)
@@ -256,7 +256,7 @@ def buildIborSingleCurve(valuationDate):
 
     for swap in swaps:
         v = swap.value(settlementDate, liborCurve)
-        testCases.print("SWAP VALUE:", swap._maturityDate, v)
+        testCases.print("SWAP VALUE:", swap.maturity_date, v)
 
     return liborCurve
 
