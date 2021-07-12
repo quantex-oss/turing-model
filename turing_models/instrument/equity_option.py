@@ -13,7 +13,7 @@ from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.instrument.core import Instrument, InstrumentBase
 
 
-@dataclass
+@dataclass(eq=False, order=False, unsafe_hash=True)
 class EqOption(Instrument, InstrumentBase):
 
     asset_id: str = None
