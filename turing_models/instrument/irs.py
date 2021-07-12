@@ -84,6 +84,7 @@ class IRS(Instrument):
     fixed_day_count_type_curve: str = None
     fixed_leg_type_curve: str = None
     __index_curve = None
+    __libor_curve = None
 
     def __post_init__(self):
         self.calendar_type = TuringCalendarTypes.WEEKEND
@@ -173,7 +174,11 @@ class IRS(Instrument):
 
     @property
     def libor_curve(self):
-        return self.build_ibor_single_curve()
+        return self.__index_curve or self.build_ibor_single_curve()
+
+    @libor_curve.setter
+    def libor_curve(self, value):
+        self.__index_curve = value
 
     def build_ibor_single_curve(self):
         value_date = self.value_date_

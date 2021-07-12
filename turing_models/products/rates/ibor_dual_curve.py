@@ -34,7 +34,7 @@ def _f(df, *args):
     indexCurve._interpolator.fit(indexCurve._times, indexCurve._dfs)
     v_swap = swap.value(valueDate, discountCurve, indexCurve, None)
 
-    notional = swap._fixedLeg._notional
+    notional = swap.fixed_leg._notional
     v_swap /= notional
     return v_swap
 
@@ -139,16 +139,16 @@ class TuringIborDualCurve(TuringDiscountCurve):
 
             for depo in iborDeposits:
                 startDt = depo._startDate
-                endDt = depo._maturityDate
+                endDt = depo.maturity_date
                 if startDt >= endDt:
                     raise TuringError("First deposit ends on or before it begins")
 
         # Ensure order of depos
         if numDepos > 1:
 
-            prevDt = iborDeposits[0]._maturityDate
+            prevDt = iborDeposits[0].maturity_date
             for depo in iborDeposits[1:]:
-                nextDt = depo._maturityDate
+                nextDt = depo.maturity_date
                 if nextDt <= prevDt:
                     raise TuringError("Deposits must be in increasing maturity")
                 prevDt = nextDt
@@ -170,9 +170,9 @@ class TuringIborDualCurve(TuringDiscountCurve):
                     raise TuringError("FRAs starts before valuation date")
 
         if numFRAs > 1:
-            prevDt = iborFRAs[0]._maturityDate
+            prevDt = iborFRAs[0].maturity_date
             for fra in iborFRAs[1:]:
-                nextDt = fra._maturityDate
+                nextDt = fra.maturity_date
                 if nextDt <= prevDt:
                     raise TuringError("FRAs must be in increasing maturity")
                 prevDt = nextDt
@@ -203,18 +203,18 @@ class TuringIborDualCurve(TuringDiscountCurve):
                     raise TuringError("Swaps must all have same start date.")
 
             # Swaps must be increasing in tenor/maturity
-            prevDt = iborSwaps[0]._maturityDate
+            prevDt = iborSwaps[0].maturity_date
             for swap in iborSwaps[1:]:
-                nextDt = swap._maturityDate
+                nextDt = swap.maturity_date
                 if nextDt <= prevDt:
                     raise TuringError("Swaps must be in increasing maturity")
                 prevDt = nextDt
 
             # Swaps must have same cashflows for bootstrap to work
             longestSwap = iborSwaps[-1]
-            longestSwapCpnDates = longestSwap._fixedLeg._paymentDates
+            longestSwapCpnDates = longestSwap.fixed_leg._paymentDates
             for swap in iborSwaps[0:-1]:
-                swapCpnDates = swap._fixedLeg._paymentDates
+                swapCpnDates = swap.fixed_leg._paymentDates
                 numFlows = len(swapCpnDates)
                 for iFlow in range(0, numFlows):
                     if swapCpnDates[iFlow] != longestSwapCpnDates[iFlow]:
@@ -229,14 +229,14 @@ class TuringIborDualCurve(TuringDiscountCurve):
         lastFRAMaturityDate = TuringDate(1900, 1, 1)
 
         if numDepos > 0:
-            lastDepositMaturityDate = iborDeposits[-1]._maturityDate
+            lastDepositMaturityDate = iborDeposits[-1].maturity_date
 
         if numFRAs > 0:
-            firstFRAMaturityDate = iborFRAs[0]._maturityDate
-            lastFRAMaturityDate = iborFRAs[-1]._maturityDate
+            firstFRAMaturityDate = iborFRAs[0].maturity_date
+            lastFRAMaturityDate = iborFRAs[-1].maturity_date
 
         if numSwaps > 0:
-            firstSwapMaturityDate = iborSwaps[0]._maturityDate
+            firstSwapMaturityDate = iborSwaps[0].maturity_date
 
         if numDepos > 0 and numFRAs > 0:
             if firstFRAMaturityDate <= lastDepositMaturityDate:
@@ -262,7 +262,7 @@ class TuringIborDualCurve(TuringDiscountCurve):
                     print("Inserting synthetic deposit")
                     syntheticDeposit = copy.deepcopy(firstDepo)
                     syntheticDeposit._startDate = self._valuationDate
-                    syntheticDeposit._maturityDate = firstDepo._startDate
+                    syntheticDeposit.maturity_date = firstDepo._startDate
                     iborDeposits.insert(0, syntheticDeposit)
                     numDepos += 1
 
@@ -297,7 +297,7 @@ class TuringIborDualCurve(TuringDiscountCurve):
         for depo in self._usedDeposits:
             dfSettle = self.df(depo._startDate)
             dfMat = depo._maturityDf() * dfSettle
-            tmat = (depo._maturityDate - self._valuationDate) / gDaysInYear
+            tmat = (depo.maturity_date - self._valuationDate) / gDaysInYear
             self._times = np.append(self._times, tmat)
             self._dfs = np.append(self._dfs, dfMat)
             self._interpolator.fit(self._times, self._dfs)
@@ -307,7 +307,7 @@ class TuringIborDualCurve(TuringDiscountCurve):
         for fra in self._usedFRAs:
 
             tset = (fra._startDate - self._valuationDate) / gDaysInYear
-            tmat = (fra._maturityDate - self._valuationDate) / gDaysInYear
+            tmat = (fra.maturity_date - self._valuationDate) / gDaysInYear
 
             # if both dates are after the previous FRA/FUT then need to
             # solve for 2 discount factors simultaneously using root search
@@ -327,7 +327,7 @@ class TuringIborDualCurve(TuringDiscountCurve):
         for swap in self._usedSwaps:
             # I use the lastPaymentDate in case a date has been adjusted fwd
             # over a holiday as the maturity date is usually not adjusted CHECK
-            maturityDate = swap._fixedLeg._paymentDates[-1]
+            maturityDate = swap.fixed_leg._paymentDates[-1]
             tmat = (maturityDate - self._valuationDate) / gDaysInYear
 
             self._times = np.append(self._times, tmat)
@@ -506,9 +506,9 @@ class TuringIborDualCurve(TuringDiscountCurve):
             # We value it as of the start date of the swap
             v = swap.value(swap.effective_date, self._discountCurve,
                            self, None)
-            v = v / swap._fixedLeg._notional
+            v = v / swap.fixed_leg._notional
             if abs(v) > swapTol:
-                print("Swap with maturity " + str(swap._maturityDate)
+                print("Swap with maturity " + str(swap.maturity_date)
                       + " Not Repriced. Has Value", v)
                 swap.printFixedLegPV()
                 swap.printFloatLegPV()

@@ -83,7 +83,7 @@ def test_FinIborDepositsOnly():
     ''' Check calibration '''
     for depo in depos:
         v = depo.value(settlementDate, liborCurve)
-        testCases.print("DEPO", depo._maturityDate, v)
+        testCases.print("DEPO", depo.maturity_date, v)
 
 ###############################################################################
 
@@ -302,12 +302,12 @@ def test_FinIborDepositsFRAsSwaps():
     testCases.header("DATE", "DF")
 
     for deposit in depos:
-        df = liborCurve.df(deposit._maturityDate)
-        testCases.print(str(deposit._maturityDate), df)
+        df = liborCurve.df(deposit.maturity_date)
+        testCases.print(str(deposit.maturity_date), df)
 
     for swap in swaps:
-        df = liborCurve.df(swap._maturityDate)
-        testCases.print(str(swap._maturityDate), df)
+        df = liborCurve.df(swap.maturity_date)
+        testCases.print(str(swap.maturity_date), df)
 
 
 ###############################################################################
@@ -450,7 +450,7 @@ def test_FinIborDepositsFuturesSwaps():
         print(endDate, df)
 
         for depo in depos:
-            endDate = depo._maturityDate
+            endDate = depo.maturity_date
             df = liborCurve.df(endDate)
             print(endDate, df)
 
@@ -460,7 +460,7 @@ def test_FinIborDepositsFuturesSwaps():
             print(endDate, df)
 
         for swap in swaps:
-            endDate = swap._maturityDate
+            endDate = swap.maturity_date
             df = liborCurve.df(endDate)
             print(endDate, df)
 
@@ -685,13 +685,13 @@ def test_bloombergPricingExample(interpType):
     # Pay fixed so make fixed leg value negative
     testCases.header("VALUATION TO TODAY DATE"," PV")
     testCases.print("VALUE:", swaps[0].value(valuationDate, liborCurve, liborCurve, None))
-    testCases.print("FIXED:", -swaps[0]._fixedLeg.value(valuationDate, liborCurve))
+    testCases.print("FIXED:", -swaps[0].fixed_leg.value(valuationDate, liborCurve))
     testCases.print("FLOAT:", swaps[0]._floatLeg.value(valuationDate, liborCurve, liborCurve, None))
 
     # Pay fixed so make fixed leg value negative
     testCases.header("VALUATION TO SWAP SETTLEMENT DATE"," PV")
     testCases.print("VALUE:", swaps[0].value(settlementDate, liborCurve, liborCurve, None))
-    testCases.print("FIXED:", -swaps[0]._fixedLeg.value(settlementDate, liborCurve))
+    testCases.print("FIXED:", -swaps[0].fixed_leg.value(settlementDate, liborCurve))
     testCases.print("FLOAT:", swaps[0]._floatLeg.value(settlementDate, liborCurve, liborCurve, None))
 
     # swaps[0].printFixedLegPV()

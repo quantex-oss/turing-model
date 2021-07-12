@@ -221,14 +221,14 @@ def test_bloombergPricingExample():
     testCases.banner("SINGLE CURVE VALUATION")
     testCases.header("LABEL", "VALUE")
     testCases.print("VALUE:", swaps[0].value(valuationDate, liborCurve, liborCurve, None))
-    testCases.print("FIXED:", swaps[0]._fixedLeg.value(valuationDate, liborCurve))
+    testCases.print("FIXED:", swaps[0].fixed_leg.value(valuationDate, liborCurve))
     testCases.print("FLOAT:", swaps[0]._floatLeg.value(valuationDate, liborCurve, liborCurve, None))
 
     testCases.banner("======================================================")
     testCases.banner("SINGLE CURVE VALUATION TO SWAP SETTLEMENT DATE")
     testCases.header("LABEL", "VALUE")
     testCases.print("VALUE:", swaps[0].value(settlementDate, liborCurve, liborCurve, None))
-    testCases.print("FIXED:", swaps[0]._fixedLeg.value(settlementDate, liborCurve))
+    testCases.print("FIXED:", swaps[0].fixed_leg.value(settlementDate, liborCurve))
     testCases.print("FLOAT:", swaps[0]._floatLeg.value(settlementDate, liborCurve, liborCurve, None))
     testCases.banner("======================================================")
 
@@ -246,12 +246,12 @@ def test_bloombergPricingExample():
 
     testCases.header("VALUATION TO TODAY DATE"," PV")
     testCases.print("VALUE:", swaps[0].value(valuationDate, oisCurve, liborDualCurve, None))
-    testCases.print("FIXED:", swaps[0]._fixedLeg.value(valuationDate, oisCurve))
+    testCases.print("FIXED:", swaps[0].fixed_leg.value(valuationDate, oisCurve))
     testCases.print("FLOAT:", swaps[0]._floatLeg.value(valuationDate, oisCurve, liborCurve, None))
 
     testCases.header("VALUATION TO SWAP SETTLEMENT DATE"," PV")
     testCases.print("VALUE:", swaps[0].value(settlementDate, oisCurve, liborDualCurve, None))
-    testCases.print("FIXED:", swaps[0]._fixedLeg.value(settlementDate, oisCurve))
+    testCases.print("FIXED:", swaps[0].fixed_leg.value(settlementDate, oisCurve))
     testCases.print("FLOAT:", swaps[0]._floatLeg.value(settlementDate, oisCurve, liborDualCurve, None, ))
 
 #    swaps[0].printFixedLegPV()

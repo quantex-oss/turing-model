@@ -64,7 +64,7 @@ class TuringIborDeposit(object):
             raise TuringError("Start date cannot be after maturity date")
 
         self._startDate = startDate
-        self._maturityDate = maturityDate
+        self.maturity_date = maturityDate
         self._depositRate = depositRate
         self._dayCountType = dayCountType
         self._notional = notional
@@ -77,7 +77,7 @@ class TuringIborDeposit(object):
         this is a forward discount factor that starts on settlement date.'''
 
         dc = TuringDayCount(self._dayCountType)
-        accFactor = dc.yearFrac(self._startDate, self._maturityDate)[0]
+        accFactor = dc.yearFrac(self._startDate, self.maturity_date)[0]
         discountFactor = 1.0 / (1.0 + accFactor * self._depositRate)
         return discountFactor
 
@@ -90,13 +90,13 @@ class TuringIborDeposit(object):
         valuation date and a Libor curve. This is simply the PV of the future
         repayment plus interest discounted on the current Libor curve. '''
 
-        if valuationDate > self._maturityDate:
+        if valuationDate > self.maturity_date:
             raise TuringError("Start date after maturity date")
 
         dc = TuringDayCount(self._dayCountType)
-        accFactor = dc.yearFrac(self._startDate, self._maturityDate)[0]
+        accFactor = dc.yearFrac(self._startDate, self.maturity_date)[0]
         df_settle = liborCurve.df(self._startDate)
-        df_maturity = liborCurve.df(self._maturityDate)
+        df_maturity = liborCurve.df(self.maturity_date)
 
         value = (1.0 + accFactor * self._depositRate) * self._notional
 
@@ -112,9 +112,9 @@ class TuringIborDeposit(object):
         ''' Print the date and size of the future repayment. '''
 
         dc = TuringDayCount(self._dayCountType)
-        accFactor = dc.yearFrac(self._startDate, self._maturityDate)[0]
+        accFactor = dc.yearFrac(self._startDate, self.maturity_date)[0]
         flow = (1.0 + accFactor * self._depositRate) * self._notional
-        print(self._maturityDate, flow)
+        print(self.maturity_date, flow)
 
     ###########################################################################
 
@@ -122,7 +122,7 @@ class TuringIborDeposit(object):
         ''' Print the contractual details of the Libor deposit. '''
         s = labelToString("OBJECT TYPE", type(self).__name__)
         s += labelToString("START DATE", self._startDate)
-        s += labelToString("MATURITY DATE", self._maturityDate)
+        s += labelToString("MATURITY DATE", self.maturity_date)
         s += labelToString("NOTIONAL", self._notional)
         s += labelToString("DEPOSIT RATE", self._depositRate)
         s += labelToString("DAY COUNT TYPE", self._dayCountType)
