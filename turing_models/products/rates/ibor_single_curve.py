@@ -16,6 +16,7 @@ from fundamental.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 from turing_models.products.rates.ibor_fra import TuringIborFRA
 from turing_models.products.rates.ibor_swap import TuringIborSwap
+from turing_models.instrument.irs import IRS
 
 swaptol = 1e-10
 
@@ -250,26 +251,26 @@ class TuringIborSingleCurve(TuringDiscountCurve):
 
         if numSwaps > 0:
 
-            swapStartDate = iborSwaps[0]._effectiveDate
+            swapStartDate = iborSwaps[0].effective_date
 
             for swap in iborSwaps:
 
-                if isinstance(swap, TuringIborSwap) is False: # is False and isinstance(swap, TuringIborSwap) is False:
+                if (isinstance(swap, TuringIborSwap) or isinstance(swap, IRS)) is False: # is False and isinstance(swap, TuringIborSwap) is False:
                     raise TuringError("Swap is not of type TuringIborSwap")
 
-                startDt = swap._effectiveDate
+                startDt = swap.effective_date
                 if startDt < self._valuationDate:
                     raise TuringError("Swaps starts before valuation date.")
 
-                if swap._effectiveDate < swapStartDate:
-                    swapStartDate = swap._effectiveDate
+                if swap.effective_date < swapStartDate:
+                    swapStartDate = swap.effective_date
 
         if numSwaps > 1:
 
             # Swaps must all start on the same date for the bootstrap
-            startDt = iborSwaps[0]._effectiveDate
+            startDt = iborSwaps[0].effective_date
             for swap in iborSwaps[1:]:
-                nextStartDt = swap._effectiveDate
+                nextStartDt = swap.effective_date
                 if nextStartDt != startDt:
                     raise TuringError("Swaps must all have same start date.")
 
@@ -569,7 +570,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
         acc = 0.0
         df = 1.0
         pv01 = 0.0
-        dfSettle = self.df(longestSwap._effectiveDate)
+        dfSettle = self.df(longestSwap.effective_date)
 
         for i in range(1, startIndex):
             dt = couponDates[i]
@@ -614,7 +615,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
 
         for swap in self._usedSwaps:
             # We value it as of the start date of the swap
-            v = swap.value(swap._effectiveDate, self, self, None)
+            v = swap.value(swap.effective_date, self, self, None)
             v = v / swap._fixedLeg._notional
 #            print("REFIT SWAP VALUATION:", swap._adjustedMaturityDate, v)
             if abs(v) > swapTol:

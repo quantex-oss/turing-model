@@ -179,26 +179,26 @@ class TuringIborDualCurve(TuringDiscountCurve):
 
         if numSwaps > 0:
 
-            swapStartDate = iborSwaps[0]._effectiveDate
+            swapStartDate = iborSwaps[0].effective_date
 
             for swap in iborSwaps:
 
                 if isinstance(swap, TuringIborSwap) is False:
                     raise TuringError("Swap is not of type TuringIborSwap")
 
-                startDt = swap._effectiveDate
+                startDt = swap.effective_date
                 if startDt < self._valuationDate:
                     raise TuringError("Swaps starts before valuation date.")
 
-                if swap._effectiveDate < swapStartDate:
-                    swapStartDate = swap._effectiveDate
+                if swap.effective_date < swapStartDate:
+                    swapStartDate = swap.effective_date
 
         if numSwaps > 1:
 
             # Swaps must all start on the same date for the bootstrap
-            startDt = iborSwaps[0]._effectiveDate
+            startDt = iborSwaps[0].effective_date
             for swap in iborSwaps[1:]:
-                nextStartDt = swap._effectiveDate
+                nextStartDt = swap.effective_date
                 if nextStartDt != startDt:
                     raise TuringError("Swaps must all have same start date.")
 
@@ -504,7 +504,7 @@ class TuringIborDualCurve(TuringDiscountCurve):
 
         for swap in self._usedSwaps:
             # We value it as of the start date of the swap
-            v = swap.value(swap._effectiveDate, self._discountCurve,
+            v = swap.value(swap.effective_date, self._discountCurve,
                            self, None)
             v = v / swap._fixedLeg._notional
             if abs(v) > swapTol:

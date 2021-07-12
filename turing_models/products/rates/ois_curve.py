@@ -210,7 +210,7 @@ class TuringOISCurve(TuringDiscountCurve):
 
         if numSwaps > 0:
 
-            swapStartDate = oisSwaps[0]._effectiveDate
+            swapStartDate = oisSwaps[0].effective_date
 
             for swap in oisSwaps:
 
@@ -521,7 +521,7 @@ class TuringOISCurve(TuringDiscountCurve):
 
         for swap in self._usedSwaps:
             # We value it as of the start date of the swap
-            v = swap.value(swap._effectiveDate, self, self, None, principal=0.0)
+            v = swap.value(swap.effective_date, self, self, None, principal=0.0)
             v = v / swap._notional
             if abs(v) > swapTol:
                 print("Swap with maturity " + str(swap._maturityDate)
