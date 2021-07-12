@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from turing_models.instrument.core import Instrument, InstrumentBase
 
 
-@dataclass
+@dataclass(eq=False, order=False, unsafe_hash=True)
 class Stock(Instrument,InstrumentBase):
     asset_id: str = None
     quantity: float = None  # 股数
