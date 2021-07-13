@@ -31,7 +31,6 @@ class KnockOutOption(EqOption):
     def price(self) -> float:
         s0 = self.stock_price_
         k = self.strike_price
-        print(s0, k)
         b = self.barrier
         r = self.r
         q = self.q
