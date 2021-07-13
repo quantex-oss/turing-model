@@ -6,7 +6,7 @@ class ConcurrentMode:
     YR = "yr"
 
 
-concurrent_mode = ConcurrentMode.YR
+concurrent_mode = ConcurrentMode.LOCAL
 
 
 def concurrent(func):
