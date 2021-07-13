@@ -346,7 +346,7 @@ rates = [-0.001506, -0.000185, 0.001358, 0.0027652, 0.0041539, 0.0054604, 0.0066
 irs = IRS(effective_date=TuringDate(2017, 12, 27),
           termination_date=TuringDate(2067, 12, 27),
           fixed_leg_type='RECEIVE',
-          fixed_coupon=0.015,
+          fixed_coupon=0.013922944499789812,
           fixed_freq_type='每年付息',
           fixed_day_count_type='30/360',
           notional=10.0 * ONE_MILLION,
@@ -364,6 +364,6 @@ irs = IRS(effective_date=TuringDate(2017, 12, 27),
           fixed_day_count_type_curve='30/360',
           fixed_leg_type_curve='PAY')
 print(irs.price())
-print(irs.pv01())
-print(irs.swap_rate())
+# print(irs.pv01())
+# print(irs.swap_rate())
 

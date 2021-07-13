@@ -235,14 +235,15 @@ class IRS(Instrument):
         """ Value the interest rate swap on a value date given a single Ibor
         discount curve. """
 
+        libor_curve = self.libor_curve
         if self.index_curve is None:
-            self.index_curve = self.libor_curve
+            self.index_curve = libor_curve
 
         fixed_leg_value = self.fixed_leg.value(self.value_date_,
-                                               self.libor_curve)
+                                               libor_curve)
 
         float_leg_value = self.float_leg.value(self.value_date_,
-                                               self.libor_curve,
+                                               libor_curve,
                                                self.index_curve,
                                                self.first_fixing_rate)
 
@@ -286,11 +287,12 @@ class IRS(Instrument):
         if abs(pv01) < gSmall:
             raise Exception("PV01 is zero. Cannot compute swap rate.")
 
+        libor_curve = self.libor_curve
         if self.index_curve is None:
-            self.index_curve = self.libor_curve
+            self.index_curve = libor_curve
 
         float_leg_pv = self.float_leg.value(self.value_date_,
-                                            self.libor_curve,
+                                            libor_curve,
                                             self.index_curve,
                                             self.first_fixing_rate)
 
