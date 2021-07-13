@@ -3,8 +3,11 @@ from dataclasses import dataclass, field
 from typing import List, Any
 
 import numpy as np
+from loguru import logger
+
 from fundamental.market.curves import TuringDiscountCurveFlat, \
      TuringDiscountCurveZeros
+from fundamental.turing_db.utils import to_snake
 
 from turing_models.instrument.common import greek, bump
 from turing_models.utilities.turing_date import TuringDate
@@ -193,3 +196,21 @@ class EqOption(Instrument, InstrumentBase):
     def eq_rho_q(self) -> float:
         return greek(self, self.price, "dividend_curve",
                      cus_inc=(self.dividend_curve.bump, bump))
+
+    def put_zero_dates(self, curve):
+        zero_dates = []
+        if curve:
+            for code in to_snake(curve):
+                for cu in code.get('curve_data'):
+                    zero_dates.append(cu.get('term'))
+        self.zero_dates = zero_dates
+        return zero_dates
+
+    def put_zero_rates(self, curve):
+        zero_rates = []
+        if curve:
+            for code in to_snake(curve):
+                for cu in code.get('curve_data'):
+                    zero_rates.append(cu.get('spot_rate'))
+        self.zero_rates = zero_rates
+        return zero_rates
