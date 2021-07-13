@@ -19,7 +19,7 @@ from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instrument.core import Instrument
 
 
-bump = 1e-4
+bump = 5e-4
 
 
 def modify_day_count_type(day_count_type):
@@ -65,7 +65,7 @@ class IRS(Instrument):
     effective_date: TuringDate = None
     termination_date: TuringDate = None
     fixed_leg_type: str = None
-    fixed_coupon: float = -100000
+    fixed_coupon: float = 100000
     fixed_freq_type: str = None
     fixed_day_count_type: str = None
     notional: float = 1000000.0
@@ -161,7 +161,7 @@ class IRS(Instrument):
 
     @property
     def fixed_coupon_(self):
-        return self.swap_rate() if self.fixed_coupon == -100000 \
+        return self.swap_rate() if self.fixed_coupon == 100000 \
             else self.fixed_coupon
 
     @property
@@ -252,12 +252,12 @@ class IRS(Instrument):
     def dv01(self):
         """ Calculate the value of 1 basis point coupon on the fixed leg. """
 
-        pv = self.price()
         libor_curve = self.libor_curve
         self.libor_curve = self.build_ibor_single_curve(bump)
-        pv_bumped = self.price()
-
-        dv01 = pv_bumped - pv
+        pv_bumpup = self.price()
+        self.libor_curve = self.build_ibor_single_curve(-bump)
+        pv_bumpdown = self.price()
+        dv01 = (pv_bumpup - pv_bumpdown) / 10
         self.libor_curve = libor_curve
         return dv01
 
@@ -298,5 +298,5 @@ class IRS(Instrument):
 
         float_leg_pv /= self.fixed_leg._notional
 
-        cpn = float_leg_pv / pv01
+        cpn = - float_leg_pv / pv01
         return cpn
