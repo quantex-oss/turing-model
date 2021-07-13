@@ -1,5 +1,6 @@
 import traceback
-from typing import Union, List, Iterable
+from dataclasses import dataclass
+from typing import Union, List, Iterable, Any
 
 import yuanrong
 from loguru import logger
@@ -7,21 +8,51 @@ from loguru import logger
 from fundamental import ctx
 from fundamental.base import Context
 from turing_models.instrument.common import RiskMeasure
-
-
 from turing_models.instrument.decorator import concurrent
+
+
+@dataclass
+class YuanRong:
+    obj: Any
+
+    def __post_init__(self):
+        self.greeks = [
+            RiskMeasure.Price, RiskMeasure.EqDelta,
+            RiskMeasure.EqGamma, RiskMeasure.EqVega,
+            RiskMeasure.EqTheta, RiskMeasure.EqRho
+        ]
+        self.obj_list = self.build_calc()
+
+    @staticmethod
+    def init():
+        yuanrong.init(
+            package_ref='sn:cn:yrk:12345678901234561234567890123456:function:0-turing-model:$latest',
+            logging_level='INFO', cluster_server_addr='123.60.60.83'
+        )
+
+    def build_calc(self):
+        return [self.obj.yuanrong_calc(x) for x in self.greeks]
+
+    def __call__(self, *args, **kwargs):
+        if isinstance(self.obj_list, list):
+            # print(self.obj_list)
+            return zip(self.greeks, yuanrong.get(self.obj_list))
+        return yuanrong.get([self.obj_list])[0]
 
 
 class Instrument:
     def __init__(self):
         self.ctx: Context = ctx
 
-    def yuanrong_calc(self, risk_measure):
-        yuanrong.init(
-            package_ref='sn:cn:yrk:12345678901234561234567890123456:function:0-turing-model:$latest',
-            logging_level='INFO', cluster_server_addr='123.60.60.83'
-        )
-        return concurrent(self.calc(risk_measure))
+    @concurrent
+    def yuanrong_calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):
+        result: Union[float, List] = []
+        try:
+            result = getattr(self, risk_measure.value)()
+            return result
+        except Exception as e:
+            logger.error(str(traceback.format_exc()))
+            return ""
 
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):
         result: Union[float, List] = []
