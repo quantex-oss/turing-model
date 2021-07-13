@@ -1,6 +1,7 @@
 import traceback
 from typing import Union, List, Iterable
 
+import yuanrong
 from loguru import logger
 
 from fundamental import ctx
@@ -8,14 +9,20 @@ from fundamental.base import Context
 from turing_models.instrument.common import RiskMeasure
 
 
-# from turing_models.instrument.decorator import concurrent
+from turing_models.instrument.decorator import concurrent
 
 
 class Instrument:
     def __init__(self):
         self.ctx: Context = ctx
 
-    # @concurrent
+    def yuanrong_calc(self, risk_measure):
+        yuanrong.init(
+            package_ref='sn:cn:yrk:12345678901234561234567890123456:function:0-turing-model:$latest',
+            logging_level='INFO', cluster_server_addr='123.60.60.83'
+        )
+        return concurrent(self.calc(risk_measure))
+
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):
         result: Union[float, List] = []
 
