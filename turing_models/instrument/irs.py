@@ -90,6 +90,7 @@ class IRS(Instrument):
     __libor_curve = None
 
     def __post_init__(self):
+        super().__init__()
         self.calendar_type = TuringCalendarTypes.WEEKEND
         self.bus_day_adjust_type = TuringBusDayAdjustTypes.FOLLOWING
         self.date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
@@ -246,15 +247,15 @@ class IRS(Instrument):
                                                self.first_fixing_rate)
 
         return fixed_leg_value + float_leg_value
-    
+
     def dv01(self):
         """ Calculate the value of 1 basis point coupon on the fixed leg. """
 
         pv = self.price()
         libor_curve = self.libor_curve
-        self.libor_curve = self.build_ibor_single_curve(bump) 
+        self.libor_curve = self.build_ibor_single_curve(bump)
         pv_bumped = self.price()
-       
+
         dv01 = pv_bumped - pv
         self.libor_curve = libor_curve
         return dv01
