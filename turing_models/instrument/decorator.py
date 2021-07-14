@@ -10,7 +10,12 @@ concurrent_mode = ConcurrentMode.YR
 
 
 def concurrent(func):
-    def _wrapper(*args, **kwargs):
-        return yuanrong.ship()(func).ship(*args, **kwargs)
+
+    if concurrent_mode == ConcurrentMode.LOCAL:
+        def _wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+    else:
+        def _wrapper(*args, **kwargs):
+            return yuanrong.ship()(func).ship(*args, **kwargs)
 
     return _wrapper

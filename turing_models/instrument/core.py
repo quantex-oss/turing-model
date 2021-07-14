@@ -1,5 +1,5 @@
 import traceback
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Union, List, Iterable, Any
 
 import yuanrong
@@ -10,10 +10,14 @@ from fundamental.base import Context
 from turing_models.instrument.common import RiskMeasure
 from turing_models.instrument.decorator import concurrent
 
+package_ref = 'sn:cn:yrk:12345678901234561234567890123456:function:0-turing-model:$latest'
+
 
 @dataclass
 class YuanRong:
-    obj: Any
+    obj: Any = None
+    time_out: int = 10
+    asset_ids: List[Any] = field(default_factory=list)
 
     def __post_init__(self):
         self.greeks = [
@@ -21,23 +25,38 @@ class YuanRong:
             RiskMeasure.EqGamma, RiskMeasure.EqVega,
             RiskMeasure.EqTheta, RiskMeasure.EqRho
         ]
-        self.obj_list = self.build_calc()
+        self.obj_list = self.build_obj_list()
+
+    def build_obj_list(self):
+        if not isinstance(self.obj, list):
+            self.obj = [self.obj]
+        obj_ = [self.calc_(o) for o in self.obj]
+        obj_list = [n for a in obj_ for n in a]
+        for a in self.obj:
+            self.asset_ids.append(a.asset_id)
+        return obj_list
+
+    def calc_(self, obj):
+        return [obj.yuanrong_calc(x) for x in self.greeks]
+
+    def __call__(self, *args, **kwargs):
+        if isinstance(self.obj_list, list):
+            try:
+                return yuanrong.get(self.obj_list, self.time_out)
+            except RuntimeError:
+                self.obj_list = self.build_obj_list()
+                return yuanrong.get(self.obj_list, self.time_out)
+            except Exception as e:
+                traceback.format_exc()
+                return []
 
     @staticmethod
     def init():
         yuanrong.init(
-            package_ref='sn:cn:yrk:12345678901234561234567890123456:function:0-turing-model:$latest',
-            logging_level='INFO', cluster_server_addr='123.60.60.83'
+            package_ref=package_ref,
+            logging_level='INFO',
+            cluster_server_addr='123.60.60.83'
         )
-
-    def build_calc(self):
-        return [self.obj.yuanrong_calc(x) for x in self.greeks]
-
-    def __call__(self, *args, **kwargs):
-        if isinstance(self.obj_list, list):
-            # print(self.obj_list)
-            return zip(self.greeks, yuanrong.get(self.obj_list))
-        return yuanrong.get([self.obj_list])[0]
 
 
 class Instrument:
@@ -47,12 +66,14 @@ class Instrument:
     @concurrent
     def yuanrong_calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):
         result: Union[float, List] = []
+        name: list = []
         try:
+            name = [getattr(self, "asset_id", None), risk_measure.value]
             result = getattr(self, risk_measure.value)()
-            return result
+            return name, result
         except Exception as e:
             logger.error(str(traceback.format_exc()))
-            return ""
+            return name, ""
 
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):
         result: Union[float, List] = []
@@ -61,13 +82,15 @@ class Instrument:
             if not isinstance(risk_measure, Iterable):
                 result = getattr(self, risk_measure.value)()
                 result = self._calc(result)
-                self.__row__(risk_measure.value, round(result, 2) if result else "-")
+                self.__row__(risk_measure.value, round(result, 2)
+                if result else "-")
                 return result
             for risk in risk_measure:
                 res = getattr(self, risk.value)()
                 res = self._calc(res)
                 result.append(res)
-                self.__row__(risk.value, round(res, 2) if res and not isinstance(res, Iterable) else "-")
+                self.__row__(risk.value, round(res, 2)
+                if res and not isinstance(res, Iterable) else "-")
             return result
         except Exception as e:
             logger.error(str(traceback.format_exc()))
