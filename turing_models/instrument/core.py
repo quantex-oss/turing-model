@@ -17,7 +17,6 @@ package_ref = 'sn:cn:yrk:12345678901234561234567890123456:function:0-turing-mode
 class YuanRong:
     obj: Any = None
     time_out: int = 10
-    asset_ids: List[Any] = field(default_factory=list)
 
     def __post_init__(self):
         self.greeks = [
@@ -31,10 +30,7 @@ class YuanRong:
         if not isinstance(self.obj, list):
             self.obj = [self.obj]
         obj_ = [self.calc_(o) for o in self.obj]
-        obj_list = [n for a in obj_ for n in a]
-        for a in self.obj:
-            self.asset_ids.append(a.asset_id)
-        return obj_list
+        return [n for a in obj_ for n in a]
 
     def calc_(self, obj):
         return [obj.yuanrong_calc(x) for x in self.greeks]
