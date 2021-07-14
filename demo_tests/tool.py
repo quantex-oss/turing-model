@@ -1,7 +1,7 @@
 from rich import print, style
 from rich.panel import Panel
 
-from turing_models.instrument.common import RiskMeasure
+from turing_models.instruments.common import RiskMeasure
 
 
 def print_result(option):

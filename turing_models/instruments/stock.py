@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from turing_models.instrument.core import Instrument, InstrumentBase
+from turing_models.instruments.core import Instrument, InstrumentBase
 
 
 @dataclass(eq=False, order=False, unsafe_hash=True)

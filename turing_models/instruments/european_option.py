@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.models.model_black_scholes_analytical import bsValue, bsDelta, \
      bsVega, bsGamma, bsRho, bsPsi, bsTheta
-from turing_models.instrument.equity_option import EqOption
+from turing_models.instruments.equity_option import EqOption
 
 
 @dataclass(eq=False, order=False, unsafe_hash=True)

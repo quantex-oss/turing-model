@@ -1,7 +1,7 @@
 from fundamental.pricing_context import PricingContext
 
-from turing_models.instrument.stock import Stock
-from turing_models.instrument.common import RiskMeasure
+from turing_models.instruments.stock import Stock
+from turing_models.instruments.common import RiskMeasure
 
 stock = Stock(asset_id="STOCKCN00000007",
               stock_price=5.23)

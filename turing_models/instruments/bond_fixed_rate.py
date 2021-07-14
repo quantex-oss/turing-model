@@ -5,7 +5,7 @@ import numpy as np
 from scipy import optimize
 
 from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
-from turing_models.instrument.bond import Bond, dy
+from turing_models.instruments.bond import Bond, dy
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.global_types import TuringYTMCalcType

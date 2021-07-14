@@ -6,7 +6,7 @@ from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.utilities.global_types import TuringKnockOutTypes
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
      TuringGBMNumericalScheme
-from turing_models.instrument.equity_option import EqOption
+from turing_models.instruments.equity_option import EqOption
 from turing_models.utilities.mathematics import N
 
 

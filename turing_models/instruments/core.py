@@ -5,21 +5,20 @@ from loguru import logger
 
 from fundamental import ctx
 from fundamental.base import Context
-from turing_models.instrument.common import RiskMeasure
-
-
-# from turing_models.instrument.decorator import concurrent
+from turing_models.instruments.common import RiskMeasure
 
 
 class Instrument:
     def __init__(self):
         self.ctx: Context = ctx
 
-    # @concurrent
-    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):
+    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], yr=False):
         result: Union[float, List] = []
 
         try:
+            if yr:
+                import yuanrong
+                return yuanrong.ship()(self.yr_calc.__func__).ship(self, risk_measure=risk_measure)
             if not isinstance(risk_measure, Iterable):
                 result = getattr(self, risk_measure.value)()
                 result = self._calc(result)
@@ -34,6 +33,17 @@ class Instrument:
         except Exception as e:
             logger.error(str(traceback.format_exc()))
             return ""
+
+    def yr_calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]]):
+        result: Union[float, List] = []
+        name: list = []
+        try:
+            name = [getattr(self, "asset_id", None), risk_measure.value]
+            result = getattr(self, risk_measure.value)()
+            return name, result
+        except Exception as e:
+            logger.error(str(traceback.format_exc()))
+            return name, ""
 
     def _calc(self, value):
         """二次计算,默认为直接返回当前值"""
