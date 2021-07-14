@@ -2,54 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="18d85260-853b-404d-b962-313815882e9e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/docs/_build/html/_modules/gs_quant/markets/portfolio.html" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/docs/_build/html/_modules/gs_quant/markets/portfolio.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/docs/_build/html/_sources/classes/gs_quant.markets.portfolio.Portfolio.rst.txt" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/docs/_build/html/_sources/classes/gs_quant.markets.portfolio.Portfolio.rst.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/docs/_build/html/classes/gs_quant.markets.portfolio.Portfolio.html" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/docs/_build/html/classes/gs_quant.markets.portfolio.Portfolio.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/docs/classes/gs_quant.markets.portfolio.Portfolio.rst" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/docs/classes/gs_quant.markets.portfolio.Portfolio.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/docs/functions/gs_quant.markets.indices_utils.get_flagships_with_assets.rst" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/docs/functions/gs_quant.markets.indices_utils.get_flagships_with_assets.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/api/gs/portfolios.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/api/gs/portfolios.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/backtests/generic_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/backtests/generic_engine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/content/made_with_gs_quant/6-Evolving Correlations.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/content/made_with_gs_quant/6-Evolving Correlations.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/content/made_with_gs_quant/7-Predicting Performance and Live Risk.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/content/made_with_gs_quant/7-Predicting Performance and Live Risk.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/content/reports_and_screens/02_rates/0000_vol_fixed_strike_grid.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/content/reports_and_screens/02_rates/0000_vol_fixed_strike_grid.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/content/reports_and_screens/02_rates/0001_vol_moneyness_screen.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/content/reports_and_screens/02_rates/0001_vol_moneyness_screen.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/content/reports_and_screens/02_rates/0002_swaption_carry_grid.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/content/reports_and_screens/02_rates/0002_swaption_carry_grid.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/02_pricing_and_risk/00_instruments_and_measures/examples/01_rates/000111_swap_future_cashflows.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/02_pricing_and_risk/00_instruments_and_measures/examples/01_rates/000111_swap_future_cashflows.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/02_pricing_and_risk/00_instruments_and_measures/examples/01_rates/000114_spread_option_grid_pricing.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/02_pricing_and_risk/00_instruments_and_measures/examples/01_rates/000114_spread_option_grid_pricing.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/02_pricing_and_risk/00_instruments_and_measures/examples/03_eq/000306_calc_eq_option_greeks.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/02_pricing_and_risk/00_instruments_and_measures/examples/03_eq/000306_calc_eq_option_greeks.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/02_pricing_and_risk/00_instruments_and_measures/examples/03_eq/000306_calc_eq_option_portfolio_greeks.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/02_pricing_and_risk/00_instruments_and_measures/examples/03_eq/000306_calc_eq_option_portfolio_greeks.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/03_portfolios/examples/030006_portfolio_grid_calc.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/03_portfolios/examples/030006_portfolio_grid_calc.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/03_portfolios/tutorials/Portfolios.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/03_portfolios/tutorials/Portfolios.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/06_baskets/tutorials/Basket Create.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/06_baskets/tutorials/Basket Create.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/06_baskets/tutorials/Basket Rebalance.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/06_baskets/tutorials/Basket Rebalance.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/documentation/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/markets/portfolio.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/markets/portfolio.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/markets/risk_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/markets/risk_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/models/risk_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/models/risk_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/risk/results.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/risk/results.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/target/hedge.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/target/hedge.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/test/api/test_portfolios.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/test/api/test_portfolios.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/test/api/test_target.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/test/api/test_target.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/test/risk" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/test/risk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gs-quant/gs_quant/test/timeseries/test_measures_portfolios.py" beforeDir="false" afterPath="$PROJECT_DIR$/gs-quant/gs_quant/test/timeseries/test_measures_portfolios.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo_tests/eqoption_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_tests/eqoption_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/turing_models/utilities/turing_date.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/utilities/turing_date.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
-    <envs>
-      <env key="FLASK_APP" value="app" />
-    </envs>
-    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
-    <option name="myEnvs">
-      <map>
-        <entry key="FLASK_APP" value="app" />
-      </map>
-    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -64,161 +23,6 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-  </component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/pricing/pricing_service/api/routers" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Python.yuanrong_demo">
-    <configuration name="app" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="turingmodel" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-        <env name="API_URL" value="https://dev.turing.iquantex.com" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pricing" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pricing/app.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="irst" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="turingmodel" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/demo_tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/demo_tests/irst.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="portfolio" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="turingmodel" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/fundamental/portfolio" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/fundamental/portfolio/portfolio.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="true" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="with_portfolio_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="turingmodel" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/tests/test_with" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <EXTENSION ID="net.ashald.envfile">
-        <option name="IS_ENABLED" value="false" />
-        <option name="IS_SUBST" value="false" />
-        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
-        <option name="IS_IGNORE_MISSING_FILES" value="false" />
-        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
-        <ENTRIES>
-          <ENTRY IS_ENABLED="true" PARSER="runconfig" />
-        </ENTRIES>
-      </EXTENSION>
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/tests/test_with/with_portfolio_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="true" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="yuanrong_demo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="turingmodel" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1,GEVENT_SUPPORT=True" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/demo_tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <EXTENSION ID="net.ashald.envfile">
-        <option name="IS_ENABLED" value="false" />
-        <option name="IS_SUBST" value="false" />
-        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
-        <option name="IS_IGNORE_MISSING_FILES" value="false" />
-        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
-        <ENTRIES>
-          <ENTRY IS_ENABLED="true" PARSER="runconfig" />
-        </ENTRIES>
-      </EXTENSION>
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/demo_tests/yuanrong_demo.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <list>
-      <item itemvalue="Python.app" />
-      <item itemvalue="Python.portfolio" />
-      <item itemvalue="Python.irst" />
-      <item itemvalue="Python.with_portfolio_test" />
-      <item itemvalue="Python.yuanrong_demo" />
-    </list>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.yuanrong_demo" />
-        <item itemvalue="Python.with_portfolio_test" />
-        <item itemvalue="Python.app" />
-        <item itemvalue="Python.portfolio" />
-        <item itemvalue="Python.irst" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -230,82 +34,10 @@
       <updated>1623220831154</updated>
       <workItem from="1623220835063" duration="1446000" />
       <workItem from="1623232592101" duration="1603000" />
-      <workItem from="1625903954246" duration="20513000" />
-      <workItem from="1626001724047" duration="41494000" />
-      <workItem from="1626168422825" duration="17515000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/turingmodel$pricing_context.coverage" NAME="pricing_context Coverage Results" MODIFIED="1622811540951" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/fundamental" />
-    <SUITE FILE_PATH="coverage/turingmodel$eq_option_app.coverage" NAME="eq_option_app Coverage Results" MODIFIED="1623036585747" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pricing" />
-    <SUITE FILE_PATH="coverage/turingmodel$utils.coverage" NAME="utils Coverage Results" MODIFIED="1620889616290" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/fundamental/api" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_mockx_py.coverage" NAME="pytest in test_mockx.py Coverage Results" MODIFIED="1622010461632" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$connect.coverage" NAME="connect Coverage Results" MODIFIED="1623552822251" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../git-samples/azure-cosmos-db-graph-python-getting-started" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_with_r_py.coverage" NAME="pytest in test_with_r.py Coverage Results" MODIFIED="1621582095335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests/archive" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_price_app_py.coverage" NAME="pytest in test_price_app.py Coverage Results" MODIFIED="1623922525029" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pricing/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$bond_test.coverage" NAME="bond_test Coverage Results" MODIFIED="1625569341010" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$t3.coverage" NAME="t3 Coverage Results" MODIFIED="1622455501398" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test2" />
-    <SUITE FILE_PATH="coverage/turingmodel$data.coverage" NAME="data Coverage Results" MODIFIED="1624522816205" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/fundamental/turing_db" />
-    <SUITE FILE_PATH="coverage/turingmodel$map_trion_thread_test.coverage" NAME="map_trion_thread_test Coverage Results" MODIFIED="1621057695653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$t.coverage" NAME="t Coverage Results" MODIFIED="1622456387069" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test2" />
-    <SUITE FILE_PATH="coverage/turingmodel$rich_test.coverage" NAME="rich_test Coverage Results" MODIFIED="1622023184946" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/utils" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_http_core_py.coverage" NAME="pytest in test_http_core.py Coverage Results" MODIFIED="1622187298545" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/utils" />
-    <SUITE FILE_PATH="coverage/turingmodel$european_option.coverage" NAME="european_option Coverage Results" MODIFIED="1624845804673" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/turing_models/instrument" />
-    <SUITE FILE_PATH="coverage/turingmodel$irst.coverage" NAME="irst Coverage Results" MODIFIED="1626062476361" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$req_test.coverage" NAME="req_test Coverage Results" MODIFIED="1621840076172" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/api" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_req_py.coverage" NAME="pytest in req_test.py Coverage Results" MODIFIED="1621239588350" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/api" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_with_portfolio_py.coverage" NAME="pytest in with_portfolio_test.py Coverage Results" MODIFIED="1622192536954" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/test_with" />
-    <SUITE FILE_PATH="coverage/turingmodel$gragh_test.coverage" NAME="gragh_test Coverage Results" MODIFIED="1622801325397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/test_with" />
-    <SUITE FILE_PATH="coverage/turingmodel$portfolio_test.coverage" NAME="portfolio_test Coverage Results" MODIFIED="1622084586149" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/test_with" />
-    <SUITE FILE_PATH="coverage/turingmodel$testgr.coverage" NAME="testgr Coverage Results" MODIFIED="1622899836158" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test2" />
-    <SUITE FILE_PATH="coverage/turingmodel$err_handler_test.coverage" NAME="err_handler_test Coverage Results" MODIFIED="1621169378836" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_for_test_utils_TestStateMachine.coverage" NAME="pytest for test_utils.TestStateMachine Coverage Results" MODIFIED="1620976824696" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$portfolio__1_.coverage" NAME="portfolio Coverage Results" MODIFIED="1622558983449" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/fundamental/portfolio" />
-    <SUITE FILE_PATH="coverage/turingmodel$position.coverage" NAME="position Coverage Results" MODIFIED="1622534417392" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/fundamental/portfolio" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_eqoption_py.coverage" NAME="pytest in test_eqoption.py Coverage Results" MODIFIED="1621857739358" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_err_handler_py.coverage" NAME="pytest in test_err_handler.py Coverage Results" MODIFIED="1621061377374" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$r_live.coverage" NAME="r_live Coverage Results" MODIFIED="1625109591115" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test_2" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_irs_test_py.coverage" NAME="pytest in irs_test.py Coverage Results" MODIFIED="1626062344882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$Doctests_in_eq_option.coverage" NAME="Doctests in eq_option Coverage Results" MODIFIED="1622600316812" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/turing_models/instrument" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_eq_option_app_py.coverage" NAME="pytest in test_eq_option_app.py Coverage Results" MODIFIED="1623229549151" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pricing/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$sunny.coverage" NAME="sunny Coverage Results" MODIFIED="1623327368378" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../Downloads" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_for_test_utils_TestRezoning.coverage" NAME="pytest for test_utils.TestRezoning Coverage Results" MODIFIED="1620976785893" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$with_portfolio_test.coverage" NAME="with_portfolio_test Coverage Results" MODIFIED="1626228504393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/test_with" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_portfolio_py__1_.coverage" NAME="pytest in test_portfolio.py (1) Coverage Results" MODIFIED="1622122907620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$with_r.coverage" NAME="with_r Coverage Results" MODIFIED="1621480182660" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$rich_theme.coverage" NAME="rich_theme Coverage Results" MODIFIED="1622026082272" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/utils" />
-    <SUITE FILE_PATH="coverage/turingmodel$t_property.coverage" NAME="t_property Coverage Results" MODIFIED="1625465922779" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test_2" />
-    <SUITE FILE_PATH="coverage/turingmodel$test_portfolios.coverage" NAME="test_portfolios Coverage Results" MODIFIED="1620870861739" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/gs-quant/gs_quant/test/api" />
-    <SUITE FILE_PATH="coverage/turingmodel$bond.coverage" NAME="bond Coverage Results" MODIFIED="1625569030208" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/turing_models/instrument" />
-    <SUITE FILE_PATH="coverage/turingmodel$eqoption_demo.coverage" NAME="eq_option Coverage Results" MODIFIED="1620632701966" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/turing_models/instrument" />
-    <SUITE FILE_PATH="coverage/turingmodel$app.coverage" NAME="app Coverage Results" MODIFIED="1626162886716" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pricing" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_portfolios_py.coverage" NAME="pytest in test_portfolios.py Coverage Results" MODIFIED="1621218731576" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/api" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_for_test_utils_Test.coverage" NAME="pytest for test_utils.Test Coverage Results" MODIFIED="1620976719048" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_dgraph_class_py.coverage" NAME="pytest in test_dgraph_class.py Coverage Results" MODIFIED="1623660996267" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test_2" />
-    <SUITE FILE_PATH="coverage/turingmodel$eq_option.coverage" NAME="eq_option Coverage Results" MODIFIED="1624074593238" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/turing_models/instrument" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_utils_py__1_.coverage" NAME="pytest in test_utils.py (1) Coverage Results" MODIFIED="1621580562400" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/utils" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_app_py.coverage" NAME="pytest in test_app.py Coverage Results" MODIFIED="1624851900539" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pricing/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$gr_test.coverage" NAME="gr_test Coverage Results" MODIFIED="1625387650376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test_2" />
-    <SUITE FILE_PATH="coverage/turingmodel$test_with_r.coverage" NAME="test_with_r Coverage Results" MODIFIED="1620810379785" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$with_r_test.coverage" NAME="with_r_test Coverage Results" MODIFIED="1621592659376" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests/archive" />
-    <SUITE FILE_PATH="coverage/turingmodel$gs.coverage" NAME="gs Coverage Results" MODIFIED="1625131757508" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test_2" />
-    <SUITE FILE_PATH="coverage/turingmodel$portfolio.coverage" NAME="portfolio Coverage Results" MODIFIED="1626142743621" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/fundamental/portfolio" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_utils_py.coverage" NAME="pytest in test_utils.py Coverage Results" MODIFIED="1621562628219" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$yuanrong_demo.coverage" NAME="yuanrong_demo Coverage Results" MODIFIED="1626228912181" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$rich.coverage" NAME="rich Coverage Results" MODIFIED="1622022686233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/utils" />
-    <SUITE FILE_PATH="coverage/turingmodel$req.coverage" NAME="req Coverage Results" MODIFIED="1621490848639" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/fundamental/api" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_portfolio_py.coverage" NAME="pytest in test_portfolio.py Coverage Results" MODIFIED="1625817357566" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/test_turing_db" />
-    <SUITE FILE_PATH="coverage/turingmodel$callin.coverage" NAME="callin Coverage Results" MODIFIED="1624074608766" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test_2" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_map_trion_thread_py.coverage" NAME="pytest in test_map_trion_thread.py Coverage Results" MODIFIED="1621057644209" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_test_api_py.coverage" NAME="pytest in test_api.py Coverage Results" MODIFIED="1622178773001" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/api" />
-    <SUITE FILE_PATH="coverage/turingmodel$eqoption_test.coverage" NAME="eqoption_test Coverage Results" MODIFIED="1625625182505" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$pytest_in_portfolio_test_py.coverage" NAME="pytest in test_portfolio.py Coverage Results" MODIFIED="1622092639909" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests/test_with" />
-    <SUITE FILE_PATH="coverage/turingmodel$price_cmd.coverage" NAME="price_cmd Coverage Results" MODIFIED="1625204885683" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pricing/pricing_service/commands" />
-    <SUITE FILE_PATH="coverage/turingmodel$Unittests_in_test_utils_py.coverage" NAME="Unittests in test_utils.py Coverage Results" MODIFIED="1620976260927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
-    <SUITE FILE_PATH="coverage/turingmodel$t2.coverage" NAME="t2 Coverage Results" MODIFIED="1621503274525" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
   </component>
 </project>
