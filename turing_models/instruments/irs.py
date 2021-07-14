@@ -16,7 +16,7 @@ from turing_models.products.rates.fixed_leg import TuringFixedLeg
 from turing_models.products.rates.float_leg import TuringFloatLeg
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
-from turing_models.instrument.core import Instrument
+from turing_models.instruments.core import Instrument
 
 
 bump = 5e-4

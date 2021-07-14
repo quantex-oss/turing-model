@@ -6,7 +6,7 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
     TuringAsianOptionValuationMethods
-from turing_models.instrument.equity_option import EqOption
+from turing_models.instruments.equity_option import EqOption
 
 errorStr = "In averaging period so need to enter accrued average."
 

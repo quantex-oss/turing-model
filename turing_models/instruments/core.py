@@ -5,7 +5,7 @@ from loguru import logger
 
 from fundamental import ctx
 from fundamental.base import Context
-from turing_models.instrument.common import RiskMeasure
+from turing_models.instruments.common import RiskMeasure
 
 
 class Instrument:

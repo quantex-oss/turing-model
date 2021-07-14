@@ -4,10 +4,10 @@ import yuanrong
 from fundamental.pricing_context import PricingContext
 
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.instrument.european_option import EuropeanOption
-from turing_models.instrument.snowball_option import SnowballOption
-from turing_models.instrument.knockout_option import KnockOutOption
-from turing_models.instrument.common import RiskMeasure
+from turing_models.instruments.european_option import EuropeanOption
+from turing_models.instruments.snowball_option import SnowballOption
+from turing_models.instruments.knockout_option import KnockOutOption
+from turing_models.instruments.common import RiskMeasure
 
 
 USE_YR = True

@@ -9,11 +9,11 @@ from fundamental.market.curves import TuringDiscountCurveFlat, \
      TuringDiscountCurveZeros
 from fundamental.turing_db.utils import to_snake
 
-from turing_models.instrument.common import greek, bump
+from turing_models.instruments.common import greek, bump
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.instrument.core import Instrument, InstrumentBase
+from turing_models.instruments.core import Instrument, InstrumentBase
 
 
 @dataclass(eq=False, order=False, unsafe_hash=True)
