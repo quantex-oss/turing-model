@@ -2,7 +2,7 @@ import traceback
 from dataclasses import dataclass, field
 from typing import Union, List, Iterable, Any
 
-import yuanrong
+
 from loguru import logger
 
 from fundamental import ctx
@@ -24,7 +24,7 @@ class YuanRong:
             RiskMeasure.EqGamma, RiskMeasure.EqVega,
             RiskMeasure.EqTheta, RiskMeasure.EqRho
         ]
-        self.obj_list = self.build_obj_list()
+
 
     def build_obj_list(self):
         if not isinstance(self.obj, list):
@@ -36,6 +36,8 @@ class YuanRong:
         return [obj.yuanrong_calc(x) for x in self.greeks]
 
     def __call__(self, *args, **kwargs):
+        import yuanrong
+        self.obj_list = self.build_obj_list()
         if isinstance(self.obj_list, list):
             try:
                 return yuanrong.get(self.obj_list, self.time_out)
@@ -48,6 +50,7 @@ class YuanRong:
 
     @staticmethod
     def init():
+        import yuanrong
         yuanrong.init(
             package_ref=package_ref,
             logging_level='INFO',
