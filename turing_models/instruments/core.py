@@ -182,5 +182,8 @@ class CurveAdjust:
             elif i > self.end_index:
                 self.rates[i] = (self.end_index - self.pivot_index) * dr + rates_copy[i]
 
-    def get_result(self):
-        return self.dates, self.rates
+    def get_dates_result(self):
+        return self.dates
+
+    def get_rates_result(self):
+        return self.rates

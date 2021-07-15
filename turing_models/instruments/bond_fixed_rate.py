@@ -6,6 +6,7 @@ from scipy import optimize
 
 from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
 from turing_models.instruments.bond import Bond, dy
+from turing_models.instruments.core import CurveAdjust
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.global_types import TuringYTMCalcType
@@ -51,13 +52,59 @@ class BondFixedRate(Bond):
         self.__ytm = value
 
     @property
+    def parallel_shift(self):
+        return getattr(self.ctx, f"parallel_shift_{self.curve_code}")
+
+    @property
+    def curve_shift(self):
+        return getattr(self.ctx, f"curve_shift_{self.curve_code}")
+
+    @property
+    def pivot_point(self):
+        return getattr(self.ctx, f"pivot_point_{self.curve_code}")
+
+    @property
+    def tenor_start(self):
+        return getattr(self.ctx, f"tenor_start_{self.curve_code}")
+
+    @property
+    def tenor_end(self):
+        return getattr(self.ctx, f"tenor_end_{self.curve_code}")
+
+    def curve_adjust(self):
+        ca = CurveAdjust(self.zero_dates,
+                         self.zero_rates,
+                         self.parallel_shift,
+                         self.curve_shift,
+                         self.pivot_point,
+                         self.tenor_start,
+                         self.tenor_end)
+        return ca.get_dates_result(), ca.get_rates_result()
+
+    @property
+    def _zero_dates(self):
+        if self.parallel_shift:
+            return self.curve_adjust()[0]
+        else:
+            return self.zero_dates
+
+    @property
+    def _zero_rates(self):
+        if self.parallel_shift:
+            return self.curve_adjust()[1]
+        else:
+            return self.zero_rates
+
+    @property
     def zero_dates_(self):
-        return self.settlement_date_.addYears(self.zero_dates)
+        return self.settlement_date_.addYears(self._zero_dates)
 
     @property
     def _discount_curve(self):
+        print("zero_dates_:", self.zero_dates_)
+        print("_zero_rates:", self._zero_rates)
         return TuringDiscountCurveZeros(
-            self.settlement_date_, self.zero_dates_, self.zero_rates)
+            self.settlement_date_, self.zero_dates_, self._zero_rates)
 
     @property
     def discount_curve(self):
@@ -340,5 +387,3 @@ class BondFixedRate(Bond):
         self._accrued_days = num
 
         return self._accrued_interest
-
-
