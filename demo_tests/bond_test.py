@@ -1,5 +1,6 @@
 import numpy as np
 
+from fundamental.pricing_context import CurveScenario
 from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
 from turing_models.utilities.turing_date import TuringDate
@@ -13,6 +14,7 @@ rates = [0.01935, 0.019773, 0.021824, 0.023816, 0.024863, 0.025819, 0.0267750000
 
 bond_fr = BondFixedRate(quantity=1,
                         coupon=0.04,
+                        curve_code="CBD100003",
                         issue_date=TuringDate(2015, 11, 13),
                         due_date=TuringDate(2025, 11, 14),
                         freq_type='半年付息',
@@ -23,46 +25,57 @@ bond_fr = BondFixedRate(quantity=1,
                         zero_dates=dates,
                         zero_rates=rates)
 
-print('dv01:', bond_fr.calc(RiskMeasure.Dv01))
-print('dollar_duration:', bond_fr.calc(RiskMeasure.DollarDuration))
-print('dollar_convexity:', bond_fr.calc(RiskMeasure.DollarConvexity))
+# print('dv01:', bond_fr.calc(RiskMeasure.Dv01))
+# print('dollar_duration:', bond_fr.calc(RiskMeasure.DollarDuration))
+# print('dollar_convexity:', bond_fr.calc(RiskMeasure.DollarConvexity))
 
 print('macauley_duration:', bond_fr.macauley_duration())
-print('modified_duration:', bond_fr.modified_duration())
-print('principal:', bond_fr.principal())
-print('full_price_from_ytm:', bond_fr.full_price_from_ytm())
-print('clean_price_from_ytm:', bond_fr.clean_price_from_ytm())
-print('full_price_from_discount_curve:', bond_fr.full_price_from_discount_curve())
-print('clean_price_from_discount_curve:', bond_fr.clean_price_from_discount_curve())
-print('current_yield:', bond_fr.current_yield())
-print('yield_to_maturity:', bond_fr.yield_to_maturity())
-print('calc_accrued_interest:', bond_fr.calc_accrued_interest())
+# print('modified_duration:', bond_fr.modified_duration())
+# print('principal:', bond_fr.principal())
+# print('full_price_from_ytm:', bond_fr.full_price_from_ytm())
+# print('clean_price_from_ytm:', bond_fr.clean_price_from_ytm())
+# print('full_price_from_discount_curve:', bond_fr.full_price_from_discount_curve())
+# print('clean_price_from_discount_curve:', bond_fr.clean_price_from_discount_curve())
+# print('current_yield:', bond_fr.current_yield())
+# print('yield_to_maturity:', bond_fr.yield_to_maturity())
+# print('calc_accrued_interest:', bond_fr.calc_accrued_interest())
 
 print("---------------------------------------------")
 
-bond_frn = BondFloatingRate(quantity=1,
-                            quoted_margin=0.01,
-                            issue_date=TuringDate(2015, 11, 13),
-                            due_date=TuringDate(2025, 11, 14),
-                            freq_type='半年付息',
-                            accrual_type='ACT/ACT',
-                            par=100,
-                            clean_price=99,
-                            next_coupon=0.035,
-                            current_ibor=0.037,
-                            future_ibor=0.038,
-                            dm=0.01)
+scenario = CurveScenario(parallel_shift=[{"curve_code": "CBD100003", "value": 1000}, {"curve_code": "CBD100003", "value": 12}],
+                         curve_shift=[{"curve_code": "CBD100003", "value": 1000}, {"curve_code": "CBD100003", "value": 12}],
+                         pivot_point=[{"curve_code": "CBD100003", "value": 2}, {"curve_code": "CBD100003", "value": 3}],
+                         tenor_start=[{"curve_code": "CBD100003", "value": 1.5}, {"curve_code": "CBD100003", "value": 1}],
+                         tenor_end=[{"curve_code": "CBD100003", "value": 40}, {"curve_code": "CBD100003", "value": 30}])
 
-print('dv01:', bond_frn.calc(RiskMeasure.Dv01))
-print('dollar_duration:', bond_frn.calc(RiskMeasure.DollarDuration))
-print('dollar_convexity:', bond_frn.calc(RiskMeasure.DollarConvexity))
+with scenario:
+    print('macauley_duration:', bond_fr.macauley_duration())
 
-print('dollar_credit_duration:', bond_frn.dollar_credit_duration())
-print('modified_credit_duration:', bond_frn.modified_credit_duration())
-print('macauley_rate_duration:', bond_frn.macauley_rate_duration())
-print('modified_rate_duration:', bond_frn.modified_rate_duration())
-print('principal:', bond_frn.principal())
-print('full_price_from_dm:', bond_frn.full_price_from_dm())
-print('clean_price_from_dm:', bond_frn.clean_price_from_dm())
-print('discount_margin:', bond_frn.discount_margin())
-print('calc_accrued_interest:', bond_frn.calc_accrued_interest())
+
+
+# bond_frn = BondFloatingRate(quantity=1,
+#                             quoted_margin=0.01,
+#                             issue_date=TuringDate(2015, 11, 13),
+#                             due_date=TuringDate(2025, 11, 14),
+#                             freq_type='半年付息',
+#                             accrual_type='ACT/ACT',
+#                             par=100,
+#                             clean_price=99,
+#                             next_coupon=0.035,
+#                             current_ibor=0.037,
+#                             future_ibor=0.038,
+#                             dm=0.01)
+#
+# print('dv01:', bond_frn.calc(RiskMeasure.Dv01))
+# print('dollar_duration:', bond_frn.calc(RiskMeasure.DollarDuration))
+# print('dollar_convexity:', bond_frn.calc(RiskMeasure.DollarConvexity))
+#
+# print('dollar_credit_duration:', bond_frn.dollar_credit_duration())
+# print('modified_credit_duration:', bond_frn.modified_credit_duration())
+# print('macauley_rate_duration:', bond_frn.macauley_rate_duration())
+# print('modified_rate_duration:', bond_frn.modified_rate_duration())
+# print('principal:', bond_frn.principal())
+# print('full_price_from_dm:', bond_frn.full_price_from_dm())
+# print('clean_price_from_dm:', bond_frn.clean_price_from_dm())
+# print('discount_margin:', bond_frn.discount_margin())
+# print('calc_accrued_interest:', bond_frn.calc_accrued_interest())
