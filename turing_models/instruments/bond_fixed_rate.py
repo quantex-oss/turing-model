@@ -101,8 +101,6 @@ class BondFixedRate(Bond):
 
     @property
     def _discount_curve(self):
-        print("zero_dates_:", self.zero_dates_)
-        print("_zero_rates:", self._zero_rates)
         return TuringDiscountCurveZeros(
             self.settlement_date_, self.zero_dates_, self._zero_rates)
 
