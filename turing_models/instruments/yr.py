@@ -1,7 +1,7 @@
 import traceback
 from dataclasses import dataclass
 from typing import Any
-
+import yuanrong
 from turing_models.instruments.common import RiskMeasure
 
 package_ref = 'sn:cn:yrk:12345678901234561234567890123456:function:0-turing-model:$latest'
@@ -29,7 +29,6 @@ class YuanRongDemo:
         return [obj.calc(x, True) for x in self.greeks]
 
     def __call__(self, *args, **kwargs):
-        import yuanrong
         self.obj_list = self.build_obj_list()
         if isinstance(self.obj_list, list):
             try:
@@ -43,7 +42,6 @@ class YuanRongDemo:
 
     @staticmethod
     def init():
-        import yuanrong
         yuanrong.init(
             package_ref=package_ref,
             logging_level='INFO',
