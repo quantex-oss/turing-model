@@ -3,16 +3,16 @@ import traceback
 from typing import Union, List, Iterable
 
 from loguru import logger
+
 from fundamental import ctx
 from fundamental.base import Context
 from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-
-from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities import TuringFrequencyTypes
 from turing_models.instruments.common import RiskMeasure
+from turing_models.utilities import TuringFrequencyTypes
+from turing_models.utilities.turing_date import TuringDate
 
 
-class Instrument:
+class PriceableImpl:
     def __init__(self):
         self.ctx: Context = ctx
 
@@ -59,6 +59,11 @@ class Instrument:
             for key, value in self.ctx.positions_dict.items():
                 if value.get('asset_id') == self.tradable.asset_id if self.tradable else "":
                     value[ident] = _value
+
+
+class Instrument(PriceableImpl):
+    def __init__(self):
+        super().__init__()
 
 
 class InstrumentBase:
