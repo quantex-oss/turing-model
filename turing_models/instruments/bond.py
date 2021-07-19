@@ -20,7 +20,6 @@ dy = 0.0001
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class Bond(Instrument, InstrumentBase):
     asset_id: str = None
-    quantity: float = 1.0
     bond_type: str = None
     interest_accrued: float = None
     issue_date: TuringDate = None
@@ -49,8 +48,6 @@ class Bond(Instrument, InstrumentBase):
         self._settlement_date = self.settlement_date
         if self.freq_type:
             self._calculate_flow_dates()
-        if self.par:
-            self.face_amount = self.par * self.quantity
         if self.freq_type:
             self.frequency = TuringFrequency(self.freq_type_)
 

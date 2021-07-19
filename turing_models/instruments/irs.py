@@ -61,7 +61,6 @@ def modify_leg_type(leg_type):
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class IRS(Instrument):
     asset_id: str = None
-    quantity: float = None
     irs_type: str = None
     effective_date: TuringDate = None
     termination_date: TuringDate = None
