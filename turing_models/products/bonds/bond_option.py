@@ -1,7 +1,7 @@
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.global_types import TuringOptionTypes, TuringExerciseTypes
 from turing_models.products.bonds.bond import TuringBond
@@ -126,11 +126,11 @@ class TuringBondOption():
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("EXPIRY DATE", self._expiryDate)
-        s += labelToString("STRIKE", self._strikePrice)
-        s += labelToString("OPTION TYPE", self._optionType)
-        s += labelToString("FACE AMOUNT", self._faceAmount, "")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("EXPIRY DATE", self._expiryDate)
+        s += label_to_string("STRIKE", self._strikePrice)
+        s += label_to_string("OPTION TYPE", self._optionType)
+        s += label_to_string("FACE AMOUNT", self._faceAmount, "")
         s += "Underlying Bond\n"
         s += str(self._bond)
         return s

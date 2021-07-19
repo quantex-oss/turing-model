@@ -6,7 +6,7 @@ from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 
 ###############################################################################
 
@@ -134,14 +134,14 @@ class TuringBondMortgage(object):
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("START DATE", self._startDate)
-        s += labelToString("MATURITY DATE", self._endDate)
-        s += labelToString("MORTGAGE TYPE", self._mortgageType)
-        s += labelToString("FREQUENCY", self._freqType)
-        s += labelToString("CALENDAR", self._calendarType)
-        s += labelToString("BUSDAYRULE", self._busDayAdjustType)
-        s += labelToString("DATEGENRULE", self._dateGenRuleType)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("START DATE", self._startDate)
+        s += label_to_string("MATURITY DATE", self._endDate)
+        s += label_to_string("MORTGAGE TYPE", self._mortgageType)
+        s += label_to_string("FREQUENCY", self._freqType)
+        s += label_to_string("CALENDAR", self._calendarType)
+        s += label_to_string("BUSDAYRULE", self._busDayAdjustType)
+        s += label_to_string("DATEGENRULE", self._dateGenRuleType)
         return s
 
 ###############################################################################

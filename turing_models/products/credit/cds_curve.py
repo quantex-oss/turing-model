@@ -9,7 +9,7 @@ from turing_models.utilities.helper_functions import inputTime, tableToString
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes, _funcName
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 
 
 ###############################################################################
@@ -219,7 +219,7 @@ class TuringCDSCurve():
 
     def __repr__(self):
         ''' Print out the details of the survival probability curve. '''
-        s = labelToString("OBJECT TYPE", type(self).__name__)    
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
         header = "TIME,SURVIVAL_PROBABILITY"
         valueTable = [self._times, self._values]
         precision = "10.7f"

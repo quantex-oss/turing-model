@@ -4,6 +4,7 @@ from scipy import optimize
 
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.instruments.bond import Bond, dy
+from turing_models.utilities.helper_functions import label_to_string
 
 
 def _f(dm, *args):
@@ -17,7 +18,7 @@ def _f(dm, *args):
     return obj_fn
 
 
-@dataclass
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFloatingRate(Bond):
     quoted_margin: float = None
     next_coupon: float = None
@@ -235,3 +236,12 @@ class BondFloatingRate(Bond):
         self._accrued_interest = acc_factor * self.face_amount * self.next_coupon
         self._accrued_days = num
         return self._accrued_interest
+
+    def __repr__(self):
+        s = super().__repr__()
+        s += label_to_string("Quoted Margin", self.quoted_margin)
+        s += label_to_string("Next Coupon", self.next_coupon)
+        s += label_to_string("Current Ibor", self.current_ibor)
+        s += label_to_string("Future Ibor", self.future_ibor)
+        s += label_to_string("Discount Margin", self.dm)
+        return s

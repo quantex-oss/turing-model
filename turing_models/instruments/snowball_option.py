@@ -7,9 +7,10 @@ from turing_models.utilities.global_types import TuringOptionTypes, TuringKnockI
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
      TuringGBMNumericalScheme
 from turing_models.instruments.equity_option import EqOption
+from turing_models.utilities.helper_functions import label_to_string
 
 
-@dataclass
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class SnowballOption(EqOption):
 
     barrier: float = None
@@ -168,3 +169,14 @@ class SnowballOption(EqOption):
                            participation_rate * texp**flag * np.exp(-r * texp))
 
         return payoff.mean()
+
+    def __repr__(self):
+        s = super().__repr__()
+        s += label_to_string("Barrier", self.barrier)
+        s += label_to_string("Rebate", self.rebate)
+        s += label_to_string("Coupon", self.coupon)
+        s += label_to_string("Knock In Price", self.knock_in_price)
+        s += label_to_string("Knock In Type", self.knock_in_type)
+        s += label_to_string("Knock In Strike1", self.knock_in_strike1)
+        s += label_to_string("Knock In Strike2", self.knock_in_strike2)
+        return s

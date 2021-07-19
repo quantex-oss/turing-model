@@ -12,7 +12,7 @@ from fundamental.market.curves.interpolator import TuringInterpTypes, interpolat
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 
 ###############################################################################
 
@@ -179,7 +179,7 @@ class TuringBondZeroCurve(TuringDiscountCurve):
     def __repr__(self):
         # TODO
         header = "TIMES,DISCOUNT FACTORS"
-        s = labelToString("OBJECT TYPE", type(self).__name__)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
         valueTable = [self._times, self._values]
         precision = "10.7f"
         s += tableToString(header, valueTable, precision)

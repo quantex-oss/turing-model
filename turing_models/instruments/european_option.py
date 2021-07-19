@@ -6,7 +6,7 @@ from turing_models.models.model_black_scholes_analytical import bsValue, bsDelta
 from turing_models.instruments.equity_option import EqOption
 
 
-@dataclass(eq=False, order=False, unsafe_hash=True)
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class EuropeanOption(EqOption):
 
     def __post_init__(self):

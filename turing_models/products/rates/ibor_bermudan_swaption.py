@@ -11,7 +11,7 @@ from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringExerciseTypes
 from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 
 from turing_models.products.rates.ibor_swap import TuringIborSwap
 
@@ -199,17 +199,17 @@ class TuringIborBermudanSwaption(object):
 ###############################################################################
         
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("EXERCISE DATE", self._exerciseDate)
-        s += labelToString("MATURITY DATE", self._maturityDate)
-        s += labelToString("SWAP FIXED LEG TYPE", self._fixedLegType)
-        s += labelToString("EXERCISE TYPE", self._exerciseType)
-        s += labelToString("FIXED COUPON", self._fixedCoupon)
-        s += labelToString("FIXED FREQUENCY", self._fixedFrequencyType)
-        s += labelToString("FIXED DAYCOUNT TYPE", self._fixedDayCountType)
-        s += labelToString("FLOAT FREQUENCY", self._floatFrequencyType)
-        s += labelToString("FLOAT DAYCOUNT TYPE", self._floatDayCountType)
-        s += labelToString("NOTIONAL", self._notional)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("EXERCISE DATE", self._exerciseDate)
+        s += label_to_string("MATURITY DATE", self._maturityDate)
+        s += label_to_string("SWAP FIXED LEG TYPE", self._fixedLegType)
+        s += label_to_string("EXERCISE TYPE", self._exerciseType)
+        s += label_to_string("FIXED COUPON", self._fixedCoupon)
+        s += label_to_string("FIXED FREQUENCY", self._fixedFrequencyType)
+        s += label_to_string("FIXED DAYCOUNT TYPE", self._fixedDayCountType)
+        s += label_to_string("FLOAT FREQUENCY", self._floatFrequencyType)
+        s += label_to_string("FLOAT DAYCOUNT TYPE", self._floatDayCountType)
+        s += label_to_string("NOTIONAL", self._notional)
         return s
 
 ###############################################################################

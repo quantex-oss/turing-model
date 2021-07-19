@@ -9,7 +9,7 @@ from turing_models.models.process_simulator import TuringProcessSimulator, Turin
      TuringGBMNumericalScheme, TuringHestonNumericalScheme
 from turing_models.models.model_black_scholes import TuringModel
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 
 
@@ -172,13 +172,13 @@ class TuringEquityKnockoutOption(TuringEquityOption):
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("EXPIRY DATE", self._expiry_date)
-        s += labelToString("STRIKE PRICE", self._strike_price)
-        s += labelToString("OPTION TYPE", self._knock_out_type)
-        s += labelToString("KNOCKOUT LEVEL", self._barrier)
-        s += labelToString("NUM OBSERVATIONS", self._num_observations_per_year)
-        s += labelToString("NOTIONAL", self._notional, "")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("EXPIRY DATE", self._expiry_date)
+        s += label_to_string("STRIKE PRICE", self._strike_price)
+        s += label_to_string("OPTION TYPE", self._knock_out_type)
+        s += label_to_string("KNOCKOUT LEVEL", self._barrier)
+        s += label_to_string("NUM OBSERVATIONS", self._num_observations_per_year)
+        s += label_to_string("NOTIONAL", self._notional, "")
         return s
 
 ###############################################################################

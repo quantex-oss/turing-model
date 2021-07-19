@@ -3,7 +3,7 @@
 
 from turing_models.utilities.error import TuringError
 from enum import Enum
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 
 # Non exhaustive list of country codes and currency names
 

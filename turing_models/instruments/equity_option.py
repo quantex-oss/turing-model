@@ -14,13 +14,13 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.instruments.core import Instrument, InstrumentBase
+from turing_models.utilities.helper_functions import label_to_string
 
 
-@dataclass(eq=False, order=False, unsafe_hash=True)
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class EqOption(Instrument, InstrumentBase):
 
     asset_id: str = None
-    quantity: float = 1
     underlier: str = None
     product_type: str = None
     option_type: str = None
@@ -44,18 +44,11 @@ class EqOption(Instrument, InstrumentBase):
     zero_dates: List[Any] = field(default_factory=list)
     zero_rates: List[Any] = field(default_factory=list)
     dividend_yield: float = 0
-    __property_data = {
-        "value_date": None,
-        "_value_date": None,
-        "stock_price": None,
-        "_stock_price": None,
-        "v": None,
-        "_v": None,
-        "discount_curve": None,
-        "_discount_curve": None,
-        "dividend_curve": None,
-        "_dividend_curve": None
-    }
+    __value_date = None
+    __stock_price = None
+    __v = None
+    __discount_curve = None
+    __dividend_curve = None
 
     def __post_init__(self):
         super().__init__()
@@ -72,27 +65,19 @@ class EqOption(Instrument, InstrumentBase):
 
     @property
     def value_date_(self):
-        self.__property_data["value_date"] = self.ctx.pricing_date or self._value_date
-        if self.__property_data["_value_date"] is None:
-            return self.__property_data["value_date"]
-        else:
-            return self.__property_data["_value_date"]
+        return self.__value_date or self.ctx.pricing_date or self._value_date
 
     @value_date_.setter
     def value_date_(self, value: TuringDate):
-        self.__property_data["_value_date"] = value
+        self.__value_date = value
 
     @property
     def stock_price_(self) -> float:
-        self.__property_data["stock_price"] = getattr(self.ctx, f"spot_{self.underlier}") or self._stock_price
-        if self.__property_data["_stock_price"] is None:
-            return self.__property_data["stock_price"]
-        else:
-            return self.__property_data["_stock_price"]
+        return self.__stock_price or getattr(self.ctx, f"spot_{self.underlier}") or self._stock_price
 
     @stock_price_.setter
     def stock_price_(self, value: float):
-        self.__property_data["_stock_price"] = value
+        self.__stock_price = value
 
     @property
     def volatility_(self) -> float:
@@ -116,34 +101,31 @@ class EqOption(Instrument, InstrumentBase):
 
     @property
     def discount_curve(self) -> TuringDiscountCurveZeros:
-        if self.interest_rate_:
-            self.__property_data["discount_curve"] = TuringDiscountCurveFlat(
-                self.value_date_, self.interest_rate_)
+        if self.__discount_curve:
+            return self.__discount_curve
         else:
-            self.__property_data["discount_curve"] = TuringDiscountCurveZeros(
-                self.value_date_, self.zero_dates_, self.zero_rates)
-
-        if self.__property_data["_discount_curve"] is None:
-            return self.__property_data["discount_curve"]
-        else:
-            return self.__property_data["_discount_curve"]
+            if self.interest_rate_:
+                return TuringDiscountCurveFlat(
+                    self.value_date_, self.interest_rate_)
+            else:
+                return TuringDiscountCurveZeros(
+                    self.value_date_, self.zero_dates_, self.zero_rates)
 
     @discount_curve.setter
     def discount_curve(self, value: TuringDiscountCurveZeros):
-        self.__property_data["_discount_curve"] = value
+        self.__discount_curve = value
 
     @property
     def dividend_curve(self) -> TuringDiscountCurveFlat:
-        self.__property_data["dividend_curve"] = TuringDiscountCurveFlat(
-            self.value_date_, self.dividend_yield_)
-        if self.__property_data["_dividend_curve"] is None:
-            return self.__property_data["dividend_curve"]
+        if self.__dividend_curve:
+            return self.__dividend_curve
         else:
-            return self.__property_data["_dividend_curve"]
+            return TuringDiscountCurveFlat(
+                self.value_date_, self.dividend_yield_)
 
     @dividend_curve.setter
     def dividend_curve(self, value: TuringDiscountCurveFlat):
-        self.__property_data["_dividend_curve"] = value
+        self.__dividend_curve = value
 
     @property
     def texp(self) -> float:
@@ -151,8 +133,7 @@ class EqOption(Instrument, InstrumentBase):
 
     @property
     def r(self) -> float:
-        # return self.discount_curve.zeroRate(self.expiry)
-        return 0.02
+        return self.discount_curve.zeroRate(self.expiry)
 
     @property
     def q(self) -> float:
@@ -161,15 +142,11 @@ class EqOption(Instrument, InstrumentBase):
 
     @property
     def v(self) -> float:
-        self.__property_data["v"] = self.model._volatility
-        if self.__property_data["_v"] is None:
-            return self.__property_data["v"]
-        else:
-            return self.__property_data["_v"]
+        return self.__v or self.model._volatility
 
     @v.setter
     def v(self, value: float):
-        self.__property_data["_v"] = value
+        self.__v = value
 
     def price(self) -> float:
         print("You should not be here!")
@@ -215,3 +192,25 @@ class EqOption(Instrument, InstrumentBase):
                     zero_rates.append(cu.get('spot_rate'))
         self.zero_rates = zero_rates
         return zero_rates
+
+    def __repr__(self):
+        s = label_to_string("Object Type", type(self).__name__)
+        s += label_to_string("Asset Id", self.asset_id)
+        s += label_to_string("Underlier", self.underlier)
+        s += label_to_string("Option Type", self.option_type)
+        s += label_to_string("Notional", self.notional)
+        s += label_to_string("Initial Spot", self.initial_spot)
+        s += label_to_string("Number of Options", self.number_of_options)
+        s += label_to_string("Start Date", self.start_date)
+        s += label_to_string("End Date", self.end_date)
+        s += label_to_string("Expiry", self.expiry)
+        s += label_to_string("Participation Rate", self.participation_rate)
+        s += label_to_string("Strike Price", self.strike_price)
+        s += label_to_string("Multiplier", self.multiplier)
+        s += label_to_string("Annualized Flag", self.annualized_flag)
+        s += label_to_string("Value Date", self.value_date_)
+        s += label_to_string("Stock Price", self.stock_price_)
+        s += label_to_string("Volatility", self.v)
+        s += label_to_string("Interest Rate", self.r)
+        s += label_to_string("Dividend Yield", self.q)
+        return s

@@ -15,7 +15,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.schedule import TuringSchedule
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.models.model_black import TuringModelBlack
 from turing_models.models.model_black_shifted import TuringModelBlackShifted
 from turing_models.models.model_bachelier import TuringModelBachelier
@@ -341,13 +341,13 @@ class TuringIborCapFloor():
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("START DATE", self._startDate)
-        s += labelToString("MATURITY DATE", self._maturityDate)
-        s += labelToString("STRIKE COUPON", self._strikeRate * 100)
-        s += labelToString("OPTION TYPE", str(self._optionType))
-        s += labelToString("FREQUENCY", str(self._freqType))
-        s += labelToString("DAY COUNT", str(self._dayCountType), "")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("START DATE", self._startDate)
+        s += label_to_string("MATURITY DATE", self._maturityDate)
+        s += label_to_string("STRIKE COUPON", self._strikeRate * 100)
+        s += label_to_string("OPTION TYPE", str(self._optionType))
+        s += label_to_string("FREQUENCY", str(self._freqType))
+        s += label_to_string("DAY COUNT", str(self._dayCountType), "")
         return s
 
 ###############################################################################

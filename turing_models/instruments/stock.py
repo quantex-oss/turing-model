@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 
 from turing_models.instruments.core import Instrument, InstrumentBase
+from turing_models.utilities.helper_functions import label_to_string
 
 
-@dataclass(eq=False, order=False, unsafe_hash=True)
-class Stock(Instrument,InstrumentBase):
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
+class Stock(Instrument, InstrumentBase):
     asset_id: str = None
     quantity: float = None  # 股数
     asset_type: str = None
@@ -32,3 +33,11 @@ class Stock(Instrument,InstrumentBase):
 
     def delta(self):
         return 1
+
+    def __repr__(self):
+        s = label_to_string("Object Type", type(self).__name__)
+        s += label_to_string("Asset Id", self.asset_id)
+        s += label_to_string("Symbol", self.symbol)
+        s += label_to_string("Name", self.name_cn)
+        s += label_to_string("Stock Price", self.stock_price_)
+        return s

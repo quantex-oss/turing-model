@@ -17,6 +17,7 @@ from turing_models.products.rates.float_leg import TuringFloatLeg
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instruments.core import Instrument
+from turing_models.utilities.helper_functions import label_to_string
 
 
 bump = 5e-4
@@ -57,10 +58,9 @@ def modify_leg_type(leg_type):
         else TuringSwapTypes.RECEIVE
 
 
-@dataclass
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class IRS(Instrument):
     asset_id: str = None
-    quantity: float = None
     irs_type: str = None
     effective_date: TuringDate = None
     termination_date: TuringDate = None
@@ -73,14 +73,14 @@ class IRS(Instrument):
     float_freq_type: str = '按季付息'
     float_day_count_type: str = '30/360'
     value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))  # 估值日期
-    curve_code1: str = None
-    curve_code2: str = None
-    zero_dates1: list = None
-    zero_rates1: list = None
-    zero_dates2: list = None
-    zero_rates2: list = None
+    swap_curve_code: str = None
+    index_curve_code: str = None
+    swap_curve_dates: list = None
+    swap_curve_rates: list = None
+    index_curve_dates: list = None
+    index_curve_rates: list = None
     first_fixing_rate: float = None
-    deposit_term: float = None  # 单位：月
+    deposit_term: float = None  # 单位：年
     deposit_rate: float = None
     deposit_day_count_type: str = None
     fixed_freq_type_curve: str = None
@@ -169,25 +169,25 @@ class IRS(Instrument):
         return self.ctx.pricing_date or self._value_date
 
     @property
-    def zero_dates1_(self):
-        return self.value_date_.addYears(self.zero_dates1)
+    def swap_curve_dates_(self):
+        return self.value_date_.addYears(self.swap_curve_dates)
 
     @property
-    def zero_dates2_(self):
-        return self.value_date_.addYears(self.zero_dates2)
+    def index_curve_dates_(self):
+        return self.value_date_.addYears(self.index_curve_dates)
 
     @property
     def discount_curve(self):
         return TuringDiscountCurveZeros(
-            self.value_date_, self.zero_dates1_, self.zero_rates1)
+            self.value_date_, self.swap_curve_dates_, self.swap_curve_rates)
 
     @property
     def index_curve(self):
         if self.__index_curve:
             return self.__index_curve
-        elif self.zero_dates2 and self.zero_rates2:
+        elif self.index_curve_dates and self.index_curve_rates:
             return TuringDiscountCurveZeros(
-                self.value_date_, self.zero_dates2_, self.zero_rates2)
+                self.value_date_, self.index_curve_dates_, self.index_curve_rates)
         else:
             return None
 
@@ -210,18 +210,18 @@ class IRS(Instrument):
         fras = []
         swaps = []
 
-        due_date = value_date.addMonths(self.deposit_term)
+        due_date = value_date.addYears(self.deposit_term)
         depo1 = TuringIborDeposit(value_date,
                                   due_date,
                                   self.deposit_rate,
                                   self.deposit_day_count_type_)
         depos.append(depo1)
 
-        for i in range(len(self.zero_dates1_)):
+        for i in range(len(self.swap_curve_dates_)):
             swap = IRS(effective_date=value_date,
-                       termination_date=self.zero_dates1_[i],
+                       termination_date=self.swap_curve_dates_[i],
                        fixed_leg_type=self.fixed_leg_type_curve,
-                       fixed_coupon=self.zero_rates1[i] + dx,
+                       fixed_coupon=self.swap_curve_rates[i] + dx,
                        fixed_freq_type=self.fixed_freq_type_curve,
                        fixed_day_count_type=self.fixed_day_count_type_curve,
                        value_date=value_date)
@@ -296,7 +296,34 @@ class IRS(Instrument):
                                             self.index_curve,
                                             self.first_fixing_rate)
 
+        float_leg_pv = np.abs(float_leg_pv)
         float_leg_pv /= self.fixed_leg._notional
 
-        cpn = - float_leg_pv / pv01
+        cpn = float_leg_pv / pv01
         return cpn
+
+    def __repr__(self):
+        s = label_to_string("Object Type", type(self).__name__)
+        s += label_to_string("Asset Id", self.asset_id)
+        s += label_to_string("IRS Type", self.irs_type)
+        s += label_to_string("Effective Date", self.effective_date)
+        s += label_to_string("Termination Date", self.termination_date)
+        s += label_to_string("Fixed Leg Type", self.fixed_leg_type)
+        s += label_to_string("Fixed Coupon", self.fixed_coupon)
+        s += label_to_string("Fixed Freq Type", self.fixed_freq_type)
+        s += label_to_string("Fixed Day Count Type", self.fixed_day_count_type)
+        s += label_to_string("Notional", self.notional)
+        s += label_to_string("Float Spread", self.float_spread)
+        s += label_to_string("Float Freq Type", self.float_freq_type)
+        s += label_to_string("Float Day Count Type", self.float_day_count_type)
+        s += label_to_string("Value Date", self.value_date_)
+        s += label_to_string("Swap Curve Code", self.swap_curve_code)
+        s += label_to_string("Index Curve Code", self.index_curve_code)
+        s += label_to_string("First Fixing Rate", self.first_fixing_rate)
+        s += label_to_string("Deposit Term", self.deposit_term)
+        s += label_to_string("Deposit Rate", self.deposit_rate)
+        s += label_to_string("Deposit Day Count Type", self.deposit_day_count_type)
+        s += label_to_string("Fixed Freq Type Curve", self.fixed_freq_type_curve)
+        s += label_to_string("Fixed Day Count Type Curve", self.fixed_day_count_type_curve)
+        s += label_to_string("Fixed Leg Type Curve", self.fixed_leg_type_curve)
+        return s

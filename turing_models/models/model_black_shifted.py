@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.stats import norm
 
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 from turing_models.utilities.global_types import TuringOptionTypes
 
 from turing_models.utilities.mathematics import N
@@ -62,11 +62,11 @@ class TuringModelBlackShifted():
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("VOLATILITY", self._volatility)
-        s += labelToString("SHIFT", self._shift)
-        s += labelToString("IMPLEMENTATION", self._implementation)
-        s += labelToString("NUMSTEPS", self._numSteps)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("VOLATILITY", self._volatility)
+        s += label_to_string("SHIFT", self._shift)
+        s += label_to_string("IMPLEMENTATION", self._implementation)
+        s += label_to_string("NUMSTEPS", self._numSteps)
         return s
 
 ###############################################################################

@@ -6,7 +6,7 @@ from turing_models.models.model_crr_tree import crrTreeValAvg
 from turing_models.instruments.equity_option import EqOption
 
 
-@dataclass
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class AmericanOption(EqOption):
 
     def __post_init__(self):

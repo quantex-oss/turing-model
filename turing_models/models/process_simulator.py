@@ -6,7 +6,7 @@ import numpy as np
 
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.mathematics import norminvcdf
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 
 ###############################################################################
 
