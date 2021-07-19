@@ -133,8 +133,7 @@ class EqOption(Instrument, InstrumentBase):
 
     @property
     def r(self) -> float:
-        # return self.discount_curve.zeroRate(self.expiry)
-        return 0.02
+        return self.discount_curve.zeroRate(self.expiry)
 
     @property
     def q(self) -> float:
