@@ -14,7 +14,7 @@
 # from turing_models.utilities.schedule import TuringSchedule
 # from turing_models.utilities.mathematics import ONE_MILLION
 
-# from turing_models.utilities.helper_functions import labelToString
+# from turing_models.utilities.helper_functions import label_to_string
 
 # from enum import Enum
 # import numpy as np
@@ -249,21 +249,21 @@
 
 #     def __repr__(self):
 
-#         s = labelToString("MATURITY DATE", self._maturityDate)
-#         s += labelToString("EXERCISE DATE", self._exerciseDate)
-#         s += labelToString("COUPON", self._coupon)
-#         s += labelToString("FREQUENCY", self._freqType)
-#         s += labelToString("ACCRUAL TYPE", self._accrualType)
-#         s += labelToString("FACE AMOUNT", self._face)
-#         s += labelToString("CONVERSION RATIO", self._conversionRatio)
-#         s += labelToString("START CONVERT DATE", self._startConvertDate)
+#         s = label_to_string("MATURITY DATE", self._maturityDate)
+#         s += label_to_string("EXERCISE DATE", self._exerciseDate)
+#         s += label_to_string("COUPON", self._coupon)
+#         s += label_to_string("FREQUENCY", self._freqType)
+#         s += label_to_string("ACCRUAL TYPE", self._accrualType)
+#         s += label_to_string("FACE AMOUNT", self._face)
+#         s += label_to_string("CONVERSION RATIO", self._conversionRatio)
+#         s += label_to_string("START CONVERT DATE", self._startConvertDate)
 
 #         for i in range(0, len(self._callDates)):
-#             s += labelToString("CALL DATE AND PRICE", self._callDates[i],
+#             s += label_to_string("CALL DATE AND PRICE", self._callDates[i],
 #                                self._callPrices[i])
 
 #         for i in range(0, len(self._putDates)):
-#             s += labelToString("PUT DATE AND PRICE", self._putDates[i],
+#             s += label_to_string("PUT DATE AND PRICE", self._putDates[i],
 #                                self._putPrices[i])
 
 #         return s

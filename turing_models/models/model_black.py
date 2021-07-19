@@ -5,7 +5,7 @@ from numba import njit, float64, float64
 
 from turing_models.utilities.mathematics import NVect, NPrimeVect
 from turing_models.utilities.global_variables import gSmall
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.error import TuringError
 
@@ -190,10 +190,10 @@ class TuringModelBlack():
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("VOLATILITY", self._volatility)
-        s += labelToString("IMPLEMENTATION", self._implementation)
-        s += labelToString("NUMSTEPS", self._numSteps)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("VOLATILITY", self._volatility)
+        s += label_to_string("IMPLEMENTATION", self._implementation)
+        s += label_to_string("NUMSTEPS", self._numSteps)
         return s
 
 ###############################################################################

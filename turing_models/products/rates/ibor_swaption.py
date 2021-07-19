@@ -15,7 +15,7 @@ from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 
 from turing_models.products.rates.ibor_swap import TuringIborSwap
@@ -366,22 +366,22 @@ class TuringIborSwaption():
     def __repr__(self):
         ''' Function to allow us to print the swaption details. '''
 
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("SETTLEMENT DATE", self._settlementDate)
-        s += labelToString("EXERCISE DATE", self._exerciseDate)
-        s += labelToString("SWAP FIXED LEG TYPE", str(self._fixedLegType))
-        s += labelToString("SWAP MATURITY DATE", self._maturityDate)
-        s += labelToString("SWAP NOTIONAL", self._notional)
-        s += labelToString("FIXED COUPON", self._fixedCoupon * 100)
-        s += labelToString("FIXED FREQUENCY", str(self._fixedFrequencyType))
-        s += labelToString("FIXED DAY COUNT", str(self._fixedDayCountType))
-        s += labelToString("FLOAT FREQUENCY", str(self._floatFrequencyType))
-        s += labelToString("FLOAT DAY COUNT", str(self._floatDayCountType))
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("SETTLEMENT DATE", self._settlementDate)
+        s += label_to_string("EXERCISE DATE", self._exerciseDate)
+        s += label_to_string("SWAP FIXED LEG TYPE", str(self._fixedLegType))
+        s += label_to_string("SWAP MATURITY DATE", self._maturityDate)
+        s += label_to_string("SWAP NOTIONAL", self._notional)
+        s += label_to_string("FIXED COUPON", self._fixedCoupon * 100)
+        s += label_to_string("FIXED FREQUENCY", str(self._fixedFrequencyType))
+        s += label_to_string("FIXED DAY COUNT", str(self._fixedDayCountType))
+        s += label_to_string("FLOAT FREQUENCY", str(self._floatFrequencyType))
+        s += label_to_string("FLOAT DAY COUNT", str(self._floatDayCountType))
 
         if self._pv01 is not None:
-            s += labelToString("PV01", self._pv01)
-            s += labelToString("FWD SWAP RATE", self._fwdSwapRate*100)
-            s += labelToString("FWD DF TO EXPIRY", self._forwardDf, "")
+            s += label_to_string("PV01", self._pv01)
+            s += label_to_string("FWD SWAP RATE", self._fwdSwapRate * 100)
+            s += label_to_string("FWD DF TO EXPIRY", self._forwardDf, "")
 
         return s
 

@@ -11,7 +11,7 @@ from turing_models.utilities.day_count import TuringDayCount, TuringDayCountType
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.mathematics import ONE_MILLION
-from turing_models.utilities.helper_functions import labelToString, tableToString
+from turing_models.utilities.helper_functions import label_to_string, tableToString
 from fundamental.market.curves.interpolator import TuringInterpTypes, _uinterpolate
 
 from turing_models.utilities.helper_functions import checkArgumentTypes
@@ -827,17 +827,17 @@ class TuringCDS(object):
     def __repr__(self):
         ''' print out details of the CDS contract and all of the calculated
         cashflows '''
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("STEP-IN DATE", self._stepInDate)
-        s += labelToString("MATURITY", self._maturityDate)
-        s += labelToString("NOTIONAL", self._notional)
-        s += labelToString("RUNNING COUPON", self._runningCoupon*10000, "bp\n")
-        s += labelToString("DAYCOUNT", self._dayCountType)
-        s += labelToString("FREQUENCY", self._freqType)
-        s += labelToString("CALENDAR", self._calendarType)
-        s += labelToString("BUSDAYRULE", self._busDayAdjustType)
-        s += labelToString("DATEGENRULE", self._dateGenRuleType)
-        s += labelToString("ACCRUED DAYS", self.accruedDays())
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("STEP-IN DATE", self._stepInDate)
+        s += label_to_string("MATURITY", self._maturityDate)
+        s += label_to_string("NOTIONAL", self._notional)
+        s += label_to_string("RUNNING COUPON", self._runningCoupon * 10000, "bp\n")
+        s += label_to_string("DAYCOUNT", self._dayCountType)
+        s += label_to_string("FREQUENCY", self._freqType)
+        s += label_to_string("CALENDAR", self._calendarType)
+        s += label_to_string("BUSDAYRULE", self._busDayAdjustType)
+        s += label_to_string("DATEGENRULE", self._dateGenRuleType)
+        s += label_to_string("ACCRUED DAYS", self.accruedDays())
 
         header = "PAYMENT_DATE, YEAR_FRAC, FLOW"
         valueTable = [self._adjustedDates, self._accrualFactors, self._flows]

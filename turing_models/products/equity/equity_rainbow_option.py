@@ -8,7 +8,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.models.gbm_process import TuringGBMProcess
 from turing_models.products.equity.equity_option import TuringEquityOption
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 
 from enum import Enum
@@ -301,11 +301,11 @@ class TuringEquityRainbowOption(TuringEquityOption):
 
     def __repr__(self):
 
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("EXPIRY DATE", self._expiryDate)
-        s += labelToString("PAYOFF TYPE", self._payoffType)
-        s += labelToString("PAYOFF PARAMS", self._payoffParams)
-        s += labelToString("NUM ASSETS TYPE", self._numAssets, "")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("EXPIRY DATE", self._expiryDate)
+        s += label_to_string("PAYOFF TYPE", self._payoffType)
+        s += label_to_string("PAYOFF PARAMS", self._payoffParams)
+        s += label_to_string("NUM ASSETS TYPE", self._numAssets, "")
         return s
 
 ###############################################################################

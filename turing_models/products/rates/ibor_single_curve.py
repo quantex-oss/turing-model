@@ -8,7 +8,7 @@ import copy
 
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 from turing_models.utilities.helper_functions import checkArgumentTypes, _funcName
 from turing_models.utilities.global_variables import gDaysInYear
 from fundamental.market.curves.interpolator import TuringInterpTypes, TuringInterpolator
@@ -632,28 +632,28 @@ class TuringIborSingleCurve(TuringDiscountCurve):
     def __repr__(self):
         ''' Print out the details of the Ibor curve. '''
 
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("VALUATION DATE", self._valuationDate)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("VALUATION DATE", self._valuationDate)
 
         for depo in self._usedDeposits:
-            s += labelToString("DEPOSIT", "")
+            s += label_to_string("DEPOSIT", "")
             s += depo.__repr__()
 
         for fra in self._usedFRAs:
-            s += labelToString("FRA", "")
+            s += label_to_string("FRA", "")
             s += fra.__repr__()
 
         for swap in self._usedSwaps:
-            s += labelToString("SWAP", "")
+            s += label_to_string("SWAP", "")
             s += swap.__repr__()
 
         numPoints = len(self._times)
 
-        s += labelToString("INTERP TYPE", self._interpType)
+        s += label_to_string("INTERP TYPE", self._interpType)
 
-        s += labelToString("GRID TIMES", "GRID DFS")
+        s += label_to_string("GRID TIMES", "GRID DFS")
         for i in range(0, numPoints):
-            s += labelToString("% 10.6f" % self._times[i],
+            s += label_to_string("% 10.6f" % self._times[i],
                                "%12.10f" % self._dfs[i])
 
         return s

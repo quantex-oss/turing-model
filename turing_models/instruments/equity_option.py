@@ -14,9 +14,10 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.instruments.core import Instrument, InstrumentBase
+from turing_models.utilities.helper_functions import label_to_string
 
 
-@dataclass(eq=False, order=False, unsafe_hash=True)
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class EqOption(Instrument, InstrumentBase):
 
     asset_id: str = None
@@ -215,3 +216,25 @@ class EqOption(Instrument, InstrumentBase):
                     zero_rates.append(cu.get('spot_rate'))
         self.zero_rates = zero_rates
         return zero_rates
+
+    def __repr__(self):
+        s = label_to_string("Object Type", type(self).__name__)
+        s += label_to_string("Asset Id", self.asset_id)
+        s += label_to_string("Underlier", self.underlier)
+        s += label_to_string("Option Type", self.option_type)
+        s += label_to_string("Notional", self.notional)
+        s += label_to_string("Initial Spot", self.initial_spot)
+        s += label_to_string("Number of Options", self.number_of_options)
+        s += label_to_string("Start Date", self.start_date)
+        s += label_to_string("End Date", self.end_date)
+        s += label_to_string("Expiry", self.expiry)
+        s += label_to_string("Participation Rate", self.participation_rate)
+        s += label_to_string("Strike Price", self.strike_price)
+        s += label_to_string("Multiplier", self.multiplier)
+        s += label_to_string("Annualized Flag", self.annualized_flag)
+        s += label_to_string("Value Date", self.value_date_)
+        s += label_to_string("Stock Price", self.stock_price_)
+        s += label_to_string("Volatility", self.v)
+        s += label_to_string("Interest Rate", self.r)
+        s += label_to_string("Dividend Yield", self.q)
+        return s

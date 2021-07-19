@@ -1,4 +1,4 @@
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 
 ###############################################################################
 
@@ -24,10 +24,10 @@ class TuringEquityModel(object):
 #         self._parameters = parameters
 #
 #     def __repr__(self):
-#         s = labelToString("OBJECT TYPE", type(self).__name__)
-#         s += labelToString("VOLATILITY", self._volatility)
-#         s += labelToString("IMPLEMENTATION", self._implementation)
-#         s += labelToString("PARAMETERS", self._parameters)
+#         s = label_to_string("OBJECT TYPE", type(self).__name__)
+#         s += label_to_string("VOLATILITY", self._volatility)
+#         s += label_to_string("IMPLEMENTATION", self._implementation)
+#         s += label_to_string("PARAMETERS", self._parameters)
 #         return s
 
 ###############################################################################
@@ -41,10 +41,10 @@ class TuringEquityModelHeston(TuringEquityModel):
         self._implementation = 0
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("VOLATILITY", self._volatility)
-        s += labelToString("MEAN REVERSION", self._meanReversion)
-        s += labelToString("IMPLEMENTATION", self._implementation)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("VOLATILITY", self._volatility)
+        s += label_to_string("MEAN REVERSION", self._meanReversion)
+        s += label_to_string("IMPLEMENTATION", self._implementation)
         return s
 
 ###############################################################################

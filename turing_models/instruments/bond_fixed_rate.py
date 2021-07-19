@@ -10,6 +10,7 @@ from turing_models.instruments.core import CurveAdjust
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.global_types import TuringYTMCalcType
+from turing_models.utilities.helper_functions import label_to_string
 
 
 def _f(y, *args):
@@ -22,7 +23,7 @@ def _f(y, *args):
     return obj_fn
 
 
-@dataclass(eq=False, order=False, unsafe_hash=True)
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
     coupon: float = 0.0
     curve_code: str = None
@@ -388,3 +389,10 @@ class BondFixedRate(Bond):
         self._accrued_days = num
 
         return self._accrued_interest
+
+    def __repr__(self):
+        s = super().__repr__()
+        s += label_to_string("Coupon", self.coupon)
+        s += label_to_string("Curve Code", self.curve_code)
+        s += label_to_string("YTM", self.__ytm__)
+        return s

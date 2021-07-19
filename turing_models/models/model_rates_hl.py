@@ -4,7 +4,7 @@ from numba import njit
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.mathematics import N
 from fundamental.market.curves.interpolator import TuringInterpTypes, _uinterpolate
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 
 interp = TuringInterpTypes.FLAT_FWD_RATES.value
 
@@ -92,8 +92,8 @@ class TuringModelRatesHL():
     def __repr__(self):
         ''' Return string with class details. '''
 
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("Sigma", self._sigma)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("Sigma", self._sigma)
         return s
 
 ###############################################################################

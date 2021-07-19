@@ -6,7 +6,7 @@ from turing_models.utilities.frequency import TuringFrequencyTypes, TuringFreque
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.schedule import TuringSchedule
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
 
@@ -292,21 +292,21 @@ class TuringIborIborSwap(object):
 ##########################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("START DATE", self._effectiveDate)
-        s += labelToString("TERMINATION DATE", self._terminationDate)
-        s += labelToString("MATURITY DATE", self._maturityDate)
-        s += labelToString("NOTIONAL", self._notional)
-        s += labelToString("SWAP TYPE", self._swapType)
-        s += labelToString("FIXED COUPON", self._fixedCoupon)
-        s += labelToString("FLOAT SPREAD", self._floatSpread)
-        s += labelToString("FIXED FREQUENCY", self._fixedFrequencyType)
-        s += labelToString("FLOAT FREQUENCY", self._floatFrequencyType)
-        s += labelToString("FIXED DAY COUNT", self._fixedDayCountType)
-        s += labelToString("FLOAT DAY COUNT", self._floatDayCountType)
-        s += labelToString("CALENDAR", self._calendarType)
-        s += labelToString("BUS DAY ADJUST", self._busDayAdjustType)
-        s += labelToString("DATE GEN TYPE", self._dateGenRuleType)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("START DATE", self._effectiveDate)
+        s += label_to_string("TERMINATION DATE", self._terminationDate)
+        s += label_to_string("MATURITY DATE", self._maturityDate)
+        s += label_to_string("NOTIONAL", self._notional)
+        s += label_to_string("SWAP TYPE", self._swapType)
+        s += label_to_string("FIXED COUPON", self._fixedCoupon)
+        s += label_to_string("FLOAT SPREAD", self._floatSpread)
+        s += label_to_string("FIXED FREQUENCY", self._fixedFrequencyType)
+        s += label_to_string("FLOAT FREQUENCY", self._floatFrequencyType)
+        s += label_to_string("FIXED DAY COUNT", self._fixedDayCountType)
+        s += label_to_string("FLOAT DAY COUNT", self._floatDayCountType)
+        s += label_to_string("CALENDAR", self._calendarType)
+        s += label_to_string("BUS DAY ADJUST", self._busDayAdjustType)
+        s += label_to_string("DATE GEN TYPE", self._dateGenRuleType)
         return s
 
 ###############################################################################

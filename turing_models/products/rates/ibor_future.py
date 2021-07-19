@@ -10,7 +10,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.turing_date import TuringDate
 
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.products.rates.ibor_fra import TuringIborFRA
 
 ###############################################################################
@@ -130,12 +130,12 @@ class TuringIborFuture(object):
     def __repr__(self):
         ''' Print a list of the unadjusted coupon payment dates used in
         analytic calculations for the bond. '''
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("LAST TRADING DATE", self._lastTradingDate)
-        s += labelToString("DELIVERY DATE", self._deliveryDate)
-        s += labelToString("END INTEREST PERIOD", self._endOfInterestPeriod)
-        s += labelToString("ACCRUAL TYPE", self._accrualType)
-        s += labelToString("CONTRACT SIZE", self._contractSize)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("LAST TRADING DATE", self._lastTradingDate)
+        s += label_to_string("DELIVERY DATE", self._deliveryDate)
+        s += label_to_string("END INTEREST PERIOD", self._endOfInterestPeriod)
+        s += label_to_string("ACCRUAL TYPE", self._accrualType)
+        s += label_to_string("CONTRACT SIZE", self._contractSize)
         return s
 
 ##########################################################################

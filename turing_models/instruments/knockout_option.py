@@ -8,9 +8,10 @@ from turing_models.models.process_simulator import TuringProcessSimulator, Turin
      TuringGBMNumericalScheme
 from turing_models.instruments.equity_option import EqOption
 from turing_models.utilities.mathematics import N
+from turing_models.utilities.helper_functions import label_to_string
 
 
-@dataclass(eq=False, order=False, unsafe_hash=True)
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class KnockOutOption(EqOption):
 
     barrier: float = None
@@ -170,3 +171,10 @@ class KnockOutOption(EqOption):
                         rebate * texp**flag * (ones * barrierCrossedFromAbove)
 
         return payoff.mean() * np.exp(- r * texp) * notional
+
+    def __repr__(self):
+        s = super().__repr__()
+        s += label_to_string("Barrier", self.barrier)
+        s += label_to_string("Rebate", self.rebate)
+        s += label_to_string("Knock Out Type", self.knock_out_type)
+        return s

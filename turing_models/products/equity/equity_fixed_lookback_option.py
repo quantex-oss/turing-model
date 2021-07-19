@@ -7,7 +7,7 @@ from turing_models.utilities.turing_date import TuringDate
 
 from turing_models.models.gbm_process import TuringGBMProcess
 from turing_models.products.equity.equity_option import TuringEquityOption
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.global_types import TuringOptionTypes
 
@@ -234,10 +234,10 @@ class TuringEquityFixedLookbackOption(TuringEquityOption):
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("EXPIRY DATE", self._expiryDate)
-        s += labelToString("STRIKE PRICE", self._strikePrice)
-        s += labelToString("OPTION TYPE", self._optionType, "")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("EXPIRY DATE", self._expiryDate)
+        s += label_to_string("STRIKE PRICE", self._strikePrice)
+        s += label_to_string("OPTION TYPE", self._optionType, "")
         return s
 
 ###############################################################################

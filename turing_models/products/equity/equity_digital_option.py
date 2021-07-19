@@ -5,7 +5,7 @@ from turing_models.utilities.global_variables import gDaysInYear, gSmall
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.products.equity.equity_option import TuringEquityOption
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
@@ -160,11 +160,11 @@ class TuringEquityDigitalOption(TuringEquityOption):
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("EXPIRY DATE", self._expiryDate)
-        s += labelToString("BARRIER LEVEL", self._barrierPrice)
-        s += labelToString("OPTION TYPE", self._optionType)
-        s += labelToString("UNDERLYING TYPE", self._underlyingType, "")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("EXPIRY DATE", self._expiryDate)
+        s += label_to_string("BARRIER LEVEL", self._barrierPrice)
+        s += label_to_string("OPTION TYPE", self._optionType)
+        s += label_to_string("UNDERLYING TYPE", self._underlyingType, "")
         return s
 
 ###############################################################################

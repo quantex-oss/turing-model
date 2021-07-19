@@ -24,7 +24,7 @@ from fundamental.market.curves.interpolator import interpolate, TuringInterpType
 
 from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 
 ###############################################################################
 # TODO: Convert functions to use NUMBA!!
@@ -312,16 +312,16 @@ class TuringCDSBasket(object):
     def __repr__(self):
         ''' print out details of the CDS contract and all of the calculated
         cashflows '''
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("STEP-IN DATE", self._stepInDate)
-        s += labelToString("MATURITY", self._maturityDate)
-        s += labelToString("NOTIONAL", self._notional)
-        s += labelToString("RUNNING COUPON", self._runningCoupon*10000, "bp\n")
-        s += labelToString("DAYCOUNT", self._dayCountType)
-        s += labelToString("FREQUENCY", self._freqType)
-        s += labelToString("CALENDAR", self._calendarType)
-        s += labelToString("BUSDAYRULE", self._busDayAdjustType)
-        s += labelToString("DATEGENRULE", self._dateGenRuleType)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("STEP-IN DATE", self._stepInDate)
+        s += label_to_string("MATURITY", self._maturityDate)
+        s += label_to_string("NOTIONAL", self._notional)
+        s += label_to_string("RUNNING COUPON", self._runningCoupon * 10000, "bp\n")
+        s += label_to_string("DAYCOUNT", self._dayCountType)
+        s += label_to_string("FREQUENCY", self._freqType)
+        s += label_to_string("CALENDAR", self._calendarType)
+        s += label_to_string("BUSDAYRULE", self._busDayAdjustType)
+        s += label_to_string("DATEGENRULE", self._dateGenRuleType)
 
 #        header = "PAYMENT_DATE, YEAR_FRAC, FLOW"
 #        valueTable = [self._adjustedDates, self._accrualFactors, self._flows]

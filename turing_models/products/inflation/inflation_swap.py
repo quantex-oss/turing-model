@@ -4,7 +4,7 @@ from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 
 ###############################################################################
 
@@ -126,15 +126,15 @@ class TuringInflationSwap(object):
     ##########################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("START ACCD DATE", self._startDate)
-        s += labelToString("MATURITY DATE", self._maturityDate)
-        s += labelToString("FRA RATE", self._fraRate)
-        s += labelToString("NOTIONAL", self._notional)
-        s += labelToString("PAY FIXED RATE", self._payFixedRate)
-        s += labelToString("DAY COUNT TYPE", self._dayCountType)
-        s += labelToString("BUS DAY ADJUST TYPE", self._busDayAdjustType)
-        s += labelToString("CALENDAR", self._calendarType)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("START ACCD DATE", self._startDate)
+        s += label_to_string("MATURITY DATE", self._maturityDate)
+        s += label_to_string("FRA RATE", self._fraRate)
+        s += label_to_string("NOTIONAL", self._notional)
+        s += label_to_string("PAY FIXED RATE", self._payFixedRate)
+        s += label_to_string("DAY COUNT TYPE", self._dayCountType)
+        s += label_to_string("BUS DAY ADJUST TYPE", self._busDayAdjustType)
+        s += label_to_string("CALENDAR", self._calendarType)
         return s
 
     ###########################################################################

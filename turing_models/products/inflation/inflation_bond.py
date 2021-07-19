@@ -8,7 +8,7 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.utilities.global_types import TuringYTMCalcType
 from ..bonds.bond import TuringBond
 
@@ -116,14 +116,14 @@ class TuringInflationBond(TuringBond):
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("ISSUE DATE", self._issueDate)
-        s += labelToString("MATURITY DATE", self._maturityDate)
-        s += labelToString("COUPON", self._coupon)
-        s += labelToString("FREQUENCY", self._freqType)
-        s += labelToString("ACCRUAL TYPE", self._accrualType)
-        s += labelToString("FACE AMOUNT", self._faceAmount)
-        s += labelToString("BASE CPI VALUE", self._baseCPIValue, "")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("ISSUE DATE", self._issueDate)
+        s += label_to_string("MATURITY DATE", self._maturityDate)
+        s += label_to_string("COUPON", self._coupon)
+        s += label_to_string("FREQUENCY", self._freqType)
+        s += label_to_string("ACCRUAL TYPE", self._accrualType)
+        s += label_to_string("FACE AMOUNT", self._faceAmount)
+        s += label_to_string("BASE CPI VALUE", self._baseCPIValue, "")
         return s
 
 ###############################################################################

@@ -4,7 +4,7 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringLongShort
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 
 ###############################################################################
 # ADD START DATE TO CLASS ?
@@ -98,11 +98,11 @@ class TuringEquityForward():
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("EXPIRY DATE", self._expiryDate)
-        s += labelToString("FORWARD PRICE", self._forwardPrice)
-        s += labelToString("LONG OR SHORT", self._longShort)
-        s += labelToString("NOTIONAL", self._notional, "")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("EXPIRY DATE", self._expiryDate)
+        s += label_to_string("FORWARD PRICE", self._forwardPrice)
+        s += label_to_string("LONG OR SHORT", self._longShort)
+        s += label_to_string("NOTIONAL", self._notional, "")
         return s
 
 ###############################################################################

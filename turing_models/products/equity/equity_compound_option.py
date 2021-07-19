@@ -13,7 +13,7 @@ from turing_models.products.equity.equity_option import TuringEquityOption
 from turing_models.products.equity.equity_vanilla_option import TuringEquityVanillaOption
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurve
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 
 ###############################################################################
@@ -417,13 +417,13 @@ class TuringEquityCompoundOption(TuringEquityOption):
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("CPD EXPIRY DATE", self._cExpiryDate)
-        s += labelToString("CPD STRIKE PRICE", self._cStrikePrice)
-        s += labelToString("CPD OPTION TYPE", self._cOptionType)
-        s += labelToString("UND EXPIRY DATE", self._uExpiryDate)
-        s += labelToString("UND STRIKE PRICE", self._uStrikePrice)
-        s += labelToString("UND OPTION TYPE", self._uOptionType)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("CPD EXPIRY DATE", self._cExpiryDate)
+        s += label_to_string("CPD STRIKE PRICE", self._cStrikePrice)
+        s += label_to_string("CPD OPTION TYPE", self._cOptionType)
+        s += label_to_string("UND EXPIRY DATE", self._uExpiryDate)
+        s += label_to_string("UND STRIKE PRICE", self._uStrikePrice)
+        s += label_to_string("UND OPTION TYPE", self._uOptionType)
         return s
 
 ###############################################################################

@@ -12,11 +12,12 @@ from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTy
 from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.helper_functions import label_to_string
 
 dy = 0.0001
 
 
-@dataclass(eq=False, order=False, unsafe_hash=True)
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class Bond(Instrument, InstrumentBase):
     asset_id: str = None
     quantity: float = 1.0
@@ -158,3 +159,16 @@ class Bond(Instrument, InstrumentBase):
                     if ytm_:
                         return ytm_
         return None
+
+    def __repr__(self):
+        s = label_to_string("Object Type", type(self).__name__)
+        s += label_to_string("Asset Id", self.asset_id)
+        s += label_to_string("Interest Accrued", self.interest_accrued)
+        s += label_to_string("Issue Date", self.issue_date)
+        s += label_to_string("Due Date", self.due_date)
+        s += label_to_string("Freq Type", self.freq_type)
+        s += label_to_string("Accrual Type", self.accrual_type)
+        s += label_to_string("Par", self.par)
+        s += label_to_string("Clean Price", self.clean_price)
+        s += label_to_string("Settlement Date", self.settlement_date_)
+        return s

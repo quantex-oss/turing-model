@@ -11,7 +11,7 @@ from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTy
 from turing_models.utilities.mathematics import testMonotonicity
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.calendar import TuringCalendarTypes
@@ -579,25 +579,25 @@ class TuringBondConvertible(object):
     def __repr__(self):
         ''' Print a list of the unadjusted coupon payment dates used in
         analytic calculations for the bond. '''
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("MATURITY DATE", self._maturityDate)
-        s += labelToString("COUPON", self._coupon)
-        s += labelToString("FREQUENCY", self._freqType)
-        s += labelToString("ACCRUAL TYPE", self._accrualType)
-        s += labelToString("FACE AMOUNT", self._faceAmount)
-        s += labelToString("CONVERSION RATIO", self._conversionRatio)
-        s += labelToString("START CONVERT DATE", self._startConvertDate)
-        s += labelToString("CALL", "DATES")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("MATURITY DATE", self._maturityDate)
+        s += label_to_string("COUPON", self._coupon)
+        s += label_to_string("FREQUENCY", self._freqType)
+        s += label_to_string("ACCRUAL TYPE", self._accrualType)
+        s += label_to_string("FACE AMOUNT", self._faceAmount)
+        s += label_to_string("CONVERSION RATIO", self._conversionRatio)
+        s += label_to_string("START CONVERT DATE", self._startConvertDate)
+        s += label_to_string("CALL", "DATES")
 
         for i in range(0, len(self._callDates)):
-            s += labelToString(self._callDates[i],
-                               self._callPrices[i])
+            s += label_to_string(self._callDates[i],
+                                 self._callPrices[i])
 
-        s += labelToString("PUT", "DATES")
+        s += label_to_string("PUT", "DATES")
 
         for i in range(0, len(self._putDates)):
-            s += labelToString(self._putDates[i],
-                               self._putPrices[i])
+            s += label_to_string(self._putDates[i],
+                                 self._putPrices[i])
 
         return s
 

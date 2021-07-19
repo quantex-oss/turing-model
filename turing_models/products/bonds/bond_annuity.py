@@ -6,7 +6,7 @@ from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.helper_functions import checkArgumentTypes, labelToString
+from turing_models.utilities.helper_functions import checkArgumentTypes, label_to_string
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
 ###############################################################################
@@ -171,12 +171,12 @@ class TuringBondAnnuity(object):
         ''' Print a list of the unadjusted coupon payment dates used in
         analytic calculations for the bond. '''
 
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("MATURITY DATE", self._maturityDate)
-        s += labelToString("FREQUENCY", self._freqType)
-        s += labelToString("CALENDAR", self._calendarType)
-        s += labelToString("BUS_DAY_RULE", self._busDayAdjustType)
-        s += labelToString("DATE_GEN_RULE", self._dateGenRuleType)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("MATURITY DATE", self._maturityDate)
+        s += label_to_string("FREQUENCY", self._freqType)
+        s += label_to_string("CALENDAR", self._calendarType)
+        s += label_to_string("BUS_DAY_RULE", self._busDayAdjustType)
+        s += label_to_string("DATE_GEN_RULE", self._dateGenRuleType)
 
         return s
 

@@ -4,7 +4,7 @@ from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
-from turing_models.utilities.helper_functions import checkArgumentTypes, labelToString
+from turing_models.utilities.helper_functions import checkArgumentTypes, label_to_string
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
@@ -138,7 +138,7 @@ class TuringIborOIS(object):
 ##########################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
         s += self._floatIborLeg.__repr__()
         s += "\n"
         s += self._floatOISLeg.__repr__()

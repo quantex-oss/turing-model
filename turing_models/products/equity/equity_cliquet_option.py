@@ -5,7 +5,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
 
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
@@ -144,15 +144,15 @@ class TuringEquityCliquetOption(TuringEquityOption):
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("START DATE", self._startDate)
-        s += labelToString("FINAL EXPIRY DATE", self._finalExpiryDate)
-        s += labelToString("OPTION TYPE", self._optionType)
-        s += labelToString("FREQUENCY TYPE", self._freqType)
-        s += labelToString("DAY COUNT TYPE", self._dayCountType)
-        s += labelToString("CALENDAR TYPE", self._calendarType)
-        s += labelToString("BUS DAY ADJUST TYPE", self._busDayAdjustType)
-        s += labelToString("DATE GEN RULE TYPE", self._dateGenRuleType, "")
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("START DATE", self._startDate)
+        s += label_to_string("FINAL EXPIRY DATE", self._finalExpiryDate)
+        s += label_to_string("OPTION TYPE", self._optionType)
+        s += label_to_string("FREQUENCY TYPE", self._freqType)
+        s += label_to_string("DAY COUNT TYPE", self._dayCountType)
+        s += label_to_string("CALENDAR TYPE", self._calendarType)
+        s += label_to_string("BUS DAY ADJUST TYPE", self._busDayAdjustType)
+        s += label_to_string("DATE GEN RULE TYPE", self._dateGenRuleType, "")
         return s
 
 ###############################################################################

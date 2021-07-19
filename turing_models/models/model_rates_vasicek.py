@@ -2,7 +2,7 @@ from math import sqrt, exp
 from numba import njit, float64, int64
 import numpy as np
 
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 
 ##########################################################################
 # dr = a(b-r) + sigma dW
@@ -21,10 +21,10 @@ class TuringModelRatesVasicek():
         self._sigma = sigma
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("a", self._a)
-        s += labelToString("b", self._b)
-        s += labelToString("sigma", self._sigma)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("a", self._a)
+        s += label_to_string("b", self._b)
+        s += label_to_string("sigma", self._sigma)
         return s
 
 ###############################################################################

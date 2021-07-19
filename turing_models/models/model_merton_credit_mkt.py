@@ -4,7 +4,7 @@ from turing_models.utilities.mathematics import N
 
 from scipy import optimize
 
-from turing_models.utilities.helper_functions import labelToString, checkArgumentTypes
+from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
 from turing_models.utilities.error import TuringError
 from .model_merton_credit import TuringModelMertonCredit
 
@@ -161,12 +161,12 @@ class TuringModelMertonCreditMkt(TuringModelMertonCredit):
 ###############################################################################
 
     def __repr__(self):
-        s = labelToString("OBJECT TYPE", type(self).__name__)
-        s += labelToString("EQUITY VALUE", self._E)
-        s += labelToString("BOND FACE", self._L)
-        s += labelToString("YEARS TO MATURITY", self._t)
-        s += labelToString("ASSET GROWTH", self._mu)
-        s += labelToString("EQUITY VOLATILITY", self._vE)
+        s = label_to_string("OBJECT TYPE", type(self).__name__)
+        s += label_to_string("EQUITY VALUE", self._E)
+        s += label_to_string("BOND FACE", self._L)
+        s += label_to_string("YEARS TO MATURITY", self._t)
+        s += label_to_string("ASSET GROWTH", self._mu)
+        s += label_to_string("EQUITY VOLATILITY", self._vE)
         return s
 
 ###############################################################################

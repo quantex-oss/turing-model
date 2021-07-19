@@ -4,7 +4,7 @@ from numba import njit, float64, int64
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.mathematics import accruedInterpolator
 from fundamental.market.curves.interpolator import TuringInterpTypes, _uinterpolate
-from turing_models.utilities.helper_functions import labelToString
+from turing_models.utilities.helper_functions import label_to_string
 from turing_models.utilities.global_types import TuringExerciseTypes
 from turing_models.utilities.global_variables import gSmall
 
@@ -793,8 +793,8 @@ class TuringModelRatesBDT():
         ''' Return string with class details. '''
 
         s = "Black-Derman-Toy Model\n"
-        s += labelToString("Sigma", self._sigma)
-        s += labelToString("numTimeSteps", self._numTimeSteps)
+        s += label_to_string("Sigma", self._sigma)
+        s += label_to_string("numTimeSteps", self._numTimeSteps)
         return s
 
 ###############################################################################
