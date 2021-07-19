@@ -117,6 +117,10 @@ class BondFixedRate(Bond):
         return TuringDiscountCurveFlat(self.settlement_date_,
                                        self.__ytm__)
 
+    @property
+    def clean_price_(self):
+        return self.clean_price or self.clean_price_from_discount_curve()
+
     def _calculate_flow_amounts(self):
         """ Determine the bond cashflow payment amounts without principal """
 
@@ -163,10 +167,9 @@ class BondFixedRate(Bond):
         px += df * self._redemption * self.par * dates
         px = px / df_settle
 
-        discount_curve = self.discount_curve
         self.discount_curve = discount_curve_flat
         fp = self.full_price_from_discount_curve()
-        self.discount_curve = discount_curve
+        self.discount_curve = None
 
         dmac = px / fp
 
@@ -311,14 +314,14 @@ class BondFixedRate(Bond):
         """ Calculate the current yield of the bond which is the
         coupon divided by the clean price (not the full price)"""
 
-        y = self.coupon * self.par / self.clean_price
+        y = self.coupon * self.par / self.clean_price_
         return y
 
     def yield_to_maturity(self):
         """ Calculate the bond's yield to maturity by solving the price
         yield relationship using a one-dimensional root solver. """
 
-        clean_price = self.clean_price
+        clean_price = self.clean_price_
         if type(clean_price) is float \
                 or type(clean_price) is int \
                 or type(clean_price) is np.float64:
