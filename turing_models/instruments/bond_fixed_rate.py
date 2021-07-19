@@ -203,7 +203,7 @@ class BondFixedRate(Bond):
 
         full_price = self.full_price_from_ytm()
 
-        principal = full_price * self.face_amount / self.par
+        principal = full_price
         principal = principal - self._accrued_interest
         return principal
 
@@ -265,7 +265,7 @@ class BondFixedRate(Bond):
 
     def clean_price_from_ytm(self):
         full_price = self.full_price_from_ytm()
-        accrued_amount = self._accrued_interest * self.par / self.face_amount
+        accrued_amount = self._accrued_interest
         clean_Price = full_price - accrued_amount
         return clean_Price
 
@@ -307,7 +307,7 @@ class BondFixedRate(Bond):
         self.calc_accrued_interest()
         full_price = self.full_price_from_discount_curve()
 
-        accrued = self._accrued_interest * self.par / self.face_amount
+        accrued = self._accrued_interest
         clean_price = full_price - accrued
         return clean_price
 
@@ -335,7 +335,7 @@ class BondFixedRate(Bond):
                             + str(type(clean_price)))
 
         self.calc_accrued_interest()
-        accrued_amount = self._accrued_interest * self.par / self.face_amount
+        accrued_amount = self._accrued_interest
         full_prices = (clean_prices + accrued_amount)
         ytms = []
 
@@ -385,7 +385,7 @@ class BondFixedRate(Bond):
             acc_factor = acc_factor - 1.0 / self.frequency
 
         self._alpha = 1.0 - acc_factor * self.frequency
-        self._accrued_interest = acc_factor * self.face_amount * self.coupon
+        self._accrued_interest = acc_factor * self.par * self.coupon
         self._accrued_days = num
 
         return self._accrued_interest
