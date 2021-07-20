@@ -54,6 +54,7 @@ class RiskMeasure(Enum):
     Theta = "theta"
     Rho = "rho"
     RhoQ = "rho_q"
+    DeltaSum = "delta_sum"
     EqDelta = "eq_delta"
     EqGamma = "eq_gamma"
     EqVega = "eq_vega"
