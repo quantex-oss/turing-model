@@ -52,7 +52,7 @@ def modify_freq_type(freq_type):
     elif freq_type == '按周付息':
         return TuringFrequencyTypes.WEEKLY
     elif freq_type == '两周付息':
-        return TuringFrequencyTypes.FORTNIGHTLY
+        return TuringFrequencyTypes.BIWEEKLY
     elif freq_type == '按天付息':
         return TuringFrequencyTypes.DAILY
     else:
