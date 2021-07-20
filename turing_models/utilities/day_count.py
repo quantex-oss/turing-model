@@ -246,6 +246,7 @@ class TuringDayCount(object):
 
             if dt3 is None:
                 y3 = y2
+                dt3 = dt2
             else:
                 y3 = dt3._y
 
