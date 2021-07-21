@@ -13,6 +13,9 @@ class TuringFrequencyTypes(Enum):
     QUARTERLY = 4
     MONTHLY = 12
     CONTINUOUS = 99
+    BIWEEKLY = 26
+    WEEKLY = 52
+    DAILY = 365
 
 ###############################################################################
 
@@ -38,5 +41,12 @@ def TuringFrequency(freqType):
         return 4
     elif freqType == TuringFrequencyTypes.MONTHLY:
         return 12
+    elif freqType == TuringFrequencyTypes.BIWEEKLY:
+        return 26
+    elif freqType == TuringFrequencyTypes.WEEKLY:
+        return 52
+    elif freqType == TuringFrequencyTypes.DAILY:
+        return 365
+
 
 ###############################################################################

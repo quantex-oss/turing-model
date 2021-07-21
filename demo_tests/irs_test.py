@@ -364,6 +364,6 @@ irs = IRS(effective_date=TuringDate(2017, 12, 27),
           fixed_day_count_type_curve='30/360',
           fixed_leg_type_curve='PAY')
 print(irs.price())
-# print(irs.pv01())
-# print(irs.swap_rate())
+print(irs.pv01())
+print(irs.swap_rate())
 

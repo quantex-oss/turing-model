@@ -49,6 +49,12 @@ def modify_freq_type(freq_type):
         return TuringFrequencyTypes.QUARTERLY
     elif freq_type == '按月付息':
         return TuringFrequencyTypes.MONTHLY
+    elif freq_type == '按周付息':
+        return TuringFrequencyTypes.WEEKLY
+    elif freq_type == '两周付息':
+        return TuringFrequencyTypes.BIWEEKLY
+    elif freq_type == '按天付息':
+        return TuringFrequencyTypes.DAILY
     else:
         raise Exception('Please check the input of freq_type')
 

@@ -39,7 +39,7 @@ class EqOption(Instrument, InstrumentBase):
     annualized_flag: bool = True
     value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))  # 估值日期
     stock_price: float = None
-    volatility: float = 0.1
+    volatility: float = 0
     interest_rate: float = 0
     zero_dates: List[Any] = field(default_factory=list)
     zero_rates: List[Any] = field(default_factory=list)
@@ -100,7 +100,7 @@ class EqOption(Instrument, InstrumentBase):
         return self.value_date_.addYears(self.zero_dates)
 
     @property
-    def discount_curve(self) -> TuringDiscountCurveZeros:
+    def discount_curve(self):
         if self.__discount_curve:
             return self.__discount_curve
         else:
