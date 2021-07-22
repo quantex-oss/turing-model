@@ -65,10 +65,8 @@ class TuringKnockInTypes(Enum):
 
 
 class TuringKnockOutTypes(Enum):
-    DOWN_AND_OUT_CALL = 1
-    UP_AND_OUT_CALL = 2
-    UP_AND_OUT_PUT = 3
-    DOWN_AND_OUT_PUT = 4
+    UP_AND_OUT_CALL = 1
+    DOWN_AND_OUT_PUT = 2
 
 
 class TuringAsianOptionValuationMethods(Enum):
@@ -81,24 +79,3 @@ class TuringYTMCalcType(Enum):
     UK_DMO = 1,
     US_STREET = 2,
     US_TREASURY = 3
-
-
-option_type_dict = {
-        'CALL-EUROPEAN': {'type': TuringOptionTypes.EUROPEAN_CALL, 'knock_out_type': None, 'knock_in_type': None, 'option_name': ["european", "generic"]},
-        'CALL-AMERICAN': {'type': TuringOptionTypes.AMERICAN_CALL, 'knock_out_type': None, 'knock_in_type': None, 'option_name': ["american", "generic"]},
-        'CALL-ASIAN': {'type': TuringOptionTypes.ASIAN_CALL, 'knock_out_type': None, 'knock_in_type': None, 'option_name': ["asian", "asian"]},
-        'CALL-SNOWBALL-Return': {'type': TuringOptionTypes.SNOWBALL_CALL, 'knock_out_type': None, 'knock_in_type': TuringKnockInTypes.RETURN, 'option_name': ["snowball", "generic"]},
-        'CALL-SNOWBALL-Vanilla': {'type': TuringOptionTypes.SNOWBALL_CALL, 'knock_out_type': None, 'knock_in_type': TuringKnockInTypes.VANILLA, 'option_name': ["snowball", "generic"]},
-        'CALL-SNOWBALL-Spreads': {'type': TuringOptionTypes.SNOWBALL_CALL, 'knock_out_type': None, 'knock_in_type': TuringKnockInTypes.SPREADS, 'option_name': ["snowball", "generic"]},
-        'CALL-KNOCK_OUT-down_and_out': {'type': TuringOptionTypes.KNOCKOUT, 'knock_out_type': TuringKnockOutTypes.DOWN_AND_OUT_CALL, 'knock_in_type': None, 'option_name': ["knockout", "generic"]},
-        'CALL-KNOCK_OUT-up_and_out': {'type': TuringOptionTypes.KNOCKOUT, 'knock_out_type': TuringKnockOutTypes.UP_AND_OUT_CALL, 'knock_in_type': None, 'option_name': ["knockout", "generic"]},
-
-        'PUT-EUROPEAN': {'type': TuringOptionTypes.EUROPEAN_PUT, 'knock_out_type': None, 'knock_in_type': None, 'option_name': ["european", "generic"]},
-        'PUT-AMERICAN': {'type': TuringOptionTypes.AMERICAN_PUT, 'knock_out_type': None, 'knock_in_type': None, 'option_name': ["american", "generic"]},
-        'PUT-ASIAN': {'type': TuringOptionTypes.ASIAN_PUT, 'knock_out_type': None, 'knock_in_type': None, 'option_name': ["asian", "asian"]},
-        'PUT-SNOWBALL-Return': {'type': TuringOptionTypes.SNOWBALL_PUT, 'knock_out_type': None, 'knock_in_type': TuringKnockInTypes.RETURN, 'option_name': ["snowball", "generic"]},
-        'PUT-SNOWBALL-Vanilla': {'type': TuringOptionTypes.SNOWBALL_PUT, 'knock_out_type': None, 'knock_in_type': TuringKnockInTypes.VANILLA, 'option_name': ["snowball", "generic"]},
-        'PUT-SNOWBALL-Spreads': {'type': TuringOptionTypes.SNOWBALL_PUT, 'knock_out_type': None, 'knock_in_type': TuringKnockInTypes.SPREADS, 'option_name': ["snowball", "generic"]},
-        'PUT-KNOCK_OUT-down_and_out': {'type': TuringOptionTypes.KNOCKOUT, 'knock_out_type': TuringKnockOutTypes.DOWN_AND_OUT_PUT, 'knock_in_type': None, 'option_name': ["knockout", "generic"]},
-        'PUT-KNOCK_OUT-up_and_out': {'type': TuringOptionTypes.KNOCKOUT, 'knock_out_type': TuringKnockOutTypes.UP_AND_OUT_PUT, 'knock_in_type': None, 'option_name': ["knockout", "generic"]},
-    }

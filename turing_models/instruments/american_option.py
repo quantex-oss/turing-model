@@ -15,8 +15,11 @@ class AmericanOption(EqOption):
 
     @property
     def option_type_(self) -> TuringOptionTypes:
-        return TuringOptionTypes.AMERICAN_CALL if self.option_type == 'CALL' \
-            else TuringOptionTypes.AMERICAN_PUT
+        if isinstance(self.option_type, TuringOptionTypes):
+            return self.option_type
+        else:
+            return TuringOptionTypes.AMERICAN_CALL if self.option_type == 'CALL' \
+                else TuringOptionTypes.AMERICAN_PUT
 
     def price(self) -> float:
         s0 = self.stock_price_

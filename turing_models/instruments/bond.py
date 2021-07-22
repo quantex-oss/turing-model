@@ -1,6 +1,7 @@
 import datetime
 import traceback
 from dataclasses import dataclass
+from typing import Union
 
 from fundamental.turing_db.base.core import InstrumentBase
 from fundamental.turing_db.data import Turing
@@ -27,8 +28,8 @@ class Bond(Instrument, InstrumentBase):
     due_date: TuringDate = None
     bond_term_year: float = None
     bond_term_day: float = None
-    freq_type: str = None
-    accrual_type: str = None
+    freq_type: Union[str, TuringFrequencyTypes] = None
+    accrual_type: Union[str, TuringDayCountTypes] = None
     par: float = None
     clean_price: float = None
     name: str = None
@@ -54,33 +55,39 @@ class Bond(Instrument, InstrumentBase):
 
     @property
     def freq_type_(self):
-        if self.freq_type == '每年付息':
-            return TuringFrequencyTypes.ANNUAL
-        elif self.freq_type == '半年付息':
-            return TuringFrequencyTypes.SEMI_ANNUAL
-        elif self.freq_type == '4个月一次':
-            return TuringFrequencyTypes.TRI_ANNUAL
-        elif self.freq_type == '按季付息':
-            return TuringFrequencyTypes.QUARTERLY
-        elif self.freq_type == '按月付息':
-            return TuringFrequencyTypes.MONTHLY
+        if isinstance(self.freq_type, TuringFrequencyTypes):
+            return self.freq_type
         else:
-            raise Exception('Please check the input of freq_type')
+            if self.freq_type == '每年付息':
+                return TuringFrequencyTypes.ANNUAL
+            elif self.freq_type == '半年付息':
+                return TuringFrequencyTypes.SEMI_ANNUAL
+            elif self.freq_type == '4个月一次':
+                return TuringFrequencyTypes.TRI_ANNUAL
+            elif self.freq_type == '按季付息':
+                return TuringFrequencyTypes.QUARTERLY
+            elif self.freq_type == '按月付息':
+                return TuringFrequencyTypes.MONTHLY
+            else:
+                raise Exception('Please check the input of freq_type')
 
     @property
     def accrual_type_(self):
-        if self.accrual_type == 'ACT/365':
-            return TuringDayCountTypes.ACT_365L
-        elif self.accrual_type == 'ACT/ACT':
-            return TuringDayCountTypes.ACT_ACT_ISDA
-        elif self.accrual_type == 'ACT/360':
-            return TuringDayCountTypes.ACT_360
-        elif self.accrual_type == '30/360':
-            return TuringDayCountTypes.THIRTY_E_360
-        elif self.accrual_type == 'ACT/365F':
-            return TuringDayCountTypes.ACT_365F
+        if isinstance(self.accrual_type, TuringDayCountTypes):
+            return self.accrual_type
         else:
-            raise Exception('Please check the input of accrual_type')
+            if self.accrual_type == 'ACT/365':
+                return TuringDayCountTypes.ACT_365L
+            elif self.accrual_type == 'ACT/ACT':
+                return TuringDayCountTypes.ACT_ACT_ISDA
+            elif self.accrual_type == 'ACT/360':
+                return TuringDayCountTypes.ACT_360
+            elif self.accrual_type == '30/360':
+                return TuringDayCountTypes.THIRTY_E_360
+            elif self.accrual_type == 'ACT/365F':
+                return TuringDayCountTypes.ACT_365F
+            else:
+                raise Exception('Please check the input of accrual_type')
 
     @property
     def settlement_date_(self):

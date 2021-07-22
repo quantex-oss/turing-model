@@ -26,8 +26,11 @@ class AsianOption(EqOption):
 
     @property
     def option_type_(self) -> TuringOptionTypes:
-        return TuringOptionTypes.ASIAN_CALL if self.option_type == 'CALL' \
-            else TuringOptionTypes.ASIAN_PUT
+        if isinstance(self.option_type, TuringOptionTypes):
+            return self.option_type
+        else:
+            return TuringOptionTypes.ASIAN_CALL if self.option_type == 'CALL' \
+                else TuringOptionTypes.ASIAN_PUT
 
     @property
     def valuation_method_(self) -> TuringAsianOptionValuationMethods:

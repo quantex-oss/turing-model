@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Union
 
 import numpy as np
 
@@ -16,7 +17,7 @@ class KnockOutOption(EqOption):
 
     barrier: float = None
     rebate: float = None
-    knock_out_type: str = None
+    knock_out_type: Union[str, TuringKnockOutTypes] = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -26,8 +27,11 @@ class KnockOutOption(EqOption):
 
     @property
     def knock_out_type_(self) -> TuringKnockOutTypes:
-        return TuringKnockOutTypes.UP_AND_OUT_CALL if self.knock_out_type == 'up_and_out' \
-            else TuringKnockOutTypes.DOWN_AND_OUT_PUT
+        if isinstance(self.knock_out_type, TuringKnockOutTypes):
+            return self.knock_out_type
+        else:
+            return TuringKnockOutTypes.UP_AND_OUT_CALL if self.knock_out_type == 'up_and_out' \
+                else TuringKnockOutTypes.DOWN_AND_OUT_PUT
 
     def price(self) -> float:
         s0 = self.stock_price_
