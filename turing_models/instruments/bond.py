@@ -2,9 +2,10 @@ import datetime
 import traceback
 from dataclasses import dataclass
 
+from fundamental.turing_db.base.core import InstrumentBase
 from fundamental.turing_db.data import Turing
 from fundamental.turing_db.utils import to_snake
-from turing_models.instruments.core import Instrument, InstrumentBase
+from turing_models.instruments.core import Instrument
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
