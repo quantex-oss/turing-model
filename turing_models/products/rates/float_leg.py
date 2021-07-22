@@ -33,7 +33,7 @@ def TuringFreqDaycount(freqType):
         return 90
     elif freqType == TuringFrequencyTypes.MONTHLY:
         return 30
-    elif freqType == TuringFrequencyTypes.FORTNIGHTLY:
+    elif freqType == TuringFrequencyTypes.BIWEEKLY:
         return 14
     elif freqType == TuringFrequencyTypes.WEEKLY:
         return 7
@@ -223,13 +223,13 @@ class TuringFloatLeg(object):
                         fi = (dfMidlast / dfMid - 1.0) / alpha
                         dfMidlast = dfMid
                         muti = muti * (1 + (fi + self._spread) * alpha)
-                
+
                     dfMid = indexCurve.df(startAccruedDt.addDays((m -1) * reset_days))
                     fi = (dfMid / dfEnd - 1.0) / alpha
                     muti = muti * (1 + (fi + self._spread) * (self._yearFracs[iPmnt] - (m - 1) * reset_days / 365))
                     # pmntAmount = (fwdRate + self._spread) * alpha * notional
                     pmntAmount = (muti - 1) * notional
-                        
+
                 dfPmnt = discountCurve.df(pmntDate) / dfValue
                 pmntPV = pmntAmount * dfPmnt
                 legPV += pmntPV
