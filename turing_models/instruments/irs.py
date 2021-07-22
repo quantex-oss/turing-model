@@ -39,21 +39,21 @@ def modify_day_count_type(day_count_type):
 
 
 def modify_freq_type(freq_type):
-    if freq_type == '每年付息':
+    if freq_type == '每年付息' or freq_type == '每年重置':
         return TuringFrequencyTypes.ANNUAL
-    elif freq_type == '半年付息':
+    elif freq_type == '半年付息' or freq_type == '半年重置':
         return TuringFrequencyTypes.SEMI_ANNUAL
     elif freq_type == '4个月一次':
         return TuringFrequencyTypes.TRI_ANNUAL
-    elif freq_type == '按季付息':
+    elif freq_type == '按季付息' or freq_type == '按季重置':
         return TuringFrequencyTypes.QUARTERLY
-    elif freq_type == '按月付息':
+    elif freq_type == '按月付息' or freq_type == '按月重置':
         return TuringFrequencyTypes.MONTHLY
-    elif freq_type == '按周付息':
+    elif freq_type == '按周付息' or freq_type == '按周重置':
         return TuringFrequencyTypes.WEEKLY
-    elif freq_type == '两周付息':
+    elif freq_type == '两周付息' or freq_type == '两周重置':
         return TuringFrequencyTypes.FORTNIGHTLY
-    elif freq_type == '按天付息':
+    elif freq_type == '按天付息' or freq_type == '按天重置':
         return TuringFrequencyTypes.DAILY
     else:
         raise Exception('Please check the input of freq_type')
@@ -94,6 +94,7 @@ class IRS(Instrument):
     fixed_leg_type_curve: str = None
     __index_curve = None
     __libor_curve = None
+    reset_freq_type: str = None
 
     def __post_init__(self):
         super().__init__()
@@ -113,6 +114,7 @@ class IRS(Instrument):
             self.float_freq_type_ = modify_freq_type(self.float_freq_type)
             self.fixed_day_count_type_ = modify_day_count_type(self.fixed_day_count_type)
             self.float_day_count_type_ = modify_day_count_type(self.float_day_count_type)
+            self.reset_freq_type_ = modify_freq_type(self.reset_freq_type)
             self.maturity_date = self.calendar.adjust(self.termination_date,
                                                       self.bus_day_adjust_type)
             self.fixed_leg = TuringFixedLeg(self.effective_date,
@@ -134,6 +136,7 @@ class IRS(Instrument):
                                             self.float_spread,
                                             self.float_freq_type_,
                                             self.float_day_count_type_,
+                                            self.reset_freq_type_,
                                             self.notional,
                                             self.principal,
                                             self.payment_lag,
@@ -230,7 +233,8 @@ class IRS(Instrument):
                        fixed_coupon=self.swap_curve_rates[i] + dx,
                        fixed_freq_type=self.fixed_freq_type_curve,
                        fixed_day_count_type=self.fixed_day_count_type_curve,
-                       value_date=value_date)
+                       value_date=value_date,
+                       reset_freq_type=self.fixed_freq_type_curve)
             swaps.append(swap)
 
         libor_curve = TuringIborSingleCurve(value_date, depos, fras, swaps)
