@@ -1,19 +1,21 @@
 import datetime
 from dataclasses import dataclass, field
-from typing import List, Any
+from typing import List, Any, Union
 
 import numpy as np
 from loguru import logger
 
 from fundamental.market.curves import TuringDiscountCurveFlat, \
      TuringDiscountCurveZeros
+from fundamental.turing_db.base.core import InstrumentBase
 from fundamental.turing_db.utils import to_snake
 
 from turing_models.instruments.common import greek, bump
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
+from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.instruments.core import Instrument, InstrumentBase
+from turing_models.instruments.core import Instrument
 from turing_models.utilities.helper_functions import label_to_string
 
 
@@ -23,7 +25,7 @@ class EqOption(Instrument, InstrumentBase):
     asset_id: str = None
     underlier: str = None
     product_type: str = None
-    option_type: str = None
+    option_type: Union[str, TuringOptionTypes] = None
     notional: float = None
     initial_spot: float = None
     number_of_options: float = None

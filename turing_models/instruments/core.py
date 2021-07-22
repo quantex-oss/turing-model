@@ -24,15 +24,16 @@ class PriceableImpl:
                 import yuanrong
                 return yuanrong.ship()(self.yr_calc.__func__).ship(self, risk_measure=risk_measure)
             if not isinstance(risk_measure, Iterable):
-                result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(option_all)
+                result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(
+                    option_all)
                 result = self._calc(result)
-                self.__row__(risk_measure.value, round(result, 2) if result else "-")
+                self.__row__(risk_measure.value, round(result, 2) if result else 0)
                 return result
             for risk in risk_measure:
                 res = getattr(self, risk.value)()
                 res = self._calc(res)
                 result.append(res)
-                self.__row__(risk.value, round(res, 2) if res and not isinstance(res, Iterable) else "-")
+                self.__row__(risk.value, round(res, 2) if res and not isinstance(res, Iterable) else 0)
             return result
         except Exception as e:
             logger.error(str(traceback.format_exc()))
@@ -43,7 +44,8 @@ class PriceableImpl:
         name: list = []
         try:
             name = [getattr(self, "asset_id", None), risk_measure.value]
-            result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(option_all)
+            result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(
+                option_all)
             return name, result
         except Exception as e:
             logger.error(str(traceback.format_exc()))
@@ -64,22 +66,6 @@ class PriceableImpl:
 class Instrument(PriceableImpl):
     def __init__(self):
         super().__init__()
-
-
-class InstrumentBase:
-
-    def set_param(self):
-        pass
-
-    def _set_by_dict(self, tmp_dict):
-        for k, v in tmp_dict.items():
-            if v:
-                setattr(self, k, v)
-
-    def resolve(self, expand_dict):
-        self._set_by_dict(expand_dict)
-        self.set_param()
-
 
 class CurveAdjust:
 

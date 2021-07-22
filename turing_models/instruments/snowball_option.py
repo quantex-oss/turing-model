@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Union
 
 import numpy as np
 
@@ -17,7 +18,7 @@ class SnowballOption(EqOption):
     rebate: float = None
     coupon: float = None
     knock_in_price: float = None
-    knock_in_type: str = None
+    knock_in_type: Union[str, TuringKnockInTypes] = None
     knock_in_strike1: float = None
     knock_in_strike2: float = None
 
@@ -29,17 +30,23 @@ class SnowballOption(EqOption):
 
     @property
     def option_type_(self) -> TuringOptionTypes:
-        return TuringOptionTypes.SNOWBALL_CALL if self.option_type == 'CALL' \
-            else TuringOptionTypes.SNOWBALL_PUT
+        if isinstance(self.option_type, TuringOptionTypes):
+            return self.option_type
+        else:
+            return TuringOptionTypes.SNOWBALL_CALL if self.option_type == 'CALL' \
+                else TuringOptionTypes.SNOWBALL_PUT
 
     @property
     def knock_in_type_(self) -> TuringKnockInTypes:
-        if self.knock_in_type == 'return':
-            return TuringKnockInTypes.RETURN
-        elif self.knock_in_type == 'vanilla':
-            return TuringKnockInTypes.VANILLA
+        if isinstance(self.knock_in_type, TuringKnockInTypes):
+            return self.knock_in_type
         else:
-            return TuringKnockInTypes.SPREADS
+            if self.knock_in_type == 'return':
+                return TuringKnockInTypes.RETURN
+            elif self.knock_in_type == 'vanilla':
+                return TuringKnockInTypes.VANILLA
+            else:
+                return TuringKnockInTypes.SPREADS
 
     def price(self) -> float:
         s0 = self.stock_price_

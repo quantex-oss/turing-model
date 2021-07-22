@@ -1,3 +1,4 @@
+import math
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.mathematics import ONE_MILLION
@@ -11,6 +12,34 @@ from turing_models.utilities.global_types import TuringSwapTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
 ##########################################################################
+def TuringFreqDaycount(freqType):
+    ''' This is a function that takes in a Frequency Type and returns an
+    integer for the number of times a year a payment occurs.'''
+    if isinstance(freqType, TuringFrequencyTypes) is False:
+        print("TuringFrequency:", freqType)
+        raise TuringError("Unknown frequency type")
+
+    if freqType == TuringFrequencyTypes.CONTINUOUS:
+        return 0.00001
+    elif freqType == TuringFrequencyTypes.SIMPLE:
+        return 0
+    elif freqType == TuringFrequencyTypes.ANNUAL:
+        return 365
+    elif freqType == TuringFrequencyTypes.SEMI_ANNUAL:
+        return 183
+    elif freqType == TuringFrequencyTypes.TRI_ANNUAL:
+        return 120
+    elif freqType == TuringFrequencyTypes.QUARTERLY:
+        return 90
+    elif freqType == TuringFrequencyTypes.MONTHLY:
+        return 30
+    elif freqType == TuringFrequencyTypes.FORTNIGHTLY:
+        return 14
+    elif freqType == TuringFrequencyTypes.WEEKLY:
+        return 7
+    elif freqType == TuringFrequencyTypes.DAILY:
+        return 1
+
 
 class TuringFloatLeg(object):
     ''' Class for managing the floating leg of a swap. A float leg consists of
@@ -24,6 +53,7 @@ class TuringFloatLeg(object):
                  spread: (float),
                  freqType: TuringFrequencyTypes,
                  dayCountType: TuringDayCountTypes,
+                 resetFreqType: TuringFrequencyTypes,
                  notional: float = ONE_MILLION,
                  principal: float = 0.0,
                  paymentLag: int= 0,
@@ -61,6 +91,7 @@ class TuringFloatLeg(object):
         self._calendarType = calendarType
         self._busDayAdjustType = busDayAdjustType
         self._dateGenRuleType = dateGenRuleType
+        self._reset_freq_type = resetFreqType
 
         self._startAccruedDates = []
         self._endAccruedDates = []
@@ -143,6 +174,7 @@ class TuringFloatLeg(object):
         self._paymentDfs = []
         self._paymentPVs = []
         self._cumulativePVs = []
+        m = int(self._reset_freq_type.value / self._freqType.value)
 
         notional = self._notional
         dfValue = discountCurve.df(valuationDate)
@@ -158,11 +190,25 @@ class TuringFloatLeg(object):
 
                 startAccruedDt = self._startAccruedDates[iPmnt]
                 endAccruedDt = self._endAccruedDates[iPmnt]
-                alpha = self._yearFracs[iPmnt]
+                alpha = self._yearFracs[iPmnt] / m
+                reset_days = TuringFreqDaycount(self._reset_freq_type)
 
                 if firstPayment is False and firstFixingRate is not None:
 
                     fwdRate = firstFixingRate
+                    dfEnd = indexCurve.df(endAccruedDt)
+                    noaccr = math.ceil((valuationDate - startAccruedDt) / reset_days) if m > 1 else 1
+                    muti = 1 + (firstFixingRate + self._spread) * alpha * noaccr
+                    if m > 1:
+                        for i in range(noaccr, m - 1):
+                            dfMidlast = indexCurve.df(startAccruedDt.addDays(i * reset_days))
+                            dfMid = indexCurve.df(startAccruedDt.addDays((i +1) * reset_days))
+                            fi = (dfMidlast / dfMid - 1.0) / alpha
+                            muti = muti * (1 + (fi + self._spread) * alpha)
+                        dfMid = indexCurve.df(startAccruedDt.addDays((m -1) * reset_days))
+                        fi = (dfMid / dfEnd - 1.0) / alpha
+                        muti = muti * (1 + (fi + self._spread) * (self._yearFracs[iPmnt] - (m - 1) * reset_days / 365))
+                    pmntAmount = (muti - 1) * notional
                     firstPayment = True
 
                 else:
@@ -170,9 +216,20 @@ class TuringFloatLeg(object):
                     dfStart = indexCurve.df(startAccruedDt)
                     dfEnd = indexCurve.df(endAccruedDt)
                     fwdRate = (dfStart / dfEnd - 1.0) / alpha
-
-                pmntAmount = (fwdRate + self._spread) * alpha * notional
-
+                    muti = 1
+                    dfMidlast = dfStart
+                    for i in range(0, m - 1):
+                        dfMid = indexCurve.df(startAccruedDt.addDays((i + 1) * reset_days))
+                        fi = (dfMidlast / dfMid - 1.0) / alpha
+                        dfMidlast = dfMid
+                        muti = muti * (1 + (fi + self._spread) * alpha)
+                
+                    dfMid = indexCurve.df(startAccruedDt.addDays((m -1) * reset_days))
+                    fi = (dfMid / dfEnd - 1.0) / alpha
+                    muti = muti * (1 + (fi + self._spread) * (self._yearFracs[iPmnt] - (m - 1) * reset_days / 365))
+                    # pmntAmount = (fwdRate + self._spread) * alpha * notional
+                    pmntAmount = (muti - 1) * notional
+                        
                 dfPmnt = discountCurve.df(pmntDate) / dfValue
                 pmntPV = pmntAmount * dfPmnt
                 legPV += pmntPV
