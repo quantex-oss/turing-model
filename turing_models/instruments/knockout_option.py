@@ -3,18 +3,18 @@ from typing import Union
 
 import numpy as np
 
-from turing_models.utilities.global_variables import gNumObsInYear
-from turing_models.utilities.global_types import TuringKnockOutTypes
-from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
-     TuringGBMNumericalScheme
+from fundamental.turing_db.option_data import OptionApi
 from turing_models.instruments.equity_option import EqOption
-from turing_models.utilities.mathematics import N
+from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
+    TuringGBMNumericalScheme
+from turing_models.utilities.global_types import TuringKnockOutTypes
+from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.mathematics import N
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class KnockOutOption(EqOption):
-
     barrier: float = None
     rebate: float = None
     knock_out_type: Union[str, TuringKnockOutTypes] = None
@@ -82,7 +82,7 @@ class KnockOutOption(EqOption):
             h_adj = b * np.exp(-0.5826 * vol * np.sqrt(t))
         else:
             raise Exception("Unknown barrier option type." +
-                              str(knock_out_type))
+                            str(knock_out_type))
 
         b = h_adj
 
@@ -139,14 +139,14 @@ class KnockOutOption(EqOption):
         seed = self.seed
 
         if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL and s0 >= b:
-            return rebate * texp**flag * notional * np.exp(-r * texp)
+            return rebate * texp ** flag * notional * np.exp(-r * texp)
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT and s0 <= b:
-            return rebate * texp**flag * notional * np.exp(-r * texp)
+            return rebate * texp ** flag * notional * np.exp(-r * texp)
 
         process = TuringProcessSimulator()
         process_type = TuringProcessTypes.GBM
         scheme = TuringGBMNumericalScheme.ANTITHETIC
-        model_params = (s0, r-q, vol, scheme)
+        model_params = (s0, r - q, vol, scheme)
 
         Sall = process.getProcess(process_type, texp, model_params,
                                   num_ann_obs, num_paths, seed)
@@ -167,14 +167,30 @@ class KnockOutOption(EqOption):
 
         if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
             payoff = np.maximum((Sall[:, -1] - k) / s0, 0.0) * \
-                        participation_rate * (ones - barrierCrossedFromBelow) + \
-                        rebate * texp**flag * (ones * barrierCrossedFromBelow)
+                     participation_rate * (ones - barrierCrossedFromBelow) + \
+                     rebate * texp ** flag * (ones * barrierCrossedFromBelow)
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
             payoff = np.maximum((k - Sall[:, -1]) / s0, 0.0) * \
-                        participation_rate * (ones - barrierCrossedFromAbove) + \
-                        rebate * texp**flag * (ones * barrierCrossedFromAbove)
+                     participation_rate * (ones - barrierCrossedFromAbove) + \
+                     rebate * texp ** flag * (ones * barrierCrossedFromAbove)
 
         return payoff.mean() * np.exp(- r * texp) * notional
+
+    def option_resolve(self):
+        temp_dict = OptionApi.fetch_Option(asset_id=self.asset_id)
+        for k, v in temp_dict.items():
+            if not getattr(self, k, None) and v:
+                setattr(self, k, v)
+        if not self.stock_price_:
+            setattr(self, "stock_price", OptionApi.stock_price(underlier=self.underlier))
+        if not self.interest_rate and not self.zero_dates and not self.zero_rates:
+            zero_dates, zero_rates = OptionApi.fill_r()
+            setattr(self, "zero_dates", zero_dates)
+            setattr(self, "zero_rates", zero_rates)
+        if not self.volatility_:
+            get_volatility = OptionApi.get_volatility(self.value_date_, self.underlier)
+            if get_volatility:
+                setattr(self, 'volatility', get_volatility)
 
     def __repr__(self):
         s = super().__repr__()

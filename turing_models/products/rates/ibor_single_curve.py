@@ -144,7 +144,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
                  iborDeposits: list,
                  iborFRAs: list,
                  iborSwaps: list,
-                 interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES,
+                 interpType: TuringInterpTypes = TuringInterpTypes.LINEAR_ZERO_RATES,
                  checkRefit: bool = False):  # Set to True to test it works
         ''' Create an instance of a FinIbor curve given a valuation date and
         a set of ibor deposits, ibor FRAs and iborSwaps. Some of these may
