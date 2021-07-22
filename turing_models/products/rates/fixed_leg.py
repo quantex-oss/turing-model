@@ -14,9 +14,9 @@ from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
 class TuringFixedLeg(object):
     ''' Class for managing the fixed leg of a swap. A fixed leg is a leg with
-    a sequence of flows calculated according to an ISDA schedule and with a 
+    a sequence of flows calculated according to an ISDA schedule and with a
     coupon that is fixed over the life of the swap. '''
-    
+
     def __init__(self,
                  effectiveDate: TuringDate,  # Date interest starts to accrue
                  endDate: (TuringDate, str),  # Date contract ends
@@ -102,8 +102,8 @@ class TuringFixedLeg(object):
         self._accruedDays = []
         self._rates = []
 
-        prevDt = scheduleDates[0] 
-        
+        prevDt = scheduleDates[0]
+
         dayCounter = TuringDayCount(self._dayCountType)
         calendar = TuringCalendar(self._calendarType)
 
@@ -115,7 +115,7 @@ class TuringFixedLeg(object):
             if self._paymentLag == 0:
                 paymentDate = nextDt
             else:
-                paymentDate = calendar.addBusinessDays(nextDt, 
+                paymentDate = calendar.addBusinessDays(nextDt,
                                                        self._paymentLag)
 
             self._paymentDates.append(paymentDate)
@@ -142,7 +142,7 @@ class TuringFixedLeg(object):
         self._paymentDfs = []
         self._paymentPVs = []
         self._cumulativePVs = []
-                
+
         notional = self._notional
         dfValue = discountCurve.df(valuationDate)
         legPV = 0.0
@@ -151,7 +151,7 @@ class TuringFixedLeg(object):
         dfPmnt = 0.0
 
         for iPmnt in range(0, numPayments):
- 
+
             pmntDate = self._paymentDates[iPmnt]
             pmntAmount= self._payments[iPmnt]
 
@@ -160,14 +160,14 @@ class TuringFixedLeg(object):
                 dfPmnt = discountCurve.df(pmntDate) / dfValue
                 pmntPV = pmntAmount * dfPmnt
                 legPV += pmntPV
-                
-                self._paymentDfs.append(dfPmnt)            
+
+                self._paymentDfs.append(dfPmnt)
                 self._paymentPVs.append(pmntAmount*dfPmnt)
                 self._cumulativePVs.append(legPV)
 
             else:
 
-                self._paymentDfs.append(0.0)            
+                self._paymentDfs.append(0.0)
                 self._paymentPVs.append(0.0)
                 self._cumulativePVs.append(0.0)
 
@@ -203,8 +203,8 @@ class TuringFixedLeg(object):
         header += "    RATE      PAYMENT "
         print(header)
 
-        numFlows = len(self._paymentDates) 
-        
+        numFlows = len(self._paymentDates)
+
         for iFlow in range(0, numFlows):
             print("%11s  %11s  %11s  %4d  %8.6f  %8.6f  %11.2f" %
                   (self._paymentDates[iFlow],
@@ -236,8 +236,8 @@ class TuringFixedLeg(object):
         header += "    RATE      PAYMENT       DF          PV        CUM PV"
         print(header)
 
-        numFlows = len(self._paymentDates) 
-        
+        numFlows = len(self._paymentDates)
+
         for iFlow in range(0, numFlows):
             print("%11s  %11s  %11s  %4d  %8.6f  %8.5f  % 11.2f  %10.8f  % 11.2f  % 11.2f" %
                   (self._paymentDates[iFlow],
@@ -246,7 +246,7 @@ class TuringFixedLeg(object):
                    self._accruedDays[iFlow],
                    self._yearFracs[iFlow],
                    self._rates[iFlow] * 100.0,
-                   self._payments[iFlow], 
+                   self._payments[iFlow],
                    self._paymentDfs[iFlow],
                    self._paymentPVs[iFlow],
                    self._cumulativePVs[iFlow]))

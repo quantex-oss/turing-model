@@ -1,6 +1,7 @@
 import numpy as np
 
 from fundamental.pricing_context import CurveScenario
+from fundamental.market.constants import dates, rates
 from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
 from turing_models.utilities.turing_date import TuringDate
@@ -9,7 +10,6 @@ from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.instruments.bond_fixed_rate import BondFixedRate
 from turing_models.instruments.bond_floating_rate import BondFloatingRate
 from turing_models.instruments.common import RiskMeasure
-from tool import dates, rates
 
 
 bond_fr = BondFixedRate(asset_id="BONDCN00000007",
