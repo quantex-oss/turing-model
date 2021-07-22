@@ -33,7 +33,7 @@ def TuringFreqDaycount(freqType):
         return 90
     elif freqType == TuringFrequencyTypes.MONTHLY:
         return 30
-    elif freqType == TuringFrequencyTypes.FORTNIGHTLY:
+    elif freqType == TuringFrequencyTypes.BIWEEKLY:
         return 14
     elif freqType == TuringFrequencyTypes.WEEKLY:
         return 7
@@ -43,9 +43,9 @@ def TuringFreqDaycount(freqType):
 
 class TuringFloatLeg(object):
     ''' Class for managing the floating leg of a swap. A float leg consists of
-    a sequence of flows calculated according to an ISDA schedule and with a 
+    a sequence of flows calculated according to an ISDA schedule and with a
     coupon determined by an index curve which changes over life of the swap.'''
-    
+
     def __init__(self,
                  effectiveDate: TuringDate,  # Date interest starts to accrue
                  endDate: (TuringDate, str),  # Date contract ends
@@ -113,7 +113,7 @@ class TuringFloatLeg(object):
                                        self._freqType,
                                        self._calendarType,
                                        self._busDayAdjustType,
-                                       self._dateGenRuleType)._generate()
+                                       self._dateGenRuleType)._adjustedDates
 
         if len(scheduleDates) < 2:
             raise TuringError("Schedule has none or only one date")
@@ -138,14 +138,14 @@ class TuringFloatLeg(object):
             if self._paymentLag == 0:
                 paymentDate = nextDt
             else:
-                paymentDate = calendar.addBusinessDays(nextDt, 
+                paymentDate = calendar.addBusinessDays(nextDt,
                                                        self._paymentLag)
 
             self._paymentDates.append(paymentDate)
 
-            (yearFrac, num, _) = dayCounter.yearFrac(prevDt, 
-                                                     nextDt)        
-            
+            (yearFrac, num, _) = dayCounter.yearFrac(prevDt,
+                                                     nextDt)
+
             self._yearFracs.append(yearFrac)
             self._accruedDays.append(num)
 
@@ -170,7 +170,7 @@ class TuringFloatLeg(object):
             indexCurve = discountCurve
 
         self._rates = []
-        self._payments = []        
+        self._payments = []
         self._paymentDfs = []
         self._paymentPVs = []
         self._cumulativePVs = []
@@ -185,7 +185,7 @@ class TuringFloatLeg(object):
         for iPmnt in range(0, numPayments):
 
             pmntDate = self._paymentDates[iPmnt]
-            
+
             if pmntDate > valuationDate:
 
                 startAccruedDt = self._startAccruedDates[iPmnt]
@@ -212,7 +212,7 @@ class TuringFloatLeg(object):
                     firstPayment = True
 
                 else:
-                    
+
                     dfStart = indexCurve.df(startAccruedDt)
                     dfEnd = indexCurve.df(endAccruedDt)
                     fwdRate = (dfStart / dfEnd - 1.0) / alpha
@@ -223,13 +223,13 @@ class TuringFloatLeg(object):
                         fi = (dfMidlast / dfMid - 1.0) / alpha
                         dfMidlast = dfMid
                         muti = muti * (1 + (fi + self._spread) * alpha)
-                
+
                     dfMid = indexCurve.df(startAccruedDt.addDays((m -1) * reset_days))
                     fi = (dfMid / dfEnd - 1.0) / alpha
                     muti = muti * (1 + (fi + self._spread) * (self._yearFracs[iPmnt] - (m - 1) * reset_days / 365))
                     # pmntAmount = (fwdRate + self._spread) * alpha * notional
                     pmntAmount = (muti - 1) * notional
-                        
+
                 dfPmnt = discountCurve.df(pmntDate) / dfValue
                 pmntPV = pmntAmount * dfPmnt
                 legPV += pmntPV
@@ -279,8 +279,8 @@ class TuringFloatLeg(object):
         header = "PAY_DATE     ACCR_START   ACCR_END      DAYS  YEARFRAC"
         print(header)
 
-        numFlows = len(self._paymentDates) 
-        
+        numFlows = len(self._paymentDates)
+
         for iFlow in range(0, numFlows):
             print("%11s  %11s  %11s  %4d  %8.6f  " %
                   (self._paymentDates[iFlow],
@@ -288,7 +288,7 @@ class TuringFloatLeg(object):
                    self._endAccruedDates[iFlow],
                    self._accruedDays[iFlow],
                    self._yearFracs[iFlow]))
-            
+
 ###############################################################################
 
     def printValuation(self):
@@ -310,8 +310,8 @@ class TuringFloatLeg(object):
         header += "    IBOR      PAYMENT       DF          PV        CUM PV"
         print(header)
 
-        numFlows = len(self._paymentDates) 
-        
+        numFlows = len(self._paymentDates)
+
         for iFlow in range(0, numFlows):
             print("%11s  %11s  %11s  %4d  %8.6f  %9.5f  % 11.2f  %10.8f  % 11.2f  % 11.2f" %
                   (self._paymentDates[iFlow],
@@ -320,7 +320,7 @@ class TuringFloatLeg(object):
                    self._accruedDays[iFlow],
                    self._yearFracs[iFlow],
                    self._rates[iFlow] * 100.0,
-                   self._payments[iFlow], 
+                   self._payments[iFlow],
                    self._paymentDfs[iFlow],
                    self._paymentPVs[iFlow],
                    self._cumulativePVs[iFlow]))

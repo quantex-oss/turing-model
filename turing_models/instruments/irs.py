@@ -52,7 +52,7 @@ def modify_freq_type(freq_type):
     elif freq_type == '按周付息' or freq_type == '按周重置':
         return TuringFrequencyTypes.WEEKLY
     elif freq_type == '两周付息' or freq_type == '两周重置':
-        return TuringFrequencyTypes.FORTNIGHTLY
+        return TuringFrequencyTypes.BIWEEKLY
     elif freq_type == '按天付息' or freq_type == '按天重置':
         return TuringFrequencyTypes.DAILY
     else:
@@ -92,15 +92,15 @@ class IRS(Instrument):
     fixed_freq_type_curve: str = None
     fixed_day_count_type_curve: str = None
     fixed_leg_type_curve: str = None
+    reset_freq_type: str = None
     __index_curve = None
     __libor_curve = None
-    reset_freq_type: str = None
+    date_gen_rule_type: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD
 
     def __post_init__(self):
         super().__init__()
         self.calendar_type = TuringCalendarTypes.WEEKEND
         self.bus_day_adjust_type = TuringBusDayAdjustTypes.FOLLOWING
-        self.date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
         self.principal = 0.0
         self.payment_lag = 0
         self.calendar = TuringCalendar(self.calendar_type)
@@ -234,7 +234,8 @@ class IRS(Instrument):
                        fixed_freq_type=self.fixed_freq_type_curve,
                        fixed_day_count_type=self.fixed_day_count_type_curve,
                        value_date=value_date,
-                       reset_freq_type=self.fixed_freq_type_curve)
+                       reset_freq_type=self.fixed_freq_type_curve,
+                       date_gen_rule_type=TuringDateGenRuleTypes.FORWARD)
             swaps.append(swap)
 
         libor_curve = TuringIborSingleCurve(value_date, depos, fras, swaps)

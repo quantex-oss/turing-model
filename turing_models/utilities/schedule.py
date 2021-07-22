@@ -135,10 +135,14 @@ class TuringSchedule(object):
             nextDate = self._terminationDate
             flowNum = 0
 
+            ordinal = 1
             while nextDate > self._effectiveDate:
 
                 unadjustedScheduleDates.append(nextDate)
-                nextDate = nextDate.addMonths(-numMonths)
+                nextDate = self._terminationDate.addMonths(-numMonths * ordinal)
+                # nextDate = nextDate.addMonths(-numMonths)
+
+                ordinal += 1
 
                 if self._endOfMonthFlag is True:
                     nextDate = nextDate.EOM()
@@ -169,15 +173,17 @@ class TuringSchedule(object):
 
             # This needs checking
             nextDate = self._effectiveDate
-            flowNum = 0
+            # flowNum = 0
 
-            unadjustedScheduleDates.append(nextDate)
-            flowNum = 1
-
+            ordinal = 1
             while nextDate < self._terminationDate:
                 unadjustedScheduleDates.append(nextDate)
-                nextDate = nextDate.addMonths(numMonths)
-                flowNum = flowNum + 1
+                nextDate = self._effectiveDate.addMonths(numMonths * ordinal)
+                ordinal += 1
+
+            flowNum = ordinal
+            unadjustedScheduleDates.append(nextDate)
+            self._adjustedDates.append(unadjustedScheduleDates[0])
 
             # The effective date is not adjusted as it is given
             for i in range(1, flowNum):
@@ -187,7 +193,7 @@ class TuringSchedule(object):
 
                 self._adjustedDates.append(dt)
 
-            self._adjustedDates.append(self._terminationDate)
+            # self._adjustedDates.append(self._terminationDate)
 
         if self._adjustedDates[0] < self._effectiveDate:
             self._adjustedDates[0] = self._effectiveDate
