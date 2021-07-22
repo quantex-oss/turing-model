@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 from scipy import optimize
 
-from turing_models.utilities.day_count import TuringDayCount
 from turing_models.instruments.bond import Bond, dy
+from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.helper_functions import label_to_string
 
 
@@ -154,8 +154,7 @@ class BondFloatingRate(Bond):
         for i_flow in range(1, num_flows):
 
             if self._flow_dates[i_flow] > self._ncd:
-
-                pcd = self._flow_dates[i_flow-1]
+                pcd = self._flow_dates[i_flow - 1]
                 ncd = self._flow_dates[i_flow]
                 (alpha, _, _) = dc.yearFrac(pcd, ncd)
 
@@ -222,7 +221,7 @@ class BondFloatingRate(Bond):
 
         for i in range(1, num_flows):
             if self._flow_dates[i] > self.settlement_date_:
-                self._pcd = self._flow_dates[i-1]
+                self._pcd = self._flow_dates[i - 1]
                 self._ncd = self._flow_dates[i]
                 break
 
