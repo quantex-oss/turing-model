@@ -14,8 +14,11 @@ class EuropeanOption(EqOption):
 
     @property
     def option_type_(self) -> TuringOptionTypes:
-        return TuringOptionTypes.EUROPEAN_CALL if self.option_type == 'CALL' \
-            else TuringOptionTypes.EUROPEAN_PUT
+        if isinstance(self.option_type, TuringOptionTypes):
+            return self.option_type
+        else:
+            return TuringOptionTypes.EUROPEAN_CALL if self.option_type == 'CALL' \
+                else TuringOptionTypes.EUROPEAN_PUT
 
     def params(self) -> list:
         return [

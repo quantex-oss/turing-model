@@ -31,7 +31,7 @@ class TuringInflationIndexCurve():
 
         # Validate curve
         if len(indexDates) == 0:
-            raise TuringError("Dates has zero length")
+            raise TuringError("indexDates has zero length")
 
         if len(indexDates) != len(indexValues):
             raise TuringError("Dates and Values are not the same length")

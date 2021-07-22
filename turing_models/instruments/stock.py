@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from turing_models.instruments.core import Instrument, InstrumentBase
+from fundamental.turing_db.base.core import InstrumentBase
+from turing_models.instruments.core import Instrument
 from turing_models.utilities.helper_functions import label_to_string
 
 
