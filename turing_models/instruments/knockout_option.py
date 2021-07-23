@@ -177,7 +177,7 @@ class KnockOutOption(EqOption):
         return payoff.mean() * np.exp(- r * texp) * notional
 
     def option_resolve(self):
-        if self.asset_id:
+        if self.asset_id and not self.asset_id.startswith("OPTION_"+self.__class__.__name__):
             temp_dict = OptionApi.fetch_Option(asset_id=self.asset_id)
             for k, v in temp_dict.items():
                 if not getattr(self, k, None) and v:
