@@ -5,7 +5,7 @@ from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 
 ###############################################################################
 
@@ -120,14 +120,14 @@ class TuringIborDeposit(object):
 
     def __repr__(self):
         ''' Print the contractual details of the Libor deposit. '''
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("START DATE", self._startDate)
-        s += label_to_string("MATURITY DATE", self.maturity_date)
-        s += label_to_string("NOTIONAL", self._notional)
-        s += label_to_string("DEPOSIT RATE", self._depositRate)
-        s += label_to_string("DAY COUNT TYPE", self._dayCountType)
-        s += label_to_string("CALENDAR", self._calendarType)
-        s += label_to_string("BUS DAY ADJUST TYPE", self._busDayAdjustType)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("START DATE", self._startDate)
+        s += to_string("MATURITY DATE", self.maturity_date)
+        s += to_string("NOTIONAL", self._notional)
+        s += to_string("DEPOSIT RATE", self._depositRate)
+        s += to_string("DAY COUNT TYPE", self._dayCountType)
+        s += to_string("CALENDAR", self._calendarType)
+        s += to_string("BUS DAY ADJUST TYPE", self._busDayAdjustType)
         return s
 
     ###########################################################################

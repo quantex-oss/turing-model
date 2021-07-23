@@ -7,7 +7,7 @@ from turing_models.utilities.turing_date import TuringDate
 
 from turing_models.models.gbm_process import TuringGBMProcess
 from turing_models.products.equity.equity_option import TuringEquityOption
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.global_types import TuringOptionTypes
 
@@ -194,9 +194,9 @@ class TuringEquityFloatLookbackOption(TuringEquityOption):
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("EXPIRY DATE", self._expiryDate)
-        s += label_to_string("OPTION TYPE", self._optionType, "")
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("EXPIRY DATE", self._expiryDate)
+        s += to_string("OPTION TYPE", self._optionType, "")
         return s
 
 ###############################################################################

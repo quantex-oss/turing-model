@@ -9,7 +9,7 @@ from turing_models.models.process_simulator import TuringProcessSimulator, Turin
     TuringGBMNumericalScheme
 from turing_models.utilities.global_types import TuringKnockOutTypes
 from turing_models.utilities.global_variables import gNumObsInYear
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
 
 
@@ -197,7 +197,7 @@ class KnockOutOption(EqOption):
 
     def __repr__(self):
         s = super().__repr__()
-        s += label_to_string("Barrier", self.barrier)
-        s += label_to_string("Rebate", self.rebate)
-        s += label_to_string("Knock Out Type", self.knock_out_type)
+        s += to_string("Barrier", self.barrier)
+        s += to_string("Rebate", self.rebate)
+        s += to_string("Knock Out Type", self.knock_out_type)
         return s

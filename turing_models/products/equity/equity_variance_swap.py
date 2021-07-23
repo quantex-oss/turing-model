@@ -8,7 +8,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.global_types import TuringOptionTypes
 from .equity_vanilla_option import TuringEquityVanillaOption
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 
 ###############################################################################
 
@@ -266,12 +266,12 @@ class TuringEquityVarianceSwap(object):
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("START DATE", self._startDate)
-        s += label_to_string("MATURITY DATE", self._maturityDate)
-        s += label_to_string("STRIKE VARIANCE", self._strikeVariance)
-        s += label_to_string("NOTIONAL", self._notional)
-        s += label_to_string("PAY STRIKE FLAG", self._payStrikeFlag, "")
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("START DATE", self._startDate)
+        s += to_string("MATURITY DATE", self._maturityDate)
+        s += to_string("STRIKE VARIANCE", self._strikeVariance)
+        s += to_string("NOTIONAL", self._notional)
+        s += to_string("PAY STRIKE FLAG", self._payStrikeFlag, "")
         return s
 
 ###############################################################################

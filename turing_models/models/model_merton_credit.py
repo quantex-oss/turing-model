@@ -3,7 +3,7 @@ import numpy as np
 from scipy.stats import norm
 N = norm.cdf
 
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 
 # TODO: Redesign this class
 
@@ -136,12 +136,12 @@ class TuringModelMertonCredit():
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("ASSET VALUE", self._A)
-        s += label_to_string("BOND FACE", self._L)
-        s += label_to_string("YEARS TO MATURITY", self._t)
-        s += label_to_string("ASSET GROWTH", self._mu)
-        s += label_to_string("ASSET VOLATILITY", self._vA)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("ASSET VALUE", self._A)
+        s += to_string("BOND FACE", self._L)
+        s += to_string("YEARS TO MATURITY", self._t)
+        s += to_string("ASSET GROWTH", self._mu)
+        s += to_string("ASSET VOLATILITY", self._vA)
         return s
 
 ###############################################################################

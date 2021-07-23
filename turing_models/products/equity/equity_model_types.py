@@ -1,4 +1,4 @@
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 ###############################################################################
 
@@ -41,10 +41,10 @@ class TuringEquityModelHeston(TuringEquityModel):
         self._implementation = 0
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("VOLATILITY", self._volatility)
-        s += label_to_string("MEAN REVERSION", self._meanReversion)
-        s += label_to_string("IMPLEMENTATION", self._implementation)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("VOLATILITY", self._volatility)
+        s += to_string("MEAN REVERSION", self._meanReversion)
+        s += to_string("IMPLEMENTATION", self._implementation)
         return s
 
 ###############################################################################

@@ -19,7 +19,7 @@ from turing_models.models.model_black_scholes import TuringModelBlackScholes
 
 from turing_models.models.model_black_scholes_analytical import bsValue, bsDelta
 
-from turing_models.utilities.helper_functions import checkArgumentTypes, label_to_string
+from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
 
 from turing_models.utilities.mathematics import N
 
@@ -724,14 +724,14 @@ class TuringFXVanillaOption():
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("EXPIRY DATE", self._expiryDate)
-        s += label_to_string("CURRENCY PAIR", self._currencyPair)
-        s += label_to_string("PREMIUM CCY", self._premCurrency)
-        s += label_to_string("STRIKE FX RATE", self._strikeFXRate)
-        s += label_to_string("OPTION TYPE", self._optionType)
-        s += label_to_string("SPOT DAYS", self._spotDays)
-        s += label_to_string("NOTIONAL", self._notional, "")
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("EXPIRY DATE", self._expiryDate)
+        s += to_string("CURRENCY PAIR", self._currencyPair)
+        s += to_string("PREMIUM CCY", self._premCurrency)
+        s += to_string("STRIKE FX RATE", self._strikeFXRate)
+        s += to_string("OPTION TYPE", self._optionType)
+        s += to_string("SPOT DAYS", self._spotDays)
+        s += to_string("NOTIONAL", self._notional, "")
         return s
 
 ###############################################################################

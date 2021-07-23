@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.interpolate import splev
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 ###############################################################################
 
@@ -23,11 +23,11 @@ class TuringCurveFitPolynomial():
         return yld
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("Power", self._power)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("Power", self._power)
 
         for c in self._coeffs:
-            s += label_to_string("Coefficient", c)
+            s += to_string("Coefficient", c)
 
         return s
 
@@ -74,11 +74,11 @@ class TuringCurveFitNelsonSiegel():
         return yld
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("Beta1", self._beta1)
-        s += label_to_string("Beta2", self._beta2)
-        s += label_to_string("Beta3", self._beta3)
-        s += label_to_string("Tau", self._tau)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("Beta1", self._beta1)
+        s += to_string("Beta2", self._beta2)
+        s += to_string("Beta3", self._beta3)
+        s += to_string("Tau", self._tau)
         return s
 
     def _print(self):
@@ -142,13 +142,13 @@ class TuringCurveFitNelsonSiegelSvensson():
         return yld
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("Beta1", self._beta1)
-        s += label_to_string("Beta2", self._beta2)
-        s += label_to_string("Beta3", self._beta3)
-        s += label_to_string("Beta4", self._beta3)
-        s += label_to_string("Tau1", self._tau1)
-        s += label_to_string("Tau2", self._tau2)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("Beta1", self._beta1)
+        s += to_string("Beta2", self._beta2)
+        s += to_string("Beta3", self._beta3)
+        s += to_string("Beta4", self._beta3)
+        s += to_string("Tau1", self._tau1)
+        s += to_string("Tau2", self._tau2)
         return s
 
     def _print(self):
@@ -172,10 +172,10 @@ class TuringCurveFitBSpline():
         return yld
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("Power", self._power)
-        s += label_to_string("Knots", self._knots)
-        s += label_to_string("Spline", self._spline)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("Power", self._power)
+        s += to_string("Knots", self._knots)
+        s += to_string("Spline", self._spline)
         return s
 
     def _print(self):
