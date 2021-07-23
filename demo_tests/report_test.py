@@ -148,6 +148,4 @@ report = WhatIfReport(
     # url_domain="https://dev.turing.iquantex.com" # 默认已配置好,需要发送到其它域时传入
 )
 portfolio.show_table()
-# report.share()
-
-
+report.share()
