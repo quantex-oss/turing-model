@@ -109,7 +109,6 @@ knockout_option_eq = EqKnockOutOption(asset_id="OPTIONCN00000002",
 knockout_option_eq.resolve()
 position_new_option_new_pricing = Position(
     tradable=knockout_option_eq, quantity=-1)
-print(knockout_option_eq)
 portfolio.add(position_new_option_new_pricing)
 
 with scenario_extreme:
@@ -149,6 +148,4 @@ report = WhatIfReport(
     # url_domain="https://dev.turing.iquantex.com" # 默认已配置好,需要发送到其它域时传入
 )
 portfolio.show_table()
-# report.share()
-
-
+report.share()
