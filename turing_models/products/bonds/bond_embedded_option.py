@@ -7,7 +7,7 @@ from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.products.bonds.bond import TuringBond
 
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
 from enum import Enum
@@ -218,19 +218,19 @@ class TuringBondEmbeddedOption(object):
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("ISSUE DATE", self._issueDate)
-        s += label_to_string("MATURITY DATE", self._maturityDate)
-        s += label_to_string("COUPON", self._coupon)
-        s += label_to_string("FREQUENCY", self._freqType)
-        s += label_to_string("ACCRUAL TYPE", self._accrualType)
-        s += label_to_string("FACE AMOUNT", self._faceAmount)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("ISSUE DATE", self._issueDate)
+        s += to_string("MATURITY DATE", self._maturityDate)
+        s += to_string("COUPON", self._coupon)
+        s += to_string("FREQUENCY", self._freqType)
+        s += to_string("ACCRUAL TYPE", self._accrualType)
+        s += to_string("FACE AMOUNT", self._faceAmount)
 
-        s += label_to_string("NUM CALL DATES", len(self._callDates))
+        s += to_string("NUM CALL DATES", len(self._callDates))
         for i in range(0, len(self._callDates)):
             s += "%12s %12.6f\n" % (self._callDates[i], self._callPrices[i])
 
-        s += label_to_string("NUM PUT DATES", len(self._putDates))
+        s += to_string("NUM PUT DATES", len(self._putDates))
         for i in range(0, len(self._putDates)):
             s += "%12s %12.6f\n" % (self._putDates[i], self._putPrices[i])
 

@@ -1,6 +1,6 @@
 from numba import njit, float64, int64
 import numpy as np
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 ###############################################################################
 # CIR Process
@@ -37,10 +37,10 @@ class TuringModelRatesCIR():
     def __repr__(self):
         ''' Return string with class details. '''
 
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("Sigma", self._sigma)
-        s += label_to_string("a", self._a)
-        s += label_to_string("b", self._b)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("Sigma", self._sigma)
+        s += to_string("a", self._a)
+        s += to_string("b", self._b)
         return s
 
 ###############################################################################

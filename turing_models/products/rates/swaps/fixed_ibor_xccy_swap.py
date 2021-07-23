@@ -6,7 +6,7 @@ from turing_models.utilities.frequency import TuringFrequencyTypes, TuringFreque
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.schedule import TuringSchedule
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
 
@@ -568,21 +568,21 @@ class TuringFixedIborXCcySwap(object):
 ##########################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("START DATE", self._effectiveDate)
-        s += label_to_string("TERMINATION DATE", self._terminationDate)
-        s += label_to_string("MATURITY DATE", self._maturityDate)
-        s += label_to_string("NOTIONAL", self._notional)
-        s += label_to_string("SWAP TYPE", self._swapType)
-        s += label_to_string("FIXED COUPON", self._fixedCoupon)
-        s += label_to_string("FLOAT SPREAD", self._floatSpread)
-        s += label_to_string("FIXED FREQUENCY", self._fixedFrequencyType)
-        s += label_to_string("FLOAT FREQUENCY", self._floatFrequencyType)
-        s += label_to_string("FIXED DAY COUNT", self._fixedDayCountType)
-        s += label_to_string("FLOAT DAY COUNT", self._floatDayCountType)
-        s += label_to_string("CALENDAR", self._calendarType)
-        s += label_to_string("BUS DAY ADJUST", self._busDayAdjustType)
-        s += label_to_string("DATE GEN TYPE", self._dateGenRuleType)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("START DATE", self._effectiveDate)
+        s += to_string("TERMINATION DATE", self._terminationDate)
+        s += to_string("MATURITY DATE", self._maturityDate)
+        s += to_string("NOTIONAL", self._notional)
+        s += to_string("SWAP TYPE", self._swapType)
+        s += to_string("FIXED COUPON", self._fixedCoupon)
+        s += to_string("FLOAT SPREAD", self._floatSpread)
+        s += to_string("FIXED FREQUENCY", self._fixedFrequencyType)
+        s += to_string("FLOAT FREQUENCY", self._floatFrequencyType)
+        s += to_string("FIXED DAY COUNT", self._fixedDayCountType)
+        s += to_string("FLOAT DAY COUNT", self._floatDayCountType)
+        s += to_string("CALENDAR", self._calendarType)
+        s += to_string("BUS DAY ADJUST", self._busDayAdjustType)
+        s += to_string("DATE GEN TYPE", self._dateGenRuleType)
         return s
 
 ###############################################################################

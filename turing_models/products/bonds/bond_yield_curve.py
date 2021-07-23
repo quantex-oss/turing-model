@@ -5,7 +5,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.mathematics import scale
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 from .bond_yield_curve_model import TuringCurveFitPolynomial
 from .bond_yield_curve_model import TuringCurveFitNelsonSiegel
@@ -163,11 +163,11 @@ class TuringBondYieldCurve():
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("SETTLEMENT DATE", self._settlementDate)
-        s += label_to_string("BOND", self._bonds)
-        s += label_to_string("YIELDS", self._ylds)
-        s += label_to_string("CURVE FIT", self._curveFit)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("SETTLEMENT DATE", self._settlementDate)
+        s += to_string("BOND", self._bonds)
+        s += to_string("YIELDS", self._ylds)
+        s += to_string("CURVE FIT", self._curveFit)
         return s
 
 ###############################################################################

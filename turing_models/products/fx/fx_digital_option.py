@@ -12,7 +12,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 #from turing_models.products.fx.FinFXModelTypes import FinFXModel
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.global_types import TuringOptionTypes
 
 ###############################################################################

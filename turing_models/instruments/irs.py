@@ -17,7 +17,7 @@ from turing_models.products.rates.float_leg import TuringFloatLeg
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instruments.core import Instrument
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 
 bump = 5e-4
@@ -314,27 +314,27 @@ class IRS(Instrument):
         return cpn
 
     def __repr__(self):
-        s = label_to_string("Object Type", type(self).__name__)
-        s += label_to_string("Asset Id", self.asset_id)
-        s += label_to_string("IRS Type", self.irs_type)
-        s += label_to_string("Effective Date", self.effective_date)
-        s += label_to_string("Termination Date", self.termination_date)
-        s += label_to_string("Fixed Leg Type", self.fixed_leg_type)
-        s += label_to_string("Fixed Coupon", self.fixed_coupon)
-        s += label_to_string("Fixed Freq Type", self.fixed_freq_type)
-        s += label_to_string("Fixed Day Count Type", self.fixed_day_count_type)
-        s += label_to_string("Notional", self.notional)
-        s += label_to_string("Float Spread", self.float_spread)
-        s += label_to_string("Float Freq Type", self.float_freq_type)
-        s += label_to_string("Float Day Count Type", self.float_day_count_type)
-        s += label_to_string("Value Date", self.value_date_)
-        s += label_to_string("Swap Curve Code", self.swap_curve_code)
-        s += label_to_string("Index Curve Code", self.index_curve_code)
-        s += label_to_string("First Fixing Rate", self.first_fixing_rate)
-        s += label_to_string("Deposit Term", self.deposit_term)
-        s += label_to_string("Deposit Rate", self.deposit_rate)
-        s += label_to_string("Deposit Day Count Type", self.deposit_day_count_type)
-        s += label_to_string("Fixed Freq Type Curve", self.fixed_freq_type_curve)
-        s += label_to_string("Fixed Day Count Type Curve", self.fixed_day_count_type_curve)
-        s += label_to_string("Fixed Leg Type Curve", self.fixed_leg_type_curve)
+        s = to_string("Object Type", type(self).__name__)
+        s += to_string("Asset Id", self.asset_id)
+        s += to_string("IRS Type", self.irs_type)
+        s += to_string("Effective Date", self.effective_date)
+        s += to_string("Termination Date", self.termination_date)
+        s += to_string("Fixed Leg Type", self.fixed_leg_type)
+        s += to_string("Fixed Coupon", self.fixed_coupon)
+        s += to_string("Fixed Freq Type", self.fixed_freq_type)
+        s += to_string("Fixed Day Count Type", self.fixed_day_count_type)
+        s += to_string("Notional", self.notional)
+        s += to_string("Float Spread", self.float_spread)
+        s += to_string("Float Freq Type", self.float_freq_type)
+        s += to_string("Float Day Count Type", self.float_day_count_type)
+        s += to_string("Value Date", self.value_date_)
+        s += to_string("Swap Curve Code", self.swap_curve_code)
+        s += to_string("Index Curve Code", self.index_curve_code)
+        s += to_string("First Fixing Rate", self.first_fixing_rate)
+        s += to_string("Deposit Term", self.deposit_term)
+        s += to_string("Deposit Rate", self.deposit_rate)
+        s += to_string("Deposit Day Count Type", self.deposit_day_count_type)
+        s += to_string("Fixed Freq Type Curve", self.fixed_freq_type_curve)
+        s += to_string("Fixed Day Count Type Curve", self.fixed_day_count_type_curve)
+        s += to_string("Fixed Leg Type Curve", self.fixed_leg_type_curve)
         return s

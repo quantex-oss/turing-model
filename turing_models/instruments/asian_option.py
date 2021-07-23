@@ -7,7 +7,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
     TuringAsianOptionValuationMethods
 from turing_models.instruments.equity_option import EqOption
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 
 errorStr = "In averaging period so need to enter accrued average."
@@ -227,6 +227,6 @@ class AsianOption(EqOption):
 
     def __repr__(self):
         s = super().__repr__()
-        s += label_to_string("Start Averaging Date", self.start_averaging_date)
-        s += label_to_string("Accrued Average", self.accrued_average)
+        s += to_string("Start Averaging Date", self.start_averaging_date)
+        s += to_string("Accrued Average", self.accrued_average)
         return s

@@ -7,7 +7,7 @@ from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.schedule import TuringSchedule
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.global_types import TuringSwapTypes
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 
@@ -328,18 +328,18 @@ class TuringFloatLeg(object):
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("START DATE", self._effectiveDate)
-        s += label_to_string("TERMINATION DATE", self._terminationDate)
-        s += label_to_string("MATURITY DATE", self._maturityDate)
-        s += label_to_string("NOTIONAL", self._notional)
-        s += label_to_string("SWAP TYPE", self._legType)
-        s += label_to_string("SPREAD (BPS)", self._spread * 10000)
-        s += label_to_string("FREQUENCY", self._freqType)
-        s += label_to_string("DAY COUNT", self._dayCountType)
-        s += label_to_string("CALENDAR", self._calendarType)
-        s += label_to_string("BUS DAY ADJUST", self._busDayAdjustType)
-        s += label_to_string("DATE GEN TYPE", self._dateGenRuleType)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("START DATE", self._effectiveDate)
+        s += to_string("TERMINATION DATE", self._terminationDate)
+        s += to_string("MATURITY DATE", self._maturityDate)
+        s += to_string("NOTIONAL", self._notional)
+        s += to_string("SWAP TYPE", self._legType)
+        s += to_string("SPREAD (BPS)", self._spread * 10000)
+        s += to_string("FREQUENCY", self._freqType)
+        s += to_string("DAY COUNT", self._dayCountType)
+        s += to_string("CALENDAR", self._calendarType)
+        s += to_string("BUS DAY ADJUST", self._busDayAdjustType)
+        s += to_string("DATE GEN TYPE", self._dateGenRuleType)
         return s
 
 ###############################################################################

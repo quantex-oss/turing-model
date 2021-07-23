@@ -9,7 +9,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 
 from turing_models.utilities.global_types import TuringOptionTypes, TuringAsianOptionValuationMethods
-from turing_models.utilities.helper_functions import checkArgumentTypes, label_to_string
+from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
 from turing_models.utilities.turing_date import TuringDate
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
@@ -911,12 +911,12 @@ class TuringEquityAsianOption():
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("START AVERAGING DATE", self._startAveragingDate)
-        s += label_to_string("EXPIRY DATE", self._expiryDate)
-        s += label_to_string("STRIKE PRICE", self._strikePrice)
-        s += label_to_string("OPTION TYPE", self._optionType)
-        s += label_to_string("NUM OBSERVATIONS", self._numObservations, "")
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("START AVERAGING DATE", self._startAveragingDate)
+        s += to_string("EXPIRY DATE", self._expiryDate)
+        s += to_string("STRIKE PRICE", self._strikePrice)
+        s += to_string("OPTION TYPE", self._optionType)
+        s += to_string("NUM OBSERVATIONS", self._numObservations, "")
         return s
 
 ###############################################################################

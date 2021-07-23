@@ -9,7 +9,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.products.equity.equity_option import TuringEquityOption
 from turing_models.utilities.global_types import TuringOptionTypes
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurve
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.models.model_black_scholes import bsValue
 
@@ -221,12 +221,12 @@ class TuringEquityChooserOption(TuringEquityOption):
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("CHOOSER DATE", self._chooseDate)
-        s += label_to_string("CALL EXPIRY DATE", self._callExpiryDate)
-        s += label_to_string("CALL STRIKE PRICE", self._callStrike)
-        s += label_to_string("PUT EXPIRY DATE", self._putExpiryDate)
-        s += label_to_string("PUT STRIKE PRICE", self._putStrike, "")
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("CHOOSER DATE", self._chooseDate)
+        s += to_string("CALL EXPIRY DATE", self._callExpiryDate)
+        s += to_string("CALL STRIKE PRICE", self._callStrike)
+        s += to_string("PUT EXPIRY DATE", self._putExpiryDate)
+        s += to_string("PUT STRIKE PRICE", self._putStrike, "")
         return s
 
 ###############################################################################

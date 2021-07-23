@@ -290,10 +290,10 @@ def normaliseWeights(wtVector: np.ndarray):
 ###############################################################################
 
 
-def label_to_string(label: str,
-                    value: float,
-                    separator: str = "\n",
-                    listFormat: bool = False):
+def to_string(label: str,
+              value: float,
+              separator: str = "\n",
+              listFormat: bool = False):
     ''' Format label/value pairs for a unified formatting. '''
     # Format option for lists such that all values are aligned:
     # Label: value1

@@ -8,7 +8,7 @@ from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 
 ###############################################################################
 # TODO: Need to complete and verify the risk sensitivity calculations.
@@ -512,13 +512,13 @@ class TuringBondFRN(object):
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("ISSUE DATE", self._issueDate)
-        s += label_to_string("MATURITY DATE", self._maturityDate)
-        s += label_to_string("QUOTED MARGIN (bp)", self._quotedMargin * 10000.0)
-        s += label_to_string("FREQUENCY", self._freqType)
-        s += label_to_string("ACCRUAL TYPE", self._accrualType)
-        s += label_to_string("FACE AMOUNT", self._faceAmount)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("ISSUE DATE", self._issueDate)
+        s += to_string("MATURITY DATE", self._maturityDate)
+        s += to_string("QUOTED MARGIN (bp)", self._quotedMargin * 10000.0)
+        s += to_string("FREQUENCY", self._freqType)
+        s += to_string("ACCRUAL TYPE", self._accrualType)
+        s += to_string("FACE AMOUNT", self._faceAmount)
         return s
 
 ###############################################################################

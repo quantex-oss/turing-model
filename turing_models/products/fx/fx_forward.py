@@ -7,7 +7,7 @@ import numpy as np
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 
 ###############################################################################
 # ALL CCY RATES MUST BE IN NUM UNITS OF DOMESTIC PER UNIT OF FOREIGN CURRENCY
@@ -148,13 +148,13 @@ class TuringFXForward():
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("EXPIRY DATE", self._expiryDate)
-        s += label_to_string("STRIKE FX RATE", self._strikeFXRate)
-        s += label_to_string("CURRENCY PAIR", self._currencyPair)
-        s += label_to_string("NOTIONAL", self._notional)
-        s += label_to_string("NOTIONAL CCY", self._notionalCurrency)
-        s += label_to_string("SPOT DAYS", self._spotDays, "")
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("EXPIRY DATE", self._expiryDate)
+        s += to_string("STRIKE FX RATE", self._strikeFXRate)
+        s += to_string("CURRENCY PAIR", self._currencyPair)
+        s += to_string("NOTIONAL", self._notional)
+        s += to_string("NOTIONAL CCY", self._notionalCurrency)
+        s += to_string("SPOT DAYS", self._spotDays, "")
         return s
 
 ###############################################################################

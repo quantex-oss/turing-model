@@ -1,7 +1,7 @@
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.products.bonds.bond import TuringBond
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 
 
 # TODO: Examine other exchange conventions.
@@ -128,12 +128,12 @@ class TuringBondFuture(object):
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("TICKER NAME", self._tickerName)
-        s += label_to_string("FIRST DELIVERY DATE", self._firstDeliveryDate)
-        s += label_to_string("LAST DELIVERY DATE", self._lastDeliveryDate)
-        s += label_to_string("CONTRACT SIZE", self._contractSize)
-        s += label_to_string("COUPON", self._coupon)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("TICKER NAME", self._tickerName)
+        s += to_string("FIRST DELIVERY DATE", self._firstDeliveryDate)
+        s += to_string("LAST DELIVERY DATE", self._lastDeliveryDate)
+        s += to_string("CONTRACT SIZE", self._contractSize)
+        s += to_string("COUPON", self._coupon)
         return s
 
 ###############################################################################

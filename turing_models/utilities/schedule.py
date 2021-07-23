@@ -3,7 +3,7 @@ from .turing_date import TuringDate
 from .calendar import (TuringCalendar, TuringCalendarTypes)
 from .calendar import (TuringBusDayAdjustTypes, TuringDateGenRuleTypes)
 from .frequency import (TuringFrequency, TuringFrequencyTypes)
-from .helper_functions import label_to_string
+from .helper_functions import to_string
 from .helper_functions import checkArgumentTypes
 
 ###############################################################################
@@ -237,25 +237,25 @@ class TuringSchedule(object):
         ''' Print out the details of the schedule and the actual dates. This
         can be used for providing transparency on schedule calculations. '''
 
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("EFFECTIVE DATE", self._effectiveDate)
-        s += label_to_string("END DATE", self._terminationDate)
-        s += label_to_string("FREQUENCY", self._freqType)
-        s += label_to_string("CALENDAR", self._calendarType)
-        s += label_to_string("BUSDAYRULE", self._busDayAdjustType)
-        s += label_to_string("DATEGENRULE", self._dateGenRuleType)
-        s += label_to_string("ADJUST TERM DATE", self._adjustTerminationDate)
-        s += label_to_string("END OF MONTH", self._endOfMonthFlag, "")
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("EFFECTIVE DATE", self._effectiveDate)
+        s += to_string("END DATE", self._terminationDate)
+        s += to_string("FREQUENCY", self._freqType)
+        s += to_string("CALENDAR", self._calendarType)
+        s += to_string("BUSDAYRULE", self._busDayAdjustType)
+        s += to_string("DATEGENRULE", self._dateGenRuleType)
+        s += to_string("ADJUST TERM DATE", self._adjustTerminationDate)
+        s += to_string("END OF MONTH", self._endOfMonthFlag, "")
 
         if 1==0:
             if len(self._adjustedDates) > 0:
                 s += "\n\n"
-                s += label_to_string("EFF", self._adjustedDates[0], "")
+                s += to_string("EFF", self._adjustedDates[0], "")
 
             if len(self._adjustedDates) > 1:
                 s += "\n"
-                s += label_to_string("FLW", self._adjustedDates[1:], "",
-                                     listFormat=True)
+                s += to_string("FLW", self._adjustedDates[1:], "",
+                               listFormat=True)
 
         return s
 

@@ -5,7 +5,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
 
-from turing_models.utilities.helper_functions import label_to_string, checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
@@ -144,15 +144,15 @@ class TuringEquityCliquetOption(TuringEquityOption):
 ###############################################################################
 
     def __repr__(self):
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("START DATE", self._startDate)
-        s += label_to_string("FINAL EXPIRY DATE", self._finalExpiryDate)
-        s += label_to_string("OPTION TYPE", self._optionType)
-        s += label_to_string("FREQUENCY TYPE", self._freqType)
-        s += label_to_string("DAY COUNT TYPE", self._dayCountType)
-        s += label_to_string("CALENDAR TYPE", self._calendarType)
-        s += label_to_string("BUS DAY ADJUST TYPE", self._busDayAdjustType)
-        s += label_to_string("DATE GEN RULE TYPE", self._dateGenRuleType, "")
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("START DATE", self._startDate)
+        s += to_string("FINAL EXPIRY DATE", self._finalExpiryDate)
+        s += to_string("OPTION TYPE", self._optionType)
+        s += to_string("FREQUENCY TYPE", self._freqType)
+        s += to_string("DAY COUNT TYPE", self._dayCountType)
+        s += to_string("CALENDAR TYPE", self._calendarType)
+        s += to_string("BUS DAY ADJUST TYPE", self._busDayAdjustType)
+        s += to_string("DATE GEN RULE TYPE", self._dateGenRuleType, "")
         return s
 
 ###############################################################################

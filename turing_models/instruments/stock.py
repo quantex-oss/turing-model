@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from fundamental.turing_db.base.core import InstrumentBase
 from turing_models.instruments.core import Instrument
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -36,9 +36,9 @@ class Stock(Instrument, InstrumentBase):
         return 1
 
     def __repr__(self):
-        s = label_to_string("Object Type", type(self).__name__)
-        s += label_to_string("Asset Id", self.asset_id)
-        s += label_to_string("Symbol", self.symbol)
-        s += label_to_string("Name", self.name_cn)
-        s += label_to_string("Stock Price", self.stock_price_)
+        s = to_string("Object Type", type(self).__name__)
+        s += to_string("Asset Id", self.asset_id)
+        s += to_string("Symbol", self.symbol)
+        s += to_string("Name", self.name_cn)
+        s += to_string("Stock Price", self.stock_price_)
         return s

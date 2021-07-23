@@ -12,7 +12,7 @@ from turing_models.products.credit.cds_curve import TuringCDSCurve
 from turing_models.products.credit.cds import TuringCDS
 from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 RPV01_INDEX = 1  # 0 is FULL, 1 is CLEAN
 
@@ -335,17 +335,17 @@ class TuringCDSIndexOption(object):
     def __repr__(self):
         ''' print out details of the CDS contract and all of the calculated
         cashflows '''
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("EXPIRY DATE", self._expiryDate)
-        s += label_to_string("MATURITY DATE", self._maturityDate)
-        s += label_to_string("INDEX COUPON", self._indexCoupon * 10000, "bp\n")
-        s += label_to_string("NOTIONAL", self._notional)
-        s += label_to_string("LONG PROTECTION", self._longProtection)
-        s += label_to_string("FREQUENCY", self._freqType)
-        s += label_to_string("DAYCOUNT", self._dayCountType)
-        s += label_to_string("CALENDAR", self._calendarType)
-        s += label_to_string("BUSDAYRULE", self._busDayAdjustType)
-        s += label_to_string("DATEGENRULE", self._dateGenRuleType)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("EXPIRY DATE", self._expiryDate)
+        s += to_string("MATURITY DATE", self._maturityDate)
+        s += to_string("INDEX COUPON", self._indexCoupon * 10000, "bp\n")
+        s += to_string("NOTIONAL", self._notional)
+        s += to_string("LONG PROTECTION", self._longProtection)
+        s += to_string("FREQUENCY", self._freqType)
+        s += to_string("DAYCOUNT", self._dayCountType)
+        s += to_string("CALENDAR", self._calendarType)
+        s += to_string("BUSDAYRULE", self._busDayAdjustType)
+        s += to_string("DATEGENRULE", self._dateGenRuleType)
         return s
 
 ###############################################################################

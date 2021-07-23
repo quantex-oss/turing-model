@@ -3,7 +3,7 @@ import numpy as np
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.mathematics import testMonotonicity
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.helper_functions import timesFromDates
 from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.turing_date import daysInMonth
@@ -91,14 +91,14 @@ class TuringInflationIndexCurve():
 
     def __repr__(self):
 
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("BASE DATE", self._baseDate)
-        s += label_to_string("INDEX LAG", self._lagInMonths)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("BASE DATE", self._baseDate)
+        s += to_string("INDEX LAG", self._lagInMonths)
 
-        s += label_to_string("DATES", "ZERO RATES")
+        s += to_string("DATES", "ZERO RATES")
         numPoints = len(self._indexValues)
         for i in range(0, numPoints):
-            s += label_to_string("%12s" % self._indexDates[i],
+            s += to_string("%12s" % self._indexDates[i],
                                "%10.7f" % self._indexValues[i])
 
         return s

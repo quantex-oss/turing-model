@@ -1,6 +1,6 @@
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 ##########################################################################
 

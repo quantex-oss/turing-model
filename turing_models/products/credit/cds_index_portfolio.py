@@ -8,7 +8,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.products.credit.cds import TuringCDS
 from turing_models.products.credit.cds_curve import TuringCDSCurve
 from turing_models.utilities.helper_functions import checkArgumentTypes
-from turing_models.utilities.helper_functions import label_to_string
+from turing_models.utilities.helper_functions import to_string
 
 ###############################################################################
 # TODO: Move index spread details into class and then pass in issuer curves
@@ -475,12 +475,12 @@ class TuringCDSIndexPortfolio():
 
     def __repr__(self):
 
-        s = label_to_string("OBJECT TYPE", type(self).__name__)
-        s += label_to_string("FREQUENCY", self._freqType)
-        s += label_to_string("DAYCOUNT", self._dayCountType)
-        s += label_to_string("CALENDAR", self._calendarType)
-        s += label_to_string("BUSDAYRULE", self._busDayAdjustType)
-        s += label_to_string("DATEGENRULE", self._dateGenRuleType)
+        s = to_string("OBJECT TYPE", type(self).__name__)
+        s += to_string("FREQUENCY", self._freqType)
+        s += to_string("DAYCOUNT", self._dayCountType)
+        s += to_string("CALENDAR", self._calendarType)
+        s += to_string("BUSDAYRULE", self._busDayAdjustType)
+        s += to_string("DATEGENRULE", self._dateGenRuleType)
         return s
 
 ###############################################################################
