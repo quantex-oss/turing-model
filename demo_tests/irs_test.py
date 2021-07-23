@@ -339,30 +339,37 @@ def test_LiborSwap():
 # test_LiborSwap()
 
 
-dates = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 20, 25, 30, 35, 40, 45, 50]
-rates = [-0.001506, -0.000185, 0.001358, 0.0027652, 0.0041539, 0.0054604, 0.006674, 0.007826, 0.008821, 0.0097379, 0.0105406, 0.0123927, 0.0139882, 0.0144972, 0.0146081, 0.01461897, 0.014567455, 0.0140826, 0.01436822]
+# dates = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 20, 25, 30, 35, 40, 45, 50]
+dates = [ 0.25,  0.5, 0.75, 1, 2,        3,        4,        5,        7,        10]
+
+# rates = [-0.001506, -0.000185, 0.001358, 0.0027652, 0.0041539, 0.0054604, 0.006674, 0.007826, 0.008821, 0.0097379, 0.0105406, 0.0123927, 0.0139882, 0.0144972, 0.0146081, 0.01461897, 0.014567455, 0.0140826, 0.01436822]
+rates = [0.023125, 0.023363, 0.023538,        0.023713,        0.024613,        0.025579,        0.026491,        0.027313,        0.028675, 0.03015]
 
 
-irs = IRS(effective_date=TuringDate(2017, 12, 27),
-          termination_date=TuringDate(2067, 12, 27),
-          fixed_leg_type='RECEIVE',
-          fixed_coupon=0.013922944499789812,
-          fixed_freq_type='每年付息',
-          fixed_day_count_type='30/360',
-          notional=10.0 * ONE_MILLION,
+
+irs = IRS(effective_date=TuringDate(2021, 7, 22),
+          termination_date=TuringDate(2026, 7, 22),
+          fixed_leg_type='PAY',
+          fixed_freq_type='按季付息',
+          fixed_day_count_type='ACT/365',
+          fixed_coupon=0.029425,
+          notional=600000,
           float_spread=0,
-          float_freq_type='半年付息',
-          float_day_count_type='ACT/360',
-          value_date=TuringDate(2018, 11, 30),
+          float_freq_type='按季付息',
+          float_day_count_type='ACT/365',
+          value_date=TuringDate(2021, 8, 24),
           swap_curve_dates=dates,
           swap_curve_rates=rates,
-          first_fixing_rate=-0.00268,
-          deposit_term=1,
-          deposit_rate=-0.00251,
-          deposit_day_count_type='ACT/360',
-          fixed_freq_type_curve='每年付息',
-          fixed_day_count_type_curve='30/360',
-          fixed_leg_type_curve='PAY')
+          deposit_term=1/52,
+          deposit_rate=0.0222,
+          first_fixing_rate=0.02,
+          deposit_day_count_type='ACT/365',
+          fixed_freq_type_curve='按季付息',
+          fixed_day_count_type_curve='ACT/365',
+          fixed_leg_type_curve='PAY',
+          reset_freq_type='按周重置')
+# print("coupon",irs.fixed_coupon)
+# print("coupon",irs.fixed_coupon_)
 print(irs.price())
 print(irs.pv01())
 print(irs.swap_rate())
