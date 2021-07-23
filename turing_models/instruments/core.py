@@ -67,6 +67,7 @@ class Instrument(PriceableImpl):
     def __init__(self):
         super().__init__()
 
+
 class CurveAdjust:
 
     def __init__(self,
