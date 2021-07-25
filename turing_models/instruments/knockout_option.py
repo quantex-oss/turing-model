@@ -177,11 +177,13 @@ class KnockOutOption(EqOption):
         return payoff.mean() * np.exp(- r * texp) * notional
 
     def option_resolve(self):
-        if self.asset_id and not self.asset_id.startswith("OPTION_"+self.__class__.__name__):
+        if self.asset_id and not self.asset_id.startswith("OPTION_" + self.__class__.__name__):
             temp_dict = OptionApi.fetch_Option(asset_id=self.asset_id)
             for k, v in temp_dict.items():
                 if not getattr(self, k, None) and v:
                     setattr(self, k, v)
+        if not self.number_of_options and self.notional and self.initial_spot and self.participation_rate:
+            self.number_of_options = (self.notional / self.initial_spot) / self.participation_rate
         if self.underlier:
             if not self.stock_price_:
                 setattr(self, "stock_price", OptionApi.stock_price(underlier=self.underlier))
