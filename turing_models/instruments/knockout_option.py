@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Union
 
 import numpy as np
 
@@ -7,7 +6,7 @@ from fundamental.turing_db.option_data import OptionApi
 from turing_models.instruments.equity_option import EqOption
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
     TuringGBMNumericalScheme
-from turing_models.utilities.global_types import TuringKnockOutTypes
+from turing_models.utilities.global_types import TuringKnockOutTypes, TuringOptionType
 from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
@@ -17,7 +16,7 @@ from turing_models.utilities.mathematics import N
 class KnockOutOption(EqOption):
     barrier: float = None
     rebate: float = None
-    knock_out_type: Union[str, TuringKnockOutTypes] = None
+    knock_out_type: str = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -27,11 +26,12 @@ class KnockOutOption(EqOption):
 
     @property
     def knock_out_type_(self) -> TuringKnockOutTypes:
-        if isinstance(self.knock_out_type, TuringKnockOutTypes):
-            return self.knock_out_type
+        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
+            return TuringKnockOutTypes.UP_AND_OUT_CALL
+        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
+            return TuringKnockOutTypes.DOWN_AND_OUT_PUT
         else:
-            return TuringKnockOutTypes.UP_AND_OUT_CALL if self.knock_out_type == 'up_and_out' \
-                else TuringKnockOutTypes.DOWN_AND_OUT_PUT
+            raise Exception('Please check the input of option_type')
 
     def price(self) -> float:
         s0 = self.stock_price_
@@ -154,25 +154,25 @@ class KnockOutOption(EqOption):
         (num_paths, _) = Sall.shape
 
         if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
-            barrierCrossedFromBelow = [False] * num_paths
+            barrier_crossed_from_below = [False] * num_paths
             for p in range(0, num_paths):
-                barrierCrossedFromBelow[p] = np.any(Sall[p] >= b)
+                barrier_crossed_from_below[p] = np.any(Sall[p] >= b)
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
-            barrierCrossedFromAbove = [False] * num_paths
+            barrier_crossed_from_above = [False] * num_paths
             for p in range(0, num_paths):
-                barrierCrossedFromAbove[p] = np.any(Sall[p] <= b)
+                barrier_crossed_from_above[p] = np.any(Sall[p] <= b)
 
         payoff = np.zeros(num_paths)
         ones = np.ones(num_paths)
 
         if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
             payoff = np.maximum((Sall[:, -1] - k) / s0, 0.0) * \
-                     participation_rate * (ones - barrierCrossedFromBelow) + \
-                     rebate * texp ** flag * (ones * barrierCrossedFromBelow)
+                     participation_rate * (ones - barrier_crossed_from_below) + \
+                     rebate * texp ** flag * (ones * barrier_crossed_from_below)
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
             payoff = np.maximum((k - Sall[:, -1]) / s0, 0.0) * \
-                     participation_rate * (ones - barrierCrossedFromAbove) + \
-                     rebate * texp ** flag * (ones * barrierCrossedFromAbove)
+                     participation_rate * (ones - barrier_crossed_from_above) + \
+                     rebate * texp ** flag * (ones * barrier_crossed_from_above)
 
         return payoff.mean() * np.exp(- r * texp) * notional
 
@@ -182,12 +182,14 @@ class KnockOutOption(EqOption):
             for k, v in temp_dict.items():
                 if not getattr(self, k, None) and v:
                     setattr(self, k, v)
-        if not self.number_of_options \
-                and self.notional \
-                and self.initial_spot \
-                and self.participation_rate \
-                and self.multiplier:
-            self.number_of_options = (self.notional / self.initial_spot) / self.participation_rate / self.multiplier
+        if not self.number_of_options:
+            if self.notional \
+                    and self.initial_spot \
+                    and self.participation_rate \
+                    and self.multiplier:
+                self.number_of_options = (self.notional / self.initial_spot) / self.participation_rate / self.multiplier
+            else:
+                self.number_of_options = 1
         if self.underlier:
             if not self.stock_price_:
                 setattr(self, "stock_price", OptionApi.stock_price(underlier=self.underlier))
@@ -205,5 +207,4 @@ class KnockOutOption(EqOption):
         s = super().__repr__()
         s += to_string("Barrier", self.barrier)
         s += to_string("Rebate", self.rebate)
-        s += to_string("Knock Out Type", self.knock_out_type)
         return s

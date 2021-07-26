@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType
 from turing_models.models.model_black_scholes_analytical import bsValue, bsDelta, \
      bsVega, bsGamma, bsRho, bsPsi, bsTheta
 from turing_models.instruments.equity_option import EqOption
@@ -14,11 +14,12 @@ class EuropeanOption(EqOption):
 
     @property
     def option_type_(self) -> TuringOptionTypes:
-        if isinstance(self.option_type, TuringOptionTypes):
-            return self.option_type
+        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
+            return TuringOptionTypes.EUROPEAN_CALL
+        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
+            return TuringOptionTypes.EUROPEAN_PUT
         else:
-            return TuringOptionTypes.EUROPEAN_CALL if self.option_type == 'CALL' \
-                else TuringOptionTypes.EUROPEAN_PUT
+            raise Exception('Please check the input of option_type')
 
     def params(self) -> list:
         return [

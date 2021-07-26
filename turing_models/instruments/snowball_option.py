@@ -4,7 +4,8 @@ from typing import Union
 import numpy as np
 
 from turing_models.utilities.global_variables import gNumObsInYear
-from turing_models.utilities.global_types import TuringOptionTypes, TuringKnockInTypes
+from turing_models.utilities.global_types import TuringOptionTypes, \
+     TuringKnockInTypes, TuringOptionType
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
      TuringGBMNumericalScheme
 from turing_models.instruments.equity_option import EqOption
@@ -30,11 +31,12 @@ class SnowballOption(EqOption):
 
     @property
     def option_type_(self) -> TuringOptionTypes:
-        if isinstance(self.option_type, TuringOptionTypes):
-            return self.option_type
+        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
+            return TuringOptionTypes.SNOWBALL_CALL
+        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
+            return TuringOptionTypes.SNOWBALL_PUT
         else:
-            return TuringOptionTypes.SNOWBALL_CALL if self.option_type == 'CALL' \
-                else TuringOptionTypes.SNOWBALL_PUT
+            raise Exception('Please check the input of option_type')
 
     @property
     def knock_in_type_(self) -> TuringKnockInTypes:

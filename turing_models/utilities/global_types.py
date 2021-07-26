@@ -25,7 +25,20 @@ class TuringOptionTypes(Enum):
     COMPOUND_PUT = 10
     SNOWBALL_CALL = 11
     SNOWBALL_PUT = 12
-    KNOCKOUT = 13
+    KNOCKOUT_CALL = 13
+    KNOCKOUT_PUT = 14
+
+
+class TuringOptionType(Enum):
+
+    """Option Type"""
+
+    CALL = 'CALL'
+    PUT = 'PUT'
+
+    def __repr__(self):
+        return self.value
+
 
 ###############################################################################
 
