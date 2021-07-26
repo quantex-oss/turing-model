@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
 from turing_models.utilities.global_variables import gNumObsInYear
-from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.models.model_crr_tree import crrTreeValAvg
 from turing_models.instruments.equity_option import EqOption
+from turing_models.utilities.global_types import TuringOptionType, TuringOptionTypes
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -15,11 +15,12 @@ class AmericanOption(EqOption):
 
     @property
     def option_type_(self) -> TuringOptionTypes:
-        if isinstance(self.option_type, TuringOptionTypes):
-            return self.option_type
+        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
+            return TuringOptionTypes.AMERICAN_CALL
+        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
+            return TuringOptionTypes.AMERICAN_PUT
         else:
-            return TuringOptionTypes.AMERICAN_CALL if self.option_type == 'CALL' \
-                else TuringOptionTypes.AMERICAN_PUT
+            raise Exception('Please check the input of option_type')
 
     def price(self) -> float:
         s0 = self.stock_price_

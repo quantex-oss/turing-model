@@ -5,7 +5,7 @@ from turing_models.utilities.mathematics import N
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
-    TuringAsianOptionValuationMethods
+    TuringAsianOptionValuationMethods, TuringOptionType
 from turing_models.instruments.equity_option import EqOption
 from turing_models.utilities.helper_functions import to_string
 
@@ -26,11 +26,12 @@ class AsianOption(EqOption):
 
     @property
     def option_type_(self) -> TuringOptionTypes:
-        if isinstance(self.option_type, TuringOptionTypes):
-            return self.option_type
+        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
+            return TuringOptionTypes.ASIAN_CALL
+        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
+            return TuringOptionTypes.ASIAN_PUT
         else:
-            return TuringOptionTypes.ASIAN_CALL if self.option_type == 'CALL' \
-                else TuringOptionTypes.ASIAN_PUT
+            raise Exception('Please check the input of option_type')
 
     @property
     def valuation_method_(self) -> TuringAsianOptionValuationMethods:
