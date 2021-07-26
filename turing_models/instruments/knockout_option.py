@@ -192,7 +192,7 @@ class KnockOutOption(EqOption):
             if not self.stock_price_:
                 setattr(self, "stock_price", OptionApi.stock_price(underlier=self.underlier))
         if self.value_date_ and self.underlier:
-            if not self.interest_rate and not self.zero_dates and not self.zero_rates:
+            if not self.interest_rate_ and not self.zero_dates and not self.zero_rates:
                 zero_dates, zero_rates = OptionApi.fill_r()
                 setattr(self, "zero_dates", zero_dates)
                 setattr(self, "zero_rates", zero_rates)
