@@ -189,7 +189,7 @@ class KnockOutOption(EqOption):
                     and self.multiplier:
                 self.number_of_options = (self.notional / self.initial_spot) / self.participation_rate / self.multiplier
             else:
-                self.number_of_options = 1
+                self.number_of_options = 1.0
         if self.underlier:
             if not self.stock_price_:
                 setattr(self, "stock_price", OptionApi.stock_price(underlier=self.underlier))
@@ -202,6 +202,8 @@ class KnockOutOption(EqOption):
                 get_volatility = OptionApi.get_volatility(self.value_date_, self.underlier)
                 if get_volatility:
                     setattr(self, 'volatility', get_volatility)
+        if not self.product_type:
+            setattr(self, 'product_type', 'KNOCK_OUT')
 
     def __repr__(self):
         s = super().__repr__()
