@@ -24,6 +24,8 @@ dy = 0.0001
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class Bond(Instrument, InstrumentBase):
     asset_id: str = None
+    bond_symbol: str = None
+    exchange_code: str = None
     bond_type: str = None
     interest_accrued: float = None
     issue_date: TuringDate = None

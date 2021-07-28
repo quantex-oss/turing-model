@@ -6,12 +6,12 @@ from fundamental.portfolio.position import Position
 from fundamental.pricing_context import PricingContext
 from fundamental.report.web_report import WhatIfReport, WhatIfReportContent
 from turing_models.instruments.knockout_option import KnockOutOption
-from knockout_option import EqKnockOutOption
+# from knockout_option import EqKnockOutOption
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.common import RiskMeasure
 from turing_models.utilities.global_types import TuringOptionType
 
-portfolio = Portfolio(portfolio_name="FI-RT")
+portfolio = Portfolio(portfolio_name="CICC")
 
 # What if we add a common KnockOutOption
 knockout_option = KnockOutOption(# asset_id="OPTIONCN00000002",
@@ -46,7 +46,8 @@ scenario_extreme = PricingContext(pricing_date="latest",
 with scenario_extreme:
     result = portfolio.calc(
         [RiskMeasure.Price, RiskMeasure.Delta,  RiskMeasure.Gamma, RiskMeasure.Vega,
-         RiskMeasure.Theta, RiskMeasure.Rho, RiskMeasure.RhoQ])
+         RiskMeasure.Theta, RiskMeasure.Rho, RiskMeasure.RhoQ, RiskMeasure.Dv01,
+         RiskMeasure.DollarDuration, RiskMeasure.DollarConvexity])
     logger.info(result)
 
 # Share the report
