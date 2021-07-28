@@ -36,6 +36,7 @@ class Bond(Instrument, InstrumentBase):
     accrual_type: Union[str, TuringDayCountTypes] = None
     par: float = None
     clean_price: float = None
+    currency: str = None
     name: str = None
     settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
 

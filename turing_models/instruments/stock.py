@@ -17,6 +17,7 @@ class Stock(Instrument, InstrumentBase):
     currency: str = None
     name: str = None
     stock_price: float = None
+    volatility: float = None
 
     def __post_init__(self):
         super().__init__()
