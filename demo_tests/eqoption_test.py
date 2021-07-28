@@ -1,6 +1,6 @@
 from fundamental.market.constants import dates, rates
 
-from tool import print_result
+from turing_models.utilities.print import print_result
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.european_option import EuropeanOption
 from turing_models.instruments.american_option import AmericanOption
