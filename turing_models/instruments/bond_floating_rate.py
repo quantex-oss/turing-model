@@ -5,6 +5,7 @@ from scipy import optimize
 from turing_models.instruments.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.error import TuringError
 
 
 def _f(dm, *args):
@@ -30,7 +31,7 @@ class BondFloatingRate(Bond):
         super().__post_init__()
 
         if self.dm > 10.0:
-            raise Exception("Discount margin exceeds 100000bp")
+            raise TuringError("Discount margin exceeds 100000bp")
 
     def dv01(self):
         current_ibor = self.current_ibor
@@ -215,7 +216,7 @@ class BondFloatingRate(Bond):
         num_flows = len(self._flow_dates)
 
         if num_flows == 0:
-            raise Exception("Accrued interest - not enough flow dates.")
+            raise TuringError("Accrued interest - not enough flow dates.")
 
         dc = TuringDayCount(self.accrual_type_)
 

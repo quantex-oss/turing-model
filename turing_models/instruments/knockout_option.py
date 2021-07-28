@@ -10,6 +10,7 @@ from turing_models.utilities.global_types import TuringKnockOutTypes, TuringOpti
 from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
+from turing_models.utilities.error import TuringError
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -31,7 +32,7 @@ class KnockOutOption(EqOption):
         elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
             return TuringKnockOutTypes.DOWN_AND_OUT_PUT
         else:
-            raise Exception('Please check the input of option_type')
+            raise TuringError('Please check the input of option_type')
 
     def price(self) -> float:
         s0 = self.stock_price_
@@ -49,7 +50,7 @@ class KnockOutOption(EqOption):
         num_ann_obs = self.num_ann_obs
 
         if texp < 0:
-            raise Exception("Option expires before value date.")
+            raise TuringError("Option expires before value date.")
 
         ln_s0k = np.log(s0 / k)
         sqrt_t = np.sqrt(texp)
@@ -81,8 +82,8 @@ class KnockOutOption(EqOption):
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
             h_adj = b * np.exp(-0.5826 * vol * np.sqrt(t))
         else:
-            raise Exception("Unknown barrier option type." +
-                            str(knock_out_type))
+            raise TuringError("Unknown barrier option type." +
+                              str(knock_out_type))
 
         b = h_adj
 
@@ -115,8 +116,8 @@ class KnockOutOption(EqOption):
                 price = participation_rate * (p - p_di) + rebate * texp ** flag * s0 * df * (
                         1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
         else:
-            raise Exception("Unknown barrier option type." +
-                            str(knock_out_type))
+            raise TuringError("Unknown barrier option type." +
+                              str(knock_out_type))
 
         v = price * notional / s0
         return v

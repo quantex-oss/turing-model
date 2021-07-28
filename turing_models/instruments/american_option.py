@@ -4,6 +4,7 @@ from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.models.model_crr_tree import crrTreeValAvg
 from turing_models.instruments.equity_option import EqOption
 from turing_models.utilities.global_types import TuringOptionType, TuringOptionTypes
+from turing_models.utilities.error import TuringError
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -20,7 +21,7 @@ class AmericanOption(EqOption):
         elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
             return TuringOptionTypes.AMERICAN_PUT
         else:
-            raise Exception('Please check the input of option_type')
+            raise TuringError('Please check the input of option_type')
 
     def price(self) -> float:
         s0 = self.stock_price_

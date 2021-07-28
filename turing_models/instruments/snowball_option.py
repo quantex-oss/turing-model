@@ -10,6 +10,7 @@ from turing_models.models.process_simulator import TuringProcessSimulator, Turin
      TuringGBMNumericalScheme
 from turing_models.instruments.equity_option import EqOption
 from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.error import TuringError
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -36,7 +37,7 @@ class SnowballOption(EqOption):
         elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
             return TuringOptionTypes.SNOWBALL_PUT
         else:
-            raise Exception('Please check the input of option_type')
+            raise TuringError('Please check the input of option_type')
 
     @property
     def knock_in_type_(self) -> TuringKnockInTypes:

@@ -15,6 +15,8 @@ from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.error import TuringError
+
 
 dy = 0.0001
 
@@ -69,7 +71,7 @@ class Bond(Instrument, InstrumentBase):
             elif self.freq_type == '按月付息':
                 return TuringFrequencyTypes.MONTHLY
             else:
-                raise Exception('Please check the input of freq_type')
+                raise TuringError('Please check the input of freq_type')
 
     @property
     def accrual_type_(self):
@@ -87,7 +89,7 @@ class Bond(Instrument, InstrumentBase):
             elif self.accrual_type == 'ACT/365F':
                 return TuringDayCountTypes.ACT_365F
             else:
-                raise Exception('Please check the input of accrual_type')
+                raise TuringError('Please check the input of accrual_type')
 
     @property
     def settlement_date_(self):
