@@ -18,6 +18,7 @@ from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instruments.core import Instrument
 from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.error import TuringError
 
 
 bump = 5e-4
@@ -35,7 +36,7 @@ def modify_day_count_type(day_count_type):
     elif day_count_type == 'ACT/365F':
         return TuringDayCountTypes.ACT_365F
     else:
-        raise Exception('Please check the input of day_count_type')
+        raise TuringError('Please check the input of day_count_type')
 
 
 def modify_freq_type(freq_type):
@@ -56,7 +57,7 @@ def modify_freq_type(freq_type):
     elif freq_type == '按天付息' or freq_type == '按天重置':
         return TuringFrequencyTypes.DAILY
     else:
-        raise Exception('Please check the input of freq_type')
+        raise TuringError('Please check the input of freq_type')
 
 
 def modify_leg_type(leg_type):
@@ -296,7 +297,7 @@ class IRS(Instrument):
         pv01 = self.pv01()
 
         if abs(pv01) < gSmall:
-            raise Exception("PV01 is zero. Cannot compute swap rate.")
+            raise TuringError("PV01 is zero. Cannot compute swap rate.")
 
         libor_curve = self.libor_curve
         if self.index_curve is None:

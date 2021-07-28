@@ -11,6 +11,7 @@ from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.error import TuringError
 
 
 def _f(y, *args):
@@ -146,7 +147,7 @@ class BondFixedRate(Bond):
         given its yield to maturity. """
 
         if self.settlement_date_ > self.due_date:
-            raise Exception("Bond settles after it matures.")
+            raise TuringError("Bond settles after it matures.")
 
         discount_curve_flat = self.discount_curve_flat
 
@@ -226,7 +227,7 @@ class BondFixedRate(Bond):
         n = n - 1
 
         if n < 0:
-            raise Exception("No coupons left")
+            raise TuringError("No coupons left")
 
         if self.convention == TuringYTMCalcType.UK_DMO:
             if n == 0:
@@ -259,7 +260,7 @@ class BondFixedRate(Bond):
                 term4 = self._redemption * (v ** n)
                 fp = (v ** (self._alpha)) * (term1 + term2 + term3 + term4)
         else:
-            raise Exception("Unknown yield convention")
+            raise TuringError("Unknown yield convention")
 
         return fp * self.par
 
@@ -276,10 +277,10 @@ class BondFixedRate(Bond):
         '''
 
         if self.settlement_date_ < self.discount_curve._valuationDate:
-            raise Exception("Bond settles before Discount curve date")
+            raise TuringError("Bond settles before Discount curve date")
 
         if self.settlement_date_ > self.due_date:
-            raise Exception("Bond settles after it matures.")
+            raise TuringError("Bond settles after it matures.")
 
         px = 0.0
         df = 1.0
@@ -331,8 +332,8 @@ class BondFixedRate(Bond):
                 or type(clean_price) is np.ndarray:
             clean_prices = np.array(clean_price)
         else:
-            raise Exception("Unknown type for clean_price "
-                            + str(type(clean_price)))
+            raise TuringError("Unknown type for clean_price "
+                              + str(type(clean_price)))
 
         self.calc_accrued_interest()
         accrued_amount = self._accrued_interest
@@ -363,7 +364,7 @@ class BondFixedRate(Bond):
         num_flows = len(self._flow_dates)
 
         if num_flows == 0:
-            raise Exception("Accrued interest - not enough flow dates.")
+            raise TuringError("Accrued interest - not enough flow dates.")
 
         for i_flow in range(1, num_flows):
             # coupons paid on a settlement date are paid

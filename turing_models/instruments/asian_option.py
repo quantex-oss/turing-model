@@ -8,6 +8,7 @@ from turing_models.utilities.global_types import TuringOptionTypes, \
     TuringAsianOptionValuationMethods, TuringOptionType
 from turing_models.instruments.equity_option import EqOption
 from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.error import TuringError
 
 
 errorStr = "In averaging period so need to enter accrued average."
@@ -31,7 +32,7 @@ class AsianOption(EqOption):
         elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
             return TuringOptionTypes.ASIAN_PUT
         else:
-            raise Exception('Please check the input of option_type')
+            raise TuringError('Please check the input of option_type')
 
     @property
     def valuation_method_(self) -> TuringAsianOptionValuationMethods:
@@ -75,7 +76,7 @@ class AsianOption(EqOption):
         if t0 < 0:  # we are in the averaging period
 
             if self.accrued_average is None:
-                raise Exception(errorStr)
+                raise TuringError(errorStr)
 
             # we adjust the strike to account for the accrued coupon
             k = (k * tau + self.accrued_average * t0) / texp
@@ -123,7 +124,7 @@ class AsianOption(EqOption):
         if t0 < 0:  # we are in the averaging period
 
             if self.accrued_average is None:
-                raise Exception(errorStr)
+                raise TuringError(errorStr)
 
             # we adjust the strike to account for the accrued coupon
             k = (k * tau + self.accrued_average * t0) / texp
@@ -194,7 +195,7 @@ class AsianOption(EqOption):
         if t0 < 0:  # we are in the averaging period
 
             if self.accrued_average is None:
-                raise Exception(errorStr)
+                raise TuringError(errorStr)
 
             # we adjust the strike to account for the accrued coupon
             k = (k * tau + self.accrued_average * t0) / texp

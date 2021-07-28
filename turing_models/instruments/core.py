@@ -10,6 +10,7 @@ from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZe
 from turing_models.instruments.common import RiskMeasure
 from turing_models.utilities import TuringFrequencyTypes
 from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.error import TuringError
 
 
 class PriceableImpl:
@@ -102,7 +103,7 @@ class CurveAdjust:
                 self.pivot_point = self.dates[0]
 
             if self.pivot_point > self.dates[-1] or self.pivot_point < self.dates[0]:
-                raise Exception("Please check the input of pivot_point")
+                raise TuringError("Please check the input of pivot_point")
 
             self.confirm_center_point()
             self.modify_data()

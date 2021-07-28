@@ -17,6 +17,7 @@ from turing_models.utilities.global_types import TuringOptionType
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.instruments.core import Instrument
 from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.error import TuringError
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -131,16 +132,25 @@ class EqOption(Instrument, InstrumentBase):
 
     @property
     def texp(self) -> float:
-        return (self.expiry - self.value_date_) / gDaysInYear
+        if self.expiry >= self.value_date_:
+            return (self.expiry - self.value_date_) / gDaysInYear
+        else:
+            raise TuringError("Expiry must be > Value_Date")
 
     @property
     def r(self) -> float:
-        return self.discount_curve.zeroRate(self.expiry)
+        if self.expiry >= self.value_date_:
+            return self.discount_curve.zeroRate(self.expiry)
+        else:
+            raise TuringError("Expiry must be > Value_Date")
 
     @property
     def q(self) -> float:
-        dq = self.dividend_curve.df(self.expiry)
-        return -np.log(dq) / self.texp
+        if self.expiry >= self.value_date_:
+            dq = self.dividend_curve.df(self.expiry)
+            return -np.log(dq) / self.texp
+        else:
+            raise TuringError("Expiry must be > Value_Date")
 
     @property
     def v(self) -> float:
