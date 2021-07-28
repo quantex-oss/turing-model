@@ -1,4 +1,4 @@
-from rich import print, style
+from rich import print
 from rich.panel import Panel
 
 from turing_models.instruments.common import RiskMeasure
