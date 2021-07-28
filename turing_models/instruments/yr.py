@@ -16,7 +16,8 @@ class YuanRongDemo:
         self.greeks = [
             RiskMeasure.Price, RiskMeasure.EqDelta,
             RiskMeasure.EqGamma, RiskMeasure.EqVega,
-            RiskMeasure.EqTheta, RiskMeasure.EqRho
+            RiskMeasure.EqTheta, RiskMeasure.EqRho,
+            RiskMeasure.EqRhoQ
         ]
 
     def build_obj_list(self):
