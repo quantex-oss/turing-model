@@ -10,7 +10,7 @@ from fundamental.market.curves import TuringDiscountCurveFlat, \
 from fundamental.turing_db.base.core import InstrumentBase
 from fundamental.turing_db.utils import to_snake
 
-from turing_models.instruments.common import greek, bump
+from turing_models.instruments.common import greek, bump, Currency
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionType
@@ -36,7 +36,7 @@ class EqOption(Instrument, InstrumentBase):
     participation_rate: float = None
     strike_price: float = None
     multiplier: float = None
-    currency: str = None
+    currency: Union[str, Currency] = None
     premium: float = None
     premium_date: TuringDate = None
     annualized_flag: bool = True
