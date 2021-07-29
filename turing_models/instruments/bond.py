@@ -16,6 +16,7 @@ from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
+from turing_models.instruments.common import Currency
 
 
 dy = 0.0001
@@ -36,7 +37,7 @@ class Bond(Instrument, InstrumentBase):
     accrual_type: Union[str, TuringDayCountTypes] = None
     par: float = None
     clean_price: float = None
-    currency: str = None
+    currency: Union[str, Currency] = None
     name: str = None
     settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
 

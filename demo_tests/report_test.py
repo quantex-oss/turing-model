@@ -8,22 +8,24 @@ from fundamental.report.web_report import WhatIfReport, WhatIfReportContent
 from turing_models.instruments.knockout_option import KnockOutOption
 # from knockout_option import EqKnockOutOption
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.instruments.common import RiskMeasure
+from turing_models.instruments.common import RiskMeasure, Currency
 from turing_models.utilities.global_types import TuringOptionType
 
-portfolio = Portfolio(portfolio_name="CICC")
+portfolio = Portfolio(portfolio_name="FI-RT")
 
 # What if we add a common KnockOutOption
 knockout_option = KnockOutOption(# asset_id="OPTIONCN00000002",
                                  underlier="STOCKCN00000001",
                                  option_type=TuringOptionType.PUT,
-                                 expiry=TuringDate(2021, 9, 3),
+                                 expiry=TuringDate(2021, 9, 29),
                                  strike_price=3.3,
                                  participation_rate=1.0,
                                  barrier=2.5,
                                  notional=16000000.0,
                                  rebate=0.2,
-                                 value_date=TuringDate(2021, 7, 6),
+                                 start_date=TuringDate(2021, 6, 29),
+                                 currency=Currency.CNY,
+                                 initial_spot=3.5,
                                  volatility=0.25,
                                  dividend_yield=0)
 knockout_option.resolve()
@@ -45,8 +47,8 @@ scenario_extreme = PricingContext(pricing_date="latest",
 
 with scenario_extreme:
     result = portfolio.calc(
-        [RiskMeasure.Price, RiskMeasure.Delta,  RiskMeasure.Gamma, RiskMeasure.Vega,
-         RiskMeasure.Theta, RiskMeasure.Rho, RiskMeasure.RhoQ, RiskMeasure.Dv01,
+        [RiskMeasure.Price, RiskMeasure.EqDelta,  RiskMeasure.EqGamma, RiskMeasure.EqVega,
+         RiskMeasure.EqTheta, RiskMeasure.EqRho, RiskMeasure.EqRhoQ, RiskMeasure.Dv01,
          RiskMeasure.DollarDuration, RiskMeasure.DollarConvexity])
     logger.info(result)
 
