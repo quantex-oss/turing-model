@@ -3,42 +3,142 @@
   <component name="ChangeListManager">
     <list default="true" id="18d85260-853b-404d-b962-313815882e9e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_tests/archive/test_with_r.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_tests/archive/test_with_r.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_tests/archive/with_r_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_tests/archive/with_r_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_tests/bond_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_tests/bond_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_tests/eqoption_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_tests/eqoption_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_tests/irs_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_tests/irs_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_tests/stock_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_tests/stock_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_tests/tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_tests/tool.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo_tests/yuanrong_demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/demo_tests/yuanrong_demo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/american_option.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/american_option.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/archive/bond.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/archive/bond.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/archive/eq_option.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/archive/eq_option.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/archive/quotes.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/archive/quotes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/asian_option.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/asian_option.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/bond.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/bond.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/bond_fixed_rate.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/bond_fixed_rate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/bond_floating_rate.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/bond_floating_rate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/common.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/core.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/equity_option.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/equity_option.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/european_option.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/european_option.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/irs.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/irs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/knockout_option.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/knockout_option.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/snowball_option.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/snowball_option.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instrument/stock.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/stock.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/turing_models/instruments/yr.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/yr.py" afterDir="false" />
     </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/turingmodel$yuanrong_demo.coverage" NAME="yuanrong_demo Coverage Results" MODIFIED="1627484584049" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
+    <SUITE FILE_PATH="coverage/turingmodel$core.coverage" NAME="core Coverage Results" MODIFIED="1626238704839" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/turing_models/instrument" />
+    <SUITE FILE_PATH="coverage/turingmodel$european_option.coverage" NAME="european_option Coverage Results" MODIFIED="1626086116260" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/turing_models/instrument" />
+    <SUITE FILE_PATH="coverage/turingmodel$py_test_in_tmp1_py.coverage" NAME="py.test in tmp1.py Coverage Results" MODIFIED="1625794826145" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
+    <SUITE FILE_PATH="coverage/turingmodel$tmp__1_.coverage" NAME="tmp (1) Coverage Results" MODIFIED="1626072121112" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/turingmodel$base.coverage" NAME="base Coverage Results" MODIFIED="1625808875221" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../fundamental/fundamental" />
+    <SUITE FILE_PATH="coverage/turingmodel$py_test_in_tmp_py.coverage" NAME="py.test in tmp.py Coverage Results" MODIFIED="1625748832746" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
+    <SUITE FILE_PATH="coverage/turingmodel$tmp1.coverage" NAME="tmp1 Coverage Results" MODIFIED="1625810052149" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
+    <SUITE FILE_PATH="coverage/turingmodel$yuanrong_demo2.coverage" NAME="yuanrong_demo2 Coverage Results" MODIFIED="1627484475500" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
+    <SUITE FILE_PATH="coverage/turingmodel$bond_fixed_rate.coverage" NAME="bond_fixed_rate Coverage Results" MODIFIED="1625558117692" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/turing_models/instrument" />
+    <SUITE FILE_PATH="coverage/turingmodel$interface.coverage" NAME="interface Coverage Results" MODIFIED="1626330821286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/yuanrong/interfacemodule" />
+    <SUITE FILE_PATH="coverage/turingmodel$bond_test.coverage" NAME="bond_test Coverage Results" MODIFIED="1625565648528" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
+    <SUITE FILE_PATH="coverage/turingmodel$eqoption_test.coverage" NAME="eqoption_test Coverage Results" MODIFIED="1625567480031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
+    <SUITE FILE_PATH="coverage/turingmodel$decorator.coverage" NAME="decorator Coverage Results" MODIFIED="1626075285718" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/turing_models/instrument" />
+    <SUITE FILE_PATH="coverage/turingmodel$tmp.coverage" NAME="tmp Coverage Results" MODIFIED="1626330910774" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="turingmodel" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
+      <file leaf-file-name="yr.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/turing_models/instruments/yr.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="363">
+              <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+              <folding>
+                <element signature="e#0#16#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="core.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/turing_models/instruments/core.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="638">
+              <caret line="41" selection-start-line="41" selection-end-line="41" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>serial_func_str</find>
+      <find>cholesky</find>
+      <find>scenario_extreme</find>
+      <find>self.ctx</find>
+      <find>s</find>
+      <find>create_fn</find>
+      <find>__create_fn__</find>
+      <find>call price</find>
+      <find>call</find>
+      <find>耗时</find>
+      <find>use_yr</find>
+      <find>,True</find>
+      <find>, True</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>, USE_YR</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$</dir>
+    </dirStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/demo_tests/yuanrong_demo2.py" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths>
+      <path value="$PROJECT_DIR$/../tunny/package.json" />
+    </packageJsonPaths>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1680" />
+    <option name="y" value="25" />
+    <option name="width" value="2560" />
+    <option name="height" value="1415" />
+  </component>
   <component name="ProjectId" id="1thUUPoQ7qeEITsRrvrCxyotY9m" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="turingmodel" type="b2602c69:ProjectViewProjectNode" />
+              <item name="turingmodel" type="47feb1d3:ProjectViewModuleNode" />
+            </path>
+            <path>
+              <item name="turingmodel" type="b2602c69:ProjectViewProjectNode" />
+              <item name="turingmodel" type="47feb1d3:ProjectViewModuleNode" />
+              <item name="turingmodel" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="turingmodel" type="b2602c69:ProjectViewProjectNode" />
+              <item name="turingmodel" type="47feb1d3:ProjectViewModuleNode" />
+              <item name="turingmodel" type="462c0819:PsiDirectoryNode" />
+              <item name="demo_tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -47,8 +147,21 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
-  <component name="RunManager">
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.yuanrong_demo">
     <configuration name="yuanrong_demo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="turingmodel" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -67,17 +180,41 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
     </configuration>
+    <configuration name="yuanrong_demo2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="turingmodel" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/demo_tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/demo_tests/yuanrong_demo2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.yuanrong_demo" />
+      <item itemvalue="Python.yuanrong_demo2" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.yuanrong_demo" />
+        <item itemvalue="Python.yuanrong_demo2" />
       </list>
     </recent_temporary>
   </component>
-  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SpellCheckerSettings" BundledDictionaries="0" Folders="0" CustomDictionaries="0" Dictionaries="0" CorrectionsLimit="5" DefaultDictionary="application-level" UseSingleDictionary="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="18d85260-853b-404d-b962-313815882e9e" name="Default Changelist" comment="" />
@@ -90,8 +227,78 @@
     </task>
     <servers />
   </component>
+  <component name="ToolWindowManager">
+    <frame x="1680" y="25" width="2560" height="1415" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info anchor="bottom" id="TODO" order="12" />
+      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.5004003" side_tool="true" weight="0.4456522" />
+      <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Run" order="3" weight="0.38043478" />
+      <window_info anchor="bottom" id="Version Control" order="4" weight="0.32919255" />
+      <window_info anchor="bottom" id="Python Console" order="5" />
+      <window_info anchor="bottom" id="Terminal" order="6" weight="0.32919255" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4988864" visible="true" weight="0.1741393" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="right" id="Database" order="3" weight="0.3298639" />
+      <window_info anchor="right" id="SciView" order="3" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Debug" order="2" sideWeight="0.49959967" weight="0.57686335" />
+      <window_info id="Favorites" order="2" sideWeight="0.5011136" side_tool="true" weight="0.1829419" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="11" weight="0.4" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Messages" order="13" />
+      <window_info anchor="bottom" id="Message" order="8" />
+      <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="9" />
+    </layout>
+    <layout-to-restore>
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Inspection" order="11" weight="0.4" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4988864" visible="true" weight="0.16813451" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="TODO" order="12" />
+      <window_info anchor="bottom" id="Version Control" order="4" weight="0.32919255" />
+      <window_info anchor="bottom" id="Run" order="3" weight="0.36335403" />
+      <window_info anchor="bottom" id="Python Console" order="5" />
+      <window_info anchor="bottom" id="Message" order="8" />
+      <window_info anchor="bottom" id="Debug" order="2" sideWeight="0.49959967" weight="0.57686335" />
+      <window_info anchor="right" id="Database" order="3" weight="0.3298639" />
+      <window_info anchor="bottom" id="Terminal" order="6" weight="0.32919255" />
+      <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.5004003" side_tool="true" weight="0.4456522" />
+      <window_info anchor="bottom" id="Database Changes" order="1" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Cvs" order="10" weight="0.25" />
+      <window_info anchor="right" id="SciView" order="4" />
+      <window_info anchor="bottom" id="Find" order="9" />
+      <window_info anchor="bottom" id="Messages" order="13" />
+      <window_info id="Favorites" order="2" sideWeight="0.5011136" side_tool="true" weight="0.1829419" />
+    </layout-to-restore>
+  </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Default Changelist" />
+    <MESSAGE value="适配元戎调整" />
+    <option name="LAST_COMMIT_MESSAGE" value="适配元戎调整" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/turingmodel$pricing_context.coverage" NAME="pricing_context Coverage Results" MODIFIED="1622811540951" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/fundamental" />
@@ -161,5 +368,298 @@
     <SUITE FILE_PATH="coverage/turingmodel$price_cmd.coverage" NAME="price_cmd Coverage Results" MODIFIED="1625204885683" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pricing/pricing_service/commands" />
     <SUITE FILE_PATH="coverage/turingmodel$Unittests_in_test_utils_py.coverage" NAME="Unittests in test_utils.py Coverage Results" MODIFIED="1620976260927" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
     <SUITE FILE_PATH="coverage/turingmodel$t2.coverage" NAME="t2 Coverage Results" MODIFIED="1621503274525" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/turing_models/instruments/core.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="638">
+          <caret line="41" selection-start-line="41" selection-end-line="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_tests/yuanrong_demo2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="31" column="24" lean-forward="true" selection-start-line="31" selection-start-column="24" selection-end-line="31" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/turing_tunny-1.0-py3.8.egg/tunny/models/model.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/enum.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="748" column="8" selection-start-line="748" selection-start-column="8" selection-end-line="748" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_tests/bond_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1100">
+          <caret line="57" column="38" selection-start-line="57" selection-start-column="38" selection-end-line="57" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instrument/bond_fixed_rate.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/yuanrong/dataoperation/dataprovider.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-114">
+          <caret line="140" column="4" selection-start-line="140" selection-start-column="4" selection-end-line="140" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/IPython/core/interactiveshell.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="222">
+          <caret line="3436" selection-start-line="3436" selection-end-line="3436" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/threading.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="419">
+          <caret line="1305" column="4" selection-start-line="1305" selection-start-column="4" selection-end-line="1305" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Library/Caches/PyCharm2018.1/python_stubs/1265336803/_pickle.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/codecs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="309" selection-start-line="309" selection-end-line="309" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/collections/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="897" selection-start-line="897" selection-end-line="897" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/cloudpickle/cloudpickle_fast.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="490">
+          <caret line="562" selection-start-line="562" selection-end-line="562" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instrument/snowball_option.py" />
+    <entry file="file://$PROJECT_DIR$/turing_models/models/gbm_process.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3311">
+          <caret line="2" column="54" selection-start-line="2" selection-start-column="54" selection-end-line="2" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/pickle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-78">
+          <caret line="423" column="23" selection-start-line="423" selection-start-column="23" selection-end-line="423" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/_threading_local.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="604">
+          <caret line="242" lean-forward="true" selection-start-line="242" selection-end-line="242" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../fundamental/fundamental/market/curves/discount_curve.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="162" column="8" selection-start-line="162" selection-start-column="8" selection-end-line="162" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../tunny/tunny/context.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="47" selection-start-line="47" selection-end-line="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../fundamental/fundamental/market/curves/discount_curve_flat.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="469">
+          <caret line="83" column="53" lean-forward="true" selection-start-line="83" selection-start-column="53" selection-end-line="83" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instrument/knockout_option.py" />
+    <entry file="file://$PROJECT_DIR$/turing_models/models/model_black_scholes_analytical.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="243">
+          <caret line="16" column="11" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../tunny/tunny/models/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="190" lean-forward="true" selection-start-line="190" selection-end-line="190" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/utilities/turing_date.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4378">
+          <caret line="206" lean-forward="true" selection-start-line="206" selection-end-line="206" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/utilities/mathematics.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1098">
+          <caret line="640" lean-forward="true" selection-start-line="640" selection-end-line="640" />
+          <folding>
+            <element signature="e#0#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instrument/equity_option.py" />
+    <entry file="file://$PROJECT_DIR$/turing_models/instrument/european_option.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/yuanrong/shipmodule/ship.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="416">
+          <caret line="214" lean-forward="true" selection-start-line="214" selection-end-line="214" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../tunny/tunny/compute.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1098">
+          <caret line="161" lean-forward="true" selection-start-line="161" selection-end-line="161" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/yuanrong/sdk/utils/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="824">
+          <caret line="126" selection-start-line="126" selection-end-line="126" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_tests/tool.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/runtime/ship_external.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2530">
+          <caret line="115" column="20" selection-start-line="115" selection-start-column="20" selection-end-line="115" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instrument/decorator.py" />
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/yuanrong/shipmodule/ship_external.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="526">
+          <caret line="105" column="58" selection-start-line="105" selection-start-column="58" selection-end-line="105" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instrument/common.py" />
+    <entry file="file://$PROJECT_DIR$/turing_models/instrument/core.py" />
+    <entry file="file://$PROJECT_DIR$/../tunny/tunny/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/yuanrong/initmodule/init.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1288">
+          <caret line="170" column="7" lean-forward="true" selection-start-line="170" selection-start-column="7" selection-end-line="170" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/gevent/monkey.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-25517">
+          <caret line="186" column="4" selection-start-line="186" selection-start-column="4" selection-end-line="186" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/yuanrong/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="17" column="39" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/envs/py38/lib/python3.8/site-packages/yuanrong/interfacemodule/interface.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="719">
+          <caret line="144" column="17" lean-forward="true" selection-start-line="144" selection-start-column="17" selection-end-line="144" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../fundamental/fundamental/pricing_context.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_tests/tmp1.py" />
+    <entry file="file://$PROJECT_DIR$/use_yr_example.py" />
+    <entry file="file://$PROJECT_DIR$/../fundamental/fundamental/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="770">
+          <caret line="74" column="57" lean-forward="true" selection-start-line="74" selection-start-column="57" selection-end-line="74" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_tests/use_yr_exp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1098">
+          <caret line="265" lean-forward="true" selection-start-line="265" selection-end-line="265" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instruments/core.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="638">
+          <caret line="41" selection-start-line="41" selection-end-line="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_tests/yuanrong_demo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1045">
+          <caret line="580" lean-forward="true" selection-start-line="580" selection-end-line="580" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_tests/yuanrong_demo2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="550">
+          <caret line="31" column="24" selection-start-line="31" selection-start-column="24" selection-end-line="31" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instruments/yr.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="363">
+          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>
