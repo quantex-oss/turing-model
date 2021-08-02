@@ -1,9 +1,10 @@
 from fundamental.pricing_context import PricingContext
 
 from turing_models.instruments.stock import Stock
-from turing_models.instruments.common import RiskMeasure
+from turing_models.instruments.common import RiskMeasure, Currency
 
 stock = Stock(asset_id="STOCKCN00000007",
+              currency=Currency.CNY,
               stock_price=5.23)
 
 print(stock.calc(RiskMeasure.Delta))
