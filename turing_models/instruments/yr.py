@@ -11,6 +11,7 @@ package_ref = 'sn:cn:yrk:12345678901234561234567890123456:function:0-turing-mode
 class YuanRongDemo:
     obj: Any = None
     time_out: int = 10
+    use_yr: bool = True
 
     def __post_init__(self):
         self.greeks = [
@@ -27,11 +28,11 @@ class YuanRongDemo:
         return [n for a in obj_ for n in a]
 
     def calc_(self, obj):
-        return [obj.calc(x, True) for x in self.greeks]
+        return [obj.calc(x, self.use_yr) for x in self.greeks]
 
     def __call__(self, *args, **kwargs):
         self.obj_list = self.build_obj_list()
-        if isinstance(self.obj_list, list):
+        if isinstance(self.obj_list, list) and self.use_yr:
             try:
                 return yuanrong.get(self.obj_list, self.time_out)
             except RuntimeError:
@@ -40,6 +41,8 @@ class YuanRongDemo:
             except Exception as e:
                 traceback.format_exc()
                 return []
+        else:
+            return self.obj_list
 
     @staticmethod
     def init():
