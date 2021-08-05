@@ -6,33 +6,35 @@ from fundamental.portfolio.position import Position
 from fundamental.pricing_context import PricingContext
 from fundamental.report.web_report import WhatIfReport, WhatIfReportContent
 from turing_models.instruments.knockout_option import KnockOutOption
-# from knockout_option import EqKnockOutOption
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.common import RiskMeasure
+from turing_models.utilities.global_types import TuringKnockOutTypes
 from turing_models.utilities.global_types import TuringOptionType
 
 portfolio = Portfolio(portfolio_name="CICC")
 
 # What if we add a common KnockOutOption
-knockout_option = KnockOutOption(# asset_id="OPTIONCN00000002",
-                                 underlier="STOCKCN00000001",
-                                 option_type=TuringOptionType.PUT,
-                                 expiry=TuringDate(2021, 9, 3),
-                                 strike_price=3.3,
-                                 participation_rate=1.0,
-                                 barrier=2.5,
-                                 notional=16000000.0,
-                                 rebate=0.2,
-                                 value_date=TuringDate(2021, 7, 6),
-                                 volatility=0.25,
-                                 dividend_yield=0)
+knockout_option = KnockOutOption(
+    underlier="STOCKCN00000001",
+    initial_spot=3.5,
+    option_type=TuringOptionType.PUT,
+    start_date=TuringDate(2021, 7, 29),
+    expiry=TuringDate(2021, 9, 29),
+    strike_price=3.3,
+    participation_rate=1.0,
+    barrier=2.5,
+    notional=11400000.0,
+    rebate=0.2,
+    currency='CNY',
+    volatility=0.25,
+    dividend_yield=0)
 knockout_option.resolve()
 print(knockout_option)
-position_new_option = Position(tradable=knockout_option, quantity=-1)
+position_new_option = Position(tradable=knockout_option, quantity=-1.0)
 portfolio.add(position_new_option)
 
 scenario_extreme = PricingContext(pricing_date="latest",
-                                  interest_rate=0.025,
+                                  interest_rate=0.03,
                                   volatility=[
                                       {"asset_id": "STOCKCN00000007", "value": 0.2},
                                       {"asset_id": "STOCKCN00000002", "value": 0.3}
@@ -44,17 +46,16 @@ scenario_extreme = PricingContext(pricing_date="latest",
                                   )
 
 with scenario_extreme:
-    result = portfolio.calc(
-        [RiskMeasure.Price, RiskMeasure.Delta,  RiskMeasure.Gamma, RiskMeasure.Vega,
-         RiskMeasure.Theta, RiskMeasure.Rho, RiskMeasure.RhoQ, RiskMeasure.Dv01,
-         RiskMeasure.DollarDuration, RiskMeasure.DollarConvexity])
-    logger.info(result)
+    result_with_hedge = portfolio.calc(
+        [RiskMeasure.Price, RiskMeasure.EqDelta, RiskMeasure.EqGamma, RiskMeasure.EqVega,
+         RiskMeasure.EqTheta, RiskMeasure.EqRho, RiskMeasure.EqRhoQ, RiskMeasure.Dv01, RiskMeasure.DollarDuration, RiskMeasure.DollarConvexity])
+
+    delta_with_hedge = list(filter(lambda r: r["tradable"].symbol == "600067", result_with_hedge[1]))
+    logger.info(delta_with_hedge)
 
 # Share the report
 report = WhatIfReport(
-    title="模拟组合1",
-    username="eric.zuo",  # 环境变量中有,则会覆盖这个值
-    email="eric.zuo@iquantex.com",  # 环境变量中有,则会覆盖这个值
+    title="对冲组合",
     contents=[
         WhatIfReportContent(
             content_type="What-IF",
@@ -63,8 +64,7 @@ report = WhatIfReport(
             result={
                 "pricing": {
                     "portfolio_name": portfolio.portfolio_name,
-                    "price": result[0]
-
+                    "price": result_with_hedge[0]
                 },
                 "positions": portfolio.positions_dict(),
             },
