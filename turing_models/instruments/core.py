@@ -57,7 +57,7 @@ class PriceableImpl:
         return value
 
     def __row__(self, ident, _value):
-        """rich表格数据填充"""
+        """计算后对表格数据进行填充"""
         if self.__class__.__name__ == "Position" and hasattr(self.ctx, "positions_dict"):
             for key, value in self.ctx.positions_dict.items():
                 if value.get('asset_id') == self.tradable.asset_id if self.tradable else "":

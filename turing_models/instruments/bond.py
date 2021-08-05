@@ -3,20 +3,23 @@ import traceback
 from dataclasses import dataclass
 from typing import Union
 
+from loguru import logger
+
 from fundamental.turing_db.base.core import InstrumentBase
+from fundamental.turing_db.bond_data import BondApi
 from fundamental.turing_db.data import Turing
+from fundamental.turing_db.err import FastError
 from fundamental.turing_db.utils import to_snake
 from turing_models.instruments.core import Instrument
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.global_types import TuringYTMCalcType
+from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.helper_functions import to_string
-from turing_models.utilities.error import TuringError
-
 
 dy = 0.0001
 
@@ -169,6 +172,27 @@ class Bond(Instrument, InstrumentBase):
                     if ytm_:
                         return ytm_
         return None
+
+    def set_curve(self, gurl):
+        curve = BondApi.fetch_yield_curve(gurl, self.curve_code)
+        if not curve:
+            raise FastError(code=10020,
+                            msg="参数不全, yield_curve api return null",
+                            data=None)
+        for code in to_snake(curve):
+            if code.get("curve_code") == self.curve_code:
+                for cu in code.get('curve_data'):
+                    self.zero_dates.append(cu.get('term'))
+                    self.zero_rates.append(cu.get('spot_rate'))
+
+    def set_ytm(self, gurl):
+        market_bond = BondApi.fetch_quotes(gurl, self.asset_id)
+        if market_bond:
+            logger.debug(f"market_bond:{market_bond}")
+            for quote in market_bond:
+                if quote.get("asset_id") == self.asset_id:
+                    if quote.get("ytm", None):
+                        self.ytm = quote.get("ytm")
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)
