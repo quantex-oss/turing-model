@@ -420,6 +420,13 @@ class TuringDate():
 
     ###########################################################################
 
+    def addWeeks(self,
+                 numWeeks: int = 1):
+        numDays = 7 * numWeeks
+        return self.addDays(numDays)
+
+    ###########################################################################
+
     def addWeekDays(self,
                     numDays: int):
         ''' Returns a new date that is numDays working days after TuringDate. Note

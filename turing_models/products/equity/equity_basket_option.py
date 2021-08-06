@@ -32,9 +32,9 @@ class TuringEquityBasketOption():
                  strikePrice: float,
                  optionType: TuringOptionTypes,
                  numAssets: int):
-        ''' Define the FinEquityBasket option by specifying its expiry date,
+        """ Define the FinEquityBasket option by specifying its expiry date,
         its strike price, whether it is a put or call, and the number of
-        underlying stocks in the basket. '''
+        underlying stocks in the basket. """
 
         checkArgumentTypes(self.__init__, locals())
 
@@ -98,10 +98,10 @@ class TuringEquityBasketOption():
               dividendCurves: (list),
               volatilities: np.ndarray,
               correlations: np.ndarray):
-        ''' Basket valuation using a moment matching method to approximate the
+        """ Basket valuation using a moment matching method to approximate the
         effective variance of the underlying basket value. This approach is
         able to handle a full rank correlation structure between the individual
-        assets. '''
+        assets. """
 
     # https://pdfs.semanticscholar.org/16ed/c0e804379e22ff36dcbab7e9bb06519faa43.pdf
 
@@ -186,11 +186,11 @@ class TuringEquityBasketOption():
                 corrMatrix: np.ndarray,
                 numPaths:int = 10000,
                 seed:int = 4242):
-        ''' Valuation of the EquityBasketOption using a Monte-Carlo simulation
+        """ Valuation of the EquityBasketOption using a Monte-Carlo simulation
         of stock prices assuming a GBM distribution. Cholesky decomposition is
         used to handle a full rank correlation structure between the individual
         assets. The numPaths and seed are pre-set to default values but can be
-        overwritten. '''
+        overwritten. """
 
         checkArgumentTypes(getattr(self, _funcName(), None), locals())
 
@@ -218,7 +218,7 @@ class TuringEquityBasketOption():
         mus = r - dividendYields
         k = self._strikePrice
 
-        numTimeSteps = 2
+        numTimeSteps = 3
 
         model = TuringGBMProcess()
         np.random.seed(seed)
