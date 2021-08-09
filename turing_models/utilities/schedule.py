@@ -180,6 +180,7 @@ class TuringSchedule(object):
 
             self._adjustedDates.append(self._terminationDate)
 
+
         elif self._dateGenRuleType == TuringDateGenRuleTypes.FORWARD:
 
             # This needs checking
@@ -223,6 +224,8 @@ class TuringSchedule(object):
 
             self._adjustedDates[-1] = self._terminationDate
 
+        self._adjustedDates = sorted(list(set(self._adjustedDates)))
+            # self._adjustedDates[-1] = self._terminationDate
         #######################################################################
         # Check the resulting schedule to ensure that no two dates are the
         # same and that they are monotonic - this should never happen but ...

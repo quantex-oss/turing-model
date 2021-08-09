@@ -2,8 +2,8 @@ from turing_models.utilities import TuringSchedule, TuringDate, TuringFrequencyT
     TuringDateGenRuleTypes
 
 effectiveDate = TuringDate(2020, 4, 17)
-terminationDate = TuringDate(2020, 11, 3)
-freqType: TuringFrequencyTypes = TuringFrequencyTypes.MONTHLY
+terminationDate = TuringDate(2020, 5, 3)
+freqType: TuringFrequencyTypes = TuringFrequencyTypes.DAILY
 calendarType: TuringCalendarTypes = TuringCalendarTypes.CHINA_SSE
 dateGenRuleType = TuringDateGenRuleTypes.BACKWARD
 schedule = TuringSchedule(effectiveDate,
@@ -11,4 +11,6 @@ schedule = TuringSchedule(effectiveDate,
                           freqType,
                           calendarType,
                           dateGenRuleType=dateGenRuleType)
-print(len(schedule._adjustedDates))
+# print(len(sorted(schedule._adjustedDates)))
+print(schedule._adjustedDates)
+print(schedule._adjustedDates.index(TuringDate(2020, 4, 23)))

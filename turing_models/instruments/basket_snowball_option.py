@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
-from typing import List, Any
+from typing import List, Any, Union
 
 import numpy as np
 
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.gbm_process import TuringGBMProcess
 from turing_models.instruments.snowball_option import SnowballOption
+from turing_models.utilities import TuringBusDayAdjustTypes
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
 
@@ -14,10 +15,8 @@ from turing_models.utilities.error import TuringError
 class BasketSnowballOption(SnowballOption):
 
     untriggered_rebate: float = None
-    business_day_adjust_type: str = None
     correlation_matrix: np.ndarray = None
     weights: List[Any] = field(default_factory=list)
-    __value_date = None
     __stock_price = None
     __volatility = None
     __discount_curve = None
@@ -129,51 +128,6 @@ class BasketSnowballOption(SnowballOption):
         sall_bskt = np.matmul(sall, weights)
         s0_dot = np.dot(s0, weights)
         return self._payoff(s0_dot, sall_bskt, num_paths, num_time_steps)
-
-    # def price_new(self) -> float:
-    #     s0 = self.stock_price_
-    #     k1 = self.barrier
-    #     k2 = self.knock_in_price
-    #     sk1 = self.knock_in_strike1
-    #     sk2 = self.knock_in_strike2
-    #     start_date = self.start_date
-    #     expiry = self.expiry
-    #     value_date = self.value_date_
-    #     r = self.r
-    #     q = self.q
-    #     vol = self.volatility_
-    #     rebate = self.rebate
-    #     notional = self.notional
-    #     texp = self.texp
-    #     option_type = self.option_type_
-    #     knock_in_type = self.knock_in_type_
-    #     flag = self.annualized_flag
-    #     participation_rate = self.participation_rate
-    #     num_ann_obs = self.num_ann_obs
-    #     num_paths = self.num_paths
-    #     seed = self.seed
-    #
-    #     schedule_monthly = TuringSchedule(start_date,
-    #                                       expiry,
-    #                                       freqType=TuringFrequencyTypes.MONTHLY,
-    #                                       calendarType=TuringCalendarTypes.CHINA_SSE)
-    #     knock_out_obs_days = schedule_monthly._adjustedDates
-    #
-    #     schedule_daily = TuringSchedule(value_date,
-    #                                     expiry,
-    #                                     freqType=TuringFrequencyTypes.DAILY,
-    #                                     calendarType=TuringCalendarTypes.CHINA_SSE)
-    #     bus_days = schedule_daily._adjustedDates
-    #
-    #     np.random.seed(seed)
-    #     mu = r - q
-    #     v2 = vol ** 2
-    #     n = int(expiry - value_date)
-    #     dt = 1 / gDaysInYear
-    #     date_list = [value_date]
-    #     for i in range(1, n + 1):
-    #         dateinc = value_date.addDays(i)
-    #         date_list.append(dateinc)
 
     def _validate(self,
                   stock_prices,

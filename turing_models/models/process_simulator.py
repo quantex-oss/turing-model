@@ -34,12 +34,13 @@ class TuringProcessSimulator():
             modelParams,
             numAnnSteps,
             numPaths,
-            seed):
+            seed,
+            numTimeSteps=None):
 
         if processType == TuringProcessTypes.GBM:
             (stockPrice, drift, volatility, scheme) = modelParams
             paths = getGBMPaths(numPaths, numAnnSteps, t, drift,
-                                stockPrice, volatility, scheme.value, seed)
+                                stockPrice, volatility, scheme.value, seed, numTimeSteps)
             return paths
 
         elif processType == TuringProcessTypes.HESTON:
@@ -218,13 +219,15 @@ class TuringGBMNumericalScheme(Enum):
 
 ###############################################################################
 
-@njit(float64[:, :](int64, int64, float64, float64, float64,
-                    float64, int64, int64), cache=True, fastmath=True)
-def getGBMPaths(numPaths, numAnnSteps, t, mu, stockPrice, sigma, scheme, seed):
+# @njit(float64[:, :](int64, int64, float64, float64, float64,
+#                     float64, int64, int64), cache=True, fastmath=True)
+@njit(cache=True, fastmath=True)
+def getGBMPaths(numPaths, numAnnSteps, t, mu, stockPrice, sigma, scheme, seed, numTimeSteps=None):
 
     np.random.seed(seed)
     dt = 1.0 / numAnnSteps
-    numTimeSteps = int(t / dt + 0.50)
+    if not numTimeSteps:
+        numTimeSteps = int(t / dt + 0.50)
     vsqrtdt = sigma * sqrt(dt)
     m = exp((mu - sigma * sigma / 2.0) * dt)
 
