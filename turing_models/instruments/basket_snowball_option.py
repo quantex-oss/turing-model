@@ -17,6 +17,11 @@ class BasketSnowballOption(SnowballOption):
     business_day_adjust_type: str = None
     correlation_matrix: np.ndarray = None
     weights: List[Any] = field(default_factory=list)
+    __value_date = None
+    __stock_price = None
+    __volatility = None
+    __discount_curve = None
+    __dividend_curve = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -226,11 +231,6 @@ class BasketSnowballOption(SnowballOption):
 
     def __repr__(self):
         s = super().__repr__()
-        s += to_string("Barrier", self.barrier)
-        s += to_string("Rebate", self.rebate)
-        s += to_string("Coupon", self.coupon)
-        s += to_string("Knock In Price", self.knock_in_price)
-        s += to_string("Knock In Type", self.knock_in_type)
-        s += to_string("Knock In Strike1", self.knock_in_strike1)
-        s += to_string("Knock In Strike2", self.knock_in_strike2)
+        s += to_string("Untriggered Rebate", self.untriggered_rebate)
+        s += to_string("Business Day Adjust Type", self.business_day_adjust_type)
         return s

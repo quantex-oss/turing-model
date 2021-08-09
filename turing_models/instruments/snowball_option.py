@@ -27,7 +27,7 @@ class SnowballOption(EqOption):
     def __post_init__(self):
         super().__post_init__()
         self.num_ann_obs = gNumObsInYear
-        self.num_paths = 10000
+        self.num_paths = 100000
         self.seed = 4242
 
     @property
