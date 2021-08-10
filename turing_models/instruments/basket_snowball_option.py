@@ -6,7 +6,6 @@ import numpy as np
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.gbm_process import TuringGBMProcess
 from turing_models.instruments.snowball_option import SnowballOption
-from turing_models.utilities import TuringBusDayAdjustTypes
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
 
@@ -14,7 +13,6 @@ from turing_models.utilities.error import TuringError
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BasketSnowballOption(SnowballOption):
 
-    untriggered_rebate: float = None
     correlation_matrix: np.ndarray = None
     weights: List[Any] = field(default_factory=list)
     __stock_price = None
@@ -98,14 +96,16 @@ class BasketSnowballOption(SnowballOption):
         q = self.q
         vol = self.volatility_
         texp = self.texp
-        num_ann_obs = self.num_ann_obs
         num_paths = self.num_paths
         num_assets = self.num_assets
-        num_time_steps = int(num_ann_obs * texp)
         corr_matrix = self.correlation_matrix
         weights = self.weights
-        seed = self.seed
         mus = r - q
+
+        seed = self.seed
+
+        # 减一是为了适配getPathsAssets函数
+        num_time_steps = len(self.bus_days) - 1
 
         self._validate(s0,
                        q,
@@ -126,8 +126,8 @@ class BasketSnowballOption(SnowballOption):
                                       seed)
         (num_paths, num_time_steps, _) = sall.shape
         sall_bskt = np.matmul(sall, weights)
-        s0_dot = np.dot(s0, weights)
-        return self._payoff(s0_dot, sall_bskt, num_paths, num_time_steps)
+
+        return self._payoff_new(sall_bskt, num_paths)
 
     def _validate(self,
                   stock_prices,

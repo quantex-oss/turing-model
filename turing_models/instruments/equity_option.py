@@ -68,7 +68,8 @@ class EqOption(Instrument, InstrumentBase):
 
     @property
     def value_date_(self):
-        return self.__value_date or self.ctx.pricing_date or self._value_date
+        date = self.__value_date or self.ctx.pricing_date or self._value_date
+        return date if date >= self.start_date else self.start_date
 
     @value_date_.setter
     def value_date_(self, value: TuringDate):

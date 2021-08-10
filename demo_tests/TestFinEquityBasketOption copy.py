@@ -121,10 +121,10 @@ def test_FinEquitySnowballOption():
         print(numPaths, vMC, duration)
 
 
-p = cProfile.Profile()
-p.enable()
+# p = cProfile.Profile()
+# p.enable()
 test_FinEquityBasketOption()
 # test_FinEquitySnowballOption()
-p.disable()
-p.print_stats(sort='tottime')
+# p.disable()
+# p.print_stats(sort='tottime')
 # testCases.compareTestCases()
