@@ -205,6 +205,7 @@ class KnockOutOption(EqOption):
                     setattr(self, 'volatility', get_volatility)
         if not self.product_type:
             setattr(self, 'product_type', 'KNOCK_OUT')
+        self.set_param()
 
     def __repr__(self):
         s = super().__repr__()
