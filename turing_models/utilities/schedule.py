@@ -125,7 +125,12 @@ class TuringSchedule(object):
 
         calendar = TuringCalendar(self._calendarType)
         frequency = TuringFrequency(self._freqType)
-        numMonths = int(12 / frequency)
+        if frequency > 52:
+            numDays = int(365 / frequency)
+        elif frequency > 12:
+            numWeeks = int(52 / frequency)
+        else:
+            numMonths = int(12 / frequency)
 
         unadjustedScheduleDates = []
         self._adjustedDates = []
@@ -139,8 +144,13 @@ class TuringSchedule(object):
             while nextDate > self._effectiveDate:
 
                 unadjustedScheduleDates.append(nextDate)
-                nextDate = self._terminationDate.addMonths(-numMonths * ordinal)
-                # nextDate = nextDate.addMonths(-numMonths)
+
+                if frequency > 52:
+                    nextDate = self._terminationDate.addDays(-numDays * ordinal)
+                elif frequency > 12:
+                    nextDate = self._terminationDate.addWeeks(-numWeeks * ordinal)
+                else:
+                    nextDate = self._terminationDate.addMonths(-numMonths * ordinal)
 
                 ordinal += 1
 
@@ -165,33 +175,39 @@ class TuringSchedule(object):
                 dt = calendar.adjust(unadjustedScheduleDates[flowNum - i - 1],
                                      self._busDayAdjustType)
 
-                self._adjustedDates.append(dt)
+                if dt not in self._adjustedDates:
+                    self._adjustedDates.append(dt)
 
             self._adjustedDates.append(self._terminationDate)
+
 
         elif self._dateGenRuleType == TuringDateGenRuleTypes.FORWARD:
 
             # This needs checking
             nextDate = self._effectiveDate
-            # flowNum = 0
 
             ordinal = 1
             while nextDate < self._terminationDate:
                 unadjustedScheduleDates.append(nextDate)
-                nextDate = self._effectiveDate.addMonths(numMonths * ordinal)
+                if frequency > 52:
+                    nextDate = self._effectiveDate.addDays(numDays * ordinal)
+                elif frequency > 12:
+                    nextDate = self._effectiveDate.addWeeks(numWeeks * ordinal)
+                else:
+                    nextDate = self._effectiveDate.addMonths(numMonths * ordinal)
                 ordinal += 1
 
-            flowNum = ordinal
             unadjustedScheduleDates.append(nextDate)
             self._adjustedDates.append(unadjustedScheduleDates[0])
 
             # The effective date is not adjusted as it is given
-            for i in range(1, flowNum):
+            for i in range(1, ordinal):
 
                 dt = calendar.adjust(unadjustedScheduleDates[i],
                                      self._busDayAdjustType)
 
-                self._adjustedDates.append(dt)
+                if dt not in self._adjustedDates:
+                    self._adjustedDates.append(dt)
 
             # self._adjustedDates.append(self._terminationDate)
 
@@ -208,6 +224,8 @@ class TuringSchedule(object):
 
             self._adjustedDates[-1] = self._terminationDate
 
+        self._adjustedDates = sorted(list(set(self._adjustedDates)))
+            # self._adjustedDates[-1] = self._terminationDate
         #######################################################################
         # Check the resulting schedule to ensure that no two dates are the
         # same and that they are monotonic - this should never happen but ...

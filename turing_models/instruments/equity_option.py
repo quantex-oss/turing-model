@@ -24,7 +24,7 @@ from turing_models.utilities.error import TuringError
 class EqOption(Instrument, InstrumentBase):
 
     asset_id: str = None
-    underlier: str = None
+    underlier: Union[str, List[str]] = None
     product_type: str = None
     option_type: Union[str, TuringOptionType] = None
     notional: float = None
@@ -41,15 +41,15 @@ class EqOption(Instrument, InstrumentBase):
     premium_date: TuringDate = None
     annualized_flag: bool = True
     value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))  # 估值日期
-    stock_price: float = None
-    volatility: float = 0
+    stock_price: Union[float, List[float]] = None
+    volatility: Union[float, List[float]] = 0
     interest_rate: float = 0
     zero_dates: List[Any] = field(default_factory=list)
     zero_rates: List[Any] = field(default_factory=list)
-    dividend_yield: float = 0
+    dividend_yield: Union[float, List[float]] = 0
     __value_date = None
     __stock_price = None
-    __v = None
+    __volatility = None
     __discount_curve = None
     __dividend_curve = None
 
@@ -68,7 +68,8 @@ class EqOption(Instrument, InstrumentBase):
 
     @property
     def value_date_(self):
-        return self.__value_date or self.ctx.pricing_date or self._value_date
+        date = self.__value_date or self.ctx.pricing_date or self._value_date
+        return date if date >= self.start_date else self.start_date
 
     @value_date_.setter
     def value_date_(self, value: TuringDate):
@@ -91,7 +92,7 @@ class EqOption(Instrument, InstrumentBase):
         return self.ctx.interest_rate or self._interest_rate
 
     @property
-    def dividend_yield_(self) -> float:
+    def dividend_yield_(self) -> Union[float, List[float]]:
         return self.ctx.dividend_yield or self._dividend_yield
 
     @property
@@ -154,11 +155,11 @@ class EqOption(Instrument, InstrumentBase):
 
     @property
     def v(self) -> float:
-        return self.__v or self.model._volatility
+        return self.__volatility or self.model._volatility
 
     @v.setter
     def v(self, value: float):
-        self.__v = value
+        self.__volatility = value
 
     def price(self) -> float:
         print("You should not be here!")
@@ -222,7 +223,7 @@ class EqOption(Instrument, InstrumentBase):
         s += to_string("Annualized Flag", self.annualized_flag)
         s += to_string("Value Date", self.value_date_)
         s += to_string("Stock Price", self.stock_price_)
-        s += to_string("Volatility", self.v)
+        s += to_string("Volatility", self.volatility_)
         s += to_string("Interest Rate", self.r)
         s += to_string("Dividend Yield", self.q)
         return s

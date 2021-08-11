@@ -34,6 +34,31 @@ def getPaths(numPaths,
 
     return Sall
 
+
+def GBMsimulator(numAssets,
+                 numPaths,
+                 numTimeSteps,
+                 t,
+                 mus,
+                 stockPrices,
+                 volatilities,
+                 corrMatrix,
+                 seed):
+
+    np.random.seed(seed)
+    dt = t / numTimeSteps
+    c = np.linalg.cholesky(corrMatrix)
+    S = np.zeros([2 * numPaths, numAssets, numTimeSteps+1])
+    for ip in range(0, numPaths):
+        S[ip, :, 0] = stockPrices
+        S[ip + numPaths, :, 0] = stockPrices
+        for i in range(1, numTimeSteps+1):
+            drift = (mus - 0.5 * volatilities ** 2) * dt
+            Z = np.random.standard_normal((numAssets))
+            diffusion = np.matmul(c, Z) * np.sqrt(dt)
+            S[ip, :, i] = S[ip, :, i-1] * np.exp(drift + diffusion)
+            S[ip + numPaths, :, i] = S[ip + numPaths, :, i-1] * np.exp(drift + diffusion)
+    return S
 ###############################################################################
 
 
@@ -89,6 +114,52 @@ def getPathsAssets(numAssets,
 
     return Sall
 
+
+@njit(float64[:, :, :](int64, int64, int64, float64, float64[:], float64[:],
+                       float64[:], float64[:, :], int64),
+      cache=True, fastmath=True)
+def getPathsAssets_new(numAssets,
+                   numPaths,
+                   numTimeSteps,
+                   t,
+                   mus,
+                   stockPrices,
+                   volatilities,
+                   corrMatrix,
+                   seed):
+    ''' Get the simulated GBM process for a number of assets and paths and num
+    time steps. Inputs include the number of assets, paths, the vector of mus,
+    stock prices, volatilities, a correlation matrix and a seed. '''
+
+    np.random.seed(seed)
+    dt = t / numTimeSteps
+    vsqrtdts = volatilities * np.sqrt(dt)
+    m = np.exp((mus - volatilities * volatilities / 2.0) * dt)
+
+    Sall = np.empty((2 * numPaths, numTimeSteps + 1, numAssets))
+
+    g = np.random.standard_normal((numPaths, numTimeSteps + 1, numAssets))
+    c = cholesky(corrMatrix)
+    gCorr = np.zeros((numPaths, numTimeSteps + 1, numAssets))
+
+    # Calculate the dot product
+    for ip in range(0, numPaths):
+        Sall[ip, 0, :] = stockPrices
+        Sall[ip + numPaths, 0, :] = stockPrices
+        for it in range(0, numTimeSteps+1):
+            for ia in range(0, numAssets):
+                # gCorr[ip][it][ia] = 0.0
+                # for ib in range(0, numAssets):
+                #     gCorr[ip][it][ia] += g[ip][it][ib] * c[ia][ib]
+                gCorr[ip][it][ia] += np.sum(np.multiply(g[ip][it][:], c[ia][:]))
+                if it > 0:
+                    z = gCorr[ip, it, ia]
+                    w = np.exp(z * vsqrtdts[ia])
+                    v = m[ia]
+                    Sall[ip, it, ia] = Sall[ip, it - 1, ia] * v*w
+                    Sall[ip + numPaths, it, ia] = Sall[ip + numPaths,
+                                                       it - 1, ia] * v/w
+    return Sall
 ###############################################################################
 
 
@@ -104,7 +175,7 @@ def getAssets(numAssets,
               volatilities,
               corrMatrix,
               seed):
-    
+
     ''' Get the simulated GBM process for a number of assets and paths for one
     time step. Inputs include the number of assets, paths, the vector of mus,
     stock prices, volatilities, a correlation matrix and a seed. '''

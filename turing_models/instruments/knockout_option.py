@@ -7,7 +7,7 @@ from turing_models.instruments.equity_option import EqOption
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
     TuringGBMNumericalScheme
 from turing_models.utilities.global_types import TuringKnockOutTypes, TuringOptionType
-from turing_models.utilities.global_variables import gNumObsInYear
+from turing_models.utilities.global_variables import gNumObsInYear, gDaysInYear
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
 from turing_models.utilities.error import TuringError
@@ -23,6 +23,7 @@ class KnockOutOption(EqOption):
         super().__post_init__()
         self.num_ann_obs = gNumObsInYear
         self.num_paths = 10000
+        self.days_in_year = gDaysInYear
         self.seed = 4242
 
     @property
@@ -36,6 +37,9 @@ class KnockOutOption(EqOption):
 
     def price(self) -> float:
         s0 = self.stock_price_
+        expiry = self.expiry
+        start_date = self.start_date
+        days_in_year = self.days_in_year
         k = self.strike_price
         b = self.barrier
         r = self.r
@@ -93,27 +97,29 @@ class KnockOutOption(EqOption):
         y1 = np.log(b / s0) / sigma_root_t + l * sigma_root_t
         h_over_s = b / s0
 
+        whole_term = (expiry - start_date) / days_in_year
+
         if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
             if b > k:
                 c_ui = s0 * dq * N(x1) - k * df * N(x1 - sigma_root_t) \
                        - s0 * dq * pow(h_over_s, 2.0 * l) * (N(-y) - N(-y1)) \
                        + k * df * pow(h_over_s, 2.0 * l - 2.0) * (N(-y + sigma_root_t) - N(-y1 + sigma_root_t))
-                price = participation_rate * (c - c_ui) + rebate * texp ** flag * s0 * df * (
+                price = participation_rate * (c - c_ui) + rebate * whole_term ** flag * s0 * df * (
                         1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
             else:
-                price = rebate * texp ** flag * s0 * df * (
+                price = rebate * whole_term ** flag * s0 * df * (
                         1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
 
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
             if b >= k:
-                price = rebate * texp ** flag * s0 * df * (
+                price = rebate * whole_term ** flag * s0 * df * (
                         1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
             else:
                 p_di = -s0 * dq * N(-x1) \
                        + k * df * N(-x1 + sigma_root_t) \
                        + s0 * dq * pow(h_over_s, 2.0 * l) * (N(y) - N(y1)) \
                        - k * df * pow(h_over_s, 2.0 * l - 2.0) * (N(y - sigma_root_t) - N(y1 - sigma_root_t))
-                price = participation_rate * (p - p_di) + rebate * texp ** flag * s0 * df * (
+                price = participation_rate * (p - p_di) + rebate * whole_term ** flag * s0 * df * (
                         1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
         else:
             raise TuringError("Unknown barrier option type." +
