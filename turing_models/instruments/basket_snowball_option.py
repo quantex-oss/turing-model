@@ -5,6 +5,8 @@ import numpy as np
 
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.gbm_process import TuringGBMProcess
+from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
+     TuringGBMNumericalScheme, TuringHestonNumericalScheme
 from turing_models.instruments.snowball_option import SnowballOption
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
@@ -128,6 +130,76 @@ class BasketSnowballOption(SnowballOption):
         sall_bskt = np.matmul(sall, weights)
 
         return self._payoff_new(sall_bskt, num_paths)
+    ###############################################################################
+    
+    def price_mm(self) -> float:
+        s0 = self.stock_price_
+        r = self.r
+        q = self.q
+        vol = self.volatility_
+        texp = self.texp
+        num_paths = self.num_paths
+        num_assets = self.num_assets
+        corr_matrix = self.correlation_matrix
+        weights = self.weights
+        num_ann_obs = self.num_ann_obs
+        
+        process = TuringProcessSimulator()
+        process_type = TuringProcessTypes.GBM
+        scheme = TuringGBMNumericalScheme.ANTITHETIC
+
+        # 减一是为了适配getGBMPaths函数
+        num_time_steps = len(self.bus_days) - 1
+
+        seed = self.seed
+
+        self._validate(s0,
+                       q,
+                       vol,
+                       corr_matrix,
+                       weights)
+
+        smean = 0.0
+        for ia in range(0, num_assets):
+            smean = smean + s0[ia] * weights[ia]
+
+        # Moment matching - starting with dividend
+        qnum = 0.0
+        qden = 0.0
+        for ia in range(0, self.num_assets):
+            qnum = qnum + weights[ia] * s0[ia] * np.exp(-q[ia] * texp)
+            qden = qden + weights[ia] * s0[ia]
+        qhat = -np.log(qnum / qden) / texp
+
+        # Moment matching - matching volatility
+        vnum = 0.0
+        for ia in range(0, self.num_assets):
+            for ja in range(0, ia):
+                rhoSigmaSigma = vol[ia] * vol[ja] * corr_matrix[ia, ja]
+                expTerm = (q[ia] + q[ja] - rhoSigmaSigma) * texp
+                vnum = vnum + weights[ia] * weights[ja] * s0[ia] * s0[ja] * np.exp(-expTerm)
+
+        vnum *= 2.0
+
+        for ia in range(0, self.num_assets):
+            rhoSigmaSigma = vol[ia] ** 2
+            expTerm = (2.0 * q[ia] - rhoSigmaSigma) * texp
+            vnum = vnum + ((weights[ia] * s0[ia]) ** 2) * np.exp(-expTerm)
+
+        vhat2 = np.log(vnum / qnum / qnum) / texp
+
+        # den = np.sqrt(vhat2) * sqrtT
+        mu = r - qhat
+        model_params = (smean, mu, np.sqrt(vhat2), scheme)
+
+        process = TuringProcessSimulator()
+
+        Sall = process.getProcess(process_type, texp, model_params,
+                                  num_ann_obs, num_paths, seed)
+
+        (num_paths, num_time_steps) = Sall.shape
+
+        return self._payoff_new(Sall, num_paths)
 
     def _validate(self,
                   stock_prices,
