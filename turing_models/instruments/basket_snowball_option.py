@@ -129,9 +129,8 @@ class BasketSnowballOption(SnowballOption):
         (num_paths, num_time_steps, _) = sall.shape
         sall_bskt = np.matmul(sall, weights)
 
-        return self._payoff_new(sall_bskt, num_paths)
-    ###############################################################################
-    
+        return self._payoff(sall_bskt, num_paths)
+
     def price_mm(self) -> float:
         s0 = self.stock_price_
         r = self.r
@@ -143,7 +142,7 @@ class BasketSnowballOption(SnowballOption):
         corr_matrix = self.correlation_matrix
         weights = self.weights
         num_ann_obs = self.num_ann_obs
-        
+
         process = TuringProcessSimulator()
         process_type = TuringProcessTypes.GBM
         scheme = TuringGBMNumericalScheme.ANTITHETIC
@@ -192,14 +191,12 @@ class BasketSnowballOption(SnowballOption):
         mu = r - qhat
         model_params = (smean, mu, np.sqrt(vhat2), scheme)
 
-        process = TuringProcessSimulator()
-
         Sall = process.getProcess(process_type, texp, model_params,
-                                  num_ann_obs, num_paths, seed)
+                                  num_ann_obs, num_paths, seed, num_time_steps)
 
-        (num_paths, num_time_steps) = Sall.shape
+        (num_paths, _) = Sall.shape
 
-        return self._payoff_new(Sall, num_paths)
+        return self._payoff(Sall, num_paths)
 
     def _validate(self,
                   stock_prices,

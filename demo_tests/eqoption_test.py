@@ -85,15 +85,7 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 #                                  zero_dates=dates,
 #                                  zero_rates=rates,
 #                                  dividend_yield=0)
-#
-# print(snowball_option.price())
-# start = time.time()
-# print(snowball_option.price_new())
-# end = time.time()
-# print(end - start)
 
-
-#
 # knockout_option = KnockOutOption(asset_id='OPTIONCN00000001',
 #                                  underlier='STOCKCN00000001',
 #                                  option_type=TuringOptionType.CALL,
@@ -125,41 +117,51 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 #                                  zero_rates=rates,
 #                                  dividend_yield=0)
 
-# betas = np.ones(5) * 0.1
-# corr_matrix = betaVectorToCorrMatrix(betas)
-#
-# basket_snowball_option = BasketSnowballOption(option_type=TuringOptionType.CALL,
-#                                               expiry=TuringDate(2016, 1, 1),
-#                                               participation_rate=1.0,
-#                                               barrier=110,
-#                                               knock_in_price=88,
-#                                               notional=1000000,
-#                                               rebate=0.2,
-#                                               underlier=["STOCKCN00000001", "STOCKCN00000002", "STOCKCN00000003", "STOCKCN00000004", "STOCKCN00000005"],
-#                                               knock_in_type='spreads',
-#                                               knock_in_strike1=5.3,
-#                                               knock_in_strike2=5.4,
-#                                               value_date=TuringDate(2015, 1, 1),
-#                                               currency=Currency.CNY,
-#                                               stock_price=[100., 100., 100., 100., 100.],
-#                                               volatility=[0.3, 0.3, 0.3, 0.3, 0.3],
-#                                               interest_rate=0.05,
-#                                               dividend_yield=[0.01, 0.01, 0.01, 0.01, 0.01],
-#                                               weights=[0.2, 0.2, 0.2, 0.2, 0.2],
-#                                               correlation_matrix=corr_matrix)
-# # # print_result(basket_snowball_option)
+betas = np.ones(5) * 0.1
+corr_matrix = betaVectorToCorrMatrix(betas)
+
+basket_snowball_option = BasketSnowballOption(option_type=TuringOptionType.CALL,
+                                              start_date=TuringDate(2014, 1, 1),
+                                              expiry=TuringDate(2016, 1, 1),
+                                              initial_spot=100,
+                                              participation_rate=1.0,
+                                              barrier=110,
+                                              knock_in_price=88,
+                                              notional=1000000,
+                                              rebate=0.2,
+                                              untriggered_rebate=0.2,
+                                              underlier=["STOCKCN00000001", "STOCKCN00000002", "STOCKCN00000003", "STOCKCN00000004", "STOCKCN00000005"],
+                                              knock_in_type='SPREADS',
+                                              knock_in_strike1=5.3,
+                                              knock_in_strike2=5.4,
+                                              value_date=TuringDate(2015, 1, 1),
+                                              currency=Currency.CNY,
+                                              stock_price=[100., 100., 100., 100., 100.],
+                                              volatility=[0.3, 0.3, 0.3, 0.3, 0.3],
+                                              interest_rate=0.05,
+                                              dividend_yield=[0.01, 0.01, 0.01, 0.01, 0.01],
+                                              weights=[0.2, 0.2, 0.2, 0.2, 0.2],
+                                              correlation_matrix=corr_matrix)
+
 # p = cProfile.Profile()
 # p.enable()
-# print(basket_snowball_option.price())
+start = time.time()
+price1 = basket_snowball_option.price()
+end = time.time()
+print(price1, end-start)
+start = time.time()
+price2 = basket_snowball_option.price_mm()
+end = time.time()
+print(price2, end-start)
 # p.disable()
 # p.print_stats(sort='tottime')
 
 
-volatilities = np.array([0.3, 0.2, 0.25, 0.22, 0.4])
-dividendYields = np.array([0.01, 0.02, 0.04, 0.01, 0.02])
-stockPrices = np.array([100., 105., 120., 100., 90.])
-weights = np.array([0.2, 0.2, 0.2, 0.2, 0.2])
-betaList = np.linspace(0.0, 0.999999, 2)
+# volatilities = np.array([0.3, 0.2, 0.25, 0.22, 0.4])
+# dividendYields = np.array([0.01, 0.02, 0.04, 0.01, 0.02])
+# stockPrices = np.array([100., 105., 120., 100., 90.])
+# weights = np.array([0.2, 0.2, 0.2, 0.2, 0.2])
+# betaList = np.linspace(0.0, 0.999999, 2)
 
 # for beta in betaList:
 #     betas = np.ones(10) * beta
@@ -195,36 +197,36 @@ betaList = np.linspace(0.0, 0.999999, 2)
 #     end = time.time()
 #     duration = end - start
 #     print(price, duration)
-import matplotlib.pyplot as plt
-stock_prices = list(range(80, 125, 1))
-price_result = []
-delta = []
-for stock_price in stock_prices:
-    snowball_option = SnowballOption(option_type=TuringOptionType.CALL,
-                                     expiry=TuringDate(2016, 1, 4),
-                                     start_date=TuringDate(2015, 10, 1),
-                                     initial_spot=100,
-                                     participation_rate=1.0,
-                                     barrier=110,
-                                     knock_in_price=88,
-                                     notional=1000000,
-                                     rebate=0.2,
-                                     untriggered_rebate=0.2,
-                                     underlier=["STOCKCN00000001"],
-                                     knock_in_type='RETURN',
-                                     # knock_in_strike1=5.3,
-                                     # knock_in_strike2=5.4,
-                                     value_date=TuringDate(2015, 1, 1),
-                                     currency=Currency.CNY,
-                                     stock_price=stock_price,
-                                     volatility=0.3,
-                                     interest_rate=0.05,
-                                     dividend_yield=0.01)
-    price_result.append(snowball_option.price())
-    delta.append(snowball_option.eq_delta())
-# plt.plot(stock_prices, price_result)
-plt.plot(stock_prices, delta)
-plt.show()
+# import matplotlib.pyplot as plt
+# stock_prices = list(range(80, 125, 1))
+# price_result = []
+# delta = []
+# for stock_price in stock_prices:
+#     snowball_option = SnowballOption(option_type=TuringOptionType.CALL,
+#                                      expiry=TuringDate(2016, 1, 4),
+#                                      start_date=TuringDate(2015, 10, 1),
+#                                      initial_spot=100,
+#                                      participation_rate=1.0,
+#                                      barrier=110,
+#                                      knock_in_price=88,
+#                                      notional=1000000,
+#                                      rebate=0.2,
+#                                      untriggered_rebate=0.2,
+#                                      underlier=["STOCKCN00000001"],
+#                                      knock_in_type='RETURN',
+#                                      # knock_in_strike1=5.3,
+#                                      # knock_in_strike2=5.4,
+#                                      value_date=TuringDate(2015, 1, 1),
+#                                      currency=Currency.CNY,
+#                                      stock_price=stock_price,
+#                                      volatility=0.3,
+#                                      interest_rate=0.05,
+#                                      dividend_yield=0.01)
+#     price_result.append(snowball_option.price())
+#     delta.append(snowball_option.eq_delta())
+# # plt.plot(stock_prices, price_result)
+# plt.plot(stock_prices, delta)
+# plt.show()
 
 #
 #

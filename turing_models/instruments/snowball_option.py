@@ -121,9 +121,9 @@ class SnowballOption(EqOption):
         sall = process.getProcess(process_type, texp, model_params,
                                   num_ann_obs, num_paths, seed, num_time_steps)
         (num_paths, _) = sall.shape
-        return self._payoff_new(sall, num_paths)
+        return self._payoff(sall, num_paths)
 
-    def _payoff_new(self, sall, num_paths):
+    def _payoff(self, sall, num_paths):
         k1 = self.barrier
         k2 = self.knock_in_price
         sk1 = self.knock_in_strike1
@@ -256,120 +256,6 @@ class SnowballOption(EqOption):
                 payoff += not_out_put_sign * in_put_sign * \
                           (-notional * np.maximum(np.minimum(sall[:, -1] / initial_spot, sk2) - sk1, 0) * \
                            participation_rate * whole_term**flag * np.exp(-r * texp))
-
-        return payoff.mean()
-
-    def _payoff(self, s0, sall, num_paths, num_time_steps):
-        k1 = self.barrier
-        k2 = self.knock_in_price
-        sk1 = self.knock_in_strike1
-        sk2 = self.knock_in_strike2
-        expiry = self.expiry
-        value_date = self.value_date_
-        r = self.r
-        rebate = self.rebate
-        notional = self.notional
-        texp = self.texp
-        option_type = self.option_type_
-        knock_in_type = self.knock_in_type_
-        flag = self.annualized_flag
-        participation_rate = self.participation_rate
-        num_ann_obs = self.num_ann_obs
-
-        out_call_sign = [False] * num_paths
-        out_call_index = [False] * num_paths
-        in_call_sign = [False] * num_paths
-        out_put_sign = [False] * num_paths
-        out_put_index = [False] * num_paths
-        in_put_sign = [False] * num_paths
-
-        # 相邻敲出观察日之间的交易日数量
-        num_bus_days = int(num_ann_obs / 12)
-
-        # 生成一个标识索引的列表
-        slice_length = (expiry._y - value_date._y) * 12 + \
-                       (expiry._m - value_date._m) + \
-                       (expiry._d > value_date._d)
-        index_list = list(range(num_time_steps))[::-num_bus_days][:slice_length][::-1]
-
-        if option_type == TuringOptionTypes.SNOWBALL_CALL:
-            for p in range(0, num_paths):
-                out_call_sign[p] = np.any(sall[p][::-num_bus_days][:slice_length] >= k1)
-
-                if out_call_sign[p]:
-                    for i in index_list:
-                        if sall[p][i] >= k1:
-                            out_call_index[p] = i
-                            break
-
-                in_call_sign[p] = np.any(sall[p] < k2)
-
-        elif option_type == TuringOptionTypes.SNOWBALL_PUT:
-            for p in range(0, num_paths):
-                out_put_sign[p] = np.any(sall[p][::-num_bus_days][:slice_length] <= k1)
-
-                if out_put_sign[p]:
-                    for i in index_list:
-                        if sall[p][i] <= k1:
-                            out_put_index[p] = i
-                            break
-
-                in_put_sign[p] = np.any(sall[p] > k2)
-
-        ones = np.ones(num_paths)
-        # list转成ndarray
-        out_call_sign = np.array(out_call_sign)
-        not_out_call_sign = ones - out_call_sign
-        out_call_index = np.array(out_call_index)
-        in_call_sign = np.array(in_call_sign)
-        not_in_call_sign = ones - in_call_sign
-        out_put_sign = np.array(out_put_sign)
-        not_out_put_sign = ones - out_put_sign
-        out_put_index = np.array(out_put_index)
-        in_put_sign = np.array(in_put_sign)
-        not_in_put_sign = ones - in_put_sign
-
-        if option_type == TuringOptionTypes.SNOWBALL_CALL:
-
-            payoff = out_call_sign * ((notional * rebate * (out_call_index / num_ann_obs)**flag) *
-                     np.exp(-r * out_call_index / num_ann_obs)) + not_out_call_sign * not_in_call_sign * \
-                     ((notional * rebate * texp**flag) * np.exp(-r * texp))
-
-            if knock_in_type == TuringKnockInTypes.RETURN:
-                payoff += not_out_call_sign * in_call_sign * \
-                          (-notional * (1 - sall[:, -1] / s0) *
-                           participation_rate * np.exp(-r * texp))
-
-            elif knock_in_type == TuringKnockInTypes.VANILLA:
-                payoff += not_out_call_sign * in_call_sign * \
-                          (-notional * np.maximum(sk1 - sall[:, -1] / s0, 0) * \
-                           participation_rate * texp**flag * np.exp(-r * texp))
-
-            elif knock_in_type == TuringKnockInTypes.SPREADS:
-                payoff += not_out_call_sign * in_call_sign * \
-                          (-notional * np.maximum(sk1 - np.maximum(sall[:, -1] / s0, sk2), 0) * \
-                           participation_rate * texp**flag * np.exp(-r * texp))
-
-        elif option_type == TuringOptionTypes.SNOWBALL_PUT:
-
-            payoff = out_put_sign * ((notional * rebate * (out_put_index / num_ann_obs)**flag) *
-                     np.exp(-r * out_put_index / num_ann_obs)) + not_out_put_sign * not_in_put_sign * \
-                     ((notional * rebate * texp**flag) * np.exp(-r * texp))
-
-            if knock_in_type == TuringKnockInTypes.RETURN:
-                payoff += not_out_put_sign * in_put_sign * \
-                          (-notional * (sall[:, -1] / s0 - 1) * \
-                           participation_rate * np.exp(-r * texp))
-
-            elif knock_in_type == TuringKnockInTypes.VANILLA:
-                payoff += not_out_put_sign * in_put_sign * \
-                          (-notional * np.maximum(sall[:, -1] / s0 - sk1, 0) * \
-                           participation_rate * texp**flag * np.exp(-r * texp))
-
-            elif knock_in_type == TuringKnockInTypes.SPREADS:
-                payoff += not_out_put_sign * in_put_sign * \
-                          (-notional * np.maximum(np.minimum(sall[:, -1] / s0, sk2) - sk1, 0) * \
-                           participation_rate * texp**flag * np.exp(-r * texp))
 
         return payoff.mean()
 
