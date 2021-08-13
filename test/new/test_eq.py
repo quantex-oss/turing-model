@@ -9,6 +9,7 @@ def test_knockout_option_knock_out_type_():
     knockout_option = KnockOutOption(asset_id='OPTIONCN00000001',
                                      underlier='STOCKCN00000001',
                                      option_type=TuringOptionType.CALL,
+                                     start_date=TuringDate(2021, 7, 3),
                                      expiry=TuringDate(2021, 9, 3),
                                      strike_price=5.3,
                                      participation_rate=1.0,
@@ -29,6 +30,7 @@ def test_knockout_option_price():
     knockout_option = KnockOutOption(asset_id='OPTIONCN00000001',
                                      underlier='STOCKCN00000001',
                                      option_type=TuringOptionType.CALL,
+                                     start_date=TuringDate(2021, 7, 3),
                                      expiry=TuringDate(2021, 9, 3),
                                      strike_price=5.3,
                                      participation_rate=1.0,
@@ -42,4 +44,4 @@ def test_knockout_option_price():
                                      zero_dates=dates,
                                      zero_rates=rates,
                                      dividend_yield=0)
-    assert knockout_option.price() == 27872.77897054046
+    assert knockout_option.price() == 29286.988331557735

@@ -1,5 +1,6 @@
 import numpy as np
 from numba import njit, float64, int64
+
 from turing_models.utilities.mathematics import cholesky
 
 ###############################################################################
@@ -62,9 +63,10 @@ def GBMsimulator(numAssets,
 ###############################################################################
 
 
-@njit(float64[:, :, :](int64, int64, int64, float64, float64[:], float64[:],
-                       float64[:], float64[:, :], int64),
-      cache=True, fastmath=True)
+# @njit(float64[:, :, :](int64, int64, int64, float64, float64[:], float64[:],
+#                        float64[:], float64[:, :], int64),
+#       cache=True, fastmath=True)
+@njit
 def getPathsAssets(numAssets,
                    numPaths,
                    numTimeSteps,

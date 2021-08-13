@@ -92,7 +92,7 @@ class BasketSnowballOption(SnowballOption):
         else:
             raise TuringError("Expiry must be > Value_Date")
 
-    def price(self) -> float:
+    def price_3dim(self) -> float:
         s0 = self.stock_price_
         r = self.r
         q = self.q
@@ -131,7 +131,7 @@ class BasketSnowballOption(SnowballOption):
 
         return self._payoff(sall_bskt, num_paths)
 
-    def price_mm(self) -> float:
+    def price(self) -> float:
         s0 = self.stock_price_
         r = self.r
         q = self.q
