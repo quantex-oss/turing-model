@@ -180,3 +180,6 @@ class CurveAdjust:
 
     def get_rates_result(self):
         return self.rates
+
+    def get_data_dict(self):
+        return dict(zip(self.dates, self.rates))
