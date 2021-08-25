@@ -1,5 +1,6 @@
-from tunny.switch import set_switch
-set_switch(0)
+import time
+
+from numba import njit
 
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.irs import IRS
@@ -349,28 +350,56 @@ rates = [0.023125, 0.023363, 0.023538,        0.023713,        0.024613,        
 
 irs = IRS(effective_date=TuringDate(2021, 7, 22),
           termination_date=TuringDate(2026, 7, 22),
-          fixed_leg_type='PAY',
-          fixed_freq_type='按季付息',
-          fixed_day_count_type='ACT/365',
+          fixed_leg_type=TuringSwapTypes.PAY,
+          fixed_freq_type=TuringFrequencyTypes.QUARTERLY,
+          fixed_day_count_type=TuringDayCountTypes.ACT_365L,
           fixed_coupon=0.029425,
           notional=600000,
           float_spread=0,
-          float_freq_type='按季付息',
-          float_day_count_type='ACT/365',
+          float_freq_type=TuringFrequencyTypes.QUARTERLY,
+          float_day_count_type=TuringDayCountTypes.ACT_365L,
           value_date=TuringDate(2021, 8, 24),
           swap_curve_dates=dates,
           swap_curve_rates=rates,
           deposit_term=1/52,
           deposit_rate=0.0222,
           first_fixing_rate=0.02,
-          deposit_day_count_type='ACT/365',
-          fixed_freq_type_curve='按季付息',
-          fixed_day_count_type_curve='ACT/365',
-          fixed_leg_type_curve='PAY',
-          reset_freq_type='按周重置')
-# print("coupon",irs.fixed_coupon)
-# print("coupon",irs.fixed_coupon_)
-print(irs.price())
-print(irs.pv01())
-print(irs.swap_rate())
+          deposit_day_count_type=TuringDayCountTypes.ACT_365L,
+          fixed_freq_type_curve=TuringFrequencyTypes.QUARTERLY,
+          fixed_day_count_type_curve=TuringDayCountTypes.ACT_365L,
+          fixed_leg_type_curve=TuringSwapTypes.PAY,
+          reset_freq_type=TuringFrequencyTypes.WEEKLY)
+
+# print(irs.price())
+# print(irs.pv01())
+# print(irs.swap_rate())
+
+# from turing_models.instruments.irs import create_ibor_single_curve
+# curve = create_ibor_single_curve(value_date=TuringDate(2021, 8, 17),
+#                                  deposit_term=0.019,
+#                                  deposit_rate=0.02,
+#                                  deposit_day_count_type=TuringDayCountTypes.ACT_365L,
+#                                  swap_curve_dates=TuringDate(2021, 8, 17).addYears(dates),
+#                                  fixed_leg_type_curve=TuringSwapTypes.PAY,
+#                                  swap_curve_rates=rates,
+#                                  fixed_freq_type_curve=TuringFrequencyTypes.QUARTERLY,
+#                                  fixed_day_count_type_curve=TuringDayCountTypes.ACT_365L,
+#                                  dx=0)
+# print(curve)
+
+# @njit(fastmath=True, cache=True)
+def bs_implied_dividend(stock_price, strike_price, price_call, price_put, r, texp, signal):
+    """ Calculate the Black-Scholes implied dividend of a European
+    vanilla option using Put-Call-Parity. """
+    q = np.log(price_call - price_put + strike_price * np.exp(-r * texp) / stock_price)
+    q = - 1 / texp * q
+    if not signal:
+        return q
+    else:
+        return texp, q
+
+start = time.time()
+print(bs_implied_dividend(1, 1.2, 0.01, 0.2, 0.3, 0.2, True))
+end = time.time()
+print("Elapsed (with compilation) = %s" % (end - start))
 

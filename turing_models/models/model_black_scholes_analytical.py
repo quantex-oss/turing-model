@@ -239,15 +239,14 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
     ''' Calculate the Black-Scholes implied volatility of a European
     vanilla option using Newton with a fallback to bisection. '''
 
-    fwd = s * np.exp((r-q)*t)
-
-    if optionTypeValue==TuringOptionTypes.EUROPEAN_CALL.value:
-        intrinsicVal = np.exp(-r*t) * max(fwd - k, 0.0)
+    fwd = s * np.exp((r - q) * t)
+    df = np.exp(-r * t)
+    if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
+        intrinsicVal = df * max(fwd - k, 0.0)
     else:
-        intrinsicVal = np.exp(-r*t) * max(k - fwd, 0.0)
+        intrinsicVal = df * max(k - fwd, 0.0)
 
     divAdjStockPrice = s * np.exp(-q * t)
-    df = np.exp(-r * t)
 
     # Flip ITM call option to be OTM put and vice-versa using put call parity
     if intrinsicVal > 0.0:
@@ -260,10 +259,10 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
             optionTypeValue = TuringOptionTypes.EUROPEAN_CALL.value
 
         # Update intrinsic based on new option type
-        if optionTypeValue==TuringOptionTypes.EUROPEAN_CALL.value:
-            intrinsicVal = np.exp(-r*t) * max(fwd - k, 0.0)
+        if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
+            intrinsicVal = df * max(fwd - k, 0.0)
         else:
-            intrinsicVal = np.exp(-r*t) * max(k - fwd, 0.0)
+            intrinsicVal = df * max(k - fwd, 0.0)
 
     timeValue = price - intrinsicVal
 
@@ -282,8 +281,8 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
         C = price + (divAdjStockPrice - k * df)
 
     # Notation in SSRN-id567721.pdf
-    X = k * np.exp(-r*t)
-    S = s*np.exp(-q*t)
+    X = k * np.exp(-r * t)
+    S = s * np.exp(-q * t)
     pi = np.pi
 
     ###########################################################################
@@ -312,14 +311,14 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
     ###########################################################################
 
     hsigma = 0.0
-    gamma = 2.0
-    arg = (2*C+X-S)**2 - gamma * (S+X)*(S-X)*(S-X)/ pi / S
+    gamma = 1.85
+    arg = (2 * C + X - S) ** 2 - gamma * (S + X) * (S - X) * (S - X) / pi / np.sqrt(X * S)
 
     if arg < 0.0:
         arg = 0.0
 
     hsigma = (2 * C + X - S + np.sqrt(arg))
-    hsigma = hsigma * np.sqrt(2.0*pi) / 2.0 / (S+X)
+    hsigma = hsigma * np.sqrt(2.0 * pi) / 2.0 / (S + X)
     hsigma = hsigma / np.sqrt(t)
 
     sigma0 = hsigma
@@ -341,10 +340,21 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
     else:
         method = "Newton"
 
-    if 1==0:
-        print("S: %7.2f K: %7.3f T:%5.3f V:%10.7f Sig0: %7.5f CM: %7.5f HL: %7.5f NW: %7.5f %10s"% (s, k, t, price, sigma0*100.0, cmsigma*100.0, hsigma*100.0, sigma*100.0, method))
+    # if 1==0:
+    #     print("S: %7.2f K: %7.3f T:%5.3f V:%10.7f Sig0: %7.5f CM: %7.5f HL: %7.5f NW: %7.5f %10s"% (s, k, t, price, sigma0*100.0, cmsigma*100.0, hsigma*100.0, sigma*100.0, method))
 
     return sigma
+
+
+def bs_implied_dividend(stock_price, strike_price, price_call, price_put, r, texp, curve):
+    """ Calculate the Black-Scholes implied dividend of a European
+    vanilla option using Put-Call-Parity. """
+    q = np.log(price_call - price_put + strike_price * np.exp(-r * texp) / stock_price)
+    q = - 1 / texp * q
+    if not curve:
+        return q
+    else:
+        return texp, q
 
 ###############################################################################
 ###############################################################################

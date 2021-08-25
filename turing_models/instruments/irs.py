@@ -1,5 +1,6 @@
 import datetime
 from dataclasses import dataclass
+from typing import Union, List
 
 import numpy as np
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
@@ -25,44 +26,106 @@ bump = 5e-4
 
 
 def modify_day_count_type(day_count_type):
-    if day_count_type == 'ACT/365':
-        return TuringDayCountTypes.ACT_365L
-    elif day_count_type == 'ACT/ACT':
-        return TuringDayCountTypes.ACT_ACT_ISDA
-    elif day_count_type == 'ACT/360':
-        return TuringDayCountTypes.ACT_360
-    elif day_count_type == '30/360':
-        return TuringDayCountTypes.THIRTY_E_360
-    elif day_count_type == 'ACT/365F':
-        return TuringDayCountTypes.ACT_365F
+    if isinstance(day_count_type, TuringDayCountTypes):
+        return day_count_type
     else:
-        raise TuringError('Please check the input of day_count_type')
+        if day_count_type == 'ACT/365':
+            return TuringDayCountTypes.ACT_365L
+        elif day_count_type == 'ACT/ACT':
+            return TuringDayCountTypes.ACT_ACT_ISDA
+        elif day_count_type == 'ACT/360':
+            return TuringDayCountTypes.ACT_360
+        elif day_count_type == '30/360':
+            return TuringDayCountTypes.THIRTY_E_360
+        elif day_count_type == 'ACT/365F':
+            return TuringDayCountTypes.ACT_365F
+        else:
+            raise TuringError('Please check the input of day_count_type')
 
 
 def modify_freq_type(freq_type):
-    if freq_type == '每年付息' or freq_type == '每年重置':
-        return TuringFrequencyTypes.ANNUAL
-    elif freq_type == '半年付息' or freq_type == '半年重置':
-        return TuringFrequencyTypes.SEMI_ANNUAL
-    elif freq_type == '4个月一次':
-        return TuringFrequencyTypes.TRI_ANNUAL
-    elif freq_type == '按季付息' or freq_type == '按季重置':
-        return TuringFrequencyTypes.QUARTERLY
-    elif freq_type == '按月付息' or freq_type == '按月重置':
-        return TuringFrequencyTypes.MONTHLY
-    elif freq_type == '按周付息' or freq_type == '按周重置':
-        return TuringFrequencyTypes.WEEKLY
-    elif freq_type == '两周付息' or freq_type == '两周重置':
-        return TuringFrequencyTypes.BIWEEKLY
-    elif freq_type == '按天付息' or freq_type == '按天重置':
-        return TuringFrequencyTypes.DAILY
+    if isinstance(freq_type, TuringFrequencyTypes):
+        return freq_type
     else:
-        raise TuringError('Please check the input of freq_type')
+        if freq_type == '每年付息' or freq_type == '每年重置':
+            return TuringFrequencyTypes.ANNUAL
+        elif freq_type == '半年付息' or freq_type == '半年重置':
+            return TuringFrequencyTypes.SEMI_ANNUAL
+        elif freq_type == '4个月一次':
+            return TuringFrequencyTypes.TRI_ANNUAL
+        elif freq_type == '按季付息' or freq_type == '按季重置':
+            return TuringFrequencyTypes.QUARTERLY
+        elif freq_type == '按月付息' or freq_type == '按月重置':
+            return TuringFrequencyTypes.MONTHLY
+        elif freq_type == '按周付息' or freq_type == '按周重置':
+            return TuringFrequencyTypes.WEEKLY
+        elif freq_type == '两周付息' or freq_type == '两周重置':
+            return TuringFrequencyTypes.BIWEEKLY
+        elif freq_type == '按天付息' or freq_type == '按天重置':
+            return TuringFrequencyTypes.DAILY
+        else:
+            raise TuringError('Please check the input of freq_type')
 
 
 def modify_leg_type(leg_type):
-    return TuringSwapTypes.PAY if leg_type == 'PAY' \
-        else TuringSwapTypes.RECEIVE
+    if isinstance(leg_type, TuringSwapTypes):
+        return leg_type
+    else:
+        if leg_type == 'PAY':
+            return TuringSwapTypes.PAY
+        elif leg_type == 'RECEIVE':
+            return TuringSwapTypes.RECEIVE
+        else:
+            raise TuringError('Please check the input of leg_type')
+
+
+def create_ibor_single_curve(value_date: TuringDate,
+                             deposit_term: float,
+                             deposit_rate: float,
+                             deposit_day_count_type: TuringDayCountTypes,
+                             swap_curve_dates: List[TuringDate],
+                             fixed_leg_type_curve: TuringSwapTypes,
+                             swap_curve_rates: List[float],
+                             fixed_freq_type_curve: TuringFrequencyTypes,
+                             fixed_day_count_type_curve: TuringDayCountTypes,
+                             dx: Union[int, float]):
+    print(value_date,
+          deposit_term,
+          deposit_rate,
+          deposit_day_count_type,
+          swap_curve_dates,
+          fixed_leg_type_curve,
+          swap_curve_rates,
+          fixed_freq_type_curve,
+          fixed_day_count_type_curve,
+          dx)
+
+    depos = []
+    fras = []
+    swaps = []
+
+    due_date = value_date.addYears(deposit_term)
+    depo1 = TuringIborDeposit(value_date,
+                              due_date,
+                              deposit_rate,
+                              deposit_day_count_type)
+    depos.append(depo1)
+
+    for i in range(len(swap_curve_dates)):
+        swap = IRS(effective_date=value_date,
+                   termination_date=swap_curve_dates[i],
+                   fixed_leg_type=fixed_leg_type_curve,
+                   fixed_coupon=swap_curve_rates[i] + dx,
+                   fixed_freq_type=fixed_freq_type_curve,
+                   fixed_day_count_type=fixed_day_count_type_curve,
+                   value_date=value_date,
+                   reset_freq_type=fixed_freq_type_curve,
+                   date_gen_rule_type=TuringDateGenRuleTypes.FORWARD)
+        swaps.append(swap)
+
+    libor_curve = TuringIborSingleCurve(value_date, depos, fras, swaps)
+
+    return libor_curve
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -71,14 +134,14 @@ class IRS(Instrument):
     irs_type: str = None
     effective_date: TuringDate = None
     termination_date: TuringDate = None
-    fixed_leg_type: str = None
+    fixed_leg_type: Union[str, TuringSwapTypes] = None
     fixed_coupon: float = 100000
-    fixed_freq_type: str = None
-    fixed_day_count_type: str = None
+    fixed_freq_type: Union[str, TuringFrequencyTypes] = None
+    fixed_day_count_type: Union[str, TuringDayCountTypes] = None
     notional: float = 1000000.0
     float_spread: float = 0.0
-    float_freq_type: str = '按季付息'
-    float_day_count_type: str = '30/360'
+    float_freq_type: Union[str, TuringFrequencyTypes] = '按季付息'
+    float_day_count_type: Union[str, TuringDayCountTypes] = '30/360'
     value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))  # 估值日期
     swap_curve_code: str = None
     index_curve_code: str = None
@@ -89,11 +152,11 @@ class IRS(Instrument):
     first_fixing_rate: float = None
     deposit_term: float = None  # 单位：年
     deposit_rate: float = None
-    deposit_day_count_type: str = None
-    fixed_freq_type_curve: str = None
-    fixed_day_count_type_curve: str = None
-    fixed_leg_type_curve: str = None
-    reset_freq_type: str = None
+    deposit_day_count_type: Union[str, TuringDayCountTypes] = None
+    fixed_freq_type_curve: Union[str, TuringFrequencyTypes] = None
+    fixed_day_count_type_curve: Union[str, TuringDayCountTypes] = None
+    fixed_leg_type_curve: Union[str, TuringSwapTypes] = None
+    reset_freq_type: Union[str, TuringFrequencyTypes] = None
     __index_curve = None
     __libor_curve = None
     date_gen_rule_type: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD
@@ -166,8 +229,12 @@ class IRS(Instrument):
 
     @property
     def float_leg_type(self):
-        return TuringSwapTypes.RECEIVE if self.fixed_leg_type == 'PAY' \
-            else TuringSwapTypes.PAY
+        if self.fixed_leg_type == 'PAY' or self.fixed_leg_type == TuringSwapTypes.PAY:
+            return TuringSwapTypes.RECEIVE
+        elif self.fixed_leg_type == 'RECEIVE' or self.fixed_leg_type == TuringSwapTypes.RECEIVE:
+            return TuringSwapTypes.PAY
+        else:
+            raise TuringError('Please check the input of fixed_leg_type')
 
     @property
     def fixed_coupon_(self):
@@ -214,34 +281,16 @@ class IRS(Instrument):
         self.__libor_curve = value
 
     def build_ibor_single_curve(self, dx):
-        value_date = self.value_date_
-
-        depos = []
-        fras = []
-        swaps = []
-
-        due_date = value_date.addYears(self.deposit_term)
-        depo1 = TuringIborDeposit(value_date,
-                                  due_date,
-                                  self.deposit_rate,
-                                  self.deposit_day_count_type_)
-        depos.append(depo1)
-
-        for i in range(len(self.swap_curve_dates_)):
-            swap = IRS(effective_date=value_date,
-                       termination_date=self.swap_curve_dates_[i],
-                       fixed_leg_type=self.fixed_leg_type_curve,
-                       fixed_coupon=self.swap_curve_rates[i] + dx,
-                       fixed_freq_type=self.fixed_freq_type_curve,
-                       fixed_day_count_type=self.fixed_day_count_type_curve,
-                       value_date=value_date,
-                       reset_freq_type=self.fixed_freq_type_curve,
-                       date_gen_rule_type=TuringDateGenRuleTypes.FORWARD)
-            swaps.append(swap)
-
-        libor_curve = TuringIborSingleCurve(value_date, depos, fras, swaps)
-
-        return libor_curve
+        return create_ibor_single_curve(self.value_date_,
+                                        self.deposit_term,
+                                        self.deposit_rate,
+                                        self.deposit_day_count_type_,
+                                        self.swap_curve_dates_,
+                                        self.fixed_leg_type_curve,
+                                        self.swap_curve_rates,
+                                        self.fixed_freq_type_curve,
+                                        self.fixed_day_count_type_curve,
+                                        dx)
 
     def price(self):
         """ Value the interest rate swap on a value date given a single Ibor

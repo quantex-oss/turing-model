@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.calendar import TuringCalendarTypes
+from turing_models.utilities.schedule import TuringSchedule
+from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType
 from turing_models.models.model_black_scholes_analytical import bsValue, bsDelta, \
-     bsVega, bsGamma, bsRho, bsPsi, bsTheta
+     bsVega, bsGamma, bsRho, bsPsi, bsTheta, bsImpliedVolatility
 from turing_models.instruments.equity_option import EqOption
 from turing_models.utilities.error import TuringError
 
@@ -21,6 +25,20 @@ class EuropeanOption(EqOption):
             return TuringOptionTypes.EUROPEAN_PUT
         else:
             raise TuringError('Please check the input of option_type')
+
+    @property
+    def texp(self) -> float:
+        """欧式期权bs模型中的t采用交易日计数"""
+        if self.expiry >= self.value_date_:
+            schedule_daily = TuringSchedule(self.value_date_,
+                                            self.expiry,
+                                            freqType=TuringFrequencyTypes.DAILY,
+                                            calendarType=TuringCalendarTypes.CHINA_SSE)
+            # 考虑一开一闭区间
+            num_days = len(schedule_daily._adjustedDates) - 1
+            return num_days / gNumObsInYear
+        else:
+            raise TuringError("Expiry must be > Value_Date")
 
     def params(self) -> list:
         return [
@@ -53,3 +71,26 @@ class EuropeanOption(EqOption):
 
     def eq_rho_q(self) -> float:
         return bsPsi(*self.params()) * self._multiplier * self._number_of_options
+
+    def implied_volatility(self, mkt, signal):
+
+        ''' Calculate the Black-Scholes implied volatility of a European
+        vanilla option. '''
+
+        texp = self.texp
+
+        if texp < 1.0 / 365.0:
+            print("Expiry time is too close to zero.")
+            return -999
+
+        r = self.r
+        q = self.q
+        s0 = self.stock_price_
+        k = self.strike_price
+        price = mkt
+        sigma = bsImpliedVolatility(s0, texp, k, r, q, price,
+                                    self.option_type_.value)
+        if signal == "sigma":
+            return sigma
+        elif signal == "surface":
+            return k, sigma
