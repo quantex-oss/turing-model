@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="18d85260-853b-404d-b962-313815882e9e" name="Default Changelist" comment="并行计算调整。">
-      <change afterPath="$PROJECT_DIR$/turing_models/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/turing_models/instruments/parallel_proxy.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/parallel_proxy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/turing_models/instruments/combination_calc.py" beforeDir="false" afterPath="$PROJECT_DIR$/turing_models/instruments/combination_calc.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -14,15 +13,36 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/turing_model_cicc$yuanrong_demo2.coverage" NAME="yuanrong_demo2 Coverage Results" MODIFIED="1629969391936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
+    <SUITE FILE_PATH="coverage/turing_model_cicc$yuanrong_demo2.coverage" NAME="yuanrong_demo2 Coverage Results" MODIFIED="1629971102367" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/demo_tests" />
   </component>
   <component name="FileEditorManager">
     <leaf>
       <file leaf-file-name="yuanrong_demo2.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/demo_tests/yuanrong_demo2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="504">
-              <caret line="69" column="21" lean-forward="true" selection-end-line="96" />
+            <state relative-caret-position="303">
+              <caret line="67" column="25" selection-start-line="67" selection-start-column="25" selection-end-line="67" selection-end-column="25" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="common.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/turing_models/instruments/common.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="419">
+              <caret line="49" column="4" selection-start-line="49" selection-start-column="4" selection-end-line="49" selection-end-column="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="combination_calc.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/turing_models/instruments/combination_calc.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="553">
+              <caret line="39" column="46" selection-start-line="39" selection-start-column="46" selection-end-line="39" selection-end-column="46" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -33,20 +53,11 @@
       <file leaf-file-name="parallel_proxy.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/turing_models/instruments/parallel_proxy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1186">
-              <caret line="72" selection-start-line="72" selection-end-line="72" />
+            <state relative-caret-position="680">
+              <caret line="53" column="39" lean-forward="true" selection-start-line="53" selection-start-column="39" selection-end-line="53" selection-end-column="39" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="config.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/turing_models/config.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="22">
-              <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
             </state>
           </provider>
         </entry>
@@ -67,10 +78,10 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/turing_models/constants.py" />
-        <option value="$PROJECT_DIR$/demo_tests/yuanrong_demo2.py" />
-        <option value="$PROJECT_DIR$/turing_models/instruments/combination_calc.py" />
         <option value="$PROJECT_DIR$/turing_models/instruments/parallel_proxy.py" />
         <option value="$PROJECT_DIR$/turing_models/config.py" />
+        <option value="$PROJECT_DIR$/demo_tests/yuanrong_demo2.py" />
+        <option value="$PROJECT_DIR$/turing_models/instruments/combination_calc.py" />
       </list>
     </option>
   </component>
@@ -119,6 +130,13 @@
               <item name="turing-model-cicc" type="47feb1d3:ProjectViewModuleNode" />
               <item name="turing-model-cicc" type="462c0819:PsiDirectoryNode" />
               <item name="turing_models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="turing-model-cicc" type="b2602c69:ProjectViewProjectNode" />
+              <item name="turing-model-cicc" type="47feb1d3:ProjectViewModuleNode" />
+              <item name="turing-model-cicc" type="462c0819:PsiDirectoryNode" />
+              <item name="turing_models" type="462c0819:PsiDirectoryNode" />
+              <item name="instruments" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -227,7 +245,14 @@
       <option name="project" value="LOCAL" />
       <updated>1629970002406</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="并行计算调整。">
+      <created>1629970404388</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1629970404388</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -237,11 +262,11 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" weight="0.32996893" />
       <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.37034163" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.4417702" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Python Console" />
       <window_info anchor="bottom" id="Terminal" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20216173" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20216173" />
       <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
       <window_info anchor="right" id="Database" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32996893" />
@@ -269,7 +294,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <option name="time" value="5" />
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
@@ -392,41 +417,54 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/turing_models/instruments/combination_calc.py">
+    <entry file="file://$PROJECT_DIR$/turing_models/config.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1098">
-          <caret line="77" lean-forward="true" selection-start-line="77" selection-end-line="77" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-            <element signature="e#1609#1808#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/demo_tests/yuanrong_demo2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="69" column="21" lean-forward="true" selection-end-line="96" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="22">
+          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/turing_models/instruments/parallel_proxy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1186">
-          <caret line="72" selection-start-line="72" selection-end-line="72" />
+        <state relative-caret-position="680">
+          <caret line="53" column="39" lean-forward="true" selection-start-line="53" selection-start-column="39" selection-end-line="53" selection-end-column="39" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/turing_models/config.py">
+    <entry file="file://$PROJECT_DIR$/turing_models/instruments/common.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
+        <state relative-caret-position="419">
+          <caret line="49" column="4" selection-start-line="49" selection-start-column="4" selection-end-line="49" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo_tests/yuanrong_demo2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="67" column="25" selection-start-line="67" selection-start-column="25" selection-end-line="67" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instruments/core.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="33" selection-start-line="33" selection-end-line="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turing_models/instruments/combination_calc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="553">
+          <caret line="39" column="46" selection-start-line="39" selection-start-column="46" selection-end-line="39" selection-end-column="46" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -44,14 +44,14 @@ class ModelCalc:
             result = ParallelCalcProxy.get_results_with_yr(self.process, timeout)
             self.result.update_fields(
                 {
-                    {risk_measure: result[idx]} for
+                    risk_measure.value: result[idx] for
                     idx, risk_measure in enumerate(self.risk_measures)
                 }
             )
         else:
             self.result.update_fields(
                 {
-                    {risk_measure: self.process[idx]} for
+                    risk_measure.value: self.process[idx] for
                     idx, risk_measure in enumerate(self.risk_measures)
                 }
             )
@@ -62,16 +62,14 @@ class CalcResult:
 
     def __init__(self, title):
         self.title = title
-        self.calc_result = {}
 
     def update_fields(self, update_fields_):
         if not isinstance(update_fields_, dict):
             raise CalcResultException("The update_fields must be a dict!")
         self.__dict__.update(update_fields_)
-        self.calc_result = {"title": self.title, "calc_result": self.__dict__}
 
     def __repr__(self):
-        return json.dumps(self.calc_result, indent=4)
+        return json.dumps(self.__dict__, indent=4)
 
     def __str__(self):
-        return json.dumps(self.calc_result, indent=4)
+        return json.dumps(self.__dict__, indent=4)
