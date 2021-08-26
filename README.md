@@ -42,13 +42,3 @@ Turing_models depends on Numpy, Numba, Scipy and basic python libraries such as 
 ## Changelog
 
 See the changelog for a detailed history of changes.
-
-## Thanks
-
-Thanks for Dominic O'Kane's financepy library.
-The address of the project is https://github.com/domokane/FinancePy.git.
-
-
-## License
-
- GPL-3.0 License - See the license file in this folder for details.
