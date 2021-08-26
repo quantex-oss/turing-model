@@ -1,33 +1,42 @@
 import time
+from fundamental.market.constants import dates, rates
 from fundamental.pricing_context import PricingContext
+from turing_models.utilities.global_types import TuringOptionType
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.european_option import EuropeanOption
-from turing_models.instruments.common import RiskMeasure
+from turing_models.instruments.common import RiskMeasure, Currency
 from turing_models.instruments.combination_calc import CombinationCalc, ModelCalc
 from turing_models.constants import ParallelType
 
 
 european_option1 = EuropeanOption(asset_id='OPTIONCN00000001',
-                                  option_type='CALL',
                                   underlier='STOCKCN00000001',
-                                  expiry=TuringDate(2021, 10, 15),
+                                  option_type=TuringOptionType.CALL,
+                                  start_date=TuringDate(2021, 6, 3),
+                                  expiry=TuringDate(2021, 9, 3),
                                   strike_price=5.3,
                                   multiplier=100,
+                                  value_date=TuringDate(2021, 8, 13),
+                                  currency=Currency.CNY,
                                   stock_price=5.262,
                                   volatility=0.1,
-                                  interest_rate=0.02,
+                                  zero_dates=dates,
+                                  zero_rates=rates,
                                   dividend_yield=0)
 
-
 european_option2 = EuropeanOption(asset_id='OPTIONCN00000002',
-                                  option_type='CALL',
-                                  underlier='STOCKCN00000002',
-                                  expiry=TuringDate(2021, 9, 15),
-                                  strike_price=5.3,
+                                  underlier='STOCKCN00000001',
+                                  option_type=TuringOptionType.CALL,
+                                  start_date=TuringDate(2021, 6, 3),
+                                  expiry=TuringDate(2021, 9, 3),
+                                  strike_price=5.28,
                                   multiplier=100,
-                                  stock_price=5.362,
+                                  value_date=TuringDate(2021, 8, 13),
+                                  currency=Currency.CNY,
+                                  stock_price=5.262,
                                   volatility=0.15,
-                                  interest_rate=0.02,
+                                  zero_dates=dates,
+                                  zero_rates=rates,
                                   dividend_yield=0)
 
 
