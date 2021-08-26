@@ -375,7 +375,8 @@ class BondFixedRate(Bond):
 
         dc = TuringDayCount(self.accrual_type_)
         cal = TuringCalendar(self.calendar_type)
-        ex_dividend_date = cal.addBusinessDays(self._ncd, -self.num_ex_dividend_days)
+        ex_dividend_date = cal.addBusinessDays(
+            self._ncd, -self.num_ex_dividend_days)
 
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
                                            self.settlement_date_,
