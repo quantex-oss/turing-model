@@ -1,6 +1,7 @@
 import traceback
 from loguru import logger
 from typing import Union, List
+from turing_models import config
 from turing_models.constants import ParallelType
 from turing_models.instruments.common import RiskMeasure
 
@@ -8,7 +9,6 @@ from turing_models.instruments.common import RiskMeasure
 __all__ = (
     "ParallelProxy"
 )
-package_ref = 'sn:cn:yrk:12345678901234561234567890123456:function:0-turing-model:$latest'
 
 
 class ParallelProxyException(BaseException):
@@ -21,7 +21,7 @@ class YrParallelProxyMixin:
     @staticmethod
     def yr_init(module):
         module.init(
-            package_ref=package_ref,
+            package_ref=config.package_ref,
             logging_level='INFO',
             cluster_server_addr='123.60.60.83'
         )
