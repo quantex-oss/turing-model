@@ -49,7 +49,13 @@ class ModelCalc:
                 }
             )
         else:
-            return self.process
+            self.result.update_fields(
+                {
+                    {risk_measure: self.process[idx]} for
+                    idx, risk_measure in enumerate(self.risk_measures)
+                }
+            )
+        return self.result
 
 
 class CalcResult:
