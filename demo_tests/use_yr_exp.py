@@ -1,5 +1,5 @@
 import time
-import yuanrong
+
 from fundamental.pricing_context import PricingContext
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.european_option import EuropeanOption
@@ -9,6 +9,7 @@ from turing_models.instruments.common import RiskMeasure
 
 USE_YR = False
 if USE_YR:
+    import yuanrong
     yuanrong.init(
         package_ref='sn:cn:yrk:12345678901234561234567890123456:function:0-turing-model:$latest',
         logging_level='INFO', cluster_server_addr='123.60.60.83'
