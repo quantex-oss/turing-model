@@ -386,5 +386,5 @@ class IRS(Instrument):
         s += to_string("Deposit Day Count Type", self.deposit_day_count_type)
         s += to_string("Fixed Freq Type Curve", self.fixed_freq_type_curve)
         s += to_string("Fixed Day Count Type Curve", self.fixed_day_count_type_curve)
-        s += to_string("Fixed Leg Type Curve", self.fixed_leg_type_curve)
+        s += to_string("Fixed Leg Type Curve", self.fixed_leg_type_curve, "")
         return s

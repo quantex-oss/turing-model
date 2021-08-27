@@ -42,5 +42,5 @@ class Stock(InstrumentBase):
         s += to_string("Asset Id", self.asset_id)
         s += to_string("Symbol", self.symbol)
         s += to_string("Name", self.name_cn)
-        s += to_string("Stock Price", self.stock_price_)
+        s += to_string("Stock Price", self.stock_price_, "")
         return s

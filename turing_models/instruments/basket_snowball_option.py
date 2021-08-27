@@ -255,5 +255,5 @@ class BasketSnowballOption(SnowballOption):
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Untriggered Rebate", self.untriggered_rebate)
-        s += to_string("Business Day Adjust Type", self.business_day_adjust_type)
+        s += to_string("Business Day Adjust Type", self.business_day_adjust_type, "")
         return s

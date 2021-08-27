@@ -14,7 +14,7 @@ from turing_models.utilities.solvers_1d import bisection, newton, newton_secant
 
 @vectorize([float64(float64, float64, float64, float64, float64, float64,
                     int64)], fastmath=True, cache=True)
-def bsValue(s, t, k, r, q, v, optionTypeValue):
+def bs_value(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
@@ -41,7 +41,7 @@ def bsValue(s, t, k, r, q, v, optionTypeValue):
 
 @vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
-def bsDelta(s, t, k, r, q, v, optionTypeValue):
+def bs_delta(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
@@ -66,7 +66,7 @@ def bsDelta(s, t, k, r, q, v, optionTypeValue):
 
 @vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
-def bsGamma(s, t, k, r, q, v, optionTypeValue):
+def bs_gamma(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
 
     k = np.maximum(k, gSmall)
@@ -84,7 +84,7 @@ def bsGamma(s, t, k, r, q, v, optionTypeValue):
 
 @vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
-def bsVega(s, t, k, r, q, v, optionTypeValue):
+def bs_vega(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
 
     k = np.maximum(k, gSmall)
@@ -103,7 +103,7 @@ def bsVega(s, t, k, r, q, v, optionTypeValue):
 
 @vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
-def bsTheta(s, t, k, r, q, v, optionTypeValue):
+def bs_theta(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
@@ -133,7 +133,7 @@ def bsTheta(s, t, k, r, q, v, optionTypeValue):
 
 @vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
-def bsRho(s, t, k, r, q, v, optionTypeValue):
+def bs_rho(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
@@ -161,7 +161,7 @@ def bsRho(s, t, k, r, q, v, optionTypeValue):
 
 @vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64)], fastmath=True, cache=True)
-def bsPsi(s, t, k, r, q, v, optionTypeValue):
+def bs_psi(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
@@ -197,7 +197,7 @@ def _f(sigma, args):
     price = args[5]
     optionTypeValue = int(args[6])
 
-    bsPrice = bsValue(s, t, k, r, q, sigma, optionTypeValue)
+    bsPrice = bs_value(s, t, k, r, q, sigma, optionTypeValue)
     obj = bsPrice - price
     return obj
 
@@ -210,7 +210,7 @@ def _fvega(sigma, args):
     r = args[3]
     q = args[4]
     optionTypeValue = int(args[6])
-    vega = bsVega(s, t, k, r, q, sigma, optionTypeValue)
+    vega = bs_vega(s, t, k, r, q, sigma, optionTypeValue)
     return vega
 
 ###############################################################################
@@ -385,7 +385,7 @@ def _fcall(si, *args):
     d1 = (np.log(si / k) + (b + v2 / 2.0) * t) / (v * np.sqrt(t))
 
     objFn = si - k
-    objFn = objFn - bsValue(si, t, k, r, q, v, +1)
+    objFn = objFn - bs_value(si, t, k, r, q, v, +1)
     objFn = objFn - (1.0 - np.exp(-q*t) * NVect(d1)) * si / q2
     return objFn
 
@@ -410,7 +410,7 @@ def _fput(si, *args):
     q1 = (1.0 - W - np.sqrt((W - 1.0)**2 + 4.0 * K)) / 2.0
     d1 = (np.log(si / k) + (b + v2 / 2.0) * t) / (v * np.sqrt(t))
     objFn = si - k
-    objFn = objFn - bsValue(si, t, k, r, q, v, -1)
+    objFn = objFn - bs_value(si, t, k, r, q, v, -1)
     objFn = objFn - (1.0 - np.exp(-q*t) * NVect(-d1)) * si / q1
     return objFn
 
@@ -428,7 +428,7 @@ def bawValue(s, t, k, r, q, v, phi):
     if phi == 1:
 
         if b >= r:
-            return bsValue(s, t, k, r, q, v, +1)
+            return bs_value(s, t, k, r, q, v, +1)
 
         argtuple = (t, k, r, q, v)
 
@@ -446,7 +446,7 @@ def bawValue(s, t, k, r, q, v, phi):
         A2 = (sstar / q2) * (1.0 - np.exp(-q * t) * NVect(d1))
 
         if s < sstar:
-            return bsValue(s, t, k, r, q, v, +1) + A2 * ((s/sstar)**q2)
+            return bs_value(s, t, k, r, q, v, +1) + A2 * ((s/sstar)**q2)
         else:
             return s - k
 
@@ -470,7 +470,7 @@ def bawValue(s, t, k, r, q, v, phi):
         a1 = -(sstar / q1) * (1 - np.exp(-q * t) * NVect(-d1))
 
         if s > sstar:
-            return bsValue(s, t, k, r, q, v, -1) + a1 * ((s/sstar)**q1)
+            return bs_value(s, t, k, r, q, v, -1) + a1 * ((s/sstar)**q1)
         else:
             return k - s
 

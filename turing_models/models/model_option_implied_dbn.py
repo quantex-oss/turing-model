@@ -6,7 +6,7 @@ from numba import njit, float64
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.error import TuringError
 
-from .model_black_scholes_analytical import bsValue
+from .model_black_scholes_analytical import bs_value
 
 ###############################################################################
 # Analytical Black Scholes model implementation and approximations
@@ -36,7 +36,7 @@ def optionImpliedDbn(s, t, r, q, strikes, sigmas):
     for ik in range(0, numSteps):
         strike = strikes[ik]        
         sigma = sigmas[ik]
-        v = bsValue(s, t, strike, r, q, sigma,
+        v = bs_value(s, t, strike, r, q, sigma,
                     TuringOptionTypes.EUROPEAN_CALL.value)
         values[ik] = v
         

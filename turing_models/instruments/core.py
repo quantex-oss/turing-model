@@ -88,6 +88,12 @@ class InstrumentBase:
             self._set_by_dict(expand_dict)
         self.set_param()
 
+    def type(self):
+        pass
+
+    def __repr__(self):
+        return self.__class__.__name__
+
 
 class CurveAdjust:
 

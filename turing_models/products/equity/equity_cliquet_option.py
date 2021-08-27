@@ -14,7 +14,7 @@ from turing_models.utilities.schedule import TuringSchedule
 from turing_models.products.equity.equity_option import TuringEquityOption
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurve
 
-from turing_models.models.model_black_scholes import bsValue, TuringModelBlackScholes
+from turing_models.models.model_black_scholes import bs_value, TuringModelBlackScholes
 from turing_models.models.model import TuringModel
 
 ###############################################################################
@@ -115,10 +115,10 @@ class TuringEquityCliquetOption(TuringEquityOption):
                     q = -np.log(dqMat/dq)/tau
 
                     if self._optionType == CALL:
-                        v_fwd_opt = s * dq * bsValue(1.0, tau, 1.0, r, q, v, CALL.value)
+                        v_fwd_opt = s * dq * bs_value(1.0, tau, 1.0, r, q, v, CALL.value)
                         v_cliquet += v_fwd_opt
                     elif self._optionType == PUT:
-                        v_fwd_opt = s * dq * bsValue(1.0, tau, 1.0, r, q, v, PUT.value)
+                        v_fwd_opt = s * dq * bs_value(1.0, tau, 1.0, r, q, v, PUT.value)
                         v_cliquet += v_fwd_opt
                     else:
                         raise TuringError("Unknown option type")

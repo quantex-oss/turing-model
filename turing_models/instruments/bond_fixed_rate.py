@@ -396,5 +396,5 @@ class BondFixedRate(Bond):
         s = super().__repr__()
         s += to_string("Coupon", self.coupon)
         s += to_string("Curve Code", self.curve_code)
-        s += to_string("YTM", self.__ytm__)
+        s += to_string("YTM", self.__ytm__, "")
         return s
