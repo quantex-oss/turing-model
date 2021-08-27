@@ -4,26 +4,27 @@ from typing import Union, List, Iterable
 
 from loguru import logger
 
-from fundamental import ctx
+from fundamental.base import ctx
 from fundamental.base import Context
 from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.instruments.common import RiskMeasure
 from turing_models.utilities import TuringFrequencyTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
+from .parallel_proxy import ParallelCalcProxy
 
 
 class PriceableImpl:
     def __init__(self):
         self.ctx: Context = ctx
 
-    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], yr=False, option_all=None):
+    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type=None, option_all=None):
         result: Union[float, List] = []
 
         try:
-            if yr:
-                import yuanrong
-                return yuanrong.ship()(self.yr_calc.__func__).ship(self, risk_measure=risk_measure)
+            if parallel_type:
+                return ParallelCalcProxy(self, parallel_type, risk_measure).calc()
+
             if not isinstance(risk_measure, Iterable):
                 result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(
                     option_all)
@@ -39,18 +40,6 @@ class PriceableImpl:
         except Exception as e:
             logger.error(str(traceback.format_exc()))
             return ""
-
-    def yr_calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], option_all=None):
-        result: Union[float, List] = []
-        name: list = []
-        try:
-            name = [getattr(self, "asset_id", None), risk_measure.value]
-            result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(
-                option_all)
-            return name, result
-        except Exception as e:
-            logger.error(str(traceback.format_exc()))
-            return name, ""
 
     def _calc(self, value):
         """二次计算,默认为直接返回当前值"""

@@ -221,9 +221,9 @@ class EqOption(Instrument, InstrumentBase):
         s += to_string("Strike Price", self.strike_price)
         s += to_string("Multiplier", self.multiplier)
         s += to_string("Annualized Flag", self.annualized_flag)
-        s += to_string("Value Date", self.value_date_)
+        # s += to_string("Value Date", self.value_date_)
         s += to_string("Stock Price", self.stock_price_)
         s += to_string("Volatility", self.volatility_)
-        s += to_string("Interest Rate", self.r)
-        s += to_string("Dividend Yield", self.q)
+        # s += to_string("Interest Rate", self.r)
+        # s += to_string("Dividend Yield", self.q)
         return s

@@ -133,10 +133,10 @@ class Bond(Instrument, InstrumentBase):
             traceback.print_exc()
             return None
 
-    def fetch_quotes(self, ids):
+    def fetch_quotes(self, gurl=None, _ids=None):
         """根据asset_ids的集合为参数,取行情"""
         try:
-            res = Turing.get_bond_markets(_ids=ids)
+            res = Turing.get_bond_markets(gurl=gurl, _ids=_ids)
             return res
         except Exception as e:
             traceback.print_exc()
@@ -173,26 +173,26 @@ class Bond(Instrument, InstrumentBase):
                         return ytm_
         return None
 
-    def set_curve(self, gurl):
-        curve = BondApi.fetch_yield_curve(gurl, self.curve_code)
+    def set_curve(self, gurl=None):
+        curve = BondApi.fetch_yield_curve(gurl=gurl, bond_curve_code=getattr(self, 'curve_code'))
         if not curve:
             raise FastError(code=10020,
                             msg="参数不全, yield_curve api return null",
                             data=None)
         for code in to_snake(curve):
-            if code.get("curve_code") == self.curve_code:
+            if code.get("curve_code") == getattr(self, 'curve_code'):
                 for cu in code.get('curve_data'):
                     self.zero_dates.append(cu.get('term'))
                     self.zero_rates.append(cu.get('spot_rate'))
 
-    def set_ytm(self, gurl):
-        market_bond = BondApi.fetch_quotes(gurl, self.asset_id)
+    def set_ytm(self, gurl=None):
+        market_bond = BondApi.fetch_quotes(gurl=gurl, asset_id=self.asset_id)
         if market_bond:
             logger.debug(f"market_bond:{market_bond}")
             for quote in market_bond:
                 if quote.get("asset_id") == self.asset_id:
                     if quote.get("ytm", None):
-                        self.ytm = quote.get("ytm")
+                        setattr(self, 'ytm', quote.get("ytm"))
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)

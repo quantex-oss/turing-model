@@ -183,7 +183,7 @@ class KnockOutOption(EqOption):
 
         return payoff.mean() * np.exp(- r * texp) * notional
 
-    def option_resolve(self):
+    def _resolve(self):
         if self.asset_id and not self.asset_id.startswith("OPTION_"):
             temp_dict = OptionApi.fetch_Option(asset_id=self.asset_id)
             for k, v in temp_dict.items():
@@ -206,7 +206,7 @@ class KnockOutOption(EqOption):
                 setattr(self, "zero_dates", zero_dates)
                 setattr(self, "zero_rates", zero_rates)
             if not self.volatility_:
-                get_volatility = OptionApi.get_volatility(self.value_date_, self.underlier)
+                get_volatility = OptionApi.get_volatility(value_date_=self.value_date_, underlier=self.underlier)
                 if get_volatility:
                     setattr(self, 'volatility', get_volatility)
         if not self.product_type:

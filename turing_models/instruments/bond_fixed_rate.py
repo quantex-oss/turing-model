@@ -5,13 +5,14 @@ import numpy as np
 from scipy import optimize
 
 from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
+from fundamental.turing_db.bond_data import BondApi
 from turing_models.instruments.bond import Bond, dy
 from turing_models.instruments.core import CurveAdjust
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
+from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.helper_functions import to_string
-from turing_models.utilities.error import TuringError
 
 
 def _f(y, *args):
@@ -391,9 +392,19 @@ class BondFixedRate(Bond):
 
         return self._accrued_interest
 
+    def _resolve(self):
+        if self.asset_id and not self.asset_id.startswith("Bond_"):  # Bond_ 为自定义时自动生成
+            bond = BondApi.fetch_one_bond(asset_id=self.asset_id)
+            for k, v in bond.items():
+                if not getattr(self, k, None) and v:
+                    setattr(self, k, v)
+        self.set_ytm()
+        self.set_curve()
+        self.set_param()
+
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Coupon", self.coupon)
         s += to_string("Curve Code", self.curve_code)
-        s += to_string("YTM", self.__ytm__)
+        # s += to_string("YTM", self.__ytm__)
         return s
