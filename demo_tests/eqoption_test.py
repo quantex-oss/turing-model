@@ -98,7 +98,7 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 knockout_option = KnockOutOption(asset_id='OPTIONCN00000001',
                                  underlier='STOCKCN00000001',
                                  option_type=TuringOptionType.CALL,
-                                 start_date='20210603',
+                                 start_date='2021-6-3',
                                  expiry=TuringDate(2021, 9, 3),
                                  strike_price=5.3,
                                  participation_rate=1.0,
