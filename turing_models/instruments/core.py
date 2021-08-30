@@ -4,7 +4,7 @@ from typing import Union, List, Iterable
 
 from loguru import logger
 
-from fundamental import ctx
+from fundamental import ctx, PricingContext
 from fundamental.base import Context
 from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.instruments.common import RiskMeasure
@@ -90,6 +90,58 @@ class InstrumentBase:
 
     def type(self):
         pass
+
+    def resolve(self, expand_dict=None):
+        if not expand_dict:
+            """手动resolve,自动补全未传入参数"""
+            class_name = []
+            class_name.append(self.__class__.__name__)
+            [class_name.append(x.__name__) for x in self.__class__.__bases__]
+            logger.debug(class_name)
+            if "KnockOutOption" in class_name:
+                self._resolve()
+            elif "Stock" in class_name:
+                self._resolve()
+            else:
+                raise Exception("暂不支持此类型的Resolve")
+        else:
+            self._set_by_dict(expand_dict)
+        self.set_param()
+
+    def api_calc(self, riskMeasure: list):
+        """api calc 结果集"""
+        msg = ''
+        response_data = []
+        if riskMeasure:
+            for risk_fun in riskMeasure:
+                try:
+                    result = getattr(self, risk_fun)()
+                except Exception as e:
+                    traceback.print_exc()
+                    msg += f'{risk_fun} error: {str(e)};'
+                    result = ''
+                    msg += f'调用{risk_fun}出错;'
+                response = {}
+                response['riskMeasure'] = risk_fun
+                response['value'] = result
+                response_data.append(response)
+        return response_data
+
+    def main(self, assetId: str = None, pricingContext=None, riskMeasure=None):
+        """api默认入口"""
+        scenario = PricingContext()
+        logger.debug(f"assetId:{assetId}")
+        if not assetId.startswith("OPTION") and not assetId.startswith("BOND"):
+            raise Exception("不支持的asset_id")
+        setattr(self, 'asset_id', assetId)
+        getattr(self, '_resolve')()
+
+        if pricingContext:
+            scenario.resolve(pricingContext)
+            with scenario:
+                return self.api_calc(riskMeasure)
+        else:
+            return self.api_calc(riskMeasure)
 
     def __repr__(self):
         return self.__class__.__name__
