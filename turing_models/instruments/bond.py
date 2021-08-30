@@ -5,12 +5,11 @@ from typing import Union
 
 from loguru import logger
 
-from fundamental.turing_db.base.core import InstrumentBase
 from fundamental.turing_db.bond_data import BondApi
 from fundamental.turing_db.data import Turing
 from fundamental.turing_db.err import FastError
 from fundamental.turing_db.utils import to_snake
-from turing_models.instruments.core import Instrument
+from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
@@ -25,7 +24,7 @@ dy = 0.0001
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class Bond(Instrument, InstrumentBase):
+class Bond(InstrumentBase):
     asset_id: str = None
     bond_symbol: str = None
     exchange_code: str = None

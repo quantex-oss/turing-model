@@ -1,14 +1,13 @@
 from dataclasses import dataclass
 from typing import Union
 
-from fundamental.turing_db.base.core import InstrumentBase
-from turing_models.instruments.core import Instrument
+from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.helper_functions import to_string
 from turing_models.instruments.common import Currency
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class Stock(Instrument, InstrumentBase):
+class Stock(InstrumentBase):
     asset_id: str = None
     quantity: float = None  # 股数
     asset_type: str = None
@@ -43,5 +42,5 @@ class Stock(Instrument, InstrumentBase):
         s += to_string("Asset Id", self.asset_id)
         s += to_string("Symbol", self.symbol)
         s += to_string("Name", self.name_cn)
-        s += to_string("Stock Price", self.stock_price_)
+        s += to_string("Stock Price", self.stock_price_, "")
         return s

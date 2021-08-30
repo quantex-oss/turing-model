@@ -267,5 +267,5 @@ class SnowballOption(EqOption):
         s += to_string("Knock In Price", self.knock_in_price)
         s += to_string("Knock In Type", self.knock_in_type)
         s += to_string("Knock In Strike1", self.knock_in_strike1)
-        s += to_string("Knock In Strike2", self.knock_in_strike2)
+        s += to_string("Knock In Strike2", self.knock_in_strike2, "")
         return s

@@ -216,5 +216,5 @@ class KnockOutOption(EqOption):
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Barrier", self.barrier)
-        s += to_string("Rebate", self.rebate)
+        s += to_string("Rebate", self.rebate, "")
         return s

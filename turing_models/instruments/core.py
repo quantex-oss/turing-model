@@ -14,7 +14,8 @@ from turing_models.utilities.error import TuringError
 from .parallel_proxy import ParallelCalcProxy
 
 
-class PriceableImpl:
+class InstrumentBase:
+
     def __init__(self):
         self.ctx: Context = ctx
 
@@ -29,13 +30,15 @@ class PriceableImpl:
                 result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(
                     option_all)
                 result = self._calc(result)
-                self.__row__(risk_measure.value, round(result, 2) if result else 0)
+                self.__row__(risk_measure.value, round(
+                    result, 2) if result else 0)
                 return result
             for risk in risk_measure:
                 res = getattr(self, risk.value)()
                 res = self._calc(res)
                 result.append(res)
-                self.__row__(risk.value, round(res, 2) if res and not isinstance(res, Iterable) else 0)
+                self.__row__(risk.value, round(res, 2)
+                             if res and not isinstance(res, Iterable) else 0)
             return result
         except Exception as e:
             logger.error(str(traceback.format_exc()))
@@ -52,10 +55,33 @@ class PriceableImpl:
                 if value.get('asset_id') == self.tradable.asset_id if self.tradable else "":
                     value[ident] = _value
 
+    def _set_by_dict(self, tmp_dict):
+        for k, v in tmp_dict.items():
+            if v:
+                setattr(self, k, v)
 
-class Instrument(PriceableImpl):
-    def __init__(self):
-        super().__init__()
+    def resolve(self, expand_dict=None):
+        if not expand_dict:
+            """手动resolve,自动补全未传入参数"""
+            class_name = []
+            class_name.append(self.__class__.__name__)
+            [class_name.append(x.__name__) for x in self.__class__.__bases__]
+            logger.debug(class_name)
+            if "KnockOutOption" in class_name:
+                self.option_resolve()
+            elif "Stock" in class_name:
+                self.stock_resolve()
+            else:
+                raise Exception("暂不支持此类型的Resolve")
+        else:
+            self._set_by_dict(expand_dict)
+        self.set_param()
+
+    def type(self):
+        pass
+
+    def __repr__(self):
+        return self.__class__.__name__
 
 
 class CurveAdjust:
@@ -107,18 +133,21 @@ class CurveAdjust:
         dates = self.today.addYears(self.dates)
         curve = TuringDiscountCurveZeros(self.today, dates, self.rates)
         point_date = self.today.addYears(self.pivot_point)
-        self.pivot_rate = curve.zeroRate(point_date, freqType=TuringFrequencyTypes.ANNUAL)
+        self.pivot_rate = curve.zeroRate(
+            point_date, freqType=TuringFrequencyTypes.ANNUAL)
 
         if self.tenor_start:
             start_date = self.today.addYears(self.tenor_start)
-            self.start_rate = curve.zeroRate(start_date, freqType=TuringFrequencyTypes.ANNUAL)
+            self.start_rate = curve.zeroRate(
+                start_date, freqType=TuringFrequencyTypes.ANNUAL)
         else:
             self.tenor_start = self.dates[0]
             self.start_rate = self.rates[0]
 
         if self.tenor_end:
             end_date = self.today.addYears(self.tenor_end)
-            self.end_rate = curve.zeroRate(end_date, freqType=TuringFrequencyTypes.ANNUAL)
+            self.end_rate = curve.zeroRate(
+                end_date, freqType=TuringFrequencyTypes.ANNUAL)
         else:
             self.tenor_end = self.dates[-1]
             self.end_rate = self.rates[-1]
@@ -160,9 +189,11 @@ class CurveAdjust:
             if i >= self.start_index and i <= self.end_index:
                 self.rates[i] = (i - self.pivot_index) * dr + rates_copy[i]
             elif i < self.start_index:
-                self.rates[i] = (self.start_index - self.pivot_index) * dr + rates_copy[i]
+                self.rates[i] = (self.start_index -
+                                 self.pivot_index) * dr + rates_copy[i]
             elif i > self.end_index:
-                self.rates[i] = (self.end_index - self.pivot_index) * dr + rates_copy[i]
+                self.rates[i] = (self.end_index -
+                                 self.pivot_index) * dr + rates_copy[i]
 
     def get_dates_result(self):
         return self.dates

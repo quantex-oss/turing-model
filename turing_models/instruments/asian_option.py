@@ -147,12 +147,13 @@ class AsianOption(EqOption):
         if b == 0:
             m1 = 1.0
             m2 = 2.0 * np.exp(sigma2 * texp) - 2.0 * \
-                 np.exp(sigma2 * t0) * (1.0 + sigma2 * dt)
+                np.exp(sigma2 * t0) * (1.0 + sigma2 * dt)
             m2 = m2 / sigma2 / sigma2 / dt / dt
         else:
             m1 = s0 * (np.exp(b * texp) - np.exp(b * t0)) / (b * dt)
             m2 = np.exp(a2 * texp) / a1 / a2 / dt / dt + \
-                 (np.exp(a2 * t0) / b / dt / dt) * (1.0 / a2 - np.exp(b * dt) / a1)
+                (np.exp(a2 * t0) / b / dt / dt) * \
+                (1.0 / a2 - np.exp(b * dt) / a1)
             m2 = 2.0 * m2 * s0 * s0
 
         f0 = m1
@@ -216,7 +217,8 @@ class AsianOption(EqOption):
         ea2 = ea2 * (w + 2.0 / (1.0 - np.exp((b + sigma2) * h)) * (u - w))
         sigmaA = np.sqrt((np.log(ea2) - 2.0 * np.log(fa)) / texp)
 
-        d1 = (np.log(fa / k) + sigmaA * sigmaA * texp / 2.0) / (sigmaA * np.sqrt(texp))
+        d1 = (np.log(fa / k) + sigmaA * sigmaA *
+              texp / 2.0) / (sigmaA * np.sqrt(texp))
         d2 = d1 - sigmaA * np.sqrt(texp)
 
         if self.option_type_ == TuringOptionTypes.ASIAN_CALL:
@@ -230,5 +232,5 @@ class AsianOption(EqOption):
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Start Averaging Date", self.start_averaging_date)
-        s += to_string("Accrued Average", self.accrued_average)
+        s += to_string("Accrued Average", self.accrued_average, "")
         return s
