@@ -7,7 +7,6 @@ from loguru import logger
 
 from fundamental.market.curves import TuringDiscountCurveFlat, \
      TuringDiscountCurveZeros
-from fundamental.turing_db.base.core import InstrumentBase
 from fundamental.turing_db.utils import to_snake
 
 from turing_models.instruments.common import greek, bump, Currency
@@ -22,7 +21,7 @@ from turing_models.utilities.helper_functions import convert_argument_type
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class EqOption(Instrument, InstrumentBase):
+class EqOption(Instrument):
 
     asset_id: str = None
     underlier: Union[str, List[str]] = None
@@ -223,9 +222,9 @@ class EqOption(Instrument, InstrumentBase):
         s += to_string("Strike Price", self.strike_price)
         s += to_string("Multiplier", self.multiplier)
         s += to_string("Annualized Flag", self.annualized_flag)
-        s += to_string("Value Date", self.value_date_)
-        s += to_string("Stock Price", self.stock_price_)
-        s += to_string("Volatility", self.volatility_)
-        s += to_string("Interest Rate", self.r)
-        s += to_string("Dividend Yield", self.q)
+        # s += to_string("Value Date", self.value_date_)
+        # s += to_string("Stock Price", self.stock_price_)
+        # s += to_string("Volatility", self.volatility_)
+        # s += to_string("Interest Rate", self.r)
+        # s += to_string("Dividend Yield", self.q)
         return s
