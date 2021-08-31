@@ -1,4 +1,5 @@
 from enum import Enum
+from abc import ABCMeta, abstractmethod
 
 
 bump = 1e-4
@@ -264,3 +265,34 @@ class AssetType(Enum):
 
     def __repr__(self):
         return self.value
+
+
+class Eq(metaclass=ABCMeta):
+
+    @abstractmethod
+    def price(self):
+        pass
+
+    @abstractmethod
+    def eq_delta(self):
+        pass
+
+    @abstractmethod
+    def eq_gamma(self):
+        pass
+
+    @abstractmethod
+    def eq_vega(self):
+        pass
+
+    @abstractmethod
+    def eq_theta(self):
+        pass
+
+    @abstractmethod
+    def eq_rho(self):
+        pass
+
+    @abstractmethod
+    def eq_rho_q(self):
+        pass

@@ -1,6 +1,6 @@
 from fundamental.pricing_context import CurveScenario
-from turing_models.market.constants import dates, rates
 
+from turing_models.market.constants import dates, rates
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes

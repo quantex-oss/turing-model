@@ -22,14 +22,10 @@ class Stock(InstrumentBase):
 
     def __post_init__(self):
         super().__init__()
-        self.set_param()
-
-    def set_param(self):
-        self._stock_price = self.stock_price
 
     @property
     def stock_price_(self) -> float:
-        return getattr(self.ctx, f"spot_{self.asset_id}") or self._stock_price
+        return getattr(self.ctx, f"spot_{self.asset_id}") or self.stock_price
 
     def price(self):
         return self.stock_price_

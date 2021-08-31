@@ -14,7 +14,7 @@ from turing_models.utilities.solvers_1d import bisection, newton, newton_secant
 
 @vectorize([float64(float64, float64, float64, float64, float64, float64,
                     int64, float64)], fastmath=True, cache=True)
-def bs_value(s, t, k, r, q, v, optionTypeValue, tdel=None):
+def bs_value(s, t, k, r, q, v, optionTypeValue, tdel=False):
     ''' Price a derivative using Black-Scholes model. '''
 
     if not tdel:
@@ -44,7 +44,7 @@ def bs_value(s, t, k, r, q, v, optionTypeValue, tdel=None):
 
 @vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64, float64)], fastmath=True, cache=True)
-def bs_delta(s, t, k, r, q, v, optionTypeValue, tdel=None):
+def bs_delta(s, t, k, r, q, v, optionTypeValue, tdel=False):
     ''' Price a derivative using Black-Scholes model. '''
     if not tdel:
         tdel = t
@@ -72,7 +72,7 @@ def bs_delta(s, t, k, r, q, v, optionTypeValue, tdel=None):
 
 @vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64, float64)], fastmath=True, cache=True)
-def bs_gamma(s, t, k, r, q, v, optionTypeValue, tdel=None):
+def bs_gamma(s, t, k, r, q, v, optionTypeValue, tdel=False):
     ''' Price a derivative using Black-Scholes model. '''
     if not tdel:
         tdel = t
@@ -93,7 +93,7 @@ def bs_gamma(s, t, k, r, q, v, optionTypeValue, tdel=None):
 
 @vectorize([float64(float64, float64, float64, float64,
                     float64, float64, int64, float64)], fastmath=True, cache=True)
-def bs_vega(s, t, k, r, q, v, optionTypeValue, tdel=None):
+def bs_vega(s, t, k, r, q, v, optionTypeValue, tdel=False):
     ''' Price a derivative using Black-Scholes model. '''
     if not tdel:
         tdel = t

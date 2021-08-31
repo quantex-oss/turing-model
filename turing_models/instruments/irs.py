@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from typing import Union, List
 
 import numpy as np
+
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gSmall
 from turing_models.utilities.day_count import TuringDayCountTypes
@@ -17,7 +17,7 @@ from turing_models.products.rates.fixed_leg import TuringFixedLeg
 from turing_models.products.rates.float_leg import TuringFloatLeg
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
-from turing_models.instruments.core import Instrument
+from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
 
@@ -89,16 +89,6 @@ def create_ibor_single_curve(value_date: TuringDate,
                              fixed_freq_type_curve: TuringFrequencyTypes,
                              fixed_day_count_type_curve: TuringDayCountTypes,
                              dx: Union[int, float]):
-    print(value_date,
-          deposit_term,
-          deposit_rate,
-          deposit_day_count_type,
-          swap_curve_dates,
-          fixed_leg_type_curve,
-          swap_curve_rates,
-          fixed_freq_type_curve,
-          fixed_day_count_type_curve,
-          dx)
 
     depos = []
     fras = []
@@ -129,7 +119,7 @@ def create_ibor_single_curve(value_date: TuringDate,
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class IRS(Instrument):
+class IRS(InstrumentBase):
     asset_id: str = None
     irs_type: str = None
     effective_date: TuringDate = None
@@ -142,7 +132,8 @@ class IRS(Instrument):
     float_spread: float = 0.0
     float_freq_type: Union[str, TuringFrequencyTypes] = '按季付息'
     float_day_count_type: Union[str, TuringDayCountTypes] = '30/360'
-    value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))  # 估值日期
+    value_date: TuringDate = TuringDate(
+        *(datetime.date.today().timetuple()[:3]))  # 估值日期
     swap_curve_code: str = None
     index_curve_code: str = None
     swap_curve_dates: list = None
@@ -157,8 +148,8 @@ class IRS(Instrument):
     fixed_day_count_type_curve: Union[str, TuringDayCountTypes] = None
     fixed_leg_type_curve: Union[str, TuringSwapTypes] = None
     reset_freq_type: Union[str, TuringFrequencyTypes] = None
-    __index_curve = None
-    __libor_curve = None
+    _index_curve = None
+    _libor_curve = None
     date_gen_rule_type: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD
 
     def __post_init__(self):
@@ -168,16 +159,14 @@ class IRS(Instrument):
         self.principal = 0.0
         self.payment_lag = 0
         self.calendar = TuringCalendar(self.calendar_type)
-        self.set_param()
-
-    def set_param(self):
-        self._value_date = self.value_date
         if self.termination_date:
             self.fixed_leg_type_ = modify_leg_type(self.fixed_leg_type)
             self.fixed_freq_type_ = modify_freq_type(self.fixed_freq_type)
             self.float_freq_type_ = modify_freq_type(self.float_freq_type)
-            self.fixed_day_count_type_ = modify_day_count_type(self.fixed_day_count_type)
-            self.float_day_count_type_ = modify_day_count_type(self.float_day_count_type)
+            self.fixed_day_count_type_ = modify_day_count_type(
+                self.fixed_day_count_type)
+            self.float_day_count_type_ = modify_day_count_type(
+                self.float_day_count_type)
             self.reset_freq_type_ = modify_freq_type(self.reset_freq_type)
             self.maturity_date = self.calendar.adjust(self.termination_date,
                                                       self.bus_day_adjust_type)
@@ -209,10 +198,14 @@ class IRS(Instrument):
                                             self.date_gen_rule_type)
 
         if self.deposit_day_count_type:
-            self.deposit_day_count_type_ = modify_day_count_type(self.deposit_day_count_type)
-            self.fixed_freq_type_curve_ = modify_freq_type(self.fixed_freq_type_curve)
-            self.fixed_day_count_type_curve_ = modify_day_count_type(self.fixed_day_count_type_curve)
-            self.fixed_leg_type_curve_ = modify_leg_type(self.fixed_leg_type_curve)
+            self.deposit_day_count_type_ = modify_day_count_type(
+                self.deposit_day_count_type)
+            self.fixed_freq_type_curve_ = modify_freq_type(
+                self.fixed_freq_type_curve)
+            self.fixed_day_count_type_curve_ = modify_day_count_type(
+                self.fixed_day_count_type_curve)
+            self.fixed_leg_type_curve_ = modify_leg_type(
+                self.fixed_leg_type_curve)
 
             self.fixed_leg = TuringFixedLeg(self.effective_date,
                                             self.termination_date,
@@ -243,7 +236,7 @@ class IRS(Instrument):
 
     @property
     def value_date_(self):
-        return self.ctx.pricing_date or self._value_date
+        return self.ctx.pricing_date or self.value_date
 
     @property
     def swap_curve_dates_(self):
@@ -260,8 +253,8 @@ class IRS(Instrument):
 
     @property
     def index_curve(self):
-        if self.__index_curve:
-            return self.__index_curve
+        if self._index_curve:
+            return self._index_curve
         elif self.index_curve_dates and self.index_curve_rates:
             return TuringDiscountCurveZeros(
                 self.value_date_, self.index_curve_dates_, self.index_curve_rates)
@@ -270,15 +263,15 @@ class IRS(Instrument):
 
     @index_curve.setter
     def index_curve(self, value: TuringDiscountCurve):
-        self.__index_curve = value
+        self._index_curve = value
 
     @property
     def libor_curve(self):
-        return self.__libor_curve or self.build_ibor_single_curve(0)
+        return self._libor_curve or self.build_ibor_single_curve(0)
 
     @libor_curve.setter
     def libor_curve(self, value):
-        self.__libor_curve = value
+        self._libor_curve = value
 
     def build_ibor_single_curve(self, dx):
         return create_ibor_single_curve(self.value_date_,
@@ -385,6 +378,7 @@ class IRS(Instrument):
         s += to_string("Deposit Rate", self.deposit_rate)
         s += to_string("Deposit Day Count Type", self.deposit_day_count_type)
         s += to_string("Fixed Freq Type Curve", self.fixed_freq_type_curve)
-        s += to_string("Fixed Day Count Type Curve", self.fixed_day_count_type_curve)
+        s += to_string("Fixed Day Count Type Curve",
+                       self.fixed_day_count_type_curve)
         s += to_string("Fixed Leg Type Curve", self.fixed_leg_type_curve, "")
         return s

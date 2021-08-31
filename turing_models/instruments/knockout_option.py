@@ -102,25 +102,27 @@ class KnockOutOption(EqOption):
         if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
             if b > k:
                 c_ui = s0 * dq * N(x1) - k * df * N(x1 - sigma_root_t) \
-                       - s0 * dq * pow(h_over_s, 2.0 * l) * (N(-y) - N(-y1)) \
-                       + k * df * pow(h_over_s, 2.0 * l - 2.0) * (N(-y + sigma_root_t) - N(-y1 + sigma_root_t))
+                    - s0 * dq * pow(h_over_s, 2.0 * l) * (N(-y) - N(-y1)) \
+                    + k * df * pow(h_over_s, 2.0 * l - 2.0) * \
+                    (N(-y + sigma_root_t) - N(-y1 + sigma_root_t))
                 price = participation_rate * (c - c_ui) + rebate * whole_term ** flag * s0 * df * (
-                        1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
+                    1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
             else:
                 price = rebate * whole_term ** flag * s0 * df * (
-                        1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
+                    1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
 
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
             if b >= k:
                 price = rebate * whole_term ** flag * s0 * df * (
-                        1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
+                    1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
             else:
                 p_di = -s0 * dq * N(-x1) \
-                       + k * df * N(-x1 + sigma_root_t) \
-                       + s0 * dq * pow(h_over_s, 2.0 * l) * (N(y) - N(y1)) \
-                       - k * df * pow(h_over_s, 2.0 * l - 2.0) * (N(y - sigma_root_t) - N(y1 - sigma_root_t))
+                    + k * df * N(-x1 + sigma_root_t) \
+                    + s0 * dq * pow(h_over_s, 2.0 * l) * (N(y) - N(y1)) \
+                       - k * df * pow(h_over_s, 2.0 * l - 2.0) * \
+                    (N(y - sigma_root_t) - N(y1 - sigma_root_t))
                 price = participation_rate * (p - p_di) + rebate * whole_term ** flag * s0 * df * (
-                        1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
+                    1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
         else:
             raise TuringError("Unknown barrier option type." +
                               str(knock_out_type))
@@ -174,12 +176,12 @@ class KnockOutOption(EqOption):
 
         if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
             payoff = np.maximum((Sall[:, -1] - k) / s0, 0.0) * \
-                     participation_rate * (ones - barrier_crossed_from_below) + \
-                     rebate * texp ** flag * (ones * barrier_crossed_from_below)
+                participation_rate * (ones - barrier_crossed_from_below) + \
+                rebate * texp ** flag * (ones * barrier_crossed_from_below)
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
             payoff = np.maximum((k - Sall[:, -1]) / s0, 0.0) * \
-                     participation_rate * (ones - barrier_crossed_from_above) + \
-                     rebate * texp ** flag * (ones * barrier_crossed_from_above)
+                participation_rate * (ones - barrier_crossed_from_above) + \
+                rebate * texp ** flag * (ones * barrier_crossed_from_above)
 
         return payoff.mean() * np.exp(- r * texp) * notional
 
@@ -194,19 +196,22 @@ class KnockOutOption(EqOption):
                     and self.initial_spot \
                     and self.participation_rate \
                     and self.multiplier:
-                self.number_of_options = (self.notional / self.initial_spot) / self.participation_rate / self.multiplier
+                self.number_of_options = (
+                    self.notional / self.initial_spot) / self.participation_rate / self.multiplier
             else:
                 self.number_of_options = 1.0
         if self.underlier:
             if not self.stock_price_:
-                setattr(self, "stock_price", OptionApi.stock_price(underlier=self.underlier))
+                setattr(self, "stock_price", OptionApi.stock_price(
+                    underlier=self.underlier))
         if self.value_date_ and self.underlier:
             if not self.interest_rate_ and not self.zero_dates and not self.zero_rates:
                 zero_dates, zero_rates = OptionApi.fill_r()
                 setattr(self, "zero_dates", zero_dates)
                 setattr(self, "zero_rates", zero_rates)
             if not self.volatility_:
-                get_volatility = OptionApi.get_volatility(value_date_=self.value_date_, underlier=self.underlier)
+                get_volatility = OptionApi.get_volatility(
+                    value_date_=self.value_date_, underlier=self.underlier)
                 if get_volatility:
                     setattr(self, 'volatility', get_volatility)
         if not self.product_type:
@@ -216,5 +221,5 @@ class KnockOutOption(EqOption):
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Barrier", self.barrier)
-        s += to_string("Rebate", self.rebate, "")
+        s += to_string("Rebate", self.rebate)
         return s

@@ -4,21 +4,21 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 from numba import njit
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.mathematics import nprime
-from turing_models.utilities.global_variables import gDaysInYear, gSmall
+from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.products.fx.fx_mkt_conventions import TuringFXDeltaMethod
-from turing_models.models.model_crr_tree import crrTreeValAvg
 from turing_models.models.model_sabr import volFunctionSABR
 from turing_models.models.model_sabr import TuringModelSABR
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
-from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
+from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.instruments.common import greek
 
 # Todo: vvprice, volquote
 
@@ -200,10 +200,10 @@ class FXVanillaOption():
             v = self.model._volatility
         elif isinstance(self.model, TuringModelSABR):
             F0T = self.spot_fx_rate * np.exp((self.rd - self.rf) * self.texp)
-            v = volFunctionSABR(model.alpha,
-                                model.beta,
-                                model.rho,
-                                model.nu,
+            v = volFunctionSABR(self.model.alpha,
+                                self.model.beta,
+                                self.model.rho,
+                                self.model.nu,
                                 F0T,
                                 self.strike_fx_rate,
                                 self.texp)

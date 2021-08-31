@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 import numpy as np
+
 from turing_models.utilities.mathematics import N
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
@@ -40,8 +41,10 @@ class AsianOption(EqOption):
             return TuringAsianOptionValuationMethods.GEOMETRIC
         elif self.valuation_method == 'turnbull_wakeman':
             return TuringAsianOptionValuationMethods.TURNBULL_WAKEMAN
-        else:
+        elif self.valuation_method == 'curran':
             return TuringAsianOptionValuationMethods.CURRAN
+        else:
+            raise TuringError('Please check the input of valuation_method')
 
     def price(self) -> float:
         valuation_method = self.valuation_method_
@@ -54,7 +57,7 @@ class AsianOption(EqOption):
         elif valuation_method == TuringAsianOptionValuationMethods.CURRAN:
             v = self._value_curran()
 
-        return v * self._multiplier * self._number_of_options
+        return v * self.multiplier * self.number_of_options
 
     def _value_geometric(self):
         # the years to the start of the averaging period
@@ -232,5 +235,5 @@ class AsianOption(EqOption):
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Start Averaging Date", self.start_averaging_date)
-        s += to_string("Accrued Average", self.accrued_average, "")
+        s += to_string("Accrued Average", self.accrued_average)
         return s
