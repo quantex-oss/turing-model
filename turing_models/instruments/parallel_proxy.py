@@ -5,7 +5,8 @@ from loguru import logger
 from typing import Union, List
 from urllib.parse import urljoin
 from turing_models import config
-from turing_models.constants import ParallelType
+from turing_models.constants import ParallelType, EnvInfo
+from turing_models.exceptions import ParallelProxyException, ApiSenderException
 from turing_models.instruments.common import RiskMeasure
 from turing_models.utilities.turing_date import TuringDate
 
@@ -13,21 +14,6 @@ from turing_models.utilities.turing_date import TuringDate
 __all__ = (
     "ParallelProxy"
 )
-
-
-class ParallelProxyException(BaseException):
-    pass
-
-
-class ApiSenderException(BaseException):
-    pass
-
-
-class EnvInfo:
-    USERNAME = "GIT_AUTHOR_NAME"
-    EMAIL = "GIT_AUTHOR_EMAIL"
-    TURING_URL = "TURING_URL"
-    TURING_URL_SHORTER = "TURING_URL_SHORTER"
 
 
 class YrParallelProxyMixin:

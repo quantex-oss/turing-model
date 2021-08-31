@@ -1,10 +1,7 @@
 import json
 from turing_models.constants import ParallelType
+from turing_models.exceptions import CalcResultException
 from turing_models.instruments.parallel_proxy import ParallelCalcProxy
-
-
-class CalcResultException(BaseException):
-    pass
 
 
 class CombinationCalc:
