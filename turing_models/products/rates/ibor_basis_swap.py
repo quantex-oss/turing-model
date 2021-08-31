@@ -7,7 +7,7 @@ from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustT
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 from .float_leg import TuringFloatLeg
 
@@ -16,15 +16,15 @@ from .float_leg import TuringFloatLeg
 
 class TuringIborBasisSwap(object):
     ''' Class for managing an Ibor-Ibor basis swap contract. This is a
-    contract in which a floating leg with one LIBOR tenor is exchanged for a 
+    contract in which a floating leg with one LIBOR tenor is exchanged for a
     floating leg payment in a different LIBOR tenor. There is no exchange of
     par. The contract is entered into at zero initial cost. The contract lasts
     from an effective date to a specified maturity date.
-    
+
     The value of the contract is the NPV of the two coupon streams. Discounting
-    is done on a supplied discount curve which can be different from the two 
+    is done on a supplied discount curve which can be different from the two
     index curves from which the implied index rates are extracted. '''
-    
+
     def __init__(self,
                  effectiveDate: TuringDate,  # Date interest starts to accrue
                  terminationDateOrTenor: (TuringDate, str),  # Date contract ends
@@ -40,7 +40,7 @@ class TuringIborBasisSwap(object):
                  busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
                  dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):
         ''' Create a Ibor basis swap contract giving the contract start
-        date, its maturity, frequency and day counts on the two floating 
+        date, its maturity, frequency and day counts on the two floating
         legs and notional. The floating leg parameters have default
         values that can be overwritten if needed. The start date is contractual
         and is the same as the settlement date for a new swap. It is the date
@@ -65,7 +65,7 @@ class TuringIborBasisSwap(object):
         leg2Type = TuringSwapTypes.PAY
         if leg1Type == TuringSwapTypes.PAY:
             leg2Type = TuringSwapTypes.RECEIVE
-        
+
         paymentLag = 0
         principal = 0.0
 
@@ -114,8 +114,8 @@ class TuringIborBasisSwap(object):
             indexCurveLeg2 = discountCurve
 
         floatLeg1Value = self._floatLeg1.value(valuationDate,
-                                               discountCurve, 
-                                               indexCurveLeg1, 
+                                               discountCurve,
+                                               indexCurveLeg1,
                                                firstFixingRateLeg1)
 
         floatLeg2Value = self._floatLeg2.value(valuationDate,

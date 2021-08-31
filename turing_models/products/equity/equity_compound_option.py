@@ -11,8 +11,8 @@ from turing_models.utilities.global_types import TuringOptionTypes
 
 from turing_models.products.equity.equity_option import TuringEquityOption
 from turing_models.products.equity.equity_vanilla_option import TuringEquityVanillaOption
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurve
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurve
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 

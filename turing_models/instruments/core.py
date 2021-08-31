@@ -8,7 +8,7 @@ from loguru import logger
 from fundamental import ctx, PricingContext
 
 from fundamental.base import Context
-from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.instruments.common import RiskMeasure
 from turing_models.utilities import TuringFrequencyTypes
 from turing_models.utilities.turing_date import TuringDate
@@ -62,23 +62,6 @@ class InstrumentBase:
             if v:
                 setattr(self, k, v)
 
-    def resolve(self, expand_dict=None):
-        if not expand_dict:
-            """手动resolve,自动补全未传入参数"""
-            class_name = []
-            class_name.append(self.__class__.__name__)
-            [class_name.append(x.__name__) for x in self.__class__.__bases__]
-            logger.debug(class_name)
-            if "KnockOutOption" in class_name:
-                self.option_resolve()
-            elif "Stock" in class_name:
-                self.stock_resolve()
-            else:
-                raise Exception("暂不支持此类型的Resolve")
-        else:
-            self._set_by_dict(expand_dict)
-        self.set_param()
-
     def type(self):
         pass
 
@@ -97,7 +80,7 @@ class InstrumentBase:
                 raise Exception("暂不支持此类型的Resolve")
         else:
             self._set_by_dict(expand_dict)
-        self.set_param()
+        self.__post_init__()
 
     def api_calc(self, riskMeasure: list):
         """api calc 结果集"""

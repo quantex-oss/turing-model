@@ -1,6 +1,6 @@
 import numpy as np
 
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError

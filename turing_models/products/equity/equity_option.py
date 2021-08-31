@@ -2,7 +2,7 @@ from enum import Enum
 
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.turing_date import TuringDate
 
 ###############################################################################

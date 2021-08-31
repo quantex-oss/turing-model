@@ -8,7 +8,7 @@ sys.path.append("..")
 from turing_models.products.equity.equity_basket_snowball import TuringSnowballBasketOption
 from turing_models.products.equity.equity_snowball_option import TuringEquitySnowballOption
 from turing_models.utilities.global_types import TuringOptionTypes
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 from turing_models.utilities.turing_date import TuringDate
 

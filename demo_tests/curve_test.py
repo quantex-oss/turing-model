@@ -3,8 +3,8 @@
 # import matplotlib.pyplot as plt
 # from matplotlib.ticker import MultipleLocator
 #
-# from fundamental.market.constants import dates, rates
-# from fundamental.market.curves.curve_generation import CurveGeneration
+# from turing_models.market.constants import dates, rates
+# from turing_models.market.curves.curve_generation import CurveGeneration
 #
 #
 # curve_gen = CurveGeneration(dates, rates)
@@ -22,8 +22,8 @@
 # ax.xaxis.set_major_locator(MultipleLocator(40))  # 设置40倍数
 # plt.show()
 
-from fundamental.market.data import china_money_yield_curve as curve_data
-from fundamental.market.curves.curve_generation import CurveGeneration
+from turing_models.market.data import china_money_yield_curve as curve_data
+from turing_models.market.curves.curve_generation import CurveGeneration
 import pandas as pd
 
 from turing_models.instruments.core import CurveAdjust

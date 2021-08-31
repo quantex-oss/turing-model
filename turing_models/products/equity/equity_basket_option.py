@@ -13,7 +13,7 @@ from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.helper_functions import _funcName
 from turing_models.utilities.turing_date import TuringDate
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 from turing_models.utilities.mathematics import N
 
@@ -125,7 +125,7 @@ class TuringEquityBasketOption():
 
         a = np.ones(self._numAssets) * (1.0 / self._numAssets)
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
 
         smean = 0.0
         for ia in range(0, self._numAssets):

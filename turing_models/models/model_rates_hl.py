@@ -3,7 +3,7 @@ from numba import njit
 
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.mathematics import N
-from fundamental.market.curves.interpolator import TuringInterpTypes, _uinterpolate
+from turing_models.market.curves.interpolator import TuringInterpTypes, _uinterpolate
 from turing_models.utilities.helper_functions import to_string
 
 interp = TuringInterpTypes.FLAT_FWD_RATES.value

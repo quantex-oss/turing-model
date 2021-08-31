@@ -13,7 +13,7 @@ from turing_models.utilities.global_types import TuringOptionTypes, TuringKnockI
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.helper_functions import _funcName
 from turing_models.utilities.turing_date import TuringDate
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 from turing_models.utilities.mathematics import N
 

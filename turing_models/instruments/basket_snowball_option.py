@@ -3,10 +3,10 @@ from typing import List, Any, Union
 
 import numpy as np
 
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.gbm_process import TuringGBMProcess
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
-     TuringGBMNumericalScheme, TuringHestonNumericalScheme
+    TuringGBMNumericalScheme, TuringHestonNumericalScheme
 from turing_models.instruments.snowball_option import SnowballOption
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
@@ -17,57 +17,50 @@ class BasketSnowballOption(SnowballOption):
 
     correlation_matrix: np.ndarray = None
     weights: List[Any] = field(default_factory=list)
-    __stock_price = None
-    __volatility = None
-    __discount_curve = None
-    __dividend_curve = None
 
     def __post_init__(self):
         super().__post_init__()
-
-    def set_param(self):
-        super().set_param()
         if self.underlier:
             self.num_assets = len(self.underlier)
 
     @property
     def stock_price_(self) -> np.ndarray:
-        if self.__stock_price:
-            return self.__stock_price
+        if self._stock_price:
+            return self._stock_price
 
         # self.underlier是一个列表
         for i in range(len(self.underlier)):
             spot = getattr(self.ctx, f"spot_{self.underlier[i]}")
             if spot:
-                self._stock_price[i] = spot
+                self.stock_price[i] = spot
 
-        return np.array(self._stock_price)
+        return np.array(self.stock_price)
 
     @stock_price_.setter
     def stock_price_(self, value: np.ndarray):
-        self.__stock_price = value
+        self._stock_price = value
 
     @property
     def volatility_(self) -> np.ndarray:
-        if self.__volatility:
-            return self.__volatility
+        if self._volatility:
+            return self._volatility
 
         # self.underlier是一个列表
         for i in range(len(self.underlier)):
             vol = getattr(self.ctx, f"volatility_{self.underlier[i]}")
             if vol:
-                self._volatility[i] = vol
+                self.volatility[i] = vol
 
-        return np.array(self._volatility)
+        return np.array(self.volatility)
 
     @volatility_.setter
     def volatility_(self, value: np.ndarray):
-        self.__volatility = value
+        self._volatility = value
 
     @property
     def dividend_curve(self) -> List[TuringDiscountCurveFlat]:
-        if self.__dividend_curve:
-            return self.__dividend_curve
+        if self._dividend_curve:
+            return self._dividend_curve
         else:
             curve_list = []
             for dividend_yield in self.dividend_yield_:
@@ -78,11 +71,11 @@ class BasketSnowballOption(SnowballOption):
 
     @dividend_curve.setter
     def dividend_curve(self, value: List[TuringDiscountCurveFlat]):
-        self.__dividend_curve = value
+        self._dividend_curve = value
 
     @property
     def q(self) -> np.ndarray:
-        if self.expiry >= self.value_date_:
+        if self.expiry > self.value_date_:
             q_list = []
             for curve in self.dividend_curve:
                 dq = curve.df(self.expiry)
@@ -176,7 +169,8 @@ class BasketSnowballOption(SnowballOption):
             for ja in range(0, ia):
                 rhoSigmaSigma = vol[ia] * vol[ja] * corr_matrix[ia, ja]
                 expTerm = (q[ia] + q[ja] - rhoSigmaSigma) * texp
-                vnum = vnum + weights[ia] * weights[ja] * s0[ia] * s0[ja] * np.exp(-expTerm)
+                vnum = vnum + weights[ia] * weights[ja] * \
+                    s0[ia] * s0[ja] * np.exp(-expTerm)
 
         vnum *= 2.0
 
@@ -255,5 +249,6 @@ class BasketSnowballOption(SnowballOption):
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Untriggered Rebate", self.untriggered_rebate)
-        s += to_string("Business Day Adjust Type", self.business_day_adjust_type, "")
+        s += to_string("Business Day Adjust Type",
+                       self.business_day_adjust_type)
         return s

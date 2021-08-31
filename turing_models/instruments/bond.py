@@ -40,7 +40,8 @@ class Bond(InstrumentBase):
     clean_price: float = None
     currency: str = None
     name: str = None
-    settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
+    settlement_date: TuringDate = TuringDate(
+        *(datetime.date.today().timetuple()[:3]))
 
     def __post_init__(self):
         super().__init__()
@@ -51,13 +52,8 @@ class Bond(InstrumentBase):
         self._flow_amounts = []
         self._accrued_interest = None
         self._accrued_days = 0.0
-        self.set_param()
-
-    def set_param(self):
-        self._settlement_date = self.settlement_date
         if self.freq_type:
             self._calculate_flow_dates()
-        if self.freq_type:
             self.frequency = TuringFrequency(self.freq_type_)
 
     @property
@@ -98,7 +94,7 @@ class Bond(InstrumentBase):
 
     @property
     def settlement_date_(self):
-        return self.ctx.pricing_date or self._settlement_date
+        return self.ctx.pricing_date or self.settlement_date
 
     def _calculate_flow_dates(self):
         """ Determine the bond cashflow payment dates."""
@@ -173,7 +169,8 @@ class Bond(InstrumentBase):
         return None
 
     def set_curve(self, gurl=None):
-        curve = BondApi.fetch_yield_curve(gurl=gurl, bond_curve_code=getattr(self, 'curve_code'))
+        curve = BondApi.fetch_yield_curve(
+            gurl=gurl, bond_curve_code=getattr(self, 'curve_code'))
         if not curve:
             raise FastError(code=10020,
                             msg="参数不全, yield_curve api return null",

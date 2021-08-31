@@ -4,7 +4,6 @@ from typing import Union, List, Any
 import numpy as np
 from scipy import optimize
 
-from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
 from fundamental.turing_db.bond_data import BondApi
 from turing_models.instruments.bond import Bond, dy
 from turing_models.instruments.core import CurveAdjust
@@ -13,6 +12,7 @@ from turing_models.utilities.day_count import TuringDayCount, TuringDayCountType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.helper_functions import to_string
+from turing_models.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
 
 
 def _f(y, *args):
@@ -32,27 +32,23 @@ class BondFixedRate(Bond):
     ytm: float = None
     zero_dates: List[Any] = field(default_factory=list)
     zero_rates: List[Any] = field(default_factory=list)
-    __ytm: float = None
-    __discount_curve = None
+    _ytm: float = None
+    _discount_curve = None
 
     def __post_init__(self):
         super().__post_init__()
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
-
-    def set_param(self):
-        super().set_param()
-        self._ytm = self.ytm
         if self.coupon:
             self._calculate_flow_amounts()
 
     @property
     def __ytm__(self):
-        return self.__ytm or self.ctx.ytm or self._ytm or self.yield_to_maturity()
+        return self._ytm or self.ctx.ytm or self.ytm or self.yield_to_maturity()
 
     @__ytm__.setter
     def __ytm__(self, value: float):
-        self.__ytm = value
+        self._ytm = value
 
     @property
     def parallel_shift(self):
@@ -109,11 +105,11 @@ class BondFixedRate(Bond):
 
     @property
     def discount_curve(self):
-        return self.__discount_curve or self._discount_curve
+        return self._discount_curve or self._discount_curve
 
     @discount_curve.setter
     def discount_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
-        self.__discount_curve = value
+        self._discount_curve = value
 
     @property
     def discount_curve_flat(self):
@@ -376,7 +372,8 @@ class BondFixedRate(Bond):
 
         dc = TuringDayCount(self.accrual_type_)
         cal = TuringCalendar(self.calendar_type)
-        ex_dividend_date = cal.addBusinessDays(self._ncd, -self.num_ex_dividend_days)
+        ex_dividend_date = cal.addBusinessDays(
+            self._ncd, -self.num_ex_dividend_days)
 
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
                                            self.settlement_date_,
@@ -393,18 +390,20 @@ class BondFixedRate(Bond):
         return self._accrued_interest
 
     def _resolve(self):
-        if self.asset_id and not self.asset_id.startswith("Bond_"):  # Bond_ 为自定义时自动生成
+        # Bond_ 为自定义时自动生成
+        if self.asset_id and not self.asset_id.startswith("Bond_"):
             bond = BondApi.fetch_one_bond(asset_id=self.asset_id)
             for k, v in bond.items():
                 if not getattr(self, k, None) and v:
                     setattr(self, k, v)
         self.set_ytm()
         self.set_curve()
-        self.set_param()
+        self.__post_init__()
 
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Coupon", self.coupon)
         s += to_string("Curve Code", self.curve_code)
-        # s += to_string("YTM", self.__ytm__)
+        if self.ytm:
+            s += to_string("YTM", self.ytm)
         return s
