@@ -5,7 +5,7 @@ from typing import List, Any, Union
 import numpy as np
 from loguru import logger
 
-from fundamental.market.curves import TuringDiscountCurveFlat, \
+from turing_models.market.curves import TuringDiscountCurveFlat, \
     TuringDiscountCurveZeros
 from fundamental.turing_db.utils import to_snake
 

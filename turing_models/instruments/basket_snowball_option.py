@@ -3,7 +3,7 @@ from typing import List, Any, Union
 
 import numpy as np
 
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.gbm_process import TuringGBMProcess
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
      TuringGBMNumericalScheme, TuringHestonNumericalScheme

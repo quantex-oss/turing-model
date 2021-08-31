@@ -28,15 +28,15 @@ from turing_models.instruments.irs import IRS
 # print(irs.pv01())
 # print(irs.swap_rate())
 # import numpy as np
-# from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-# from fundamental.market.curves.discount_curve import TuringDiscountCurve
+# from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+# from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 # from turing_models.products.rates.ibor_swap import TuringIborSwap
 # from turing_models.utilities.global_types import TuringSwapTypes
 # from turing_models.utilities.frequency import TuringFrequencyTypes
 # from turing_models.utilities.day_count import TuringDayCountTypes
 # from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, TuringDateGenRuleTypes
-# from fundamental.market.curves.interpolator import TuringInterpTypes
+# from turing_models.market.curves.interpolator import TuringInterpTypes
 
 # swap = TuringIborSwap(TuringDate(2021, 6, 9),
 #                       TuringDate(2022, 5, 31),
@@ -402,4 +402,3 @@ start = time.time()
 print(bs_implied_dividend(1, 1.2, 0.01, 0.2, 0.3, 0.2, True))
 end = time.time()
 print("Elapsed (with compilation) = %s" % (end - start))
-

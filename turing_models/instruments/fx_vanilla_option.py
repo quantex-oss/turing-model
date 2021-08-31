@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 from numba import njit
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.mathematics import nprime

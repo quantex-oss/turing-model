@@ -3,8 +3,8 @@ import time
 
 import numpy as np
 
-from fundamental.market.constants import dates, rates
-from fundamental.market.curves import TuringDiscountCurveFlat
+from turing_models.market.constants import dates, rates
+from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption
 from turing_models.products.equity.equity_basket_snowball import TuringSnowballBasketOption

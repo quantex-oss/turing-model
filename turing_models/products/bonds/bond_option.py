@@ -2,7 +2,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.global_types import TuringOptionTypes, TuringExerciseTypes
 from turing_models.products.bonds.bond import TuringBond
 
@@ -73,11 +73,11 @@ class TuringBondOption():
         numFlows = len(self._bond._flowDates)
 
         # Want the first flow to be the previous coupon date
-        # This is needed to calculate accrued correctly        
+        # This is needed to calculate accrued correctly
         for i in range(1, numFlows):
             pcd = flowDates[i-1]
             ncd = flowDates[i]
-            if pcd < valuationDate and ncd > valuationDate:            
+            if pcd < valuationDate and ncd > valuationDate:
                 flowTime = (pcd - valuationDate) / gDaysInYear
                 couponTimes.append(flowTime)
                 couponFlows.append(flowAmounts[i])
@@ -87,11 +87,11 @@ class TuringBondOption():
             if flowDates[i] == valuationDate:
                 couponTimes.append(0.0)
                 couponFlows.append(flowAmounts[i])
-                
+
         # Now calculate the remaining coupons
         for i in range(1, numFlows):
             ncd = flowDates[i]
-            if ncd > valuationDate:            
+            if ncd > valuationDate:
                 flowTime = (ncd - valuationDate) / gDaysInYear
                 couponTimes.append(flowTime)
                 couponFlows.append(flowAmounts[i])
@@ -115,7 +115,7 @@ class TuringBondOption():
 
         if self._optionType == TuringOptionTypes.EUROPEAN_CALL \
             or self._optionType == TuringOptionTypes.AMERICAN_CALL:
-                return v['call']    
+                return v['call']
         elif self._optionType == TuringOptionTypes.EUROPEAN_PUT \
             or self._optionType == TuringOptionTypes.AMERICAN_PUT:
                 return v['put']

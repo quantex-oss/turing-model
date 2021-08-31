@@ -7,7 +7,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.products.equity.equity_option import TuringEquityOption
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.models.gbm_process import getPaths
 
 from numba import njit

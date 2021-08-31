@@ -8,7 +8,7 @@ from loguru import logger
 from fundamental import ctx, PricingContext
 
 from fundamental.base import Context
-from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.instruments.common import RiskMeasure
 from turing_models.utilities import TuringFrequencyTypes
 from turing_models.utilities.turing_date import TuringDate

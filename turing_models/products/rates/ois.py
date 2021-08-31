@@ -9,7 +9,7 @@ from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustT
 from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 from .fixed_leg import TuringFixedLeg
 from .float_leg import TuringFloatLeg
@@ -28,15 +28,15 @@ class TuringCompoundingTypes(Enum):
 ###############################################################################
 
 class TuringOIS(object):
-    ''' Class for managing overnight index rate swaps (OIS) and Fed Fund swaps. 
+    ''' Class for managing overnight index rate swaps (OIS) and Fed Fund swaps.
     This is a contract in which a fixed payment leg is exchanged for a payment
     which pays the rolled-up overnight index rate (OIR). There is no exchange
     of par. The contract is entered into at zero initial cost.
 
     NOTE: This class is almost identical to TuringIborSwap but will possibly
-    deviate as distinctions between the two become clear to me. If not they 
+    deviate as distinctions between the two become clear to me. If not they
     will be converged (or inherited) to avoid duplication.
-    
+
     The contract lasts from a start date to a specified maturity date.
     The fixed coupon is the OIS fixed rate for the corresponding tenor which is
     set at contract initiation.
@@ -147,14 +147,14 @@ class TuringOIS(object):
 
         value = fixedLegValue + floatLegValue
         return value
-            
+
 ##########################################################################
 
     def pv01(self, valuationDate, discountCurve):
         ''' Calculate the value of 1 basis point coupon on the fixed leg. '''
 
         pv = self._fixedLeg.value(valuationDate, discountCurve)
-        
+
         # Needs to be positive even if it is a payer leg
         pv = np.abs(pv)
         pv01 = pv / self._fixedLeg._coupon / self._fixedLeg._notional
@@ -180,9 +180,9 @@ class TuringOIS(object):
         floatLegPV = 0.0
 
         dfT = oisCurve.df(self._maturityDate)
-        floatLegPV = (df0 - dfT) 
+        floatLegPV = (df0 - dfT)
         floatLegPV /= self._fixedLeg._notional
-        cpn = floatLegPV / pv01           
+        cpn = floatLegPV / pv01
         return cpn
 
 ###############################################################################
@@ -208,7 +208,7 @@ class TuringOIS(object):
         the dates and sizes of the promised fixed leg flows. '''
 
         self._fixedLeg.printPayments()
-        
+
         self._floatLeg.printPayments()
 
 ##########################################################################
@@ -228,4 +228,3 @@ class TuringOIS(object):
         print(self)
 
 ###############################################################################
-

@@ -8,7 +8,7 @@ from turing_models.utilities.error import TuringError
 
 from turing_models.products.equity.equity_option import TuringEquityOption
 from turing_models.utilities.global_types import TuringOptionTypes
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurve
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurve
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.models.model_black_scholes import bs_value

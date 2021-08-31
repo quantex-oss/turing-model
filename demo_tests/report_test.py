@@ -1,6 +1,6 @@
 from loguru import logger
 
-from fundamental.market.constants import dates, rates
+from turing_models.market.constants import dates, rates
 from fundamental.portfolio.portfolio import Portfolio
 from fundamental.portfolio.position import Position
 from fundamental.pricing_context import PricingContext

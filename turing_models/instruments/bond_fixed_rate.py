@@ -4,7 +4,7 @@ from typing import Union, List, Any
 import numpy as np
 from scipy import optimize
 
-from fundamental.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
+from turing_models.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
 from fundamental.turing_db.bond_data import BondApi
 from turing_models.instruments.bond import Bond, dy
 from turing_models.instruments.core import CurveAdjust

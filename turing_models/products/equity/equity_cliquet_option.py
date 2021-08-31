@@ -12,7 +12,7 @@ from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.products.equity.equity_option import TuringEquityOption
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurve
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurve
 
 from turing_models.models.model_black_scholes import bs_value, TuringModelBlackScholes
 from turing_models.models.model import TuringModel
