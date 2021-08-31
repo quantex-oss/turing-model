@@ -15,7 +15,7 @@ __all__ = (
 )
 
 
-class YrParallelProxyMixin:
+class YrParallelCalcMixin:
     __slots__ = ()
 
     @staticmethod
@@ -111,7 +111,7 @@ class RemoteApiCaller:
         return self.sender.send(self.api_data)
 
 
-class InnerParallelProxyMixin:
+class InnerParallelCalcMixin:
     __slots__ = ()
 
     def inner_calc(self):
@@ -123,7 +123,7 @@ class InnerParallelProxyMixin:
         ).call()
 
 
-class ParallelCalcProxy(YrParallelProxyMixin, InnerParallelProxyMixin):
+class ParallelCalcProxy(YrParallelCalcMixin, InnerParallelCalcMixin):
 
     def __init__(self, instance, parallel_type,
                  call_func_name, func_params, timeout=3):
