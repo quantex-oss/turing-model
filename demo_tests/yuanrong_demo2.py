@@ -11,9 +11,9 @@ from turing_models.constants import ParallelType
 european_option1 = EuropeanOption(asset_id='OPTIONCN00000001',
                                   underlier='STOCKCN00000001',
                                   option_type=TuringOptionType.CALL,
-                                  start_date=TuringDate(2021, 6, 3),
+                                  # start_date=TuringDate(2021, 6, 3),
                                   # start_date=TuringDate.fromString('2021-06-03', '%Y-%m-%d'),
-                                  # start_date="2021-06-03",
+                                  start_date="2021-06-03",
                                   expiry=TuringDate(2021, 9, 3),
                                   strike_price=5.3,
                                   multiplier=100,
@@ -71,7 +71,7 @@ cms = CombinationCalc(
     # parallel_type为可选参数，可以指定走元戎并
     # 行计算或内部并行计算或者不走并行计算，默认值
     # 为None，表示不进行并行计算，可不指定。
-    parallel_type=ParallelType.INNER,
+    parallel_type=ParallelType.NULL,
     timeout=3
 )
 cms.add(model_calc2)

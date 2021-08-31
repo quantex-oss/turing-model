@@ -96,7 +96,7 @@ class RemoteApiCaller:
         self.api_data = {
             "modulePath": None,
             "classMeta": {"name": None, "param": {}},
-            "function": {"name": call_func_name, "param": risk_measure}
+            "function": {"name": call_func_name, "param": {"risk_measure": risk_measure}}
         }
 
     def build_api_data(self):
