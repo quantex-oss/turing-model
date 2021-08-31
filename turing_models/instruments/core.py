@@ -12,6 +12,7 @@ from turing_models.utilities import TuringFrequencyTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from .parallel_proxy import ParallelCalcProxy
+from turing_models.constants import ParallelType
 
 
 class PriceableImpl:
@@ -22,8 +23,11 @@ class PriceableImpl:
         result: Union[float, List] = []
 
         try:
-            if parallel_type:
+            if parallel_type and parallel_type != ParallelType.NULL:
                 return ParallelCalcProxy(self, parallel_type, risk_measure).calc()
+
+            if isinstance(risk_measure, str) and risk_measure in RiskMeasure.__members__:
+                risk_measure = RiskMeasure.__members__[risk_measure]
 
             if not isinstance(risk_measure, Iterable):
                 result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(

@@ -40,7 +40,7 @@ class ModelCalc:
         self.process.extend([self.model.calc(r, parallel_type) for r in self.risk_measures])
 
     def process_result(self, parallel_type, timeout):
-        if parallel_type == ParallelType.YR.value:
+        if parallel_type == ParallelType.YR:
             result = ParallelCalcProxy.get_results_with_yr(self.process, timeout)
             self.result.update_fields(
                 {
