@@ -10,7 +10,6 @@ from turing_models.exceptions import ParallelProxyException, ApiSenderException
 from turing_models.instruments.common import RiskMeasure
 from turing_models.utilities.turing_date import TuringDate
 
-
 __all__ = (
     "ParallelProxy"
 )
@@ -33,7 +32,9 @@ class YrParallelProxyMixin:
         return yuanrong.ship()(self._yr_calc.__func__).ship(
             self, risk_measure=self.func_params["risk_measure"])
 
-    def _yr_calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], option_all=None):
+    def _yr_calc(self,
+                 risk_measure: Union[RiskMeasure, List[RiskMeasure]],
+                 option_all=None):
         try:
             result: Union[float, List] = (
                 getattr(self.instance, risk_measure.value)() if not option_all
@@ -65,7 +66,10 @@ class Sender:
         try:
             resp = requests.post(self.url, json=api_data, timeout=self.timeout)
             if resp.status_code != 200:
-                raise ApiSenderException(f"status_code is {resp.status_code}, err_msg is {resp.text}")
+                raise ApiSenderException(
+                    f"status_code is {resp.status_code}, "
+                    f"err_msg is {resp.text}"
+                )
             return resp.json()["data"]["result"]
         except ApiSenderException as error:
             logger.error(
@@ -121,7 +125,8 @@ class InnerParallelProxyMixin:
 
 class ParallelCalcProxy(YrParallelProxyMixin, InnerParallelProxyMixin):
 
-    def __init__(self, instance, parallel_type, call_func_name, func_params, timeout=3):
+    def __init__(self, instance, parallel_type,
+                 call_func_name, func_params, timeout=3):
         self.instance = instance
         self.parallel_type = parallel_type
         self.call_func_name = call_func_name
@@ -141,4 +146,6 @@ class ParallelCalcProxy(YrParallelProxyMixin, InnerParallelProxyMixin):
         elif self.parallel_type == ParallelType.INNER:
             return self.inner_calc()
         else:
-            raise ParallelProxyException(f"Not support '{self.parallel_type}' parallel_type!")
+            raise ParallelProxyException(
+                f"Not support '{self.parallel_type}' parallel_type!"
+            )

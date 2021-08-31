@@ -19,11 +19,13 @@ class PriceableImpl:
     def __init__(self):
         self.ctx: Context = ctx
 
-    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type=None, option_all=None):
+    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]],
+             parallel_type=ParallelType.NULL, option_all=None):
+
         result: Union[float, List] = []
 
         try:
-            if parallel_type and parallel_type != ParallelType.NULL:
+            if ParallelType.valid(parallel_type):
                 return ParallelCalcProxy(
                     instance=self,
                     parallel_type=parallel_type,

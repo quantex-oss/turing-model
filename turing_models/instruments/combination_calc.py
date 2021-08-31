@@ -6,8 +6,9 @@ from turing_models.instruments.parallel_proxy import ParallelCalcProxy
 
 class CombinationCalc:
 
-    def __init__(self, source_list, parallel_type=None, timeout=3):
+    def __init__(self, source_list, parallel_type=ParallelType.NULL, timeout=3):
         self.source_list = source_list
+        ParallelType.valid(parallel_type)
         self.parallel_type = parallel_type
         self.timeout = timeout
         self.results = []
