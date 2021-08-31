@@ -25,6 +25,7 @@ european_option1 = EuropeanOption(asset_id='OPTIONCN00000001',
                                   zero_rates=rates,
                                   dividend_yield=0)
 
+
 european_option2 = EuropeanOption(asset_id='OPTIONCN00000002',
                                   underlier='STOCKCN00000001',
                                   option_type=TuringOptionType.CALL,
@@ -41,10 +42,21 @@ european_option2 = EuropeanOption(asset_id='OPTIONCN00000002',
                                   dividend_yield=0)
 
 
-risk_measures = [
+risk_measures1 = [
         RiskMeasure.Price,
         RiskMeasure.EqDelta,
         RiskMeasure.EqGamma,
+        # RiskMeasure.EqVega,
+        # RiskMeasure.EqTheta,
+        # RiskMeasure.EqRho,
+        # RiskMeasure.EqRhoQ
+    ]
+
+
+risk_measures2 = [
+        # RiskMeasure.Price,
+        # RiskMeasure.EqDelta,
+        # RiskMeasure.EqGamma,
         RiskMeasure.EqVega,
         RiskMeasure.EqTheta,
         RiskMeasure.EqRho,
@@ -53,14 +65,15 @@ risk_measures = [
 
 
 model_calc1 = ModelCalc(
-    european_option1,
-    risk_measures=risk_measures,
+    model=european_option1,
+    risk_measures=risk_measures1,
     title="european_option1",  # 可选参数，不传在结果相关的打印中会取类名
 )
 
+
 model_calc2 = ModelCalc(
-    european_option1,
-    risk_measures=risk_measures,
+    model=european_option2,
+    risk_measures=risk_measures2,
     title="european_option2",  # 可选参数，不传在结果相关的打印中会取类名
 )
 
