@@ -507,4 +507,6 @@ def convert_argument_type(self, func, values):
                 if value.isdigit():
                     """只支持传入'%Y%m%d'格式的字符串时间"""
                     __value = TuringDate.fromString(value)
-                    setattr(self, value_name, __value)
+                elif '-' in str(value):
+                    __value = TuringDate.fromString(value, '%Y-%m-%d')
+                setattr(self, value_name, __value)
