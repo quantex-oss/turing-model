@@ -13,12 +13,10 @@ from turing_models.utilities.solvers_1d import bisection, newton, newton_secant
 ###############################################################################
 
 @vectorize([float64(float64, float64, float64, float64, float64, float64,
-                    int64, float64)], fastmath=True, cache=True)
-def bs_value(s, t, k, r, q, v, optionTypeValue, tdel=None):
+                    int64)], fastmath=True, cache=True)
+def bs_value(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
 
-    if not tdel:
-        tdel = t
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = 1.0
     elif optionTypeValue == TuringOptionTypes.EUROPEAN_PUT.value:
@@ -29,7 +27,6 @@ def bs_value(s, t, k, r, q, v, optionTypeValue, tdel=None):
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
     v = np.maximum(v, gSmall)
-    tdel = np.maximum(tdel, gSmall)
 
     vsqrtT = v * np.sqrt(t)
     ss = s * np.exp(-q*t)
@@ -37,17 +34,15 @@ def bs_value(s, t, k, r, q, v, optionTypeValue, tdel=None):
     d1 = np.log(ss/kk) / vsqrtT + vsqrtT / 2.0
     d2 = d1 - vsqrtT
 
-    value = phi * s * np.exp(-q*tdel) * NVect(phi*d1) - phi * k * np.exp(-r*tdel) * NVect(phi*d2)
+    value = phi * ss * NVect(phi*d1) - phi * kk * NVect(phi*d2)
     return value
 
 ###############################################################################
 
 @vectorize([float64(float64, float64, float64, float64,
-                    float64, float64, int64, float64)], fastmath=True, cache=True)
-def bs_delta(s, t, k, r, q, v, optionTypeValue, tdel=None):
+                    float64, float64, int64)], fastmath=True, cache=True)
+def bs_delta(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
-    if not tdel:
-        tdel = t
 
     if optionTypeValue == TuringOptionTypes.EUROPEAN_CALL.value:
         phi = +1.0
@@ -59,28 +54,24 @@ def bs_delta(s, t, k, r, q, v, optionTypeValue, tdel=None):
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
     v = np.maximum(v, gSmall)
-    tdel = np.maximum(tdel, gSmall)
 
     vsqrtT = v * np.sqrt(t)
     ss = s * np.exp(-q*t)
     kk = k * np.exp(-r*t)
     d1 = np.log(ss/kk) / vsqrtT + vsqrtT / 2.0
-    delta = phi * np.exp(-q*tdel) * NVect(phi*d1)
+    delta = phi * np.exp(-q*t) * NVect(phi*d1)
     return delta
 
 ###############################################################################
 
 @vectorize([float64(float64, float64, float64, float64,
-                    float64, float64, int64, float64)], fastmath=True, cache=True)
-def bs_gamma(s, t, k, r, q, v, optionTypeValue, tdel=None):
+                    float64, float64, int64)], fastmath=True, cache=True)
+def bs_gamma(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
-    if not tdel:
-        tdel = t
 
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
     v = np.maximum(v, gSmall)
-    tdel = np.maximum(tdel, gSmall)
 
     vsqrtT = v * np.sqrt(t)
     ss = s * np.exp(-q*t)
@@ -92,23 +83,20 @@ def bs_gamma(s, t, k, r, q, v, optionTypeValue, tdel=None):
 ###############################################################################
 
 @vectorize([float64(float64, float64, float64, float64,
-                    float64, float64, int64, float64)], fastmath=True, cache=True)
-def bs_vega(s, t, k, r, q, v, optionTypeValue, tdel=None):
+                    float64, float64, int64)], fastmath=True, cache=True)
+def bs_vega(s, t, k, r, q, v, optionTypeValue):
     ''' Price a derivative using Black-Scholes model. '''
-    if not tdel:
-        tdel = t
 
     k = np.maximum(k, gSmall)
     t = np.maximum(t, gSmall)
     v = np.maximum(v, gSmall)
-    tdel = np.maximum(tdel, gSmall)
 
     sqrtT = np.sqrt(t)
     vsqrtT = v * sqrtT
     ss = s * np.exp(-q*t)
     kk = k * np.exp(-r*t)
     d1 = np.log(ss/kk) / vsqrtT + vsqrtT / 2.0
-    vega = s * np.exp(-q*tdel) * sqrtT * NPrimeVect(d1)
+    vega = ss * sqrtT * NPrimeVect(d1)
     return vega
 
 ###############################################################################
@@ -198,7 +186,7 @@ def bs_psi(s, t, k, r, q, v, optionTypeValue):
 ###############################################################################
 
 
-# @njit(fastmath=True, cache=True)
+#@njit(fastmath=True, cache=True)
 def _f(sigma, args):
 
     s = args[0]
@@ -213,7 +201,7 @@ def _f(sigma, args):
     obj = bsPrice - price
     return obj
 
-# @njit(fastmath=True, cache=True)
+#@njit(fastmath=True, cache=True)
 def _fvega(sigma, args):
 
     s = args[0]
@@ -358,15 +346,15 @@ def bsImpliedVolatility(s, t, k, r, q, price, optionTypeValue):
     return sigma
 
 
-def bs_implied_dividend(stock_price, strike_price, price_call, price_put, r, tdel, curve):
+def bs_implied_dividend(stock_price, strike_price, price_call, price_put, r, texp, curve):
     """ Calculate the Black-Scholes implied dividend of a European
     vanilla option using Put-Call-Parity. """
-    q = np.log(price_call - price_put + strike_price * np.exp(-r * tdel) / stock_price)
-    q = - 1 / tdel * q
+    q = np.log(price_call - price_put + strike_price * np.exp(-r * texp) / stock_price)
+    q = - 1 / texp * q
     if not curve:
         return q
     else:
-        return tdel, q
+        return texp, q
 
 ###############################################################################
 ###############################################################################

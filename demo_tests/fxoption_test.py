@@ -7,9 +7,7 @@ from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.instruments.fx_vanilla_option import FXVanillaOption
 
 
-fxoption = FXVanillaOption(trade_date=TuringDate(2015, 1, 1),
-                          maturity_date=TuringDate(2015, 1, 1).addMonths(4),
-                           cut_off_date=TuringDate(2015, 4, 15),
+fxoption = FXVanillaOption(expiry_date=TuringDate(2015, 1, 1).addMonths(4),
                            value_date=TuringDate(2015, 1, 1),
                            ccy1_cc_rate=0.11,
                            ccy2_cc_rate=0.08,
@@ -20,7 +18,7 @@ fxoption = FXVanillaOption(trade_date=TuringDate(2015, 1, 1),
                            notional=1000000,
                            option_type=TuringOptionTypes.EUROPEAN_CALL,
                            premium_currency="USD",
-                           spot_days=2)
+                           spot_days=0)
 
 # value = fxoption.price()
 # delta = fxoption.delta()
@@ -28,8 +26,7 @@ for spotFXRate in np.arange(100, 200, 10)/100.0:
     fxoption.spot_fx_rate = spotFXRate
 
     value = fxoption.price()
-    valuemc = fxoption.price_mc()
     fxoption.market_price = value
     impliedVol = fxoption.implied_volatility()
 
-    print(spotFXRate, value, valuemc, impliedVol)
+    print(spotFXRate, value, impliedVol)
