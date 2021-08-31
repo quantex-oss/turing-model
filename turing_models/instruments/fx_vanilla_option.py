@@ -20,6 +20,8 @@ from turing_models.models.model_black_scholes_analytical import bs_value, bs_del
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
 from turing_models.utilities.mathematics import N
 
+# Todo: vvprice, volquote
+
 
 def f(volatility, *args):
     """ This is the objective function used in the determination of the FX
@@ -94,7 +96,9 @@ class FXVanillaOption():
     allows the calculation of the option's delta in a number of forms as
     well as the various Greek risk sensitivies. """
 
-    expiry_date: TuringDate = None
+    trade_date: TuringDate = None
+    maturity_date: TuringDate = None
+    cut_off_date: TuringDate = None
     # 1 unit of foreign in domestic
     strike_fx_rate: (float, np.ndarray) = None
     currency_pair: str = None
@@ -109,14 +113,16 @@ class FXVanillaOption():
     ccy2_cc_rate: float = None
     volatility: float = None
     market_price = None
+    __value_date = None
     _spot_fx_rate = None
 
     def __post_init__(self):
 
-        self.delivery_date = self.expiry_date.addWeekDays(self.spot_days)
+        self.delivery_date = self.maturity_date.addWeekDays(self.spot_days)
 
-        if self.delivery_date < self.expiry_date:
-            raise TuringError("Delivery date must be on or after expiry date.")
+        if self.delivery_date < self.maturity_date:
+            raise TuringError(
+                "Delivery date must be on or after maturity date.")
 
         if len(self.currency_pair) != 6:
             raise TuringError("Currency pair must be 6 characters.")
@@ -143,6 +149,15 @@ class FXVanillaOption():
         self.seed = 4242
 
     @property
+    def value_date_(self):
+        date = self.__value_date or self.ctx.pricing_date or self._value_date
+        return date if date >= self.trade_date else self.trade_date
+
+    @value_date_.setter
+    def value_date_(self, value: TuringDate):
+        self.__value_date = value
+
+    @property
     def foreign_discount_curve(self):
         return TuringDiscountCurveFlat(self.value_date, self.ccy1_cc_rate)
 
@@ -165,33 +180,33 @@ class FXVanillaOption():
 
     @property
     def texp(self):
-        return (self.expiry_date - self.value_date) / gDaysInYear
+        return (self.cut_off_date - self.value_date) / gDaysInYear
 
     @property
     def rd(self):
-        tdel = self.tdel
-        domDF = self.domestic_discount_curve._df(tdel)
-        return -np.log(domDF) / tdel
+        texp = self.texp
+        domDF = self.domestic_discount_curve._df(texp)
+        return -np.log(domDF) / texp
 
     @property
     def rf(self):
-        tdel = self.tdel
-        forDF = self.foreign_discount_curve._df(self.tdel)
-        return -np.log(forDF) / tdel
+        texp = self.texp
+        forDF = self.foreign_discount_curve._df(self.texp)
+        return -np.log(forDF) / texp
 
     @property
     def vol(self):
         if isinstance(self.model, TuringModelBlackScholes):
             v = self.model._volatility
         elif isinstance(self.model, TuringModelSABR):
-            F0T = self.spot_fx_rate * np.exp((self.rd - self.rf) * self.tdel)
+            F0T = self.spot_fx_rate * np.exp((self.rd - self.rf) * self.texp)
             v = volFunctionSABR(model.alpha,
                                 model.beta,
                                 model.rho,
                                 model.nu,
                                 F0T,
                                 self.strike_fx_rate,
-                                self.tdel)
+                                self.texp)
 
         if np.all(v >= 0.0):
             v = np.maximum(v, 1e-10)
@@ -223,6 +238,7 @@ class FXVanillaOption():
         rf = self.rf
         v = self.vol
         texp = self.texp
+        tdel = self.tdel
         notional = self.notional
         premium_currency = self.premium_currency
         domestic_name = self.domestic_name
@@ -232,21 +248,21 @@ class FXVanillaOption():
         if option_type == TuringOptionTypes.EUROPEAN_CALL:
 
             vdf = bs_value(S0, texp, K, rd, rf, v,
-                           TuringOptionTypes.EUROPEAN_CALL.value)
+                           TuringOptionTypes.EUROPEAN_CALL.value, tdel)
 
         elif option_type == TuringOptionTypes.EUROPEAN_PUT:
 
             vdf = bs_value(S0, texp, K, rd, rf, v,
-                           TuringOptionTypes.EUROPEAN_PUT.value)
+                           TuringOptionTypes.EUROPEAN_PUT.value, tdel)
 
-        elif option_type == TuringOptionTypes.AMERICAN_CALL:
-            numStepsPerYear = 100
-            vdf = crrTreeValAvg(S0, rd, rf, volatility, numStepsPerYear,
-                                texp, TuringOptionTypes.AMERICAN_CALL.value, K)['value']
-        elif option_type == TuringOptionTypes.AMERICAN_PUT:
-            numStepsPerYear = 100
-            vdf = crrTreeValAvg(S0, rd, rf, volatility, numStepsPerYear,
-                                texp, TuringOptionTypes.AMERICAN_PUT.value, K)['value']
+        # elif option_type == TuringOptionTypes.AMERICAN_CALL:
+        #     numStepsPerYear = 100
+        #     vdf = crrTreeValAvg(S0, rd, rf, volatility, numStepsPerYear,
+        #                         texp, TuringOptionTypes.AMERICAN_CALL.value, K)['value']
+        # elif option_type == TuringOptionTypes.AMERICAN_PUT:
+        #     numStepsPerYear = 100
+        #     vdf = crrTreeValAvg(S0, rd, rf, volatility, numStepsPerYear,
+        #                         texp, TuringOptionTypes.AMERICAN_PUT.value, K)['value']
         else:
             raise TuringError("Unknown option type")
 
@@ -309,9 +325,10 @@ class FXVanillaOption():
         v = self.vol
         option_type = self.option_type
 
-        pips_spot_delta = bs_delta(S0, texp, K, rd, rf, v, option_type.value)
+        pips_spot_delta = bs_delta(
+            S0, texp, K, rd, rf, v, option_type.value, tdel)
         pips_fwd_delta = pips_spot_delta * np.exp(rf * tdel)
-        vpctf = bs_value(S0, texp, K, rd, rf, v, option_type.value) / S0
+        vpctf = bs_value(S0, texp, K, rd, rf, v, option_type.value, tdel) / S0
         pct_spot_delta_prem_adj = pips_spot_delta - vpctf
         pct_fwd_delta_prem_adj = np.exp(rf * tdel) * (pips_spot_delta - vpctf)
 
@@ -330,16 +347,18 @@ class FXVanillaOption():
         rd = self.rd
         rf = self.rf
         texp = self.texp
+        tdel = self.tdel
         v = self.vol
         option_type = self.option_type
 
-        pips_spot_delta = bs_delta(S0, texp, K, rd, rf, v, option_type.value)
-        pips_fwd_delta = pips_spot_delta * np.exp(rf * texp)
+        pips_spot_delta = bs_delta(
+            S0, texp, K, rd, rf, v, option_type.value, tdel)
+        pips_fwd_delta = pips_spot_delta * np.exp(rf * tdel)
 
-        vpctf = bs_value(S0, texp, K, rd, rf, v, option_type.value) / S0
+        vpctf = bs_value(S0, texp, K, rd, rf, v, option_type.value, tdel) / S0
 
         pct_spot_delta_prem_adj = pips_spot_delta - vpctf
-        pct_fwd_delta_prem_adj = np.exp(rf * texp) * (pips_spot_delta - vpctf)
+        pct_fwd_delta_prem_adj = np.exp(rf * tdel) * (pips_spot_delta - vpctf)
 
         return {"pips_spot_delta": pips_spot_delta,
                 "pips_fwd_delta": pips_fwd_delta,
@@ -431,6 +450,56 @@ class FXVanillaOption():
 
         return v
 
+    def vanna(self):
+        """ This function calculates the FX Option Vanna using the spot delta. """
+
+        S0 = self.spot_fx_rate
+        K = self.strike_fx_rate
+        texp = self.texp
+        v = self.vol
+
+        domDf = self.domestic_discount_curve._df(texp)
+        rd = -np.log(domDf) / texp
+
+        forDf = self.foreign_discount_curve._df(texp)
+        rf = -np.log(forDf) / texp
+
+        lnS0k = np.log(S0 / K)
+        sqrtT = np.sqrt(texp)
+        den = v * sqrtT
+        mu = rd - rf
+        v2 = v * v
+        d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
+        d2 = (lnS0k + (mu - v2 / 2.0) * texp) / den
+        vanna = - np.exp(-rf * texp) * d2 / v * nprime(d1)
+
+        return vanna
+
+    def volga(self):
+        """ This function calculates the FX Option Vanna using the spot delta. """
+
+        S0 = self.spot_fx_rate
+        K = self.strike_fx_rate
+        texp = self.texp
+        v = self.vol
+
+        domDf = self.domestic_discount_curve._df(texp)
+        rd = -np.log(domDf) / texp
+
+        forDf = self.foreign_discount_curve._df(texp)
+        rf = -np.log(forDf) / texp
+
+        lnS0k = np.log(S0 / K)
+        sqrtT = np.sqrt(texp)
+        den = v * sqrtT
+        mu = rd - rf
+        v2 = v * v
+        d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
+        d2 = (lnS0k + (mu - v2 / 2.0) * texp) / den
+        volga = S0 * np.exp(-rf * texp) * sqrtT * d1 * d2 / v * nprime(d1)
+
+        return volga
+
     def implied_volatility(self):
         """ This function determines the implied volatility of an FX option
         given a price and the other option details. It uses a one-dimensional
@@ -459,12 +528,13 @@ class FXVanillaOption():
 
         np.random.seed(self.seed)
         texp = self.texp
+        tdel = self.tdel
 
-        domDF = self.domestic_discount_curve.df(self.expiry_date)
-        forDF = self.foreign_discount_curve.df(self.expiry_date)
+        domDF = self.domestic_discount_curve.df(self.delivery_date)
+        forDF = self.foreign_discount_curve.df(self.delivery_date)
 
-        rd = -np.log(domDF)/texp
-        rf = -np.log(forDF)/texp
+        rd = -np.log(domDF)/tdel
+        rf = -np.log(forDF)/tdel
 
         mu = rd - rf
         v2 = v**2
@@ -487,7 +557,7 @@ class FXVanillaOption():
             raise TuringError("Unknown option type.")
 
         payoff = np.mean(payoff_a_1) + np.mean(payoff_a_2)
-        v = payoff * np.exp(-rd * texp) / 2.0
+        v = payoff * np.exp(-rd * tdel) / 2.0
         return v
 
 ###############################################################################
