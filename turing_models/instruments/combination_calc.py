@@ -1,6 +1,6 @@
 import json
 from turing_models.constants import ParallelType
-from turing_models.exceptions import CalcResultException
+from turing_models.exceptions import CalcResultException, CombinationCalcException
 from turing_models.instruments.parallel_proxy import ParallelCalcProxy
 
 
@@ -13,6 +13,10 @@ class CombinationCalc:
         self.results = []
 
     def add(self, model_calc_obj):
+        if not isinstance(model_calc_obj, ModelCalc):
+            raise CombinationCalcException(
+                f"The {model_calc_obj} must be instance of ModelCalc!"
+            )
         self.source_list.append(model_calc_obj)
 
     def run(self):

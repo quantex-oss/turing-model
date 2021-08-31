@@ -8,3 +8,7 @@ class ApiSenderException(BaseException):
 
 class CalcResultException(BaseException):
     pass
+
+
+class CombinationCalcException(BaseException):
+    pass
