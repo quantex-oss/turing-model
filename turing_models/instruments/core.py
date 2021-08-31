@@ -24,7 +24,12 @@ class PriceableImpl:
 
         try:
             if parallel_type and parallel_type != ParallelType.NULL:
-                return ParallelCalcProxy(self, parallel_type, risk_measure).calc()
+                return ParallelCalcProxy(
+                    instance=self,
+                    parallel_type=parallel_type,
+                    call_func_name="calc",
+                    func_params={"risk_measure": risk_measure}
+                ).calc()
 
             if isinstance(risk_measure, str) and risk_measure in RiskMeasure.__members__:
                 risk_measure = RiskMeasure.__members__[risk_measure]
