@@ -80,7 +80,7 @@ class InstrumentBase:
                 raise Exception("暂不支持此类型的Resolve")
         else:
             self._set_by_dict(expand_dict)
-        self.set_param()
+        self.__post_init__()
 
     def api_calc(self, riskMeasure: list):
         """api calc 结果集"""
