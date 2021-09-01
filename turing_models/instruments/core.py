@@ -86,10 +86,11 @@ class InstrumentBase:
                 response_data.append(response)
         return response_data
 
-    def main(self, assetId: str = None, pricingContext=None, riskMeasure=None):
+    def main(self, context=None, assetId: str = None, pricingContext=None, riskMeasure=None):
+        if context:
+            self.ctx.context = context
         """api默认入口"""
         scenario = PricingContext()
-        logger.debug(f"assetId:{assetId}")
         if not assetId.startswith("OPTION") and not assetId.startswith("BOND"):
             raise Exception("不支持的asset_id")
         setattr(self, 'asset_id', assetId)
