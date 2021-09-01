@@ -398,7 +398,7 @@ class BondFixedRate(Bond):
                     setattr(self, k, v)
         self.set_ytm()
         self.set_curve()
-        self.set_param()
+        self.__post_init__()
 
     def __repr__(self):
         s = super().__repr__()

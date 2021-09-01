@@ -4,15 +4,13 @@ from typing import Union, List, Iterable
 
 from loguru import logger
 
-
 from fundamental import ctx, PricingContext
-
 from fundamental.base import Context
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.instruments.common import RiskMeasure
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.utilities import TuringFrequencyTypes
-from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
+from turing_models.utilities.turing_date import TuringDate
 from .parallel_proxy import ParallelCalcProxy
 
 
@@ -23,39 +21,26 @@ class InstrumentBase:
 
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type=None, option_all=None):
         result: Union[float, List] = []
-
         try:
             if parallel_type:
                 return ParallelCalcProxy(self, parallel_type, risk_measure).calc()
-
             if not isinstance(risk_measure, Iterable):
                 result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(
                     option_all)
-                result = self._calc(result)
-                self.__row__(risk_measure.value, round(
-                    result, 2) if result else 0)
+                result = self._calc(risk_measure, result)
                 return result
             for risk in risk_measure:
                 res = getattr(self, risk.value)()
-                res = self._calc(res)
+                res = self._calc(risk, res)
                 result.append(res)
-                self.__row__(risk.value, round(res, 2)
-                             if res and not isinstance(res, Iterable) else 0)
             return result
         except Exception as e:
             logger.error(str(traceback.format_exc()))
             return ""
 
-    def _calc(self, value):
+    def _calc(self, risk, value):
         """二次计算,默认为直接返回当前值"""
         return value
-
-    def __row__(self, ident, _value):
-        """计算后对表格数据进行填充"""
-        if self.__class__.__name__ == "Position" and hasattr(self.ctx, "positions_dict"):
-            for key, value in self.ctx.positions_dict.items():
-                if value.get('asset_id') == self.tradable.asset_id if self.tradable else "":
-                    value[ident] = _value
 
     def _set_by_dict(self, tmp_dict):
         for k, v in tmp_dict.items():
@@ -80,7 +65,7 @@ class InstrumentBase:
                 raise Exception("暂不支持此类型的Resolve")
         else:
             self._set_by_dict(expand_dict)
-        self.set_param()
+        self.__post_init__()
 
     def api_calc(self, riskMeasure: list):
         """api calc 结果集"""
@@ -101,10 +86,11 @@ class InstrumentBase:
                 response_data.append(response)
         return response_data
 
-    def main(self, assetId: str = None, pricingContext=None, riskMeasure=None):
+    def main(self, context=None, assetId: str = None, pricingContext=None, riskMeasure=None):
+        if context:
+            self.ctx.context = context
         """api默认入口"""
         scenario = PricingContext()
-        logger.debug(f"assetId:{assetId}")
         if not assetId.startswith("OPTION") and not assetId.startswith("BOND"):
             raise Exception("不支持的asset_id")
         setattr(self, 'asset_id', assetId)
