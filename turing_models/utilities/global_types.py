@@ -62,6 +62,17 @@ class TuringExerciseTypes(Enum):
     BERMUDAN = 2
     AMERICAN = 3
 
+
+class TuringExerciseType(Enum):
+    """Exercise Type"""
+
+    EUROPEAN = 'EUROPEAN'
+    BERMUDAN = 'BERMUDAN'
+    AMERICAN = 'AMERICAN'
+
+    def __repr__(self):
+        return self.value
+
 ###############################################################################
 
 

@@ -83,6 +83,7 @@ def _obj(params, *args):
 # Do not cache this function as it leads to complaints
 ###############################################################################
 
+
 def _solveToHorizon(s, t, r, q,
                     strikes,
                     timeIndex,
@@ -182,7 +183,7 @@ def _deltaFit(k, *args):
 
     f = s * np.exp((r-q)*t)
     v = volFunction(volTypeValue, params, f, k, t)
-    deltaOut = bs_delta(s, t, k, r, q, v, optionTypeValue)
+    deltaOut = bs_delta(s, t, k, r, q, v, optionTypeValue, False)
     inverseDeltaOut = norminvcdf(np.abs(deltaOut))
     invObjFn = inverseDeltaTarget - inverseDeltaOut
 
@@ -201,21 +202,21 @@ def _solveForSmileStrike(s, t, r, q,
                          deltaTarget,
                          initialGuess,
                          parameters):
-     ''' Solve for the strike that sets the delta of the option equal to the
-     target value of delta allowing the volatility to be a function of the
-     strike. '''
+    ''' Solve for the strike that sets the delta of the option equal to the
+    target value of delta allowing the volatility to be a function of the
+    strike. '''
 
-     inverseDeltaTarget = norminvcdf(np.abs(deltaTarget))
+    inverseDeltaTarget = norminvcdf(np.abs(deltaTarget))
 
-     argtuple = (volatilityTypeValue, s, t, r, q,
-                 optionTypeValue,
-                 inverseDeltaTarget,
-                 parameters)
+    argtuple = (volatilityTypeValue, s, t, r, q,
+                optionTypeValue,
+                inverseDeltaTarget,
+                parameters)
 
-     K = newton_secant(_deltaFit, x0=initialGuess, args=argtuple,
-                       tol=1e-8, maxiter=50)
+    K = newton_secant(_deltaFit, x0=initialGuess, args=argtuple,
+                      tol=1e-8, maxiter=50)
 
-     return K
+    return K
 
 ###############################################################################
 # Unable to cache function and if I remove njit it complains about pickle
@@ -237,8 +238,8 @@ class TuringEquityVolSurface():
                  expiryDates: (list),
                  strikes: (list, np.ndarray),
                  volatilityGrid: (list, np.ndarray),
-                 volatilityFunctionType:TuringVolFunctionTypes=TuringVolFunctionTypes.CLARK,
-                 finSolverType:TuringSolverTypes=TuringSolverTypes.NELDER_MEAD):
+                 volatilityFunctionType: TuringVolFunctionTypes = TuringVolFunctionTypes.CLARK,
+                 finSolverType: TuringSolverTypes = TuringSolverTypes.NELDER_MEAD):
         ''' Create the FinEquitySurface object by passing in market vol data
         for a list of strikes and expiry dates. '''
 
@@ -259,7 +260,8 @@ class TuringEquityVolSurface():
             raise TuringError("1st dimension of vol grid is not nExpiryDates")
 
         if m != nStrikes:
-            raise TuringError("2nd dimension of the vol matrix is not nStrikes")
+            raise TuringError(
+                "2nd dimension of the vol matrix is not nStrikes")
 
         self._strikes = strikes
         self._numStrikes = len(strikes)
@@ -289,8 +291,8 @@ class TuringEquityVolSurface():
 
         volTypeValue = self._volatilityFunctionType.value
 
-        index0 = 0 # lower index in bracket
-        index1 = 0 # upper index in bracket
+        index0 = 0  # lower index in bracket
+        index1 = 0  # upper index in bracket
 
         numCurves = self._numExpiryDates
 
@@ -311,7 +313,7 @@ class TuringEquityVolSurface():
             index0 = len(self._texp) - 1
             index1 = len(self._texp) - 1
 
-        else: # Otherwise we look for bracketing times and interpolate
+        else:  # Otherwise we look for bracketing times and interpolate
 
             for i in range(1, numCurves):
 
@@ -327,7 +329,7 @@ class TuringEquityVolSurface():
         t1 = self._texp[index1]
 
         vol0 = volFunction(volTypeValue, self._parameters[index0],
-                               fwd0, K, t0)
+                           fwd0, K, t0)
 
         if index1 != index0:
 
@@ -453,7 +455,7 @@ class TuringEquityVolSurface():
 ###############################################################################
 
     def volatilityFromDeltaDate(self, callDelta, expiryDate,
-                                deltaMethod = None):
+                                deltaMethod=None):
         ''' Interpolates the Black-Scholes volatility from the volatility
         surface given a call option delta and expiry date. Linear interpolation
         is done in variance space. The smile strikes at bracketed dates are
@@ -470,8 +472,8 @@ class TuringEquityVolSurface():
 
         s = self._stockPrice
 
-        index0 = 0 # lower index in bracket
-        index1 = 0 # upper index in bracket
+        index0 = 0  # lower index in bracket
+        index1 = 0  # upper index in bracket
 
         numCurves = self._numExpiryDates
 
@@ -493,7 +495,7 @@ class TuringEquityVolSurface():
             index0 = len(self._texp) - 1
             index1 = len(self._texp) - 1
 
-        else: # Otherwise we look for bracketing times and interpolate
+        else:  # Otherwise we look for bracketing times and interpolate
 
             for i in range(1, numCurves):
 
@@ -548,7 +550,8 @@ class TuringEquityVolSurface():
             kt = ((texp-t0) * K1 + (t1-texp) * K0) / (t1 - t0)
 
             if vart < 0.0:
-                raise TuringError("Failed interpolation due to negative variance.")
+                raise TuringError(
+                    "Failed interpolation due to negative variance.")
 
             volt = np.sqrt(vart/texp)
 
@@ -639,7 +642,7 @@ class TuringEquityVolSurface():
                                   xinits[i],
                                   finSolverType)
 
-            self._parameters[i,:] = res
+            self._parameters[i, :] = res
 
             xinit = res
             xinits.append(xinit)
@@ -675,7 +678,7 @@ class TuringEquityVolSurface():
 
                 diff = fittedVol - mktVol
 
-                print("%s %12.3f %7.4f %7.4f %7.5f"%
+                print("%s %12.3f %7.4f %7.4f %7.5f" %
                       (expiryDate, strike,
                        fittedVol*100.0, mktVol*100, diff*100))
 
@@ -694,7 +697,7 @@ class TuringEquityVolSurface():
             f = self._F0T[iTenor]
             t = self._texp[iTenor]
 
-            dS = (highS - lowS)/ numIntervals
+            dS = (highS - lowS) / numIntervals
 
             disDF = self._discountCurve._df(t)
             divDF = self._dividendCurve._df(t)

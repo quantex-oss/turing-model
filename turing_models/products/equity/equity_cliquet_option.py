@@ -22,6 +22,7 @@ from turing_models.models.model import TuringModel
 # TODO: Monte Carlo pricer
 ###############################################################################
 
+
 class TuringEquityCliquetOption(TuringEquityOption):
     ''' A TuringEquityCliquetOption is a series of options which start and stop at
     successive times with each subsequent option resetting its strike to be ATM
@@ -72,7 +73,7 @@ class TuringEquityCliquetOption(TuringEquityOption):
               stockPrice: float,
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
-              model:TuringModel):
+              model: TuringModel):
         ''' Value the cliquet option as a sequence of options using the Black-
         Scholes model. '''
 
@@ -115,10 +116,12 @@ class TuringEquityCliquetOption(TuringEquityOption):
                     q = -np.log(dqMat/dq)/tau
 
                     if self._optionType == CALL:
-                        v_fwd_opt = s * dq * bs_value(1.0, tau, 1.0, r, q, v, CALL.value)
+                        v_fwd_opt = s * dq * \
+                            bs_value(1.0, tau, 1.0, r, q, v, CALL.value, False)
                         v_cliquet += v_fwd_opt
                     elif self._optionType == PUT:
-                        v_fwd_opt = s * dq * bs_value(1.0, tau, 1.0, r, q, v, PUT.value)
+                        v_fwd_opt = s * dq * \
+                            bs_value(1.0, tau, 1.0, r, q, v, PUT.value, False)
                         v_cliquet += v_fwd_opt
                     else:
                         raise TuringError("Unknown option type")

@@ -12,7 +12,8 @@ from .model_black_scholes_analytical import bs_value
 # Analytical Black Scholes model implementation and approximations
 ###############################################################################
 
-@njit(float64[:](float64, float64, float64, float64, float64[:], 
+
+@njit(float64[:](float64, float64, float64, float64, float64[:],
                  float64[:]), cache=True)
 def optionImpliedDbn(s, t, r, q, strikes, sigmas):
     ''' This function calculates the option smile/skew-implied probability
@@ -34,18 +35,18 @@ def optionImpliedDbn(s, t, r, q, strikes, sigmas):
     values = np.zeros(numSteps)
 
     for ik in range(0, numSteps):
-        strike = strikes[ik]        
+        strike = strikes[ik]
         sigma = sigmas[ik]
         v = bs_value(s, t, strike, r, q, sigma,
-                    TuringOptionTypes.EUROPEAN_CALL.value)
+                     TuringOptionTypes.EUROPEAN_CALL.value, False)
         values[ik] = v
-        
-    # Calculate the density rho(K) dK
-    densitydk = np.zeros(numSteps)    
 
-    for ik in range(1, numSteps-1):        
-        d2VdK2 = (values[ik+1] - 2.0 * values[ik] + values[ik-1] ) / dK
-        
+    # Calculate the density rho(K) dK
+    densitydk = np.zeros(numSteps)
+
+    for ik in range(1, numSteps-1):
+        d2VdK2 = (values[ik+1] - 2.0 * values[ik] + values[ik-1]) / dK
+
  #       print("%d %12.8f %12.8f %12.8f" %
  #             (ik, strikes[ik], values[ik], d2VdK2))
 
@@ -54,9 +55,3 @@ def optionImpliedDbn(s, t, r, q, strikes, sigmas):
     return densitydk
 
 ###############################################################################
-
-                   
-        
-                
-        
-        
