@@ -52,7 +52,7 @@ class FXOption(FX, InstrumentBase):
     exercise_type: (str, TuringExerciseType) = None  # EUROPEAN
     option_type: (str, TuringOptionType) = None  # CALL/PUT
     currency_pair: str = None  # USD/CNY (外币/本币)
-    trade_date: TuringDate = None
+    start_date: TuringDate = None
     # 1 unit of foreign in domestic
     premium_currency: (str, Currency) = None
     spot_days: int = 2
@@ -118,7 +118,7 @@ class FXOption(FX, InstrumentBase):
     @property
     def value_date_(self):
         date = self._value_date or self.ctx.pricing_date or self.value_date
-        return date if date >= self.trade_date else self.trade_date
+        return date if date >= self.start_date else self.start_date
 
     @value_date_.setter
     def value_date_(self, value: TuringDate):
@@ -217,7 +217,7 @@ class FXOption(FX, InstrumentBase):
         s += to_string("Exercise Type", self.exercise_type)
         s += to_string("Option Type", self.option_type)
         s += to_string("Currency Pair", self.currency_pair)
-        s += to_string("Trade Date", self.trade_date)
+        s += to_string("Start Date", self.start_date)
         s += to_string("Premium Currency", self.premium_currency)
         s += to_string("Exchange Rate", self.exchange_rate)
         s += to_string("Volatility", self.volatility)
