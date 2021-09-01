@@ -94,6 +94,9 @@ class FXOption(FX, InstrumentBase):
         if np.any(self.exchange_rate <= 0.0):
             raise TuringError(error_str3)
 
+        if not self.cut_off_time:
+            self.cut_off_time = self.expiry
+
         self.num_paths = 100000
         self.seed = 4242
 
