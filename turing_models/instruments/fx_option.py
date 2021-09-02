@@ -20,6 +20,7 @@ from turing_models.models.model_black_scholes_analytical import bs_value, bs_del
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
 from turing_models.instruments.common import greek, FX, Currency
 from turing_models.instruments.core import InstrumentBase
 
@@ -62,7 +63,13 @@ class FXOption(FX, InstrumentBase):
     tenors: List[Any] = field(default_factory=list)
     ccy1_cc_rates: List[Any] = field(default_factory=list)  # 外币
     ccy2_cc_rates: List[Any] = field(default_factory=list)  # 本币
-    volatility: float = 0.2
+    vol_tenors: List[Any] = field(default_factory=list)
+    atm_vols: List[Any] = field(default_factory=list)
+    butterfly_25delta_vols: List[Any] = field(default_factory=list)
+    risk_reversal_25delta_vols: List[Any] = field(default_factory=list)
+    butterfly_10delta_vols: List[Any] = field(default_factory=list)
+    risk_reversal_10delta_vols: List[Any] = field(default_factory=list)
+    volatility: float = None
     market_price = None
     _value_date = None
 
@@ -142,6 +149,21 @@ class FXOption(FX, InstrumentBase):
                 self.value_date_, self.tenors_, self.ccy2_cc_rates, TuringFrequencyTypes.CONTINUOUS)
 
     @property
+    def volatility_surface(self):
+        return TuringFXVolSurfaceVV(self.value_date_,
+                                    self.exchange_rate,
+                                    self.currency_pair,
+                                    self.notional_currency,
+                                    self.domestic_discount_curve,
+                                    self.foreign_discount_curve,
+                                    self.vol_tenors,
+                                    self.atm_vols,
+                                    self.butterfly_25delta_vols,
+                                    self.risk_reversal_25delta_vols,
+                                    self.butterfly_10delta_vols,
+                                    self.risk_reversal_10delta_vols)
+
+    @property
     def model(self):
         return TuringModelBlackScholes(self.volatility)
 
@@ -172,9 +194,11 @@ class FXOption(FX, InstrumentBase):
 
     @property
     def vol(self):
-        if isinstance(self.model, TuringModelBlackScholes):
+        if self.volatility:
             v = self.model._volatility
-
+        elif self.vol_tenors:
+            v = self.volatility_surface.volatilityFromStrikeDate(
+                self.strike, self.expiry)
         if np.all(v >= 0.0):
             v = np.maximum(v, 1e-10)
             return v

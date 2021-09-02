@@ -325,7 +325,7 @@ class TuringFXVolSurfaceVV():
                  riskReversal25DeltaVols: (list, np.ndarray),
                  butterfly10DeltaVols: (list, np.ndarray),
                  riskReversal10DeltaVols: (list, np.ndarray),
-                 alpha: float = 0.5,
+                 alpha: float = 1,
                  atmMethod: TuringFXATMMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL,
                  deltaMethod: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
                  volatilityFunctionType: TuringVolFunctionTypes = TuringVolFunctionTypes.VANNA_VOLGA,
@@ -355,11 +355,11 @@ class TuringFXVolSurfaceVV():
         self._spotFXRate = spotFXRate
         self._currencyPair = currencyPair
 
-        if len(currencyPair) != 6:
+        if len(currencyPair) != 7:
             raise TuringError("Currency pair must be 6 characters.")
 
         self._forName = self._currencyPair[0:3]
-        self._domName = self._currencyPair[3:6]
+        self._domName = self._currencyPair[4:7]
 
         self._notionalCurrency = notionalCurrency
         self._domDiscountCurve = domDiscountCurve
@@ -370,7 +370,7 @@ class TuringFXVolSurfaceVV():
         if len(atmVols) != self._numVolCurves:
             raise TuringError("Number ATM vols must equal number of tenors")
 
-        self._atmVols = np.array(atmVols)/100.0
+        self._atmVols = np.array(atmVols)
 
         self._useMS25DVol = True
         self._useRR25DVol = True
@@ -422,10 +422,10 @@ class TuringFXVolSurfaceVV():
             raise TuringError(
                 "No MS and RR. You must provide 10D or 25D MS + RR.")
 
-        self._butterfly25DeltaVols = np.array(butterfly25DeltaVols)/100.0
-        self._riskReversal25DeltaVols = np.array(riskReversal25DeltaVols)/100.0
-        self._butterfly10DeltaVols = np.array(butterfly10DeltaVols)/100.0
-        self._riskReversal10DeltaVols = np.array(riskReversal10DeltaVols)/100.0
+        self._butterfly25DeltaVols = np.array(butterfly25DeltaVols)
+        self._riskReversal25DeltaVols = np.array(riskReversal25DeltaVols)
+        self._butterfly10DeltaVols = np.array(butterfly10DeltaVols)
+        self._riskReversal10DeltaVols = np.array(riskReversal10DeltaVols)
 
         if alpha < 0.0 or alpha > 1.0:
             raise TuringError("Alpha must be between 0.0 and 1.0")
@@ -450,9 +450,15 @@ class TuringFXVolSurfaceVV():
         self._tenorIndex = 0
 
         self._expiryDates = []
-        for i in range(0, self._numVolCurves):
-            expiryDate = valueDate.addTenor(tenors[i])
-            self._expiryDates.append(expiryDate)
+
+        if isinstance(tenors[0], str):
+            for i in range(0, self._numVolCurves):
+                expiryDate = valueDate.addTenor(tenors[i])
+                self._expiryDates.append(expiryDate)
+        else:
+            for i in range(0, self._numVolCurves):
+                expiryDate = valueDate.addYears(tenors[i])
+                self._expiryDates.append(expiryDate)
 
         self._buildVolSurface(finSolverType=finSolverType, tol=tol)
 ###############################################################################
