@@ -3,12 +3,13 @@ from typing import Union
 
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.helper_functions import to_string
-from turing_models.instruments.common import Currency, Eq
+from turing_models.instruments.common import Currency
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class Stock(Eq, InstrumentBase):
+class Stock(InstrumentBase):
     asset_id: str = None
+    quantity: float = None  # 股数
     asset_type: str = None
     symbol: str = None
     name_cn: str = None
@@ -29,28 +30,13 @@ class Stock(Eq, InstrumentBase):
     def price(self):
         return self.stock_price_
 
-    def eq_delta(self):
+    def delta(self):
         return 1
-
-    def eq_gamma(self):
-        return 0
-
-    def eq_vega(self):
-        return 0
-
-    def eq_theta(self):
-        return 0
-
-    def eq_rho(self):
-        return 0
-
-    def eq_rho_q(self):
-        return 0
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)
         s += to_string("Asset Id", self.asset_id)
         s += to_string("Symbol", self.symbol)
         s += to_string("Name", self.name_cn)
-        s += to_string("Stock Price", self.stock_price_)
+        s += to_string("Stock Price", self.stock_price_, "")
         return s

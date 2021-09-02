@@ -1,21 +1,29 @@
 import datetime
 from dataclasses import dataclass, field
-from typing import List, Any
+from typing import List, Any, Union
 
 import numpy as np
-from loguru import logger
+from scipy import optimize
+from numba import njit
 
-from fundamental.turing_db.utils import to_snake
-from turing_models.instruments.common import FX, Currency
-from turing_models.instruments.core import InstrumentBase
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.models.model_black_scholes import TuringModelBlackScholes
+from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.mathematics import nprime
+from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType, TuringExerciseType
-from turing_models.utilities.global_variables import gDaysInYear
+from turing_models.products.fx.fx_mkt_conventions import TuringFXDeltaMethod
+from turing_models.models.model_sabr import volFunctionSABR
+from turing_models.models.model_sabr import TuringModelSABR
+from turing_models.models.model_black_scholes import TuringModelBlackScholes
+from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.helper_functions import to_string
-from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.mathematics import N
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
+from turing_models.instruments.common import greek, FX, Currency
+from turing_models.instruments.core import InstrumentBase
+
 
 ###############################################################################
 # ALL CCY RATES MUST BE IN NUM UNITS OF DOMESTIC PER UNIT OF FOREIGN CURRENCY
@@ -31,10 +39,11 @@ error_str3 = "Exchange Rate must be greater than zero."
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class FXOption(FX, InstrumentBase):
+
     asset_id: str = None
     product_type: str = None  # VANILLA
     underlier: str = None
-    underlier_symbol: str = None
+    underlier_symbol: str = None  # USD/CNY (外币/本币)
     notional: float = None
     notional_currency: (str, Currency) = None
     strike: float = None
@@ -43,8 +52,7 @@ class FXOption(FX, InstrumentBase):
     cut_off_time: TuringDate = None
     exercise_type: (str, TuringExerciseType) = None  # EUROPEAN
     option_type: (str, TuringOptionType) = None  # CALL/PUT
-    currency_pair: str = None  # USD/CNY (外币/本币)
-    trade_date: TuringDate = None
+    start_date: TuringDate = None
     # 1 unit of foreign in domestic
     premium_currency: (str, Currency) = None
     spot_days: int = 2
@@ -54,6 +62,12 @@ class FXOption(FX, InstrumentBase):
     tenors: List[Any] = field(default_factory=list)
     ccy1_cc_rates: List[Any] = field(default_factory=list)  # 外币
     ccy2_cc_rates: List[Any] = field(default_factory=list)  # 本币
+    vol_tenors: List[Any] = field(default_factory=list)
+    atm_vols: List[Any] = field(default_factory=list)
+    butterfly_25delta_vols: List[Any] = field(default_factory=list)
+    risk_reversal_25delta_vols: List[Any] = field(default_factory=list)
+    butterfly_10delta_vols: List[Any] = field(default_factory=list)
+    risk_reversal_10delta_vols: List[Any] = field(default_factory=list)
     volatility: float = None
     market_price = None
     _value_date = None
@@ -61,18 +75,18 @@ class FXOption(FX, InstrumentBase):
     def __post_init__(self):
         super().__init__()
 
-        if self.delivery_date and self.expiry and self.delivery_date < self.expiry:
+        if self.delivery_date < self.expiry:
             raise TuringError(
                 "Delivery date must be on or after expiry.")
 
-        if self.currency_pair and len(self.currency_pair) != 7:
+        if len(self.underlier_symbol) != 7:
             raise TuringError("Currency pair must be 7 characters.")
 
-        if self.strike and np.any(self.strike < 0.0):
+        if np.any(self.strike < 0.0):
             raise TuringError("Negative strike.")
-        if self.currency_pair:
-            self.foreign_name = self.currency_pair[0:3]
-            self.domestic_name = self.currency_pair[4:7]
+
+        self.foreign_name = self.underlier_symbol[0:3]
+        self.domestic_name = self.underlier_symbol[4:7]
 
         if isinstance(self.notional_currency, Currency):
             self.notional_currency = self.notional_currency.value
@@ -80,12 +94,10 @@ class FXOption(FX, InstrumentBase):
         if isinstance(self.premium_currency, Currency):
             self.premium_currency = self.premium_currency.value
 
-        if self.premium_currency \
-                and self.premium_currency != self.domestic_name \
-                and self.premium_currency != self.foreign_name:
+        if self.premium_currency != self.domestic_name and self.premium_currency != self.foreign_name:
             raise TuringError("Premium currency not in currency pair.")
 
-        if self.exchange_rate and np.any(self.exchange_rate <= 0.0):
+        if np.any(self.exchange_rate <= 0.0):
             raise TuringError(error_str3)
 
         if not self.cut_off_time:
@@ -112,7 +124,7 @@ class FXOption(FX, InstrumentBase):
     @property
     def value_date_(self):
         date = self._value_date or self.ctx.pricing_date or self.value_date
-        return date if date >= self.trade_date else self.trade_date
+        return date if date >= self.start_date else self.start_date
 
     @value_date_.setter
     def value_date_(self, value: TuringDate):
@@ -134,6 +146,21 @@ class FXOption(FX, InstrumentBase):
         if self.tenors_ and self.ccy2_cc_rates:
             return TuringDiscountCurveZeros(
                 self.value_date_, self.tenors_, self.ccy2_cc_rates, TuringFrequencyTypes.CONTINUOUS)
+
+    @property
+    def volatility_surface(self):
+        return TuringFXVolSurfaceVV(self.value_date_,
+                                    self.exchange_rate,
+                                    self.underlier_symbol,
+                                    self.notional_currency,
+                                    self.domestic_discount_curve,
+                                    self.foreign_discount_curve,
+                                    self.vol_tenors,
+                                    self.atm_vols,
+                                    self.butterfly_25delta_vols,
+                                    self.risk_reversal_25delta_vols,
+                                    self.butterfly_10delta_vols,
+                                    self.risk_reversal_10delta_vols)
 
     @property
     def model(self):
@@ -166,9 +193,11 @@ class FXOption(FX, InstrumentBase):
 
     @property
     def vol(self):
-        if isinstance(self.model, TuringModelBlackScholes):
+        if self.volatility:
             v = self.model._volatility
-
+        elif self.vol_tenors:
+            v = self.volatility_surface.volatilityFromStrikeDate(
+                self.strike, self.expiry)
         if np.all(v >= 0.0):
             v = np.maximum(v, 1e-10)
             return v
@@ -196,15 +225,6 @@ class FXOption(FX, InstrumentBase):
     def fx_volga(self):
         return 0.0
 
-    def set_property_list(self, curve, underlier, _property, key):
-        _list = []
-        for k,v in curve.items():
-            if k==underlier:
-                for cu in v.get('iuir_curve_data'):
-                    _list.append(cu.get(key))
-        setattr(self, _property, _list)
-        return _list
-
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)
         s += to_string("Asset Id", self.asset_id)
@@ -219,8 +239,8 @@ class FXOption(FX, InstrumentBase):
         s += to_string("Cut Off Time", self.cut_off_time)
         s += to_string("Exercise Type", self.exercise_type)
         s += to_string("Option Type", self.option_type)
-        s += to_string("Currency Pair", self.currency_pair)
-        s += to_string("Trade Date", self.trade_date)
+        s += to_string("Currency Pair", self.underlier_symbol)
+        s += to_string("Start Date", self.start_date)
         s += to_string("Premium Currency", self.premium_currency)
         s += to_string("Exchange Rate", self.exchange_rate)
         s += to_string("Volatility", self.volatility)
