@@ -10,11 +10,13 @@ from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
 
 vol_tenors = ['1M', '2M', '3M', '6M', '1Y', '2Y']
-atm_vols = [21.00, 21.00, 20.750, 19.400, 18.250, 17.677]
-butterfly_25delta_vols = [0.65, 0.75, 0.85, 0.90, 0.95, 0.85]
-risk_reversal_25delta_vols = [-0.20, -0.25, -0.30, -0.50, -0.60, -0.562]
-butterfly_10delta_vols = [2.433, 2.83, 3.228, 3.485, 3.806, 3.208]
-risk_reversal_10delta_vols = [-1.258, -1.297, -1.332, -1.408, -1.359, -1.208]
+atm_vols = [0.21, 0.21, 0.2075, 0.194, 0.1825, 0.17677]
+butterfly_25delta_vols = [0.0065, 0.0075, 0.0085, 0.0090, 0.0095, 0.0085]
+risk_reversal_25delta_vols = [-0.002, -
+                              0.0025, -0.003, -0.005, -0.006, -0.00562]
+butterfly_10delta_vols = [0.02433, 0.0283, 0.03228, 0.03485, 0.03806, 0.03208]
+risk_reversal_10delta_vols = [-0.01258, -
+                              0.01297, -0.01332, -0.01408, -0.01359, -0.01208]
 
 fxoption = FXVanillaOption(start_date=TuringDate(2015, 1, 1),
                            expiry=TuringDate(2015, 1, 1).addMonths(4),
