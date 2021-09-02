@@ -1,5 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
+import scipy.stats as sci
+import math
 
 import matplotlib.pyplot as plt
 from numba import njit, float64, int64

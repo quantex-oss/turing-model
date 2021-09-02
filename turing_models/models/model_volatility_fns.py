@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from numba import njit, float64
 
 from turing_models.utilities.mathematics import N
@@ -10,13 +11,14 @@ from turing_models.utilities.error import TuringError
 
 from enum import Enum
 
+
 class TuringVolFunctionTypes(Enum):
     CLARK = 0
     SABR = 1
     SABR_BETA_ONE = 2
     SABR_BETA_HALF = 3
     BBG = 4
-    CLARK5= 5
+    CLARK5 = 5
     SVI = 6
     SSVI = 7
     VANNA_VOLGA = 8
@@ -73,7 +75,7 @@ def volFunctionBloomberg(params, f, k, t):
 
     vsqrtt = sigma * np.sqrt(t)
 
-    d1 = np.log(f/k)/ vsqrtt + vsqrtt/2.0
+    d1 = np.log(f/k) / vsqrtt + vsqrtt/2.0
     delta = N(d1)
 
     v = 0.0
@@ -88,8 +90,9 @@ def volFunctionBloomberg(params, f, k, t):
 # Also, if I vectorise it it fails as it cannot handle a numpy array as input
 ###############################################################################
 
+
 @njit(float64(float64[:], float64, float64, float64),
-           fastmath=True, cache=True)
+      fastmath=True, cache=True)
 def volFunctionSVI(params, f, k, t):
     ''' Volatility Function proposed by Gatheral in 2004. Increasing a results
     in a vertical translation of the smile in the positive direction.
@@ -118,10 +121,12 @@ def volFunctionSVI(params, f, k, t):
 ###############################################################################
 ###############################################################################
 
+
 @njit(float64(float64, float64), fastmath=True, cache=True)
 def phiSSVI(theta, gamma):
     phi = (1.0/gamma/theta) * (1.0 - (1.0 - np.exp(-gamma*theta))/gamma/theta)
     return phi
+
 
 @njit(float64(float64, float64, float64, float64, float64),
       fastmath=True, cache=True)
@@ -132,8 +137,9 @@ def SSVI(x, gamma, sigma, rho, t):
     p = phiSSVI(theta, gamma)
     px = p * x
     g = px + rho
-    v = 0.5 * theta * (1. + rho * px + np.sqrt(g**2  + 1. - rho * rho))
+    v = 0.5 * theta * (1. + rho * px + np.sqrt(g**2 + 1. - rho * rho))
     return v
+
 
 @njit(float64(float64, float64, float64, float64, float64),
       fastmath=True, cache=True)
@@ -142,9 +148,11 @@ def SSVI1(x, gamma, sigma, rho, t):
     theta = sigma * sigma * t
     p = phiSSVI(theta, gamma)
     px = p * x
-    v = 0.5 * theta * p * (px + rho * np.sqrt(px**2 + 2. * px * rho + 1.) + rho)
+    v = 0.5 * theta * p * \
+        (px + rho * np.sqrt(px**2 + 2. * px * rho + 1.) + rho)
     v = v / np.sqrt(px**2 + 2. * px * rho + 1.)
     return v
+
 
 @njit(float64(float64, float64, float64, float64, float64),
       fastmath=True, cache=True)
@@ -154,8 +162,10 @@ def SSVI2(x, gamma, sigma, rho, t):
     p = phiSSVI(theta, gamma)
     px = p * x
     v = 0.5 * theta * p * p * (1. - rho * rho)
-    v =v / ((px**2 + 2. * px * rho + 1.) * np.sqrt(px**2 + 2. * px * rho + 1.))
+    v = v / ((px**2 + 2. * px * rho + 1.) *
+             np.sqrt(px**2 + 2. * px * rho + 1.))
     return v
+
 
 @njit(float64(float64, float64, float64, float64, float64),
       fastmath=True, cache=True)
@@ -164,8 +174,9 @@ def SSVIt(x, gamma, sigma, rho, t):
     eps = 0.0001
     ssvitplus = SSVI(x, gamma, sigma, rho, t + eps)
     ssvitminus = SSVI(x, gamma, sigma, rho, t - eps)
-    deriv = (ssvitplus - ssvitminus) / 2.0/ eps
+    deriv = (ssvitplus - ssvitminus) / 2.0 / eps
     return deriv
+
 
 @njit(float64(float64, float64, float64, float64, float64),
       fastmath=True, cache=True)
@@ -174,8 +185,9 @@ def g(x, gamma, sigma, rho, t):
     w1 = SSVI1(x, gamma, sigma, rho, t)
     w2 = SSVI2(x, gamma, sigma, rho, t)
     xwv = x * w1 / w
-    v = (1. - 0.5 * xwv) **2 - 0.25 * w1 * w1 * (0.25 + 1. / w) + 0.5 * w2
+    v = (1. - 0.5 * xwv) ** 2 - 0.25 * w1 * w1 * (0.25 + 1. / w) + 0.5 * w2
     return v
+
 
 @njit(float64(float64, float64, float64, float64, float64),
       fastmath=True, cache=True)
@@ -183,6 +195,7 @@ def dminus(x, gamma, sigma, rho, t):
     vsqrt = np.sqrt(SSVI(x, gamma, sigma, rho, t))
     v = -x / vsqrt - 0.5 * vsqrt
     return v
+
 
 @njit(float64(float64, float64, float64, float64, float64),
       fastmath=True, cache=True)
@@ -192,6 +205,7 @@ def densitySSVI(x, gamma, sigma, rho, t):
     v = v / np.sqrt(2. * np.pi * SSVI(x, gamma, sigma, rho, t))
     return v
 
+
 @njit(float64(float64, float64, float64, float64, float64),
       fastmath=True, cache=True)
 def SSVI_LocalVarg(x, gamma, sigma, rho, t):
@@ -200,6 +214,7 @@ def SSVI_LocalVarg(x, gamma, sigma, rho, t):
     den = g(x, gamma, sigma, rho, t)
     var = num/den
     return var
+
 
 @njit(float64(float64[:], float64, float64, float64),
       fastmath=True, cache=True)
@@ -218,10 +233,29 @@ def volFunctionSSVI(params, f, k, t):
 ###############################################################################
 
 
-def volFunctionVV(K_P, K_ATM, K_C, sig_PUT, sig_ATM, sig_CALL, f, k, t):
-    z1 = (math.log(K_ATM/k) * math.log(K_C/k)) / (math.log(K_ATM/K_P) * math.log(K_C/K_P))
-    z2 = (math.log(k/K_P) * math.log(K_C/k)) / (math.log(K_ATM/K_P) * math.log(K_C/K_ATM))
-    z3 = (math.log(k/K_P) * math.log(k/K_ATM)) / (math.log(K_C/K_P) * math.log(K_C/K_ATM))
+@njit(float64(float64, float64, float64, float64),
+      fastmath=True, cache=True)
+def d_1(F, X, vol, t):
+    d1 = (math.log(F/X) + 0.5 * (vol ** 2) * t)/(vol * math.sqrt(t))
+    return d1
+
+
+@njit(float64(float64, float64, float64, float64),
+      fastmath=True, cache=True)
+def d_2(F, X, vol, t):
+    d2 = d_1(F, X, vol, t) - vol * math.sqrt(t)
+    return d2
+
+@njit(float64(float64[:], float64, float64, float64),
+      fastmath=True, cache=True)
+def volFunctionVV(params, f, k, t):
+    K_P, K_ATM, K_C, sig_PUT, sig_ATM, sig_CALL = params
+    z1 = (math.log(K_ATM/k) * math.log(K_C/k)) / \
+        (math.log(K_ATM/K_P) * math.log(K_C/K_P))
+    z2 = (math.log(k/K_P) * math.log(K_C/k)) / \
+        (math.log(K_ATM/K_P) * math.log(K_C/K_ATM))
+    z3 = (math.log(k/K_P) * math.log(k/K_ATM)) / \
+        (math.log(K_C/K_P) * math.log(K_C/K_ATM))
 
     First_Ord_Approx = (z1 * sig_PUT + z2 * sig_ATM + z3 * sig_CALL) - sig_ATM
     Second_Ord_Approx = z1 * d_1(f, K_P, sig_PUT, t) * d_2(f, K_P, sig_PUT, t) * ((sig_PUT-sig_ATM)**2) \
@@ -236,10 +270,3 @@ def volFunctionVV(K_P, K_ATM, K_C, sig_PUT, sig_ATM, sig_CALL, f, k, t):
 
     return vol
 
-def d_1(F, X, vol, t):
-    d1 = (math.log(F/X) + 0.5 * (vol ** 2) * t)/(vol * math.sqrt(t))
-    return d1
-
-def d_2(F, X, vol, t):
-    d2 = d_1(F, X, vol, t) - vol * math.sqrt(t)
-    return d2
