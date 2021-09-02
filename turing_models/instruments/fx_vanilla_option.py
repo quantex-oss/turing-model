@@ -1,25 +1,14 @@
-import datetime
 from dataclasses import dataclass
 
 import numpy as np
 from scipy import optimize
-from numba import njit
 
-from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.mathematics import nprime
-from turing_models.utilities.global_variables import gDaysInYear
+from turing_models.instruments.fx_option import FXOption
+from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.products.fx.fx_mkt_conventions import TuringFXDeltaMethod
-from turing_models.models.model_sabr import volFunctionSABR
-from turing_models.models.model_sabr import TuringModelSABR
-from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
-from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.instruments.common import greek
-from turing_models.instruments.fx_option import FXOption
+from turing_models.utilities.mathematics import nprime
 
 
 def f(volatility, *args):
@@ -33,6 +22,7 @@ def f(volatility, *args):
     objFn = vdf - price
 
     return objFn
+
 
 ###############################################################################
 
@@ -220,7 +210,7 @@ class FXVanillaOption(FXOption):
         rd = self.rd
         rf = self.rf
 
-        lnS0k = np.log(S0/K)
+        lnS0k = np.log(S0 / K)
         sqrtT = np.sqrt(texp)
         den = v * sqrtT
         mu = rd - rf
@@ -315,7 +305,7 @@ class FXVanillaOption(FXOption):
         rf = self.rf
 
         mu = rd - rf
-        v2 = v**2
+        v2 = v ** 2
         sqrtdt = np.sqrt(texp)
 
         # Use Antithetic variables
@@ -337,3 +327,12 @@ class FXVanillaOption(FXOption):
         payoff = np.mean(payoff_a_1) + np.mean(payoff_a_2)
         v = payoff * np.exp(-rd * tdel) / 2.0
         return v
+
+    def set_property_list(self, curve, underlier, _property, key):
+        _list = []
+        for k, v in curve.items():
+            if k == underlier:
+                for cu in v.get('iuir_curve_data'):
+                    _list.append(cu.get(key))
+        setattr(self, _property, _list)
+        return _list
