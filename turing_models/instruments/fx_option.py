@@ -43,7 +43,7 @@ class FXOption(FX, InstrumentBase):
     asset_id: str = None
     product_type: str = None  # VANILLA
     underlier: str = None
-    underlier_symbol: str = None
+    underlier_symbol: str = None  # USD/CNY (外币/本币)
     notional: float = None
     notional_currency: (str, Currency) = None
     strike: float = None
@@ -52,7 +52,6 @@ class FXOption(FX, InstrumentBase):
     cut_off_time: TuringDate = None
     exercise_type: (str, TuringExerciseType) = None  # EUROPEAN
     option_type: (str, TuringOptionType) = None  # CALL/PUT
-    currency_pair: str = None  # USD/CNY (外币/本币)
     start_date: TuringDate = None
     # 1 unit of foreign in domestic
     premium_currency: (str, Currency) = None
@@ -80,14 +79,14 @@ class FXOption(FX, InstrumentBase):
             raise TuringError(
                 "Delivery date must be on or after expiry.")
 
-        if len(self.currency_pair) != 7:
+        if len(self.underlier_symbol) != 7:
             raise TuringError("Currency pair must be 7 characters.")
 
         if np.any(self.strike < 0.0):
             raise TuringError("Negative strike.")
 
-        self.foreign_name = self.currency_pair[0:3]
-        self.domestic_name = self.currency_pair[4:7]
+        self.foreign_name = self.underlier_symbol[0:3]
+        self.domestic_name = self.underlier_symbol[4:7]
 
         if isinstance(self.notional_currency, Currency):
             self.notional_currency = self.notional_currency.value
@@ -152,7 +151,7 @@ class FXOption(FX, InstrumentBase):
     def volatility_surface(self):
         return TuringFXVolSurfaceVV(self.value_date_,
                                     self.exchange_rate,
-                                    self.currency_pair,
+                                    self.underlier_symbol,
                                     self.notional_currency,
                                     self.domestic_discount_curve,
                                     self.foreign_discount_curve,
@@ -240,7 +239,7 @@ class FXOption(FX, InstrumentBase):
         s += to_string("Cut Off Time", self.cut_off_time)
         s += to_string("Exercise Type", self.exercise_type)
         s += to_string("Option Type", self.option_type)
-        s += to_string("Currency Pair", self.currency_pair)
+        s += to_string("Currency Pair", self.underlier_symbol)
         s += to_string("Start Date", self.start_date)
         s += to_string("Premium Currency", self.premium_currency)
         s += to_string("Exchange Rate", self.exchange_rate)
