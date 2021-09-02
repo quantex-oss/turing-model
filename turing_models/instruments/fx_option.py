@@ -1,28 +1,21 @@
 import datetime
 from dataclasses import dataclass, field
-from typing import List, Any, Union
+from typing import List, Any
 
 import numpy as np
-from scipy import optimize
-from numba import njit
+from loguru import logger
 
-from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.mathematics import nprime
-from turing_models.utilities.global_variables import gDaysInYear
+from fundamental.turing_db.utils import to_snake
+from turing_models.instruments.common import FX, Currency
+from turing_models.instruments.core import InstrumentBase
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType, TuringExerciseType
-from turing_models.products.fx.fx_mkt_conventions import TuringFXDeltaMethod
-from turing_models.models.model_sabr import volFunctionSABR
-from turing_models.models.model_sabr import TuringModelSABR
-from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
+from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.helper_functions import to_string
-from turing_models.utilities.mathematics import N
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.instruments.common import greek, FX, Currency
-from turing_models.instruments.core import InstrumentBase
-
+from turing_models.utilities.turing_date import TuringDate
 
 ###############################################################################
 # ALL CCY RATES MUST BE IN NUM UNITS OF DOMESTIC PER UNIT OF FOREIGN CURRENCY
@@ -38,7 +31,6 @@ error_str3 = "Exchange Rate must be greater than zero."
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class FXOption(FX, InstrumentBase):
-
     asset_id: str = None
     product_type: str = None  # VANILLA
     underlier: str = None
@@ -69,18 +61,18 @@ class FXOption(FX, InstrumentBase):
     def __post_init__(self):
         super().__init__()
 
-        if self.delivery_date < self.expiry:
+        if self.delivery_date and self.expiry and self.delivery_date < self.expiry:
             raise TuringError(
                 "Delivery date must be on or after expiry.")
 
-        if len(self.currency_pair) != 7:
+        if self.currency_pair and len(self.currency_pair) != 7:
             raise TuringError("Currency pair must be 7 characters.")
 
-        if np.any(self.strike < 0.0):
+        if self.strike and np.any(self.strike < 0.0):
             raise TuringError("Negative strike.")
-
-        self.foreign_name = self.currency_pair[0:3]
-        self.domestic_name = self.currency_pair[4:7]
+        if self.currency_pair:
+            self.foreign_name = self.currency_pair[0:3]
+            self.domestic_name = self.currency_pair[4:7]
 
         if isinstance(self.notional_currency, Currency):
             self.notional_currency = self.notional_currency.value
@@ -88,10 +80,12 @@ class FXOption(FX, InstrumentBase):
         if isinstance(self.premium_currency, Currency):
             self.premium_currency = self.premium_currency.value
 
-        if self.premium_currency != self.domestic_name and self.premium_currency != self.foreign_name:
+        if self.premium_currency \
+                and self.premium_currency != self.domestic_name \
+                and self.premium_currency != self.foreign_name:
             raise TuringError("Premium currency not in currency pair.")
 
-        if np.any(self.exchange_rate <= 0.0):
+        if self.exchange_rate and np.any(self.exchange_rate <= 0.0):
             raise TuringError(error_str3)
 
         if not self.cut_off_time:
@@ -201,6 +195,15 @@ class FXOption(FX, InstrumentBase):
 
     def fx_volga(self):
         return 0.0
+
+    def set_property_list(self, curve, underlier, _property, key):
+        _list = []
+        for k,v in curve.items():
+            if k==underlier:
+                for cu in v.get('iuir_curve_data'):
+                    _list.append(cu.get(key))
+        setattr(self, _property, _list)
+        return _list
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)

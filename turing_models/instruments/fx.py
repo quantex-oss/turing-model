@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import Union
 
+from fundamental.turing_db.utils import to_snake
+from turing_models.instruments.common import FX
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.helper_functions import to_string
-from turing_models.instruments.common import Currency, FX
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -40,6 +40,7 @@ class ForeignExchange(FX, InstrumentBase):
 
     def fx_rho_q(self):
         return 0
+
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)
