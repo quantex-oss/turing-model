@@ -3,7 +3,7 @@ import time
 
 import numpy as np
 
-from turing_models.market.constants import dates, rates
+from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.products.equity import TuringEquitySnowballOption
@@ -75,7 +75,7 @@ asian_option = AsianOption(asset_id='OPTIONCN00000001',
 snowball_option = SnowballOption(asset_id='OPTIONCN00000001',
                                  option_type=TuringOptionType.CALL,
                                  start_date=TuringDate(2021, 6, 3),
-                                 expiry=TuringDate(2021, 9, 3),
+                                 expiry=TuringDate(2021, 10, 3),
                                  participation_rate=1.0,
                                  barrier=5.5,
                                  knock_in_price=5.2,

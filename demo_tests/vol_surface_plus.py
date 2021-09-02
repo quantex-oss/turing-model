@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 # from TuringTestCases import TuringTestCases, globalTestCaseMode
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.turing_date import TuringDate
-from fundamental.market.volatility.fx_vol_surface_plus import TuringFXDeltaMethod
-from fundamental.market.volatility.fx_vol_surface_plus import TuringFXATMMethod
-from fundamental.market.volatility.fx_vol_surface_plus import TuringFXVolSurfacePlus
-from fundamental.market.volatility.fx_vol_surface import TuringFXVolSurface
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.volatility.fx_vol_surface_plus import TuringFXDeltaMethod
+from turing_models.market.volatility.fx_vol_surface_plus import TuringFXATMMethod
+from turing_models.market.volatility.fx_vol_surface_plus import TuringFXVolSurfacePlus
+from turing_models.market.volatility.fx_vol_surface import TuringFXVolSurface
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 import numpy as np
 # import sys
 # sys.path.append("..")
@@ -18,7 +18,7 @@ import numpy as np
 
 ###############################################################################
 
-PLOT_GRAPHS = False
+PLOT_GRAPHS = True
 
 ###############################################################################
 # TODO: ADD LOGGING TO TEST CASES
@@ -34,7 +34,7 @@ def test_FinFXMktVolSurface1(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -81,7 +81,7 @@ def test_FinFXMktVolSurface1(verboseCalibration):
 
         fxMarketPlus.checkCalibration(False)
 
-        if 1 == 0:  # PLOT_GRAPHS:
+        if 1 == 1:  # PLOT_GRAPHS:
 
             fxMarketPlus.plotVolCurves()
 
@@ -93,6 +93,7 @@ def test_FinFXMktVolSurface1(verboseCalibration):
                 plt.plot(dbns[i]._x, dbns[i]._densitydx)
                 plt.title(volFunctionType)
                 print("SUM:", dbns[i].sum())
+            plt.show()
 
 ###############################################################################
 
@@ -104,7 +105,7 @@ def test_FinFXMktVolSurface2(verboseCalibration):
     # Example from Book extract by Iain Clarke using Tables 3.3 and 3.4
     # print("EURJPY EXAMPLE CLARK")
 
-    valueDate = TuringDate(10, 4, 2020)
+    valueDate = TuringDate(2020, 4, 10)
 
     forName = "EUR"
     domName = "JPY"
@@ -162,6 +163,7 @@ def test_FinFXMktVolSurface2(verboseCalibration):
             plt.plot(dbns[i]._x, dbns[i]._densitydx)
             plt.title(volFunctionType)
             print("SUM:", dbns[i].sum())
+        plt.show()
 
 
 ###############################################################################
@@ -175,7 +177,7 @@ def test_FinFXMktVolSurface3(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 4.4 and 4.5
         # where we examine the calibration to a full surface in Chapter 4
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -222,9 +224,9 @@ def test_FinFXMktVolSurface3(verboseCalibration):
                                               deltaMethod,
                                               volFunctionType)
 
-        fxMarketPlus.checkCalibration(False)
+        # fxMarketPlus.checkCalibration(False)
 
-        if 1 == 0:  # PLOT_GRAPHS:
+        if 1 == 1:  # PLOT_GRAPHS:
 
             fxMarketPlus.plotVolCurves()
 
@@ -312,7 +314,7 @@ def test_FinFXMktVolSurface4(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -406,7 +408,7 @@ def test_FinFXMktVolSurface5(verboseCalibration):
         # Example from Book extract by Iain Clark using Tables 3.3 and 3.4
         # print("EURUSD EXAMPLE CLARK")
 
-        valueDate = TuringDate(10, 4, 2020)
+        valueDate = TuringDate(2020, 4, 10)
 
         forName = "EUR"
         domName = "USD"
@@ -465,11 +467,11 @@ if __name__ == '__main__':
 
     verboseCalibration = False
 
-    test_FinFXMktVolSurface1(verboseCalibration)
-    test_FinFXMktVolSurface2(verboseCalibration)
+    # test_FinFXMktVolSurface1(verboseCalibration)
+    # test_FinFXMktVolSurface2(verboseCalibration)
     test_FinFXMktVolSurface3(verboseCalibration)
-    test_FinFXMktVolSurface4(verboseCalibration)
-    test_FinFXMktVolSurface5(verboseCalibration)
+    # test_FinFXMktVolSurface4(verboseCalibration)
+    # test_FinFXMktVolSurface5(verboseCalibration)
 
     end = time.time()
 
