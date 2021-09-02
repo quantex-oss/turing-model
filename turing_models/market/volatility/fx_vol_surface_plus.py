@@ -996,9 +996,14 @@ class TuringFXVolSurfacePlus():
         self._tenorIndex = 0
 
         self._expiryDates = []
-        for i in range(0, self._numVolCurves):
-            expiryDate = valueDate.addTenor(tenors[i])
-            self._expiryDates.append(expiryDate)
+        if isinstance(tenors[0], str):
+            for i in range(0, self._numVolCurves):
+                expiryDate = valueDate.addTenor(tenors[i])
+                self._expiryDates.append(expiryDate)
+        else:
+            for i in range(0, self._numVolCurves):
+                expiryDate = valueDate.addYears(tenors[i])
+                self._expiryDates.append(expiryDate)
 
         self._buildVolSurface(finSolverType=finSolverType, tol=tol)
 
@@ -2130,7 +2135,7 @@ class TuringFXVolSurfacePlus():
                 vols.append(sigma)
                 K = K + dK
 
-            labelStr = self._tenors[tenorIndex]
+            labelStr = str(self._tenors[tenorIndex])
             labelStr += " ATM: " + str(atmVol)[0:6]
             labelStr += " MS25: " + str(msVol25)[0:6]
             labelStr += " RR25: " + str(rrVol25)[0:6]
@@ -2192,6 +2197,7 @@ class TuringFXVolSurfacePlus():
 
         plt.title(title)
         plt.legend(loc="lower left", bbox_to_anchor=(1, 0))
+        plt.show()
 
 ###############################################################################
 

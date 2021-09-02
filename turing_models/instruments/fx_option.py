@@ -62,7 +62,7 @@ class FXOption(FX, InstrumentBase):
     tenors: List[Any] = field(default_factory=list)
     ccy1_cc_rates: List[Any] = field(default_factory=list)  # 外币
     ccy2_cc_rates: List[Any] = field(default_factory=list)  # 本币
-    volatility: float = None
+    volatility: float = 0.2
     market_price = None
     _value_date = None
 
