@@ -35,12 +35,11 @@ class ForeignExchange(FX, InstrumentBase):
     def fx_theta(self):
         return 0
 
-    def fx_rho(self):
+    def fx_vanna(self):
         return 0
 
-    def fx_rho_q(self):
+    def fx_volga(self):
         return 0
-
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)

@@ -9,7 +9,7 @@ from turing_models.instruments.fx_vanilla_option import FXVanillaOption
 from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
 
-vol_tenors = ['1M', '2M', '3M', '6M', '1Y', '2Y']
+vol_tenors = [0.083, 0.167, 0.25, 0.5, 1, 2]
 atm_vols = [0.21, 0.21, 0.2075, 0.194, 0.1825, 0.17677]
 butterfly_25delta_vols = [0.0065, 0.0075, 0.0085, 0.0090, 0.0095, 0.0085]
 risk_reversal_25delta_vols = [-0.002, -
