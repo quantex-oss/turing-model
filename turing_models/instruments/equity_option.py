@@ -5,23 +5,23 @@ from typing import List, Any, Union
 import numpy as np
 from loguru import logger
 
-from fundamental.market.curves import TuringDiscountCurveFlat, \
-     TuringDiscountCurveZeros
 from fundamental.turing_db.utils import to_snake
 
-from turing_models.instruments.common import greek, bump, Currency
+from turing_models.instruments.common import greek, bump, Currency, Eq
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionType
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.instruments.core import Instrument
+from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
+from turing_models.market.curves import TuringDiscountCurveFlat, \
+    TuringDiscountCurveZeros
 from turing_models.utilities.helper_functions import convert_argument_type
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class EqOption(Instrument):
+class EqOption(Eq, InstrumentBase):
 
     asset_id: str = None
     underlier: Union[str, List[str]] = None
@@ -40,61 +40,54 @@ class EqOption(Instrument):
     premium: float = None
     premium_date: TuringDate = None
     annualized_flag: bool = True
-    value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))  # 估值日期
+    value_date: TuringDate = TuringDate(
+        *(datetime.date.today().timetuple()[:3]))  # 估值日期
     stock_price: Union[float, List[float]] = None
     volatility: Union[float, List[float]] = 0
     interest_rate: float = 0
     zero_dates: List[Any] = field(default_factory=list)
     zero_rates: List[Any] = field(default_factory=list)
     dividend_yield: Union[float, List[float]] = 0
-    __value_date = None
-    __stock_price = None
-    __volatility = None
-    __discount_curve = None
-    __dividend_curve = None
+    _value_date = None
+    _stock_price = None
+    _volatility = None
+    _discount_curve = None
+    _dividend_curve = None
 
     def __post_init__(self):
         super().__init__()
         convert_argument_type(self, self.__init__, self.__dict__)
-        self.set_param()
-
-    def set_param(self):
-        self._value_date = self.value_date
-        self._stock_price = self.stock_price
-        self._volatility = self.volatility
-        self._interest_rate = self.interest_rate
-        self._dividend_yield = self.dividend_yield
-        self._number_of_options = self.number_of_options or 1
-        self._multiplier = self.multiplier or 1
+        self.number_of_options = self.number_of_options or 1
+        self.multiplier = self.multiplier or 1
 
     @property
     def value_date_(self):
-        date = self.__value_date or self.ctx.pricing_date or self._value_date
+        date = self._value_date or self.ctx.pricing_date or self.value_date
         return date if date >= self.start_date else self.start_date
 
     @value_date_.setter
     def value_date_(self, value: TuringDate):
-        self.__value_date = value
+        self._value_date = value
 
     @property
     def stock_price_(self) -> float:
-        return self.__stock_price or getattr(self.ctx, f"spot_{self.underlier}") or self._stock_price
+        return self._stock_price or getattr(self.ctx, f"spot_{self.underlier}") or self.stock_price
 
     @stock_price_.setter
     def stock_price_(self, value: float):
-        self.__stock_price = value
+        self._stock_price = value
 
     @property
     def volatility_(self) -> float:
-        return getattr(self.ctx, f"volatility_{self.underlier}") or self._volatility
+        return getattr(self.ctx, f"volatility_{self.underlier}") or self.volatility
 
     @property
     def interest_rate_(self) -> float:
-        return self.ctx.interest_rate or self._interest_rate
+        return self.ctx.interest_rate or self.interest_rate
 
     @property
     def dividend_yield_(self) -> Union[float, List[float]]:
-        return self.ctx.dividend_yield or self._dividend_yield
+        return self.ctx.dividend_yield or self.dividend_yield
 
     @property
     def model(self) -> TuringModelBlackScholes:
@@ -102,46 +95,47 @@ class EqOption(Instrument):
 
     @property
     def zero_dates_(self):
+        """把年化的时间列表转换为TuringDate格式"""
         return self.value_date_.addYears(self.zero_dates)
 
     @property
     def discount_curve(self):
-        if self.__discount_curve:
-            return self.__discount_curve
+        if self._discount_curve:
+            return self._discount_curve
         else:
             if self.interest_rate_:
                 return TuringDiscountCurveFlat(
                     self.value_date_, self.interest_rate_)
-            else:
+            elif self.zero_dates_ and self.zero_rates:
                 return TuringDiscountCurveZeros(
                     self.value_date_, self.zero_dates_, self.zero_rates)
 
     @discount_curve.setter
     def discount_curve(self, value: TuringDiscountCurveZeros):
-        self.__discount_curve = value
+        self._discount_curve = value
 
     @property
     def dividend_curve(self) -> TuringDiscountCurveFlat:
-        if self.__dividend_curve:
-            return self.__dividend_curve
+        if self._dividend_curve:
+            return self._dividend_curve
         else:
             return TuringDiscountCurveFlat(
                 self.value_date_, self.dividend_yield_)
 
     @dividend_curve.setter
     def dividend_curve(self, value: TuringDiscountCurveFlat):
-        self.__dividend_curve = value
+        self._dividend_curve = value
 
     @property
     def texp(self) -> float:
-        if self.expiry >= self.value_date_:
+        if self.expiry > self.value_date_:
             return (self.expiry - self.value_date_) / gDaysInYear
         else:
             raise TuringError("Expiry must be > Value_Date")
 
     @property
     def r(self) -> float:
-        if self.expiry >= self.value_date_:
+        if self.expiry > self.value_date_:
             return self.discount_curve.zeroRate(self.expiry)
         else:
             raise TuringError("Expiry must be > Value_Date")
@@ -156,11 +150,11 @@ class EqOption(Instrument):
 
     @property
     def v(self) -> float:
-        return self.__volatility or self.model._volatility
+        return self._volatility or self.model._volatility
 
     @v.setter
     def v(self, value: float):
-        self.__volatility = value
+        self._volatility = value
 
     def price(self) -> float:
         print("You should not be here!")
@@ -222,9 +216,12 @@ class EqOption(Instrument):
         s += to_string("Strike Price", self.strike_price)
         s += to_string("Multiplier", self.multiplier)
         s += to_string("Annualized Flag", self.annualized_flag)
-        # s += to_string("Value Date", self.value_date_)
-        # s += to_string("Stock Price", self.stock_price_)
-        # s += to_string("Volatility", self.volatility_)
-        # s += to_string("Interest Rate", self.r)
-        # s += to_string("Dividend Yield", self.q)
+        s += to_string("Stock Price", self.stock_price_)
+        s += to_string("Volatility", self.volatility_)
+        if self.value_date_:
+            s += to_string("Value Date", self.value_date_)
+        if self.interest_rate_:
+            s += to_string("Interest Rate", self.interest_rate_)
+        if self.dividend_yield_ or self.dividend_yield_ == 0:
+            s += to_string("Dividend Yield", self.dividend_yield_)
         return s

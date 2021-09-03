@@ -58,7 +58,7 @@ class FXOption(FX, InstrumentBase):
     risk_reversal_25delta_vols: List[Any] = field(default_factory=list)
     butterfly_10delta_vols: List[Any] = field(default_factory=list)
     risk_reversal_10delta_vols: List[Any] = field(default_factory=list)
-    volatility: float = 0.2
+    volatility: float = None
     market_price = None
     _value_date = None
 

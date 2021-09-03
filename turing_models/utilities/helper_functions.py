@@ -510,3 +510,22 @@ def convert_argument_type(self, func, values):
                 elif '-' in str(value):
                     __value = TuringDate.fromString(value, '%Y-%m-%d')
                 setattr(self, value_name, __value)
+
+
+def convert_argument_type(self, func, values):
+    """将时间的str格式转换为TuringDate"""
+    print(func.__annotations__)
+    for value_name, annotation_type in func.__annotations__.items():
+        if value_name != 'return':
+            value = values[value_name]
+            if value is None:
+                continue
+            if annotation_type is TuringDate and type(value) is str:
+                """注释类型是TuringDate，但实际传入是str，
+                则将str类型转成对应的TuringDate类型"""
+                if value.isdigit():
+                    """只支持传入'%Y%m%d'格式的字符串时间"""
+                    __value = TuringDate.fromString(value)
+                elif '-' in str(value):
+                    __value = TuringDate.fromString(value, '%Y-%m-%d')
+                setattr(self, value_name, __value)

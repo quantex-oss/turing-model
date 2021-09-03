@@ -4,26 +4,24 @@ from typing import Union, List, Iterable
 
 from loguru import logger
 
-from fundamental.base import ctx
-from fundamental.base import Context
-from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from fundamental import PricingContext
+from fundamental.base import ctx, Context
 from turing_models.instruments.common import RiskMeasure
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.utilities import TuringFrequencyTypes
-from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
-from .parallel_proxy import ParallelCalcProxy
+from turing_models.utilities.turing_date import TuringDate
+from turing_models.instruments.parallel_proxy import ParallelCalcProxy
 from turing_models.constants import ParallelType
 
 
-class PriceableImpl:
+class InstrumentBase:
+
     def __init__(self):
         self.ctx: Context = ctx
 
-    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]],
-             parallel_type=ParallelType.NULL, option_all=None):
-
+    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type=ParallelType.NULL, option_all=None):
         result: Union[float, List] = []
-
         try:
             if ParallelType.valid(parallel_type):
                 return ParallelCalcProxy(
@@ -32,41 +30,89 @@ class PriceableImpl:
                     call_func_name="calc",
                     func_params={"risk_measure": risk_measure}
                 ).calc()
-
             if isinstance(risk_measure, str) and risk_measure in RiskMeasure.__members__:
                 risk_measure = RiskMeasure.__members__[risk_measure]
-
             if not isinstance(risk_measure, Iterable):
                 result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(
                     option_all)
-                result = self._calc(result)
-                self.__row__(risk_measure.value, round(result, 2) if result else 0)
+                result = self._calc(risk_measure, result)
                 return result
             for risk in risk_measure:
                 res = getattr(self, risk.value)()
-                res = self._calc(res)
+                res = self._calc(risk, res)
                 result.append(res)
-                self.__row__(risk.value, round(res, 2) if res and not isinstance(res, Iterable) else 0)
             return result
         except Exception as e:
             logger.error(str(traceback.format_exc()))
             return ""
 
-    def _calc(self, value):
+    def _calc(self, risk, value):
         """二次计算,默认为直接返回当前值"""
         return value
 
-    def __row__(self, ident, _value):
-        """计算后对表格数据进行填充"""
-        if self.__class__.__name__ == "Position" and hasattr(self.ctx, "positions_dict"):
-            for key, value in self.ctx.positions_dict.items():
-                if value.get('asset_id') == self.tradable.asset_id if self.tradable else "":
-                    value[ident] = _value
+    def _set_by_dict(self, tmp_dict):
+        for k, v in tmp_dict.items():
+            if v:
+                setattr(self, k, v)
 
+    def type(self):
+        pass
 
-class Instrument(PriceableImpl):
-    def __init__(self):
-        super().__init__()
+    def resolve(self, expand_dict=None):
+        if not expand_dict:
+            """手动resolve,自动补全未传入参数"""
+            class_name = []
+            class_name.append(self.__class__.__name__)
+            [class_name.append(x.__name__) for x in self.__class__.__bases__]
+            logger.debug(class_name)
+            if "KnockOutOption" in class_name:
+                self._resolve()
+            elif "Stock" in class_name:
+                self._resolve()
+            else:
+                raise Exception("暂不支持此类型的Resolve")
+        else:
+            self._set_by_dict(expand_dict)
+        self.__post_init__()
+
+    def api_calc(self, riskMeasure: list):
+        """api calc 结果集"""
+        msg = ''
+        response_data = []
+        if riskMeasure:
+            for risk_fun in riskMeasure:
+                try:
+                    result = getattr(self, risk_fun)()
+                except Exception as e:
+                    traceback.print_exc()
+                    msg += f'{risk_fun} error: {str(e)};'
+                    result = ''
+                    msg += f'调用{risk_fun}出错;'
+                response = {}
+                response['riskMeasure'] = risk_fun
+                response['value'] = result
+                response_data.append(response)
+        return response_data
+
+    def main(self, context=None, assetId: str = None, pricingContext=None, riskMeasure=None):
+        if context:
+            self.ctx.context = context
+        """api默认入口"""
+        scenario = PricingContext()
+        if not assetId.startswith("OPTION") and not assetId.startswith("BOND"):
+            raise Exception("不支持的asset_id")
+        setattr(self, 'asset_id', assetId)
+        getattr(self, '_resolve')()
+
+        if pricingContext:
+            scenario.resolve(pricingContext)
+            with scenario:
+                return self.api_calc(riskMeasure)
+        else:
+            return self.api_calc(riskMeasure)
+
+    def __repr__(self):
+        return self.__class__.__name__
 
 
 class CurveAdjust:
@@ -118,18 +164,21 @@ class CurveAdjust:
         dates = self.today.addYears(self.dates)
         curve = TuringDiscountCurveZeros(self.today, dates, self.rates)
         point_date = self.today.addYears(self.pivot_point)
-        self.pivot_rate = curve.zeroRate(point_date, freqType=TuringFrequencyTypes.ANNUAL)
+        self.pivot_rate = curve.zeroRate(
+            point_date, freqType=TuringFrequencyTypes.ANNUAL)
 
         if self.tenor_start:
             start_date = self.today.addYears(self.tenor_start)
-            self.start_rate = curve.zeroRate(start_date, freqType=TuringFrequencyTypes.ANNUAL)
+            self.start_rate = curve.zeroRate(
+                start_date, freqType=TuringFrequencyTypes.ANNUAL)
         else:
             self.tenor_start = self.dates[0]
             self.start_rate = self.rates[0]
 
         if self.tenor_end:
             end_date = self.today.addYears(self.tenor_end)
-            self.end_rate = curve.zeroRate(end_date, freqType=TuringFrequencyTypes.ANNUAL)
+            self.end_rate = curve.zeroRate(
+                end_date, freqType=TuringFrequencyTypes.ANNUAL)
         else:
             self.tenor_end = self.dates[-1]
             self.end_rate = self.rates[-1]
@@ -171,9 +220,11 @@ class CurveAdjust:
             if i >= self.start_index and i <= self.end_index:
                 self.rates[i] = (i - self.pivot_index) * dr + rates_copy[i]
             elif i < self.start_index:
-                self.rates[i] = (self.start_index - self.pivot_index) * dr + rates_copy[i]
+                self.rates[i] = (self.start_index -
+                                 self.pivot_index) * dr + rates_copy[i]
             elif i > self.end_index:
-                self.rates[i] = (self.end_index - self.pivot_index) * dr + rates_copy[i]
+                self.rates[i] = (self.end_index -
+                                 self.pivot_index) * dr + rates_copy[i]
 
     def get_dates_result(self):
         return self.dates
