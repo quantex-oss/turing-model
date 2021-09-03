@@ -2,17 +2,15 @@ import datetime
 import traceback
 from typing import Union, List, Iterable
 
-from loguru import logger
-
 from fundamental import PricingContext
 from fundamental.base import ctx, Context
+from turing_models.constants import ParallelType
 from turing_models.instruments.common import RiskMeasure
+from turing_models.instruments.parallel_proxy import ParallelCalcProxy
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.utilities import TuringFrequencyTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.instruments.parallel_proxy import ParallelCalcProxy
-from turing_models.constants import ParallelType
 
 
 class InstrumentBase:
@@ -20,7 +18,8 @@ class InstrumentBase:
     def __init__(self):
         self.ctx: Context = ctx
 
-    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type=ParallelType.NULL, option_all=None):
+    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type=ParallelType.NULL,
+             option_all=None):
         result: Union[float, List] = []
         try:
             if ParallelType.valid(parallel_type):
@@ -43,7 +42,7 @@ class InstrumentBase:
                 result.append(res)
             return result
         except Exception as e:
-            logger.error(str(traceback.format_exc()))
+            traceback.format_exc()
             return ""
 
     def _calc(self, risk, value):
@@ -64,7 +63,6 @@ class InstrumentBase:
             class_name = []
             class_name.append(self.__class__.__name__)
             [class_name.append(x.__name__) for x in self.__class__.__bases__]
-            logger.debug(class_name)
             if "KnockOutOption" in class_name:
                 self._resolve()
             elif "Stock" in class_name:
