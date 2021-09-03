@@ -15,7 +15,7 @@ from turing_models.utilities.solvers_1d import bisection, newton, newton_secant
 
 @vectorize([float64(float64, float64, float64, float64, float64, float64,
                     int64, float64)], fastmath=True, cache=True)
-def bs_value(s, t, k, r, q, v, optionTypeValue, tdel=False):
+def bs_value(s:float, t:float, k:float, r:float, q:float, v:float, optionTypeValue:float, tdel:float=0.0):
     ''' Price a derivative using Black-Scholes model. '''
 
     if not tdel:
