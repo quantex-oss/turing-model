@@ -8,7 +8,7 @@ from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustT
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.global_types import TuringSwapTypes
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 ##########################################################################
 

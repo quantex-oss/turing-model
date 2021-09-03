@@ -5,12 +5,11 @@ from typing import Union
 
 from loguru import logger
 
-from fundamental.turing_db.base.core import InstrumentBase
 from fundamental.turing_db.bond_data import BondApi
 from fundamental.turing_db.data import Turing
 from fundamental.turing_db.err import FastError
 from fundamental.turing_db.utils import to_snake
-from turing_models.instruments.core import Instrument
+from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
@@ -25,7 +24,7 @@ dy = 0.0001
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class Bond(Instrument, InstrumentBase):
+class Bond(InstrumentBase):
     asset_id: str = None
     bond_symbol: str = None
     exchange_code: str = None
@@ -41,7 +40,8 @@ class Bond(Instrument, InstrumentBase):
     clean_price: float = None
     currency: str = None
     name: str = None
-    settlement_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))
+    settlement_date: TuringDate = TuringDate(
+        *(datetime.date.today().timetuple()[:3]))
 
     def __post_init__(self):
         super().__init__()
@@ -52,13 +52,8 @@ class Bond(Instrument, InstrumentBase):
         self._flow_amounts = []
         self._accrued_interest = None
         self._accrued_days = 0.0
-        self.set_param()
-
-    def set_param(self):
-        self._settlement_date = self.settlement_date
         if self.freq_type:
             self._calculate_flow_dates()
-        if self.freq_type:
             self.frequency = TuringFrequency(self.freq_type_)
 
     @property
@@ -99,7 +94,7 @@ class Bond(Instrument, InstrumentBase):
 
     @property
     def settlement_date_(self):
-        return self.ctx.pricing_date or self._settlement_date
+        return self.ctx.pricing_date or self.settlement_date
 
     def _calculate_flow_dates(self):
         """ Determine the bond cashflow payment dates."""
@@ -133,10 +128,10 @@ class Bond(Instrument, InstrumentBase):
             traceback.print_exc()
             return None
 
-    def fetch_quotes(self, ids):
+    def fetch_quotes(self, gurl=None, _ids=None):
         """根据asset_ids的集合为参数,取行情"""
         try:
-            res = Turing.get_bond_markets(_ids=ids)
+            res = Turing.get_bond_markets(gurl=gurl, _ids=_ids)
             return res
         except Exception as e:
             traceback.print_exc()
@@ -173,26 +168,27 @@ class Bond(Instrument, InstrumentBase):
                         return ytm_
         return None
 
-    def set_curve(self, gurl):
-        curve = BondApi.fetch_yield_curve(gurl, self.curve_code)
+    def set_curve(self, gurl=None):
+        curve = BondApi.fetch_yield_curve(
+            gurl=gurl, bond_curve_code=getattr(self, 'curve_code'))
         if not curve:
             raise FastError(code=10020,
                             msg="参数不全, yield_curve api return null",
                             data=None)
         for code in to_snake(curve):
-            if code.get("curve_code") == self.curve_code:
+            if code.get("curve_code") == getattr(self, 'curve_code'):
                 for cu in code.get('curve_data'):
                     self.zero_dates.append(cu.get('term'))
                     self.zero_rates.append(cu.get('spot_rate'))
 
-    def set_ytm(self, gurl):
-        market_bond = BondApi.fetch_quotes(gurl, self.asset_id)
+    def set_ytm(self, gurl=None):
+        market_bond = BondApi.fetch_quotes(gurl=gurl, asset_id=self.asset_id)
         if market_bond:
             logger.debug(f"market_bond:{market_bond}")
             for quote in market_bond:
                 if quote.get("asset_id") == self.asset_id:
                     if quote.get("ytm", None):
-                        self.ytm = quote.get("ytm")
+                        setattr(self, 'ytm', quote.get("ytm"))
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)

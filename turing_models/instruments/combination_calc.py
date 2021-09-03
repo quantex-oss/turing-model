@@ -1,23 +1,21 @@
 import json
 from turing_models.constants import ParallelType
-from turing_models.exceptions import CalcResultException, CombinationCalcException
 from turing_models.instruments.parallel_proxy import ParallelCalcProxy
+
+
+class CalcResultException(BaseException):
+    pass
 
 
 class CombinationCalc:
 
-    def __init__(self, source_list, parallel_type=ParallelType.NULL, timeout=3):
+    def __init__(self, source_list, parallel_type=None, timeout=3):
         self.source_list = source_list
-        ParallelType.valid(parallel_type)
         self.parallel_type = parallel_type
         self.timeout = timeout
         self.results = []
 
     def add(self, model_calc_obj):
-        if not isinstance(model_calc_obj, ModelCalc):
-            raise CombinationCalcException(
-                f"The {model_calc_obj} must be instance of ModelCalc!"
-            )
         self.source_list.append(model_calc_obj)
 
     def run(self):
@@ -42,7 +40,7 @@ class ModelCalc:
         self.process.extend([self.model.calc(r, parallel_type) for r in self.risk_measures])
 
     def process_result(self, parallel_type, timeout):
-        if parallel_type == ParallelType.YR:
+        if parallel_type == ParallelType.YR.value:
             result = ParallelCalcProxy.get_results_with_yr(self.process, timeout)
             self.result.update_fields(
                 {

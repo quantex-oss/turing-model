@@ -5,7 +5,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.products.equity.equity_option import TuringEquityOption
 
 from turing_models.models.model import TuringModel
@@ -68,7 +68,7 @@ class TuringEquityAmericanOption(TuringEquityOption):
 
         texp = np.maximum(texp, 1e-10)
 
-        r = discountCurve.ccRate(self._expiryDate)        
+        r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
 
         s = stockPrice

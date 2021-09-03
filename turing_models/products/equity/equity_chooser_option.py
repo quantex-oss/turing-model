@@ -8,10 +8,10 @@ from turing_models.utilities.error import TuringError
 
 from turing_models.products.equity.equity_option import TuringEquityOption
 from turing_models.utilities.global_types import TuringOptionTypes
-from fundamental.market.curves.discount_curve_flat import TuringDiscountCurve
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurve
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.models.model_black_scholes import bsValue
+from turing_models.models.model_black_scholes import bs_value
 
 from scipy.stats import norm
 N = norm.cdf
@@ -38,8 +38,10 @@ def _f(ss, *args):
     v = args[7]
     q = args[8]
 
-    v_call = bsValue(ss, tc - t, kc, rtc, q, v, TuringOptionTypes.EUROPEAN_CALL.value)
-    v_put = bsValue(ss, tp - t, kp, rtp, q, v, TuringOptionTypes.EUROPEAN_PUT.value)
+    v_call = bs_value(ss, tc - t, kc, rtc, q, v,
+                      TuringOptionTypes.EUROPEAN_CALL.value, False)
+    v_put = bs_value(ss, tp - t, kp, rtp, q, v,
+                     TuringOptionTypes.EUROPEAN_PUT.value, False)
 
     v = v_call - v_put
     return v
@@ -67,10 +69,12 @@ class TuringEquityChooserOption(TuringEquityOption):
         checkArgumentTypes(self.__init__, locals())
 
         if chooseDate > callExpiryDate:
-            raise TuringError("Expiry date must precede call option expiry date")
+            raise TuringError(
+                "Expiry date must precede call option expiry date")
 
         if chooseDate > putExpiryDate:
-            raise TuringError("Expiry date must precede put option expiry date")
+            raise TuringError(
+                "Expiry date must precede put option expiry date")
 
         self._chooseDate = chooseDate
         self._callExpiryDate = callExpiryDate
@@ -205,11 +209,15 @@ class TuringEquityChooserOption(TuringEquityOption):
         s_1 = s * m
         s_2 = s / m
 
-        v_call_1 = bsValue(s_1, tc - t, kc, rtc, q, v, TuringOptionTypes.EUROPEAN_CALL.value)
-        v_put_1 = bsValue(s_1, tp - t, kp, rtp, q, v, TuringOptionTypes.EUROPEAN_PUT.value)
+        v_call_1 = bs_value(s_1, tc - t, kc, rtc, q, v,
+                            TuringOptionTypes.EUROPEAN_CALL.value, False)
+        v_put_1 = bs_value(s_1, tp - t, kp, rtp, q, v,
+                           TuringOptionTypes.EUROPEAN_PUT.value, False)
 
-        v_call_2 = bsValue(s_2, tc - t, kc, rtc, q, v, TuringOptionTypes.EUROPEAN_CALL.value)
-        v_put_2 = bsValue(s_2, tp - t, kp, rtp, q, v, TuringOptionTypes.EUROPEAN_PUT.value)
+        v_call_2 = bs_value(s_2, tc - t, kc, rtc, q, v,
+                            TuringOptionTypes.EUROPEAN_CALL.value, False)
+        v_put_2 = bs_value(s_2, tp - t, kp, rtp, q, v,
+                           TuringOptionTypes.EUROPEAN_PUT.value, False)
 
         payoff_1 = np.maximum(v_call_1, v_put_1)
         payoff_2 = np.maximum(v_call_2, v_put_2)

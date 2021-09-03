@@ -243,5 +243,5 @@ class BondFloatingRate(Bond):
         s += to_string("Next Coupon", self.next_coupon)
         s += to_string("Current Ibor", self.current_ibor)
         s += to_string("Future Ibor", self.future_ibor)
-        s += to_string("Discount Margin", self.dm)
+        s += to_string("Discount Margin", self.dm, "")
         return s

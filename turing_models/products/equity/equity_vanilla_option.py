@@ -10,16 +10,16 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 from turing_models.models.model import TuringModel
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.models.model_black_scholes_analytical import bsValue
-from turing_models.models.model_black_scholes_analytical import bsDelta
-from turing_models.models.model_black_scholes_analytical import bsVega
-from turing_models.models.model_black_scholes_analytical import bsGamma
-from turing_models.models.model_black_scholes_analytical import bsRho, bsPsi
-from turing_models.models.model_black_scholes_analytical import bsTheta
+from turing_models.models.model_black_scholes_analytical import bs_value
+from turing_models.models.model_black_scholes_analytical import bs_delta
+from turing_models.models.model_black_scholes_analytical import bs_vega
+from turing_models.models.model_black_scholes_analytical import bs_gamma
+from turing_models.models.model_black_scholes_analytical import bs_rho, bs_psi
+from turing_models.models.model_black_scholes_analytical import bs_theta
 from turing_models.models.model_black_scholes_analytical import bsImpliedVolatility
 from turing_models.models.model_black_scholes_analytical import bsIntrinsic
 
@@ -34,6 +34,7 @@ from turing_models.utilities.mathematics import N
 
 ###############################################################################
 
+
 @njit(fastmath=True, cache=True)
 def _f(v, args):
 
@@ -45,7 +46,7 @@ def _f(v, args):
     k = args[5]
     price = args[6]
 
-    objFn = bsValue(s0, texp, k, r, q, v, optionTypeValue)
+    objFn = bs_value(s0, texp, k, r, q, v, optionTypeValue, False)
     objFn = objFn - price
     return objFn
 
@@ -61,7 +62,7 @@ def _fvega(v, *args):
     q = args[4]
     k = args[5]
 
-    fprime = bsVega(s0, texp, k, r, q, v, self._optionType.value)
+    fprime = bs_vega(s0, texp, k, r, q, v, self._optionType.value, False)
     return fprime
 
 ###############################################################################
@@ -161,7 +162,8 @@ class TuringEquityVanillaOption():
         if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
-            value = bsValue(s0, texp, k, r, q, v, self._optionType.value)
+            value = bs_value(s0, texp, k, r, q, v,
+                             self._optionType.value, False)
 
         else:
             raise TuringError("Unknown Model Type")
@@ -205,7 +207,8 @@ class TuringEquityVanillaOption():
         if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
-            delta = bsDelta(s0, texp, k, r, q, v, self._optionType.value)
+            delta = bs_delta(s0, texp, k, r, q, v,
+                             self._optionType.value, False)
 
         else:
             raise TuringError("Unknown Model Type")
@@ -219,7 +222,7 @@ class TuringEquityVanillaOption():
               stockPrice: float,
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
-              model:TuringModel):
+              model: TuringModel):
         ''' Calculate the analytical gamma of a European vanilla option. '''
 
         if type(valueDate) == TuringDate:
@@ -248,7 +251,7 @@ class TuringEquityVanillaOption():
         if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
-            gamma = bsGamma(s0, texp, k, r, q, v, self._optionType.value)
+            gamma = bs_gamma(s0, texp, k, r, q, v, self._optionType.value, False)
 
         else:
             raise TuringError("Unknown Model Type")
@@ -262,7 +265,7 @@ class TuringEquityVanillaOption():
              stockPrice: float,
              discountCurve: TuringDiscountCurve,
              dividendCurve: TuringDiscountCurve,
-             model:TuringModel):
+             model: TuringModel):
         ''' Calculate the analytical vega of a European vanilla option. '''
 
         if type(valueDate) == TuringDate:
@@ -290,7 +293,7 @@ class TuringEquityVanillaOption():
         if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
-            vega = bsVega(s0, texp, k, r, q, v, self._optionType.value)
+            vega = bs_vega(s0, texp, k, r, q, v, self._optionType.value, False)
 
         else:
             raise TuringError("Unknown Model Type")
@@ -304,7 +307,7 @@ class TuringEquityVanillaOption():
               stockPrice: float,
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
-              model:TuringModel):
+              model: TuringModel):
         ''' Calculate the analytical theta of a European vanilla option. '''
 
         if type(valueDate) == TuringDate:
@@ -332,7 +335,7 @@ class TuringEquityVanillaOption():
         if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
-            theta = bsTheta(s0, texp, k, r, q, v, self._optionType.value)
+            theta = bs_theta(s0, texp, k, r, q, v, self._optionType.value)
 
         else:
             raise TuringError("Unknown Model Type")
@@ -374,7 +377,7 @@ class TuringEquityVanillaOption():
         if isinstance(model, TuringModelBlackScholes):
 
             v = model._volatility
-            rho = bsRho(s0, texp, k, r, q, v, self._optionType.value)
+            rho = bs_rho(s0, texp, k, r, q, v, self._optionType.value)
 
         else:
             raise TuringError("Unknown Model Type")
@@ -388,39 +391,39 @@ class TuringEquityVanillaOption():
               discountCurve: TuringDiscountCurve,
               dividendCurve: TuringDiscountCurve,
               model: TuringModel):
-            ''' Calculate the analytical rho_q of a European vanilla option. '''
+        ''' Calculate the analytical rho_q of a European vanilla option. '''
 
-            if type(valueDate) == TuringDate:
-                texp = (self._expiryDate - valueDate) / gDaysInYear
-            else:
-                texp = valueDate
+        if type(valueDate) == TuringDate:
+            texp = (self._expiryDate - valueDate) / gDaysInYear
+        else:
+            texp = valueDate
 
-            if np.any(stockPrice <= 0.0):
-                raise TuringError("Stock price must be greater than zero.")
+        if np.any(stockPrice <= 0.0):
+            raise TuringError("Stock price must be greater than zero.")
 
-            if np.any(texp < 0.0):
-                raise TuringError("Time to expiry must be positive.")
+        if np.any(texp < 0.0):
+            raise TuringError("Time to expiry must be positive.")
 
-            s0 = stockPrice
-            texp = np.maximum(texp, 1e-10)
+        s0 = stockPrice
+        texp = np.maximum(texp, 1e-10)
 
-            df = discountCurve.df(self._expiryDate)
-            r = -np.log(df)/texp
+        df = discountCurve.df(self._expiryDate)
+        r = -np.log(df)/texp
 
-            dq = dividendCurve.df(self._expiryDate)
-            q = -np.log(dq)/texp
+        dq = dividendCurve.df(self._expiryDate)
+        q = -np.log(dq)/texp
 
-            k = self._strikePrice
+        k = self._strikePrice
 
-            if isinstance(model, TuringModelBlackScholes):
+        if isinstance(model, TuringModelBlackScholes):
 
-                v = model._volatility
-                rho_q = bsPsi(s0, texp, k, r, q, v, self._optionType.value)
+            v = model._volatility
+            rho_q = bs_psi(s0, texp, k, r, q, v, self._optionType.value)
 
-            else:
-                raise TuringError("Unknown Model Type")
+        else:
+            raise TuringError("Unknown Model Type")
 
-            return rho_q
+        return rho_q
 
     ###############################################################################
 
@@ -460,7 +463,7 @@ class TuringEquityVanillaOption():
                            stockPrice: float,
                            discountCurve: TuringDiscountCurve,
                            dividendCurve: TuringDiscountCurve,
-                           model:TuringModel,
+                           model: TuringModel,
                            numPaths: int = 10000,
                            seed: int = 4242,
                            useSobol: int = 0):
@@ -476,15 +479,15 @@ class TuringEquityVanillaOption():
         vol = model._volatility
 
         v = _valueMC_NUMPY_ONLY(stockPrice,
-                           texp,
-                           self._strikePrice,
-                           self._optionType.value,
-                           r,
-                           q,
-                           vol,
-                           numPaths,
-                           seed,
-                           useSobol)
+                                texp,
+                                self._strikePrice,
+                                self._optionType.value,
+                                r,
+                                q,
+                                vol,
+                                numPaths,
+                                seed,
+                                useSobol)
 
         return v
 
@@ -495,7 +498,7 @@ class TuringEquityVanillaOption():
                            stockPrice: float,
                            discountCurve: TuringDiscountCurve,
                            dividendCurve: TuringDiscountCurve,
-                           model:TuringModel,
+                           model: TuringModel,
                            numPaths: int = 10000,
                            seed: int = 4242,
                            useSobol: int = 0):
@@ -511,15 +514,15 @@ class TuringEquityVanillaOption():
         vol = model._volatility
 
         v = _valueMC_NUMBA_ONLY(stockPrice,
-                           texp,
-                           self._strikePrice,
-                           self._optionType.value,
-                           r,
-                           q,
-                           vol,
-                           numPaths,
-                           seed,
-                           useSobol)
+                                texp,
+                                self._strikePrice,
+                                self._optionType.value,
+                                r,
+                                q,
+                                vol,
+                                numPaths,
+                                seed,
+                                useSobol)
 
         return v
 
@@ -530,7 +533,7 @@ class TuringEquityVanillaOption():
                                stockPrice: float,
                                discountCurve: TuringDiscountCurve,
                                dividendCurve: TuringDiscountCurve,
-                               model:TuringModel,
+                               model: TuringModel,
                                numPaths: int = 10000,
                                seed: int = 4242,
                                useSobol: int = 0):
@@ -546,15 +549,15 @@ class TuringEquityVanillaOption():
         vol = model._volatility
 
         v = _valueMC_NUMBA_PARALLEL(stockPrice,
-                           texp,
-                           self._strikePrice,
-                           self._optionType.value,
-                           r,
-                           q,
-                           vol,
-                           numPaths,
-                           seed,
-                           useSobol)
+                                    texp,
+                                    self._strikePrice,
+                                    self._optionType.value,
+                                    r,
+                                    q,
+                                    vol,
+                                    numPaths,
+                                    seed,
+                                    useSobol)
 
 #        _valueMC_NUMBA_ONLY.parallel_diagnostics(level=4)
 
@@ -567,7 +570,7 @@ class TuringEquityVanillaOption():
                             stockPrice: float,
                             discountCurve: TuringDiscountCurve,
                             dividendCurve: TuringDiscountCurve,
-                            model:TuringModel,
+                            model: TuringModel,
                             numPaths: int = 10000,
                             seed: int = 4242,
                             useSobol: int = 0):
@@ -583,15 +586,15 @@ class TuringEquityVanillaOption():
         vol = model._volatility
 
         v = _valueMC_NUMPY_NUMBA(stockPrice,
-                           texp,
-                           self._strikePrice,
-                           self._optionType.value,
-                           r,
-                           q,
-                           vol,
-                           numPaths,
-                           seed,
-                           useSobol)
+                                 texp,
+                                 self._strikePrice,
+                                 self._optionType.value,
+                                 r,
+                                 q,
+                                 vol,
+                                 numPaths,
+                                 seed,
+                                 useSobol)
 
         return v
 
@@ -602,7 +605,7 @@ class TuringEquityVanillaOption():
                                 stockPrice: float,
                                 discountCurve: TuringDiscountCurve,
                                 dividendCurve: TuringDiscountCurve,
-                                model:TuringModel,
+                                model: TuringModel,
                                 numPaths: int = 10000,
                                 seed: int = 4242,
                                 useSobol: int = 0):
@@ -618,15 +621,15 @@ class TuringEquityVanillaOption():
         vol = model._volatility
 
         v = _valueMC_NONUMBA_NONUMPY(stockPrice,
-                           texp,
-                           self._strikePrice,
-                           self._optionType.value,
-                           r,
-                           q,
-                           vol,
-                           numPaths,
-                           seed,
-                           useSobol)
+                                     texp,
+                                     self._strikePrice,
+                                     self._optionType.value,
+                                     r,
+                                     q,
+                                     vol,
+                                     numPaths,
+                                     seed,
+                                     useSobol)
 
         return v
 
@@ -637,7 +640,7 @@ class TuringEquityVanillaOption():
                 stockPrice: float,
                 discountCurve: TuringDiscountCurve,
                 dividendCurve: TuringDiscountCurve,
-                model:TuringModel,
+                model: TuringModel,
                 numPaths: int = 10000,
                 seed: int = 4242,
                 useSobol: int = 0):

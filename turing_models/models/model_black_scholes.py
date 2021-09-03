@@ -10,7 +10,7 @@ from turing_models.utilities.helper_functions import checkArgumentTypes
 from .model import TuringModel
 from .model_crr_tree import crrTreeValAvg
 from .model_black_scholes_analytical import bawValue
-from .model_black_scholes_analytical import bsValue
+from .model_black_scholes_analytical import bs_value
 
 from enum import Enum
 
@@ -23,7 +23,7 @@ class TuringModelBlackScholesTypes(Enum):
 ###############################################################################
 
 class TuringModelBlackScholes(TuringModel):
-    
+
     def __init__(self,
                  volatility: (float, np.ndarray),
                  implementationType: TuringModelBlackScholesTypes = TuringModelBlackScholesTypes.DEFAULT,
@@ -51,23 +51,23 @@ class TuringModelBlackScholes(TuringModel):
 
             if self._implementationType == TuringModelBlackScholesTypes.ANALYTICAL:
 
-                v =  bsValue(spotPrice, timeToExpiry, strikePrice, 
+                v =  bs_value(spotPrice, timeToExpiry, strikePrice,
                              riskFreeRate, dividendRate, self._volatility,
-                             optionType.value)
+                             optionType.value, False)
 
                 return v
 
             elif self._implementationType == TuringModelBlackScholesTypes.CRR_TREE:
-                
-                v = crrTreeValAvg(spotPrice, riskFreeRate, dividendRate, 
+
+                v = crrTreeValAvg(spotPrice, riskFreeRate, dividendRate,
                                   self._volatility, self._numStepsPerYear,
-                                  timeToExpiry, optionType.value, 
+                                  timeToExpiry, optionType.value,
                                   strikePrice)['value']
 
                 return v
 
             else:
-                
+
                 raise TuringError("Implementation not available for this product")
 
         elif optionType == TuringOptionTypes.AMERICAN_CALL \
@@ -91,19 +91,19 @@ class TuringModelBlackScholes(TuringModel):
 
             elif self._implementationType == TuringModelBlackScholesTypes.CRR_TREE:
 
-                v = crrTreeValAvg(spotPrice, riskFreeRate, dividendRate, 
+                v = crrTreeValAvg(spotPrice, riskFreeRate, dividendRate,
                                   self._volatility, self._numStepsPerYear,
-                                  timeToExpiry, optionType.value, 
+                                  timeToExpiry, optionType.value,
                                   strikePrice)['value']
 
                 return v
 
             else:
-                
+
                 raise TuringError("Implementation not available for this product")
 
         else:
-            
+
             raise TuringError("Should not be here")
 
 ###############################################################################

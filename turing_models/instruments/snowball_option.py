@@ -6,9 +6,9 @@ import numpy as np
 from turing_models.utilities import TuringSchedule, TuringFrequencyTypes, TuringCalendarTypes, TuringBusDayAdjustTypes
 from turing_models.utilities.global_variables import gNumObsInYear, gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
-     TuringKnockInTypes, TuringOptionType
+    TuringKnockInTypes, TuringOptionType
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
-     TuringGBMNumericalScheme
+    TuringGBMNumericalScheme
 from turing_models.instruments.equity_option import EqOption
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
@@ -26,7 +26,8 @@ class SnowballOption(EqOption):
     knock_in_type: Union[str, TuringKnockInTypes] = None
     knock_in_strike1: float = None
     knock_in_strike2: float = None
-    business_day_adjust_type: Union[str, TuringBusDayAdjustTypes] = TuringBusDayAdjustTypes.FOLLOWING
+    business_day_adjust_type: Union[str,
+                                    TuringBusDayAdjustTypes] = TuringBusDayAdjustTypes.FOLLOWING
     knock_out_obs_days_whole: List[TuringDate] = None
 
     def __post_init__(self):
@@ -75,7 +76,8 @@ class SnowballOption(EqOption):
             elif self.business_day_adjust_type is None:
                 return TuringBusDayAdjustTypes.NONE
             else:
-                raise TuringError('Please check the input of business_day_adjust_type')
+                raise TuringError(
+                    'Please check the input of business_day_adjust_type')
 
     @property
     def bus_days(self) -> List[TuringDate]:
@@ -145,7 +147,8 @@ class SnowballOption(EqOption):
         bus_days = self.bus_days
 
         # 统计从估值日到到期日之间的敲出观察日
-        knock_out_obs_days = sorted(list(set(self.knock_out_obs_days_whole_).intersection(set(bus_days))))
+        knock_out_obs_days = sorted(
+            list(set(self.knock_out_obs_days_whole_).intersection(set(bus_days))))
 
         # 统计敲出观察日在交易日列表中的索引值
         knock_out_obs_days_index = []
@@ -165,7 +168,8 @@ class SnowballOption(EqOption):
         if option_type == TuringOptionTypes.SNOWBALL_CALL:
             for p in range(0, num_paths):
                 # 判断每条路径是否存在敲出
-                out_call_sign[p] = any([sall[p][i] >= k1 for i in knock_out_obs_days_index])
+                out_call_sign[p] = any(
+                    [sall[p][i] >= k1 for i in knock_out_obs_days_index])
 
                 # 如果敲出，就填充对应的索引值，用于计算相关天数
                 if out_call_sign[p]:
@@ -183,7 +187,8 @@ class SnowballOption(EqOption):
         elif option_type == TuringOptionTypes.SNOWBALL_PUT:
             for p in range(0, num_paths):
                 # 判断每条路径是否存在敲出
-                out_put_sign[p] = any([sall[p][i] <= k1 for i in knock_out_obs_days_index])
+                out_put_sign[p] = any(
+                    [sall[p][i] <= k1 for i in knock_out_obs_days_index])
 
                 # 如果敲出，就填充对应的索引值，用于计算相关天数
                 if out_put_sign[p]:
@@ -218,44 +223,44 @@ class SnowballOption(EqOption):
         if option_type == TuringOptionTypes.SNOWBALL_CALL:
 
             payoff = out_call_sign * ((notional * rebate * (out_call_index / days_in_year)**flag) *
-                     np.exp(-r * out_call_index2 / days_in_year)) + not_out_call_sign * not_in_call_sign * \
-                     ((notional * untriggered_rebate * whole_term**flag) * np.exp(-r * texp))
+                                      np.exp(-r * out_call_index2 / days_in_year)) + not_out_call_sign * not_in_call_sign * \
+                ((notional * untriggered_rebate * whole_term**flag) * np.exp(-r * texp))
 
             if knock_in_type == TuringKnockInTypes.RETURN:
                 payoff += not_out_call_sign * in_call_sign * \
-                          (-notional * (1 - sall[:, -1] / initial_spot) *
-                           participation_rate * np.exp(-r * texp))
+                    (-notional * (1 - sall[:, -1] / initial_spot) *
+                     participation_rate * np.exp(-r * texp))
 
             elif knock_in_type == TuringKnockInTypes.VANILLA:
                 payoff += not_out_call_sign * in_call_sign * \
-                          (-notional * np.maximum(sk1 - sall[:, -1] / initial_spot, 0) * \
-                           participation_rate * whole_term**flag * np.exp(-r * texp))
+                    (-notional * np.maximum(sk1 - sall[:, -1] / initial_spot, 0) *
+                     participation_rate * whole_term**flag * np.exp(-r * texp))
 
             elif knock_in_type == TuringKnockInTypes.SPREADS:
                 payoff += not_out_call_sign * in_call_sign * \
-                          (-notional * np.maximum(sk1 - np.maximum(sall[:, -1] / initial_spot, sk2), 0) * \
-                           participation_rate * whole_term**flag * np.exp(-r * texp))
+                    (-notional * np.maximum(sk1 - np.maximum(sall[:, -1] / initial_spot, sk2), 0) *
+                     participation_rate * whole_term**flag * np.exp(-r * texp))
 
         elif option_type == TuringOptionTypes.SNOWBALL_PUT:
 
             payoff = out_put_sign * ((notional * rebate * (out_put_index / days_in_year)**flag) *
-                     np.exp(-r * out_put_index2 / days_in_year)) + not_out_put_sign * not_in_put_sign * \
-                     ((notional * untriggered_rebate * whole_term**flag) * np.exp(-r * texp))
+                                     np.exp(-r * out_put_index2 / days_in_year)) + not_out_put_sign * not_in_put_sign * \
+                ((notional * untriggered_rebate * whole_term**flag) * np.exp(-r * texp))
 
             if knock_in_type == TuringKnockInTypes.RETURN:
                 payoff += not_out_put_sign * in_put_sign * \
-                          (-notional * (sall[:, -1] / initial_spot - 1) * \
-                           participation_rate * np.exp(-r * texp))
+                    (-notional * (sall[:, -1] / initial_spot - 1) *
+                     participation_rate * np.exp(-r * texp))
 
             elif knock_in_type == TuringKnockInTypes.VANILLA:
                 payoff += not_out_put_sign * in_put_sign * \
-                          (-notional * np.maximum(sall[:, -1] / initial_spot - sk1, 0) * \
-                           participation_rate * whole_term**flag * np.exp(-r * texp))
+                    (-notional * np.maximum(sall[:, -1] / initial_spot - sk1, 0) *
+                     participation_rate * whole_term**flag * np.exp(-r * texp))
 
             elif knock_in_type == TuringKnockInTypes.SPREADS:
                 payoff += not_out_put_sign * in_put_sign * \
-                          (-notional * np.maximum(np.minimum(sall[:, -1] / initial_spot, sk2) - sk1, 0) * \
-                           participation_rate * whole_term**flag * np.exp(-r * texp))
+                    (-notional * np.maximum(np.minimum(sall[:, -1] / initial_spot, sk2) - sk1, 0) *
+                     participation_rate * whole_term**flag * np.exp(-r * texp))
 
         return payoff.mean()
 

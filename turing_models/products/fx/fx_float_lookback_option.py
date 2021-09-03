@@ -12,7 +12,7 @@ from turing_models.products.fx.fx_option import TuringFXOption
 from turing_models.utilities.helper_functions import checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_types import TuringOptionTypes
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 ##########################################################################
 # TODO: Attempt control variate adjustment to monte carlo

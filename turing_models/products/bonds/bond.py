@@ -31,8 +31,8 @@ from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
-from fundamental.market.curves import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves import TuringDiscountCurveFlat
 
 from scipy import optimize
 

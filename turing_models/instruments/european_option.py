@@ -5,8 +5,8 @@ from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType
-from turing_models.models.model_black_scholes_analytical import bsValue, bsDelta, \
-     bsVega, bsGamma, bsRho, bsPsi, bsTheta, bsImpliedVolatility
+from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta, \
+    bs_vega, bs_gamma, bs_rho, bs_psi, bs_theta, bsImpliedVolatility
 from turing_models.instruments.equity_option import EqOption
 from turing_models.utilities.error import TuringError
 
@@ -48,32 +48,32 @@ class EuropeanOption(EqOption):
             self.r,
             self.q,
             self.v,
-            self.option_type_.value
+            self.option_type_.value,
+            False
         ]
 
     def price(self) -> float:
-        return bsValue(*self.params()) * self._multiplier * self._number_of_options
+        return bs_value(*self.params()) * self.multiplier * self.number_of_options
 
     def eq_delta(self) -> float:
-        return bsDelta(*self.params()) * self._multiplier * self._number_of_options
+        return bs_delta(*self.params()) * self.multiplier * self.number_of_options
 
     def eq_gamma(self) -> float:
-        return bsGamma(*self.params()) * self._multiplier * self._number_of_options
+        return bs_gamma(*self.params()) * self.multiplier * self.number_of_options
 
     def eq_vega(self) -> float:
-        return bsVega(*self.params()) * self._multiplier * self._number_of_options
+        return bs_vega(*self.params()) * self.multiplier * self.number_of_options
 
     def eq_theta(self) -> float:
-        return bsTheta(*self.params()) * self._multiplier * self._number_of_options
+        return bs_theta(*self.params()[:-1]) * self.multiplier * self.number_of_options
 
     def eq_rho(self) -> float:
-        return bsRho(*self.params()) * self._multiplier * self._number_of_options
+        return bs_rho(*self.params()[:-1]) * self.multiplier * self.number_of_options
 
     def eq_rho_q(self) -> float:
-        return bsPsi(*self.params()) * self._multiplier * self._number_of_options
+        return bs_psi(*self.params()[:-1]) * self.multiplier * self.number_of_options
 
     def implied_volatility(self, mkt, signal):
-
         ''' Calculate the Black-Scholes implied volatility of a European
         vanilla option. '''
 

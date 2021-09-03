@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 import numpy as np
+
 from turing_models.utilities.mathematics import N
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
@@ -40,8 +41,10 @@ class AsianOption(EqOption):
             return TuringAsianOptionValuationMethods.GEOMETRIC
         elif self.valuation_method == 'turnbull_wakeman':
             return TuringAsianOptionValuationMethods.TURNBULL_WAKEMAN
-        else:
+        elif self.valuation_method == 'curran':
             return TuringAsianOptionValuationMethods.CURRAN
+        else:
+            raise TuringError('Please check the input of valuation_method')
 
     def price(self) -> float:
         valuation_method = self.valuation_method_
@@ -54,7 +57,7 @@ class AsianOption(EqOption):
         elif valuation_method == TuringAsianOptionValuationMethods.CURRAN:
             v = self._value_curran()
 
-        return v * self._multiplier * self._number_of_options
+        return v * self.multiplier * self.number_of_options
 
     def _value_geometric(self):
         # the years to the start of the averaging period
@@ -147,12 +150,13 @@ class AsianOption(EqOption):
         if b == 0:
             m1 = 1.0
             m2 = 2.0 * np.exp(sigma2 * texp) - 2.0 * \
-                 np.exp(sigma2 * t0) * (1.0 + sigma2 * dt)
+                np.exp(sigma2 * t0) * (1.0 + sigma2 * dt)
             m2 = m2 / sigma2 / sigma2 / dt / dt
         else:
             m1 = s0 * (np.exp(b * texp) - np.exp(b * t0)) / (b * dt)
             m2 = np.exp(a2 * texp) / a1 / a2 / dt / dt + \
-                 (np.exp(a2 * t0) / b / dt / dt) * (1.0 / a2 - np.exp(b * dt) / a1)
+                (np.exp(a2 * t0) / b / dt / dt) * \
+                (1.0 / a2 - np.exp(b * dt) / a1)
             m2 = 2.0 * m2 * s0 * s0
 
         f0 = m1
@@ -216,7 +220,8 @@ class AsianOption(EqOption):
         ea2 = ea2 * (w + 2.0 / (1.0 - np.exp((b + sigma2) * h)) * (u - w))
         sigmaA = np.sqrt((np.log(ea2) - 2.0 * np.log(fa)) / texp)
 
-        d1 = (np.log(fa / k) + sigmaA * sigmaA * texp / 2.0) / (sigmaA * np.sqrt(texp))
+        d1 = (np.log(fa / k) + sigmaA * sigmaA *
+              texp / 2.0) / (sigmaA * np.sqrt(texp))
         d2 = d1 - sigmaA * np.sqrt(texp)
 
         if self.option_type_ == TuringOptionTypes.ASIAN_CALL:

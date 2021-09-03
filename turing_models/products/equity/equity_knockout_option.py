@@ -8,7 +8,7 @@ from turing_models.products.equity.equity_option import TuringEquityOption
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
      TuringGBMNumericalScheme, TuringHestonNumericalScheme
 from turing_models.models.model_black_scholes import TuringModel
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 

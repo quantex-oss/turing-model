@@ -7,7 +7,7 @@ from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 ###############################################################################
 

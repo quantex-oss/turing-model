@@ -5,7 +5,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.products.equity.equity_option import TuringEquityOption
 from turing_models.models.process_simulator import TuringProcessSimulator
-from fundamental.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.turing_date import TuringDate
 
@@ -300,12 +300,12 @@ class TuringEquityBarrierOption(TuringEquityOption):
         process = TuringProcessSimulator()
 
         r = discountCurve.zeroRate(self._expiryDate)
-        
+
         # TODO - NEED TO DECIDE IF THIS IS PART OF MODEL PARAMS OR NOT ??????????????
 
         r = discountCurve.ccRate(self._expiryDate)
         q = dividendCurve.ccRate(self._expiryDate)
-        
+
         #######################################################################
 
         if optionType == TuringEquityBarrierTypes.DOWN_AND_OUT_CALL and stockPrice <= B:

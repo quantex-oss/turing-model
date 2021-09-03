@@ -17,7 +17,7 @@ from turing_models.models.model_sabr import volFunctionSABR
 from turing_models.models.model_sabr import TuringModelSABR
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 
-from turing_models.models.model_black_scholes_analytical import bsValue, bsDelta
+from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
 
@@ -77,13 +77,14 @@ def fvega(volatility, *args):
 
 ###############################################################################
 
+
 @njit(fastmath=True, cache=True)
 def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
     ''' Calculation of the FX Option delta. Used in the determination of
     the volatility surface. Avoids discount curve interpolation so it
     should be slightly faster than the full calculation of delta. '''
 
-    pips_spot_delta = bsDelta(s, t, k, rd, rf, vol, optionTypeValue)
+    pips_spot_delta = bs_delta(s, t, k, rd, rf, vol, optionTypeValue, False)
 
     if deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA.value:
         return pips_spot_delta
@@ -91,11 +92,11 @@ def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
         pips_fwd_delta = pips_spot_delta * np.exp(rf*t)
         return pips_fwd_delta
     elif deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
-        vpctf = bsValue(s, t, k, rd, rf, vol, optionTypeValue) / s
+        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
         pct_spot_delta_prem_adj = pips_spot_delta - vpctf
         return pct_spot_delta_prem_adj
     elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
-        vpctf = bsValue(s, t, k, rd, rf, vol, optionTypeValue) / s
+        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
         pct_fwd_delta_prem_adj = np.exp(rf*t) * (pips_spot_delta - vpctf)
         return pct_fwd_delta_prem_adj
     else:
@@ -176,7 +177,8 @@ class TuringFXVanillaOption():
 
     def __init__(self,
                  expiryDate: TuringDate,
-                 strikeFXRate: (float, np.ndarray),  # 1 unit of foreign in domestic
+                 # 1 unit of foreign in domestic
+                 strikeFXRate: (float, np.ndarray),
                  currencyPair: str,  # FORDOM
                  optionType: (TuringOptionTypes, list),
                  notional: float,
@@ -291,13 +293,13 @@ class TuringFXVanillaOption():
 
             if self._optionType == TuringOptionTypes.EUROPEAN_CALL:
 
-                vdf = bsValue(S0, texp, K, rd, rf, v,
-                              TuringOptionTypes.EUROPEAN_CALL.value)
+                vdf = bs_value(S0, texp, K, rd, rf, v,
+                               TuringOptionTypes.EUROPEAN_CALL.value, False)
 
             elif self._optionType == TuringOptionTypes.EUROPEAN_PUT:
 
-                vdf = bsValue(S0, texp, K, rd, rf, v,
-                              TuringOptionTypes.EUROPEAN_PUT.value)
+                vdf = bs_value(S0, texp, K, rd, rf, v,
+                               TuringOptionTypes.EUROPEAN_PUT.value, False)
 
             elif self._optionType == TuringOptionTypes.AMERICAN_CALL:
                 numStepsPerYear = 100
@@ -426,11 +428,14 @@ class TuringFXVanillaOption():
 
             v = np.maximum(v, gSmall)
 
-            pips_spot_delta = bsDelta(S0, texp, K, rd, rf, v, self._optionType.value)
+            pips_spot_delta = bs_delta(
+                S0, texp, K, rd, rf, v, self._optionType.value, False)
             pips_fwd_delta = pips_spot_delta * np.exp(rf*tdel)
-            vpctf = bsValue(S0, texp, K, rd, rf, v, self._optionType.value) / S0
+            vpctf = bs_value(S0, texp, K, rd, rf, v,
+                             self._optionType.value, False) / S0
             pct_spot_delta_prem_adj = pips_spot_delta - vpctf
-            pct_fwd_delta_prem_adj = np.exp(rf*tdel) * (pips_spot_delta - vpctf)
+            pct_fwd_delta_prem_adj = np.exp(
+                rf*tdel) * (pips_spot_delta - vpctf)
 
         return {"pips_spot_delta": pips_spot_delta,
                 "pips_fwd_delta": pips_fwd_delta,
@@ -459,11 +464,12 @@ class TuringFXVanillaOption():
 
 #        print("FAST DELTA IN OPTION CLASS", s,t,k,rd,rf,vol)
 
-        pips_spot_delta = bsDelta(s, t, k, rd, rf, vol,
-                                   self._optionType.value)
+        pips_spot_delta = bs_delta(s, t, k, rd, rf, vol,
+                                   self._optionType.value, False)
         pips_fwd_delta = pips_spot_delta * np.exp(rf*t)
 
-        vpctf = bsValue(s, t, k, rd, rf, vol, self._optionType.value) / s
+        vpctf = bs_value(s, t, k, rd, rf, vol,
+                         self._optionType.value, False) / s
 
         pct_spot_delta_prem_adj = pips_spot_delta - vpctf
         pct_fwd_delta_prem_adj = np.exp(rf*t) * (pips_spot_delta - vpctf)
