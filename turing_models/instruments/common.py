@@ -1,6 +1,5 @@
-from enum import Enum
 from abc import ABCMeta, abstractmethod
-
+from enum import Enum
 
 bump = 1e-4
 
@@ -16,14 +15,14 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
 
     def increment(_attr_value, count=1):
         if cus_func:
-            _attr_value = cus_func(args*count)
+            _attr_value = cus_func(args * count)
         else:
             _attr_value += count * bump
         setattr(obj, attr, _attr_value)
 
     def decrement(_attr_value, count=1):
         if cus_func:
-            _attr_value = cus_func(-args*count)
+            _attr_value = cus_func(-args * count)
         else:
             _attr_value -= count * bump
         setattr(obj, attr, _attr_value)
@@ -64,6 +63,12 @@ class RiskMeasure(Enum):
     Dv01 = "dv01"
     DollarDuration = "dollar_duration"
     DollarConvexity = "dollar_convexity"
+    FxDelta = "fx_delta"
+    FxGamma = "fx_gamma"
+    FxVega = "fx_vega"
+    FxTheta = "fx_theta"
+    FxVanna = "fx_vanna"
+    FxVolga = "fx_volga"
 
     def __repr__(self):
         return self.value
@@ -119,7 +124,6 @@ class OptionStyle(Enum):
 
 
 class Currency(Enum):
-
     """Currency, ISO 4217 currency code or exchange quote modifier (e.g. GBP vs GBp)"""
 
     _ = ''
