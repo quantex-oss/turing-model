@@ -514,7 +514,6 @@ def convert_argument_type(self, func, values):
 
 def convert_argument_type(self, func, values):
     """将时间的str格式转换为TuringDate"""
-    print(func.__annotations__)
     for value_name, annotation_type in func.__annotations__.items():
         if value_name != 'return':
             value = values[value_name]
