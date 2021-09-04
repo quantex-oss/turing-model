@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 
+from fundamental.turing_db.option_data import FxOptionApi
 from turing_models.instruments.fx_option import FXOption
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
@@ -336,3 +337,31 @@ class FXVanillaOption(FXOption):
                     _list.append(cu.get(key))
         setattr(self, _property, _list)
         return _list
+
+    def _resolve(self):
+        if self.asset_id and not self.asset_id.startswith("OPTION_"):
+            temp_dict = FxOptionApi.fetch_fx_option(gurl="https://yapi.iquantex.com/mock/566", asset_id=self.asset_id)
+            for k, v in temp_dict.items():
+                if not getattr(self, k, None) and v:
+                    setattr(self, k, v)
+
+        if self.underlier:
+            if not self.exchange_rate:
+                ex_rate = FxOptionApi.get_exchange_rate(gurl="https://yapi.iquantex.com/mock/569", asset_id=self.asset_id, underlier=self.underlier)
+                if ex_rate:
+                    setattr(self, "exchange_rate", ex_rate)
+            if not self.tenors:
+                FxOptionApi.get_iuir_curve(self)
+            if not self.volatility:
+                FxOptionApi.get_fx_volatility(self=self,gurl="https://yapi.iquantex.com/mock/569",
+                    volatility_types=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])
+                print(self.atm_vols)
+
+        if not self.product_type:
+            setattr(self, 'product_type', 'FX_VANILLA')
+        self.__post_init__()
+        print(self.__dict__)
+        print(self.price())
+if __name__ == '__main__':
+    fxo = FXVanillaOption(asset_id="OPTIONCN00000170")
+    fxo._resolve()

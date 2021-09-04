@@ -60,12 +60,11 @@ class InstrumentBase:
     def resolve(self, expand_dict=None):
         if not expand_dict:
             """手动resolve,自动补全未传入参数"""
+            class_names = ["KnockOutOption", "Stock", "FXVanillaOption"]
             class_name = []
             class_name.append(self.__class__.__name__)
             [class_name.append(x.__name__) for x in self.__class__.__bases__]
-            if "KnockOutOption" in class_name:
-                self._resolve()
-            elif "Stock" in class_name:
+            if class_name in class_names:
                 self._resolve()
             else:
                 raise Exception("暂不支持此类型的Resolve")
@@ -95,6 +94,7 @@ class InstrumentBase:
     def main(self, context=None, assetId: str = None, pricingContext=None, riskMeasure=None):
         if context:
             self.ctx.context = context
+        print(ctx.context)
         """api默认入口"""
         scenario = PricingContext()
         if not assetId.startswith("OPTION") and not assetId.startswith("BOND"):
