@@ -1,4 +1,5 @@
 import datetime
+import inspect
 import traceback
 from typing import Union, List, Iterable
 
@@ -13,10 +14,28 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 
 
+class IsPriceable:
+    def __get__(self, instance, owner):
+        if instance.__class__.__name__ == "Position":
+            class_names = self.get_classes(instance)
+            if "Priceable" not in class_names:
+                raise Exception(f"Position的tradable不支持类型: {instance.tradable.__class__.__name__}")
+            return
+
+    def get_classes(self, instance):
+        class_names = [x.__name__ for x in inspect.getmro(instance.tradable.__class__)]
+        return class_names
+
+
 class InstrumentBase:
+    _ = IsPriceable()
 
     def __init__(self):
         self.ctx: Context = ctx
+        self.check_param()
+
+    def check_param(self):
+        getattr(self, '_')
 
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type=ParallelType.NULL,
              option_all=None):
@@ -59,18 +78,10 @@ class InstrumentBase:
 
     def resolve(self, expand_dict=None):
         if not expand_dict:
-            """手动resolve,自动补全未传入参数"""
-            class_names = ["KnockOutOption", "Stock", "FXVanillaOption"]
-            class_name = []
-            class_name.append(self.__class__.__name__)
-            [class_name.append(x.__name__) for x in self.__class__.__bases__]
-            if class_name in class_names:
-                self._resolve()
-            else:
-                raise Exception("暂不支持此类型的Resolve")
+            getattr(self, '_resolve')()
         else:
             self._set_by_dict(expand_dict)
-        self.__post_init__()
+        getattr(self, "__post_init__")()
 
     def api_calc(self, riskMeasure: list):
         """api calc 结果集"""
