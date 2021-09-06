@@ -591,7 +591,11 @@ class AssetType(Enum):
         return self.value
 
 
-class Eq(metaclass=ABCMeta):
+class Priceable:
+    pass
+
+
+class Eq(Priceable, metaclass=ABCMeta):
 
     @abstractmethod
     def price(self):
@@ -622,7 +626,7 @@ class Eq(metaclass=ABCMeta):
         pass
 
 
-class FX(metaclass=ABCMeta):
+class FX(Priceable, metaclass=ABCMeta):
 
     @abstractmethod
     def price(self):
