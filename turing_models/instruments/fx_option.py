@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from typing import List, Any
 
 import numpy as np
+from loguru import logger
 
 from turing_models.instruments.common import FX, Currency
 from turing_models.instruments.core import InstrumentBase
@@ -64,11 +65,13 @@ class FXOption(FX, InstrumentBase):
 
     def __post_init__(self):
         super().__init__()
-        self.domestic_name=None
-        self.foreign_name=None
-        if self.delivery_date and self.expiry and self.delivery_date < self.expiry:
-            raise TuringError(
-                "Delivery date must be on or after expiry.")
+        self.domestic_name = None
+        self.foreign_name = None
+        if self.expiry:
+            self.final_delivery = self.expiry.addWeekDays(self.spot_days)
+            if self.final_delivery < self.expiry:
+                raise TuringError(
+                    "Final delivery date must be on or after expiry.")
 
         if self.underlier_symbol and len(self.underlier_symbol) != 7:
             raise TuringError("Currency pair must be 7 characters.")
@@ -85,14 +88,14 @@ class FXOption(FX, InstrumentBase):
         if self.premium_currency and isinstance(self.premium_currency, Currency):
             self.premium_currency = self.premium_currency.value
 
-        if self.domestic_name and self.foreign_name and self.premium_currency and\
+        if self.domestic_name and self.foreign_name and self.premium_currency and \
                 self.premium_currency != self.domestic_name and self.premium_currency != self.foreign_name:
             raise TuringError("Premium currency not in currency pair.")
 
         if self.exchange_rate and np.any(self.exchange_rate <= 0.0):
             raise TuringError(error_str3)
 
-        if not self.cut_off_time:
+        if not self.cut_off_time or not isinstance(self.cut_off_time, TuringDate):
             self.cut_off_time = self.expiry
 
         self.num_paths = 100000
@@ -161,7 +164,7 @@ class FXOption(FX, InstrumentBase):
     @property
     def tdel(self):
         spot_date = self.value_date_.addWeekDays(self.spot_days)
-        td = (self.delivery_date - spot_date) / gDaysInYear
+        td = (self.final_delivery - spot_date) / gDaysInYear
         if td < 0.0:
             raise TuringError(error_str)
         td = np.maximum(td, 1e-10)
@@ -195,6 +198,9 @@ class FXOption(FX, InstrumentBase):
             return v
         else:
             raise TuringError(error_str2)
+
+    def get_vol(self):
+        return self.vol
 
     def price(self):
         return 0.0
