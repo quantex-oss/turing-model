@@ -105,7 +105,6 @@ class InstrumentBase:
     def main(self, context=None, assetId: str = None, pricingContext=None, riskMeasure=None):
         if context:
             self.ctx.context = context
-        print(ctx.context)
         """api默认入口"""
         scenario = PricingContext()
         if not assetId.startswith("OPTION") and not assetId.startswith("BOND"):
