@@ -67,10 +67,11 @@ class FXOption(FX, InstrumentBase):
         super().__init__()
         self.domestic_name = None
         self.foreign_name = None
-        logger.debug(f"{self},{self.delivery_date}, {self.expiry}")
-        if self.delivery_date and self.expiry and self.delivery_date < self.expiry:
-            raise TuringError(
-                "Delivery date must be on or after expiry.")
+        if self.expiry:
+            self.final_delivery = self.expiry.addWeekDays(self.spot_days)
+            if self.final_delivery < self.expiry:
+                raise TuringError(
+                    "Delivery date must be on or after expiry.")
 
         if self.underlier_symbol and len(self.underlier_symbol) != 7:
             raise TuringError("Currency pair must be 7 characters.")
@@ -163,7 +164,7 @@ class FXOption(FX, InstrumentBase):
     @property
     def tdel(self):
         spot_date = self.value_date_.addWeekDays(self.spot_days)
-        td = (self.delivery_date - spot_date) / gDaysInYear
+        td = (self.final_delivery - spot_date) / gDaysInYear
         if td < 0.0:
             raise TuringError(error_str)
         td = np.maximum(td, 1e-10)
