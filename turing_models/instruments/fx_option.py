@@ -199,6 +199,9 @@ class FXOption(FX, InstrumentBase):
         else:
             raise TuringError(error_str2)
 
+    def get_vol(self):
+        return self.vol
+
     def price(self):
         return 0.0
 
