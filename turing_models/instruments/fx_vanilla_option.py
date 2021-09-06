@@ -345,7 +345,7 @@ class FXVanillaOption(FXOption):
             for k, v in temp_dict.items():
                 if not getattr(self, k, None) and v:
                     setattr(self, k, v)
-
+    def resolve_param(self):
         if self.underlier:
             if not self.exchange_rate:
                 ex_rate = FxApi.get_exchange_rate(gurl=None,
