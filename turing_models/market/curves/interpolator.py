@@ -40,7 +40,7 @@ def interpolate(t: (float, np.ndarray),  # time or array of times
     if type(t) is float or type(t) is np.float64:
         
         if t < 0.0:
-            print(t)
+            # print(t)
             raise TuringError("Interpolate times must all be >= 0")
 
         u = _uinterpolate(t, times, dfs, method)
@@ -48,7 +48,7 @@ def interpolate(t: (float, np.ndarray),  # time or array of times
     elif type(t) is np.ndarray:
 
         if np.any(t < 0.0):
-            print(t)
+            # print(t)
             raise TuringError("Interpolate times must all be >= 0")
 
         v = _vinterpolate(t, times, dfs, method)
@@ -159,7 +159,7 @@ def _uinterpolate(t, times, dfs, method):
         return yvalue
 
     else:
-        print(method)
+        # print(method)
         raise TuringError("Invalid interpolation scheme.")
 
 ###############################################################################
@@ -284,7 +284,7 @@ class TuringInterpolator():
         if type(t) is float or type(t) is np.float64:
 
             if t < 0.0:
-                print(t)
+                # print(t)
                 raise TuringError("Interpolate times must all be >= 0")
 
             if np.abs(t) < gSmall:
@@ -295,7 +295,7 @@ class TuringInterpolator():
         elif type(t) is np.ndarray:
 
             if np.any(t < 0.0):
-                print(t)
+                # print(t)
                 raise TuringError("Interpolate times must all be >= 0")
 
             tvec = t
