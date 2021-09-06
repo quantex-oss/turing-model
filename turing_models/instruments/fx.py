@@ -43,14 +43,14 @@ class ForeignExchange(FX, InstrumentBase):
 
     def _resolve(self):
         if self.asset_id:
-            temp_dict = FxApi.fetch_fx_orm(self=self, gurl="https://yapi.iquantex.com/mock/566")
+            temp_dict = FxApi.fetch_fx_orm(self=self, gurl=None)
             for k, v in temp_dict.items():
                 if not getattr(self, k, None) and v:
                     setattr(self, k, v)
 
         if self.asset_id:
             if not self.exchange_rate:
-                ex_rate = FxApi.get_exchange_rate(gurl="https://yapi.iquantex.com/mock/569",
+                ex_rate = FxApi.get_exchange_rate(gurl=None,
                                                   underlier=self.asset_id)
                 if ex_rate:
                     setattr(self, "exchange_rate", ex_rate)

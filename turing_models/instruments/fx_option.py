@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from typing import List, Any
 
 import numpy as np
+from loguru import logger
 
 from turing_models.instruments.common import FX, Currency
 from turing_models.instruments.core import InstrumentBase
@@ -64,8 +65,9 @@ class FXOption(FX, InstrumentBase):
 
     def __post_init__(self):
         super().__init__()
-        self.domestic_name=None
-        self.foreign_name=None
+        self.domestic_name = None
+        self.foreign_name = None
+        logger.debug(f"{self},{self.delivery_date}, {self.expiry}")
         if self.delivery_date and self.expiry and self.delivery_date < self.expiry:
             raise TuringError(
                 "Delivery date must be on or after expiry.")
@@ -85,7 +87,7 @@ class FXOption(FX, InstrumentBase):
         if self.premium_currency and isinstance(self.premium_currency, Currency):
             self.premium_currency = self.premium_currency.value
 
-        if self.domestic_name and self.foreign_name and self.premium_currency and\
+        if self.domestic_name and self.foreign_name and self.premium_currency and \
                 self.premium_currency != self.domestic_name and self.premium_currency != self.foreign_name:
             raise TuringError("Premium currency not in currency pair.")
 

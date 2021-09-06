@@ -341,21 +341,21 @@ class FXVanillaOption(FXOption):
 
     def _resolve(self):
         if self.asset_id and not self.asset_id.startswith("OPTION_"):
-            temp_dict = FxOptionApi.fetch_fx_option(gurl="https://yapi.iquantex.com/mock/566", asset_id=self.asset_id)
+            temp_dict = FxOptionApi.fetch_fx_option(gurl=None, asset_id=self.asset_id)
             for k, v in temp_dict.items():
                 if not getattr(self, k, None) and v:
                     setattr(self, k, v)
 
         if self.underlier:
             if not self.exchange_rate:
-                ex_rate = FxApi.get_exchange_rate(gurl="https://yapi.iquantex.com/mock/569",
+                ex_rate = FxApi.get_exchange_rate(gurl=None,
                                                         underlier=self.underlier)
                 if ex_rate:
                     setattr(self, "exchange_rate", ex_rate)
             if not self.tenors:
                 FxOptionApi.get_iuir_curve(self)
             if not self.volatility:
-                FxOptionApi.get_fx_volatility(self=self, gurl="https://yapi.iquantex.com/mock/569",
+                FxOptionApi.get_fx_volatility(self=self, gurl=None,
                                               volatility_types=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])
 
         if not self.product_type:
