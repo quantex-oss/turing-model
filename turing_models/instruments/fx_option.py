@@ -71,7 +71,7 @@ class FXOption(FX, InstrumentBase):
             self.final_delivery = self.expiry.addWeekDays(self.spot_days)
             if self.final_delivery < self.expiry:
                 raise TuringError(
-                    "Delivery date must be on or after expiry.")
+                    "Final delivery date must be on or after expiry.")
 
         if self.underlier_symbol and len(self.underlier_symbol) != 7:
             raise TuringError("Currency pair must be 7 characters.")
