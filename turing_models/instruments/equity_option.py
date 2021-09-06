@@ -17,6 +17,7 @@ from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
 from turing_models.market.curves import TuringDiscountCurveFlat, \
     TuringDiscountCurveZeros
+from turing_models.utilities.helper_functions import convert_argument_type
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -55,6 +56,7 @@ class EqOption(Eq, InstrumentBase):
 
     def __post_init__(self):
         super().__init__()
+        convert_argument_type(self, self.__init__, self.__dict__)
         self.number_of_options = self.number_of_options or 1
         self.multiplier = self.multiplier or 1
 

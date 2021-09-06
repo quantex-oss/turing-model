@@ -1,11 +1,14 @@
 import sys
+from typing import Union
+
 import numpy as np
 from numba import njit, float64
-from typing import Union
-from .turing_date import TuringDate
-from .global_variables import gDaysInYear, gSmall
-from .error import TuringError
+
 from .day_count import TuringDayCountTypes, TuringDayCount
+from .error import TuringError
+from .global_variables import gDaysInYear, gSmall
+from .turing_date import TuringDate
+
 
 ###############################################################################
 
@@ -16,10 +19,10 @@ def _funcName():
     ff = sys._getframe().f_back.f_code.co_name
     return ff
 
+
 ###############################################################################
 
 def gridIndex(t, gridTimes):
-
     n = len(gridTimes)
     for i in range(0, n):
         gridTime = gridTimes[i]
@@ -28,6 +31,7 @@ def gridIndex(t, gridTimes):
             return i
 
     raise TuringError("Grid index not found")
+
 
 ###############################################################################
 
@@ -45,6 +49,7 @@ def betaVectorToCorrMatrix(betas):
             correlation[j, i] = c
 
     return np.array(correlation)
+
 
 ###############################################################################
 
@@ -64,6 +69,7 @@ def pv01Times(t: float,
         t -= dt
 
     return pv01Times
+
 
 ###############################################################################
 
@@ -131,6 +137,7 @@ def checkVectorDifferences(x: np.ndarray,
         if abs(diff) > tol:
             print("Vector difference of:", diff, " at index: ", i)
 
+
 ###############################################################################
 
 
@@ -139,6 +146,7 @@ def checkDate(d: TuringDate):
 
     if isinstance(d, TuringDate) is False:
         raise TuringError("Should be a date dummy!")
+
 
 ###############################################################################
 
@@ -170,6 +178,7 @@ def dump(obj):
         x = getattr(obj, attr)
         print(attr, x)
 
+
 ###############################################################################
 
 
@@ -184,12 +193,13 @@ def printTree(array: np.ndarray,
 
     for j in range(0, n2):
         for i in range(0, n1):
-            x = array[i, n2-j-1]
+            x = array[i, n2 - j - 1]
             if x != 0.0:
                 print("%10.5f" % x, end="")
             else:
                 print("%10s" % '-', end="")
         print("")
+
 
 ###############################################################################
 
@@ -206,7 +216,7 @@ def inputTime(dt: TuringDate,
     def check(t):
         if t < 0.0:
             raise TuringError("Date " + str(dt) +
-                           " is before curve date " + str(curve._curveDate))
+                              " is before curve date " + str(curve._curveDate))
         elif t < small:
             t = small
         return t
@@ -226,6 +236,7 @@ def inputTime(dt: TuringDate,
     else:
         raise TuringError("Unknown type.")
 
+
 ###############################################################################
 
 
@@ -243,6 +254,7 @@ def listdiff(a: np.ndarray,
 
     return diff
 
+
 ###############################################################################
 
 
@@ -256,6 +268,7 @@ def dotproduct(xVector: np.ndarray,
     for i in range(0, n):
         dotprod += xVector[i] * yVector[i]
     return dotprod
+
 
 ###############################################################################
 
@@ -272,6 +285,7 @@ def frange(start: int,
 
     return x
 
+
 ###############################################################################
 
 
@@ -284,8 +298,9 @@ def normaliseWeights(wtVector: np.ndarray):
     for i in range(0, n):
         sumWts += wtVector[i]
     for i in range(0, n):
-        wtVector[i] = wtVector[i]/sumWts
+        wtVector[i] = wtVector[i] / sumWts
     return wtVector
+
 
 ###############################################################################
 
@@ -314,6 +329,7 @@ def to_string(label: str,
     else:
         return f"{label}: {value}{separator}"
 
+
 ###############################################################################
 
 
@@ -339,6 +355,7 @@ def tableToString(header: str,
 
     return s[:-1]
 
+
 ###############################################################################
 
 
@@ -360,6 +377,7 @@ def toUsableType(t):
             return tuple(toUsableType(tp) for tp in t)
 
     return t
+
 
 ###############################################################################
 
@@ -399,6 +417,7 @@ def uniformToDefaultTime(u, t, v):
 
     return tau
 
+
 ###############################################################################
 # THIS IS NOT USED
 
@@ -436,13 +455,14 @@ def accruedTree(gridTimes: np.ndarray,
     for iGrid in range(0, numGridTimes):
         t = gridTimes[iGrid]
         for i in range(0, numCoupons):
-            if t > couponTimes[i-1] and t <= couponTimes[i]:
-                den = couponTimes[i] - couponTimes[i-1]
-                num = (t - couponTimes[i-1])
+            if t > couponTimes[i - 1] and t <= couponTimes[i]:
+                den = couponTimes[i] - couponTimes[i - 1]
+                num = (t - couponTimes[i - 1])
                 accrued[iGrid] = face * num * couponFlows[i] / den
                 break
 
     return accrued
+
 
 ###############################################################################
 
@@ -456,18 +476,36 @@ def checkArgumentTypes(func, values):
         if value is None:
             continue
         usableType = toUsableType(annotationType)
-        if(not isinstance(value, usableType)):
-
+        if (not isinstance(value, usableType)):
             print("ERROR with function arguments for", func.__name__)
             print("This is in module", func.__module__)
             print("Please check inputs for argument >>", valueName, "<<")
             print("You have input an argument", value, "of type", type(value))
             print("The allowed types are", usableType)
             print("It is none of these so FAILS. Please amend.")
-#            s = f"In {func.__module__}.{func.__name__}:\n"
-#            s += f"Mismatched Types: expected a "
-#            s += f"{valueName} of type '{usableType.__name__}', however"
-#            s += f" a value of type '{type(value).__name__}' was given."
+            #            s = f"In {func.__module__}.{func.__name__}:\n"
+            #            s += f"Mismatched Types: expected a "
+            #            s += f"{valueName} of type '{usableType.__name__}', however"
+            #            s += f" a value of type '{type(value).__name__}' was given."
             raise TuringError("Argument Type Error")
 
+
 ###############################################################################
+
+
+def convert_argument_type(self, func, values):
+    """将时间的str格式转换为TuringDate"""
+    for value_name, annotation_type in func.__annotations__.items():
+        if value_name != 'return':
+            value = values[value_name]
+            if value is None:
+                continue
+            if annotation_type is TuringDate and type(value) is str:
+                """注释类型是TuringDate，但实际传入是str，
+                则将str类型转成对应的TuringDate类型"""
+                if value.isdigit():
+                    """只支持传入'%Y%m%d'格式的字符串时间"""
+                    __value = TuringDate.fromString(value)
+                elif '-' in str(value):
+                    __value = TuringDate.fromString(value, '%Y-%m-%d')
+                setattr(self, value_name, __value)

@@ -37,6 +37,7 @@ from turing_models.utilities.solvers_1d import newton_secant
 #       delta fit.
 ###############################################################################
 
+
 @njit(fastmath=True, cache=True)
 def g(K, *args):
     ''' This is the objective function used in the determination of the FX
@@ -61,7 +62,9 @@ def g(K, *args):
 
 ###############################################################################
 # Do not cache this function
-@njit(fastmath=True) #, cache=True)
+
+
+@njit(fastmath=True)  # , cache=True)
 def objFAST(params, *args):
     ''' Return a function that is minimised when the ATM, MS and RR vols have
     been best fitted using the parametric volatility curve represented by cvec
@@ -95,12 +98,12 @@ def objFAST(params, *args):
     sigma_K_25D_C_MS = volFunction(volTypeValue, params, f, K_25D_C_MS, t)
 
     V_25D_C_MS = bs_value(s, t, K_25D_C_MS, rd, rf, sigma_K_25D_C_MS,
-                          TuringOptionTypes.EUROPEAN_CALL.value)
+                          TuringOptionTypes.EUROPEAN_CALL.value, False)
 
     sigma_K_25D_P_MS = volFunction(volTypeValue, params, f, K_25D_P_MS, t)
 
     V_25D_P_MS = bs_value(s, t, K_25D_P_MS, rd, rf, sigma_K_25D_P_MS,
-                          TuringOptionTypes.EUROPEAN_PUT.value)
+                          TuringOptionTypes.EUROPEAN_PUT.value, False)
 
     V_25D_MS = V_25D_C_MS + V_25D_P_MS
     term2 = (V_25D_MS - V_25D_MS_target)**2
@@ -137,6 +140,7 @@ def objFAST(params, *args):
 # This function cannot be jitted until the scipy minimisation has been replaced
 # with a jittable function
 
+
 def solveToHorizonFAST(s, t,
                        rd, rf,
                        K_ATM, atmVol,
@@ -165,10 +169,10 @@ def solveToHorizonFAST(s, t,
 
     # USE MARKET STRANGLE VOL TO DETERMINE PRICE OF A MARKET STRANGLE
     V_25D_C_MS = bs_value(s, t, K_25D_C_MS, rd, rf, vol_25D_MS,
-                          TuringOptionTypes.EUROPEAN_CALL.value)
+                          TuringOptionTypes.EUROPEAN_CALL.value, False)
 
     V_25D_P_MS = bs_value(s, t, K_25D_P_MS, rd, rf, vol_25D_MS,
-                          TuringOptionTypes.EUROPEAN_PUT.value)
+                          TuringOptionTypes.EUROPEAN_PUT.value, False)
 
     # Market price of strangle in the domestic currency
     V_25D_MS = V_25D_C_MS + V_25D_P_MS
@@ -177,10 +181,10 @@ def solveToHorizonFAST(s, t,
     tol = 1e-8
 
     fargs = (s, t, rd, rf,
-            K_ATM, atmVol,
-            K_25D_C_MS, K_25D_P_MS,
-            V_25D_MS,
-            deltaMethodValue, rr25DVol, volTypeValue)
+             K_ATM, atmVol,
+             K_25D_C_MS, K_25D_P_MS,
+             V_25D_MS,
+             deltaMethodValue, rr25DVol, volTypeValue)
 
     opt = minimize(objFAST, c0, fargs, method="CG", tol=tol)
     xopt = opt.x
@@ -203,6 +207,7 @@ def solveToHorizonFAST(s, t,
     return ret
 
 ###############################################################################
+
 
 @njit(float64(int64, float64[:], float64, float64, float64),
       cache=True, fastmath=True)
@@ -233,6 +238,7 @@ def volFunction(volFunctionTypeValue, params, f, k, t):
 
 ###############################################################################
 
+
 @njit(cache=True, fastmath=True)
 def deltaFit(K, *args):
     ''' This is the objective function used in the determination of the FX
@@ -261,6 +267,8 @@ def deltaFit(K, *args):
 
 ###############################################################################
 # Unable to cache this function due to dynamic globals warning. Revisit.
+
+
 @njit(float64(float64, float64, float64, float64, int64, int64, float64,
               int64, float64, float64[:]), fastmath=True)
 def solveForSmileStrikeFAST(s, t, rd, rf,
@@ -286,6 +294,8 @@ def solveForSmileStrikeFAST(s, t, rd, rf,
 
 ###############################################################################
 # Unable to cache function
+
+
 @njit(float64(float64, float64, float64, float64, int64, float64,
               int64, float64), fastmath=True)
 def solveForStrike(spotFXRate,
@@ -323,7 +333,7 @@ def solveForStrike(spotFXRate,
         vsqrtt = volatility * np.sqrt(tdel)
         arg = deltaTarget*phi/forDF  # CHECK THIS !!!
         norminvdelta = norminvcdf(arg)
-        K = F0T * np.exp(-vsqrtt *(phi*norminvdelta - vsqrtt/2.0))
+        K = F0T * np.exp(-vsqrtt * (phi*norminvdelta - vsqrtt/2.0))
         return K
 
     elif deltaMethodValue == TuringFXDeltaMethod.FORWARD_DELTA.value:
@@ -340,7 +350,7 @@ def solveForStrike(spotFXRate,
         vsqrtt = volatility * np.sqrt(tdel)
         arg = deltaTarget*phi   # CHECK THIS!!!!!!!!
         norminvdelta = norminvcdf(arg)
-        K = F0T * np.exp(-vsqrtt *(phi*norminvdelta - vsqrtt/2.0))
+        K = F0T * np.exp(-vsqrtt * (phi*norminvdelta - vsqrtt/2.0))
         return K
 
     elif deltaMethodValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
@@ -359,7 +369,7 @@ def solveForStrike(spotFXRate,
                     deltaMethodValue, optionTypeValue, deltaTarget)
 
         K = newton_secant(g, x0=spotFXRate, args=argtuple,
-                   tol=1e-7, maxiter=50)
+                          tol=1e-7, maxiter=50)
 
         return K
 
@@ -388,9 +398,9 @@ class TuringFXVolSurface():
                  atmVols: (list, np.ndarray),
                  mktStrangle25DeltaVols: (list, np.ndarray),
                  riskReversal25DeltaVols: (list, np.ndarray),
-                 atmMethod:TuringFXATMMethod=TuringFXATMMethod.FWD_DELTA_NEUTRAL,
-                 deltaMethod:TuringFXDeltaMethod=TuringFXDeltaMethod.SPOT_DELTA,
-                 volatilityFunctionType:TuringVolFunctionTypes=TuringVolFunctionTypes.CLARK):
+                 atmMethod: TuringFXATMMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL,
+                 deltaMethod: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
+                 volatilityFunctionType: TuringVolFunctionTypes = TuringVolFunctionTypes.CLARK):
         ''' Create the TuringFXVolSurface object by passing in market vol data
         for ATM and 25 Delta Market Strangles and Risk Reversals. '''
 
@@ -474,7 +484,7 @@ class TuringFXVolSurface():
             fwd = self._F0T[0]
             texp = self._texp[0]
             vol = volFunction(volTypeValue, self._parameters[0],
-                                  fwd, K, texp)
+                              fwd, K, texp)
             return vol
 
         # If the time is below first time then assume a flat vol
@@ -483,7 +493,7 @@ class TuringFXVolSurface():
             fwd = self._F0T[0]
             texp = self._texp[0]
             vol = volFunction(volTypeValue, self._parameters[0],
-                                  fwd, K, texp)
+                              fwd, K, texp)
             return vol
 
         # If the time is beyond the last time then extrapolate with a flat vol
@@ -492,7 +502,7 @@ class TuringFXVolSurface():
             fwd = self._F0T[-1]
             texp = self._texp[-1]
             vol = volFunction(volTypeValue, self._parameters[-1],
-                                  fwd, K, texp)
+                              fwd, K, texp)
             return vol
 
         for i in range(1, numCurves):
@@ -505,12 +515,12 @@ class TuringFXVolSurface():
         fwd0 = self._F0T[index0]
         t0 = self._texp[index0]
         vol0 = volFunction(volTypeValue, self._parameters[index0],
-                               fwd0, K, t0)
+                           fwd0, K, t0)
 
         fwd1 = self._F0T[index1]
         t1 = self._texp[index1]
         vol1 = volFunction(volTypeValue, self._parameters[index1],
-                               fwd1, K, t1)
+                           fwd1, K, t1)
 
         vart0 = vol0*vol0*t0
         vart1 = vol1*vol1*t1
@@ -659,7 +669,6 @@ class TuringFXVolSurface():
             else:
                 raise TuringError("Unknown Model Type")
 
-
             xinits.append(xinit)
 
         deltaMethodValue = self._deltaMethod.value
@@ -678,11 +687,11 @@ class TuringFXVolSurface():
 #            print(t, rd, rf, K_ATM, atmVol, ms25DVol, rr25DVol)
 
             res = solveToHorizonFAST(s, t, rd, rf, K_ATM,
-                                   atmVol, ms25DVol, rr25DVol,
-                                   deltaMethodValue, volTypeValue,
-                                   xinits[i])
+                                     atmVol, ms25DVol, rr25DVol,
+                                     deltaMethodValue, volTypeValue,
+                                     xinits[i])
 
-            (self._parameters[i,:],
+            (self._parameters[i, :],
              self._K_25D_C_MS[i], self._K_25D_P_MS[i],
              self._K_25D_C[i], self._K_25D_P[i]) = res
 
@@ -713,7 +722,7 @@ class TuringFXVolSurface():
                     inverseDeltaTarget, self._parameters[tenorIndex])
 
         K = newton_secant(deltaFit, x0=initialValue, args=argtuple,
-                       tol=1e-5, maxiter=50)
+                          tol=1e-5, maxiter=50)
 
         return K
 
@@ -739,9 +748,11 @@ class TuringFXVolSurface():
             if verbose:
                 print("TENOR:", self._tenors[i])
                 print("EXPIRY DATE:", expiryDate)
-                print("IN ATM VOL: %9.6f %%"% (100.0*self._atmVols[i]))
-                print("IN MKT STRANGLE 25D VOL: %9.6f %%"% (100.0*self._mktStrangle25DeltaVols[i]))
-                print("IN RSK REVERSAL 25D VOL: %9.6f %%"% (100.0*self._riskReversal25DeltaVols[i]))
+                print("IN ATM VOL: %9.6f %%" % (100.0*self._atmVols[i]))
+                print("IN MKT STRANGLE 25D VOL: %9.6f %%" %
+                      (100.0*self._mktStrangle25DeltaVols[i]))
+                print("IN RSK REVERSAL 25D VOL: %9.6f %%" %
+                      (100.0*self._riskReversal25DeltaVols[i]))
 
             call = TuringFXVanillaOption(expiryDate,
                                          K_dummy,
@@ -757,7 +768,6 @@ class TuringFXVolSurface():
                                         1.0,
                                         self._notionalCurrency)
 
-
             ###################################################################
             # AT THE MONEY
             ###################################################################
@@ -765,9 +775,9 @@ class TuringFXVolSurface():
             if verbose:
                 print("==========================================================")
                 print("T_(YEARS): ", self._texp[i])
-                print("CNT_CPD_RD:%9.6f %%"% (self._rd[i]*100))
-                print("CNT_CPD_RF:%9.6f %%"% (self._rf[i]*100))
-                print("FWD_RATE:  %9.6f"% (self._F0T[i]))
+                print("CNT_CPD_RD:%9.6f %%" % (self._rd[i]*100))
+                print("CNT_CPD_RF:%9.6f %%" % (self._rf[i]*100))
+                print("FWD_RATE:  %9.6f" % (self._F0T[i]))
 
             sigma_ATM_out = volFunction(self._volatilityFunctionType.value,
                                         self._parameters[i],
@@ -787,7 +797,7 @@ class TuringFXVolSurface():
             diff = sigma_ATM_out - self._atmVols[i]
 
             if np.abs(diff) > tol:
-                print("FAILED FIT TO ATM VOL IN: %9.6f  OUT: %9.6f  DIFF: %9.6f"%
+                print("FAILED FIT TO ATM VOL IN: %9.6f  OUT: %9.6f  DIFF: %9.6f" %
                       (self._atmVols[i]*100.0, sigma_ATM_out*100.0,
                        diff * 100.0))
 
@@ -816,7 +826,6 @@ class TuringFXVolSurface():
             # NOW WE ASSIGN THE SAME VOLATILITY TO THE MS STRIKES
             # THESE STRIKES ARE DETERMINED BY SETTING DELTA TO 0.25/-0.25
             ###################################################################
-
 
             msVol = self._atmVols[i] + self._mktStrangle25DeltaVols[i]
 
@@ -875,10 +884,10 @@ class TuringFXVolSurface():
 
             # CALL
             sigma_K_25D_C_MS = volFunction(self._volatilityFunctionType.value,
-                                            self._parameters[i],
-                                            self._F0T[i],
-                                            self._K_25D_C_MS[i],
-                                            self._texp[i])
+                                           self._parameters[i],
+                                           self._F0T[i],
+                                           self._K_25D_C_MS[i],
+                                           self._texp[i])
 
             model = TuringModelBlackScholes(sigma_K_25D_C_MS)
             call_value = call.value(self._valueDate,
@@ -896,11 +905,10 @@ class TuringFXVolSurface():
 
             # PUT
             sigma_K_25D_P_MS = volFunction(self._volatilityFunctionType.value,
-                                            self._parameters[i],
-                                            self._F0T[i],
-                                            self._K_25D_P_MS[i],
-                                            self._texp[i])
-
+                                           self._parameters[i],
+                                           self._F0T[i],
+                                           self._K_25D_P_MS[i],
+                                           self._texp[i])
 
             model = TuringModelBlackScholes(sigma_K_25D_P_MS)
             put_value = put.value(self._valueDate,
@@ -930,7 +938,7 @@ class TuringFXVolSurface():
 
             diff = mktStrangleValue - mktStrangleValueSkew
             if np.abs(diff) > tol:
-                print("FAILED FIT TO 25D MS VAL: %9.6f  OUT: %9.6f  DIFF: % 9.6f"%
+                print("FAILED FIT TO 25D MS VAL: %9.6f  OUT: %9.6f  DIFF: % 9.6f" %
                       (mktStrangleValue, mktStrangleValueSkew, diff))
 
             ###################################################################
@@ -941,10 +949,10 @@ class TuringFXVolSurface():
             put._strikeFXRate = self._K_25D_P[i]
 
             sigma_K_25D_C = volFunction(self._volatilityFunctionType.value,
-                                            self._parameters[i],
-                                            self._F0T[i],
-                                            self._K_25D_C[i],
-                                            self._texp[i])
+                                        self._parameters[i],
+                                        self._F0T[i],
+                                        self._K_25D_C[i],
+                                        self._texp[i])
 
             model = TuringModelBlackScholes(sigma_K_25D_C)
 
@@ -956,10 +964,10 @@ class TuringFXVolSurface():
                                     model)[self._deltaMethodString]
 
             sigma_K_25D_P = volFunction(self._volatilityFunctionType.value,
-                                            self._parameters[i],
-                                            self._F0T[i],
-                                            self._K_25D_P[i],
-                                            self._texp[i])
+                                        self._parameters[i],
+                                        self._F0T[i],
+                                        self._K_25D_P[i],
+                                        self._texp[i])
 
             model = TuringModelBlackScholes(sigma_K_25D_P)
 
@@ -977,19 +985,18 @@ class TuringFXVolSurface():
                 print("K_25D_P: %9.7f  VOL: %9.6f  DELTA: % 9.6f"
                       % (self._K_25D_P[i], 100.0*sigma_K_25D_P, delta_put))
 
-
             sigma_RR = sigma_K_25D_C - sigma_K_25D_P
 
             if verbose:
                 print("==========================================================")
                 print("RR = VOL_K_25_C - VOL_K_25_P => RR_IN: %9.6f %% RR_OUT: %9.6f %%"
-                  % (100.0 * self._riskReversal25DeltaVols[i], 100.0*sigma_RR))
+                      % (100.0 * self._riskReversal25DeltaVols[i], 100.0*sigma_RR))
                 print("==========================================================")
 
             diff = sigma_RR - self._riskReversal25DeltaVols[i]
 
             if np.abs(diff) > tol:
-                print("FAILED FIT TO 25D RRV IN: % 9.6f  OUT: % 9.6f  DIFF: % 9.6f"%
+                print("FAILED FIT TO 25D RRV IN: % 9.6f  OUT: % 9.6f  DIFF: % 9.6f" %
                       (self._riskReversal25DeltaVols[i]*100.0,
                        sigma_RR*100.0,
                        diff*100.0))
@@ -1007,7 +1014,7 @@ class TuringFXVolSurface():
             f = self._F0T[iTenor]
             texp = self._texp[iTenor]
 
-            dFX = (highFX - lowFX)/ numIntervals
+            dFX = (highFX - lowFX) / numIntervals
 
             domDF = self._domDiscountCurve._df(texp)
             forDF = self._forDiscountCurve._df(texp)
@@ -1023,8 +1030,8 @@ class TuringFXVolSurface():
                 k = lowFX + iK*dFX
 
                 vol = volFunction(self._volatilityFunctionType.value,
-                                      self._parameters[iTenor],
-                                      f, k, texp)
+                                  self._parameters[iTenor],
+                                  f, k, texp)
 
                 Ks.append(k)
                 vols.append(vol)
@@ -1081,7 +1088,8 @@ class TuringFXVolSurface():
             plt.xlabel("Strike")
             plt.ylabel("Volatility")
 
-            title = "25D FIT:" + self._currencyPair + " " + str(self._volatilityFunctionType)
+            title = "25D FIT:" + self._currencyPair + \
+                " " + str(self._volatilityFunctionType)
 
             keyStrikes = []
             keyStrikes.append(self._K_ATM[tenorIndex])

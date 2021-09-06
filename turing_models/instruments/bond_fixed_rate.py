@@ -99,13 +99,11 @@ class BondFixedRate(Bond):
         return self.settlement_date_.addYears(self._zero_dates)
 
     @property
-    def _discount_curve(self):
+    def discount_curve(self):
+        if self._discount_curve:
+            return self._discount_curve
         return TuringDiscountCurveZeros(
             self.settlement_date_, self.zero_dates_, self._zero_rates)
-
-    @property
-    def discount_curve(self):
-        return self._discount_curve or self._discount_curve
 
     @discount_curve.setter
     def discount_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
