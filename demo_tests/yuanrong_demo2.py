@@ -1,4 +1,6 @@
 import time
+
+from turing_models.instruments.snowball_option import SnowballOption
 from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.global_types import TuringOptionType
 from turing_models.utilities.turing_date import TuringDate
@@ -8,16 +10,22 @@ from turing_models.instruments.combination_calc import CombinationCalc, ModelCal
 from turing_models.constants import ParallelType
 
 
-european_option1 = EuropeanOption(asset_id='OPTIONCN00000001',
-                                  underlier='STOCKCN00000001',
+snowball_option1 = SnowballOption(asset_id='OPTIONCN00000001',
                                   option_type=TuringOptionType.CALL,
-                                  # start_date=TuringDate(2021, 6, 3),
-                                  # start_date=TuringDate.fromString('2021-06-03', '%Y-%m-%d'),
-                                  start_date="2021-06-03",
-                                  expiry=TuringDate(2021, 9, 3),
-                                  strike_price=5.3,
-                                  multiplier=100,
-                                  value_date=TuringDate(2021, 8, 13),
+                                  start_date=TuringDate(2021, 6, 3),
+                                  expiry=TuringDate(2021, 10, 3),
+                                  participation_rate=1.0,
+                                  barrier=5.5,
+                                  knock_in_price=5.2,
+                                  notional=1000000,
+                                  rebate=0.2,
+                                  initial_spot=5.2,
+                                  untriggered_rebate=0.2,
+                                  knock_in_type='SPREADS',
+                                  knock_out_obs_days_whole=[TuringDate(2021, 6, 3), TuringDate(2021, 7, 5), TuringDate(2021, 8, 3), TuringDate(2021, 9, 3)],
+                                  knock_in_strike1=5.3,
+                                  knock_in_strike2=5.4,
+                                  # value_date=TuringDate(2021, 8, 13),
                                   currency=Currency.CNY,
                                   stock_price=5.262,
                                   volatility=0.1,
@@ -25,21 +33,28 @@ european_option1 = EuropeanOption(asset_id='OPTIONCN00000001',
                                   zero_rates=rates,
                                   dividend_yield=0)
 
-european_option2 = EuropeanOption(asset_id='OPTIONCN00000002',
-                                  underlier='STOCKCN00000001',
+snowball_option2 = SnowballOption(asset_id='OPTIONCN00000001',
                                   option_type=TuringOptionType.CALL,
                                   start_date=TuringDate(2021, 6, 3),
-                                  expiry=TuringDate(2021, 9, 3),
-                                  strike_price=5.28,
-                                  multiplier=100,
-                                  value_date=TuringDate(2021, 8, 13),
+                                  expiry=TuringDate(2021, 10, 3),
+                                  participation_rate=1.0,
+                                  barrier=5.5,
+                                  knock_in_price=5.2,
+                                  notional=1000000,
+                                  rebate=0.2,
+                                  initial_spot=5.2,
+                                  untriggered_rebate=0.2,
+                                  knock_in_type='SPREADS',
+                                  knock_out_obs_days_whole=[TuringDate(2021, 6, 3), TuringDate(2021, 7, 5), TuringDate(2021, 8, 3), TuringDate(2021, 9, 3)],
+                                  knock_in_strike1=5.3,
+                                  knock_in_strike2=5.4,
+                                  # value_date=TuringDate(2021, 8, 13),
                                   currency=Currency.CNY,
-                                  stock_price=5.262,
-                                  volatility=0.15,
+                                  stock_price=5.4,
+                                  volatility=0.1,
                                   zero_dates=dates,
                                   zero_rates=rates,
                                   dividend_yield=0)
-
 
 risk_measures = [
     RiskMeasure.Price,
@@ -53,13 +68,13 @@ risk_measures = [
 
 
 model_calc1 = ModelCalc(
-    european_option1,
+    snowball_option1,
     risk_measures=risk_measures,
     title="european_option1",  # 可选参数，不传在结果相关的打印中会取类名
 )
 
 model_calc2 = ModelCalc(
-    european_option1,
+    snowball_option1,
     risk_measures=risk_measures,
     title="european_option2",  # 可选参数，不传在结果相关的打印中会取类名
 )
