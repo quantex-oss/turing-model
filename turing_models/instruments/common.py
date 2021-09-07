@@ -451,6 +451,56 @@ class Currency(Enum):
         return self.value
 
 
+class CurrencyPair(Enum):
+
+    USDCNY = 'USD/CNY'
+    JPYCNY = 'JPY/CNY'
+    GBPCNY = 'GBP/CNY'
+    NZDCNY = 'NZD/CNY'
+    CHFCNY = 'CHF/CNY'
+    CNYMYR = 'CNY/MYR'
+    CNYZAR = 'CNY/ZAR'
+    CNYAED = 'CNY/AED'
+    CNYHUF = 'CNY/HUF'
+    CNYDKK = 'CNY/DKK'
+    CNYNOK = 'CNY/NOK'
+    CNYMXN = 'CNY/MXN'
+    EURCNY = 'EUR/CNY'
+    HKDCNY = 'HKD/CNY'
+    AUDCNY = 'AUD/CNY'
+    SGDCNY = 'SGD/CNY'
+    CADCNY = 'CAD/CNY'
+    CNYRUB = 'CNY/RUB'
+    CNYKRW = 'CNY/KRW'
+    CNYSAR = 'CNY/SAR'
+    CNYPLN = 'CNY/PLN'
+    CNYSEK = 'CNY/SEK'
+    CNYTRY = 'CNY/TRY'
+    CNYTHB = 'CNY/THB'
+
+    def __repr__(self):
+        return self.value
+
+
+class RMBIRCurveType(Enum):
+
+    Shibor = 'Shibor'
+    Shibor3M = 'Shibor3M'
+    FR007 = 'FR007'
+
+    def __repr__(self):
+        return self.value
+
+
+class SpotExchangeRateType(Enum):
+
+    Central = 'central'
+    Average = 'average'
+
+    def __repr__(self):
+        return self.value
+
+
 class OptionSettlementMethod(Enum):
     """How the option is settled (e.g. Cash, Physical)"""
 
