@@ -139,7 +139,7 @@ class FXOptionImpliedVolatilitySurface:
                  num_strike: int,  # 参与计算的行权价个数（即：从[strike_min, strike_max]中等间隔取的点的个数）
                  expiry_min: TuringDate,  # 最近到期日
                  expiry_max: TuringDate,  # 最远到期日
-                 frequency_type: TuringFrequencyTypes = TuringFrequencyTypes.DAILY,  # 到期日时间间隔
+                 frequency_type: TuringFrequencyTypes = TuringFrequencyTypes.DAILY,  # 到期日时间间隔，默认是每个交易日逐个计算
                  base_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
 
         if isinstance(fx_symbol, CurrencyPair):
