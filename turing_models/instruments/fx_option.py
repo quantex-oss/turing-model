@@ -187,7 +187,7 @@ class FXOption(FX, InstrumentBase):
         return -np.log(forDF) / texp
 
     @property
-    def vol(self):
+    def volatility_(self):
         if self.volatility:
             v = self.model._volatility
         elif self.vol_tenors:
@@ -199,8 +199,8 @@ class FXOption(FX, InstrumentBase):
         else:
             raise TuringError(error_str2)
 
-    def get_vol(self):
-        return self.vol
+    def vol(self):
+        return self.volatility_
 
     def price(self):
         return 0.0

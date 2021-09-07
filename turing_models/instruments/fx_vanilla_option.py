@@ -74,7 +74,7 @@ class FXVanillaOption(FXOption):
         K = self.strike
         rd = self.rd
         rf = self.rf
-        v = self.vol
+        v = self.volatility_
         texp = self.texp
         tdel = self.tdel
         notional = self.notional
@@ -144,7 +144,7 @@ class FXVanillaOption(FXOption):
         rf = self.rf
         texp = self.texp
         tdel = self.tdel
-        v = self.vol
+        v = self.volatility_
         option_type = self.option_type_
 
         pips_spot_delta = bs_delta(
@@ -166,7 +166,7 @@ class FXVanillaOption(FXOption):
         S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
-        v = self.vol
+        v = self.volatility_
         rd = self.rd
         rf = self.rf
 
@@ -187,7 +187,7 @@ class FXVanillaOption(FXOption):
         S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
-        v = self.vol
+        v = self.volatility_
         rd = self.rd
         rf = self.rf
 
@@ -207,7 +207,7 @@ class FXVanillaOption(FXOption):
         S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
-        v = self.vol
+        v = self.volatility_
         option_type = self.option_type_
         rd = self.rd
         rf = self.rf
@@ -239,7 +239,7 @@ class FXVanillaOption(FXOption):
         S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
-        v = self.vol
+        v = self.volatility_
         rd = self.rd
         rf = self.rf
 
@@ -260,7 +260,7 @@ class FXVanillaOption(FXOption):
         S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
-        v = self.vol
+        v = self.volatility_
         rd = self.rd
         rf = self.rf
 
@@ -294,7 +294,7 @@ class FXVanillaOption(FXOption):
         cannot be priced analytically. This function uses Numpy vectorisation
         for speed of execution."""
 
-        v = self.vol
+        v = self.volatility_
         K = self.strike
         spot_fx_rate = self.exchange_rate
         option_type = self.option_type_
