@@ -306,7 +306,7 @@ def normaliseWeights(wtVector: np.ndarray):
 
 
 def to_string(label: str,
-              value: float,
+              value: (float, str),
               separator: str = "\n",
               listFormat: bool = False):
     ''' Format label/value pairs for a unified formatting. '''

@@ -193,6 +193,8 @@ class FXOption(FX, InstrumentBase):
         elif self.vol_tenors:
             v = self.volatility_surface.volatilityFromStrikeDate(
                 self.strike, self.expiry)
+        else:
+            raise TuringError("Volatility does not exist.")
         if np.all(v >= 0.0):
             v = np.maximum(v, 1e-10)
             return v
