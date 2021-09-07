@@ -69,8 +69,7 @@ def _solveToHorizon(s, t, rd, rf,
                     d10C):
 
     ###########################################################################
-    # Determine the price of a market strangle from market strangle
-    # Need to price a call and put that agree with market strangle
+    # Determine strikes of the key points on the curve.
     ###########################################################################
 
     use10D = True
@@ -84,7 +83,6 @@ def _solveToHorizon(s, t, rd, rf,
 
     if use25D is True:
 
-        Dd = np.exp(-np.multiply(rd, t))
         Df = np.exp(-np.multiply(rf, t))
         delta = 0.25
         alpha = -sci.norm.ppf(delta * np.reciprocal(Df))
@@ -104,9 +102,8 @@ def _solveToHorizon(s, t, rd, rf,
 
         return K25DeltaPut, KATM, K25DeltaCall
 
-    else:
+    elif use10D is True:
 
-        Dd = np.exp(-np.multiply(rd, t))
         Df = np.exp(-np.multiply(rf, t))
         delta = 0.10
         alpha = -sci.norm.ppf(delta * np.reciprocal(Df))
@@ -126,29 +123,13 @@ def _solveToHorizon(s, t, rd, rf,
 
         return K10DeltaPut, KATM, K10DeltaCall
 
-    # else:
-
-    #     vol_10D_MS = -999.0
-    #     K_10D_C_MS = 0.0
-    #     K_10D_P_MS = 0.0
-    #     V_10D_C_MS = 0.0
-    #     V_10D_P_MS = 0.0
-    #     V_10D_MS = 0.0
-    #     K10DeltaCall = 0.0
-    #     K10DeltaPut = 0.0
-
-    # ###########################################################################
-    # return (K25DeltaCall, K25DeltaPut,
-    #          K10DeltaCall, K10DeltaPut,
-    #          KATM)
 
 ###############################################################################
 
 
 @njit(float64(float64[:], float64, float64, float64), cache=True, fastmath=True)
 def volFunction(params, f, k, t):
-    ''' Return the volatility for a strike using a given polynomial
-    interpolation following Section 3.9 of Iain Clark book. '''
+    ''' Return the volatility for a strike using vanna-volga method. '''
 
 #    print("volFunction", volFunctionTypeValue)
     vol = volFunctionVV(params, f, k, t)
@@ -881,540 +862,6 @@ class TuringFXVolSurfaceVV():
                           self._K_10D_C[i], d10P, d10ATM, d10C]
                 self._parameters[i, :] = np.array(params)
 
-###############################################################################
-
-#     def checkCalibration(self, verbose: bool, tol: float = 1e-6):
-#         ''' Compare calibrated vol surface with market and output a report
-#         which sets out the quality of fit to the ATM and 10 and 25 delta market
-#         strangles and risk reversals. '''
-
-#         if verbose:
-
-#             print("==========================================================")
-#             print("VALUE DATE:", self._valueDate)
-#             print("SPOT FX RATE:", self._spotFXRate)
-#             print("ALPHA WEIGHT:", self._alpha)
-#             print("ATM METHOD:", self._atmMethod)
-#             print("DELTA METHOD:", self._deltaMethod)
-#             print("==========================================================")
-
-#         K_dummy = 999
-
-#         for i in range(0, self._numVolCurves):
-
-#             expiryDate = self._expiryDates[i]
-
-#             if verbose:
-#                 print("TENOR:", self._tenors[i])
-#                 print("EXPIRY DATE:", expiryDate)
-#                 print("IN ATM VOL: %9.6f %%"%
-#                       (100.0*self._atmVols[i]))
-
-#                 if self._useMS25DVol:
-#                     print("IN MKT STRANGLE 25D VOL: %9.6f %%"%
-#                           (100.0*self._butterfly25DeltaVols[i]))
-#                     print("IN RSK REVERSAL 25D VOL: %9.6f %%"%
-#                           (100.0*self._riskReversal25DeltaVols[i]))
-
-#                 if self._useMS10DVol:
-#                     print("IN MKT STRANGLE 10D VOL: %9.6f %%"%
-#                           (100.0*self._butterfly10DeltaVols[i]))
-#                     print("IN RSK REVERSAL 10D VOL: %9.6f %%"%
-#                           (100.0*self._riskReversal10DeltaVols[i]))
-
-#             call = TuringFXVanillaOption(expiryDate,
-#                                          K_dummy,
-#                                          self._currencyPair,
-#                                          TuringOptionTypes.EUROPEAN_CALL,
-#                                          1.0,
-#                                          self._notionalCurrency, )
-
-#             put = TuringFXVanillaOption(expiryDate,
-#                                         K_dummy,
-#                                         self._currencyPair,
-#                                         TuringOptionTypes.EUROPEAN_PUT,
-#                                         1.0,
-#                                         self._notionalCurrency)
-
-#             ###################################################################
-#             # AT THE MONEY
-#             ###################################################################
-
-#             if verbose:
-#                 print("==========================================================")
-#                 print("T_(YEARS): ", self._texp[i])
-#                 print("CNT_CPD_RD:%9.6f %%"% (self._rd[i]*100))
-#                 print("CNT_CPD_RF:%9.6f %%"% (self._rf[i]*100))
-#                 print("FWD_RATE:  %9.6f"% (self._F0T[i]))
-
-#             sigma_ATM_out = volFunction(self._volatilityFunctionType.value,
-#                                             self._parameters[i],
-#                                             self._strikes[i],
-#                                             self._F0T[i],
-#                                             self._K_ATM[i],
-#                                             self._texp[i])
-
-#             if verbose:
-#                 print("==========================================================")
-#                 print("VOL FUNCTION", self._volatilityFunctionType)
-#                 print("VOL_PARAMETERS:", self._parameters[i])
-#                 print("==========================================================")
-#                 print("OUT_K_ATM:  %9.6f" % (self._K_ATM[i]))
-#                 print("OUT_ATM_VOL: %9.6f %%"
-#                       % (100.0*sigma_ATM_out))
-
-#             diff = sigma_ATM_out - self._atmVols[i]
-
-#             if np.abs(diff) > tol:
-#                 print("FAILED FIT TO ATM VOL IN: %9.6f  OUT: %9.6f  DIFF: %9.6f"%
-#                       (self._atmVols[i]*100.0, sigma_ATM_out*100.0,
-#                        diff * 100.0))
-
-#             call._strikeFXRate = self._K_ATM[i]
-#             put._strikeFXRate = self._K_ATM[i]
-
-#             model = TuringModelBlackScholes(sigma_ATM_out)
-
-#             delta_call = call.delta(self._valueDate,
-#                                     self._spotFXRate,
-#                                     self._domDiscountCurve,
-#                                     self._forDiscountCurve,
-#                                     model)[self._deltaMethodString]
-
-#             delta_put = put.delta(self._valueDate,
-#                                   self._spotFXRate,
-#                                   self._domDiscountCurve,
-#                                   self._forDiscountCurve,
-#                                   model)[self._deltaMethodString]
-
-#             if verbose:
-#                 print("CALL_DELTA: % 9.6f  PUT_DELTA: % 9.6f  NET_DELTA: % 9.6f"
-#                       % (delta_call, delta_put, delta_call + delta_put))
-
-#             ###################################################################
-#             # NOW WE ASSIGN THE SAME VOLATILITY TO THE MS STRIKES
-#             # THESE STRIKES ARE DETERMINED BY SETTING DELTA TO 0.25/-0.25
-#             ###################################################################
-
-#             if self._useMS25DVol is True:
-
-#                 msVol = self._atmVols[i] + self._butterfly25DeltaVols[i]
-
-#                 if verbose:
-
-#                     print("==========================================================")
-#                     print("MKT STRANGLE 25D VOL IN: %9.6f %%"
-#                           % (100.0*self._butterfly25DeltaVols[i]))
-
-#                 call._strikeFXRate = self._K_25D_C_MS[i]
-#                 put._strikeFXRate = self._K_25D_P_MS[i]
-
-#                 model = TuringModelBlackScholes(msVol)
-
-#                 delta_call = call.delta(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)[self._deltaMethodString]
-
-#                 delta_put = put.delta(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)[self._deltaMethodString]
-
-#                 if verbose:
-#                     print("K_25D_C_MS: %9.6f  ATM + MSVOL: %9.6f %%   DELTA: %9.6f"
-#                           % (self._K_25D_C_MS[i], 100.0*msVol, delta_call))
-
-#                     print("K_25D_P_MS: %9.6f  ATM + MSVOL: %9.6f %%   DELTA: %9.6f"
-#                           % (self._K_25D_P_MS[i], 100.0*msVol, delta_put))
-
-#                 call_value = call.value(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)['v']
-
-#                 put_value = put.value(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)['v']
-
-#                 butterflyValue = call_value + put_value
-
-#                 if verbose:
-#                     print("CALL_VALUE: %9.6f  PUT_VALUE: %9.6f  MS_VALUE: % 9.6f"
-#                           % (call_value, put_value, butterflyValue))
-
-#                 ###################################################################
-#                 # NOW WE ASSIGN A DIFFERENT VOLATILITY TO THE MS STRIKES
-#                 # THE DELTAS WILL NO LONGER EQUAL 0.25, -0.25
-#                 ###################################################################
-
-#                 # CALL
-#                 sigma_K_25D_C_MS = volFunction(self._volatilityFunctionType.value,
-#                                                    self._parameters[i],
-#                                                    self._strikes[i],
-#                                                    self._gaps[i],
-#                                                    self._F0T[i],
-#                                                    self._K_25D_C_MS[i],
-#                                                    self._texp[i])
-
-#                 model = TuringModelBlackScholes(sigma_K_25D_C_MS)
-#                 call_value = call.value(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)['v']
-
-#                 # THIS IS NOT GOING TO BE 0.25 AS WE HAVE USED A DIFFERENT SKEW VOL
-#                 delta_call = call.delta(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)[self._deltaMethodString]
-
-#                 # PUT
-#                 sigma_K_25D_P_MS = volFunction(self._volatilityFunctionType.value,
-#                                                    self._parameters[i],
-#                                                    self._strikes[i],
-#                                                    self._gaps[i],
-#                                                    self._F0T[i],
-#                                                    self._K_25D_P_MS[i],
-#                                                    self._texp[i])
-
-#                 model = TuringModelBlackScholes(sigma_K_25D_P_MS)
-#                 put_value = put.value(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)['v']
-
-#                 # THIS IS NOT GOING TO BE -0.25 AS WE HAVE USED A DIFFERENT SKEW VOL
-#                 delta_put = put.delta(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)[self._deltaMethodString]
-
-#                 butterflyValueSkew = call_value + put_value
-
-#                 if verbose:
-#                     print("K_25D_C_MS: %9.6f  SURFACE_VOL: %9.6f %%   DELTA: %9.6f"
-#                           % (self._K_25D_C_MS[i], 100.0*sigma_K_25D_C_MS, delta_call))
-
-#                     print("K_25D_P_MS: %9.6f  SURFACE_VOL: %9.6f %%   DELTA: %9.6f"
-#                           % (self._K_25D_P_MS[i], 100.0*sigma_K_25D_P_MS, delta_put))
-
-#                     print("CALL_VALUE: %9.6f  PUT_VALUE: %9.6f  MS_SKEW_VALUE: % 9.6f"
-#                           % (call_value, put_value, butterflyValueSkew))
-
-#                 diff = butterflyValue - butterflyValueSkew
-#                 if np.abs(diff) > tol:
-#                     print("FAILED FIT TO 25D MS VAL: %9.6f  OUT: %9.6f  DIFF: % 9.6f"%
-#                           (butterflyValue, butterflyValueSkew, diff))
-
-#                 ###################################################################
-#                 # NOW WE SHIFT STRIKES SO THAT DELTAS NOW EQUAL 0.25, -0.25
-#                 ###################################################################
-
-#                 call._strikeFXRate = self._K_25D_C[i]
-#                 put._strikeFXRate = self._K_25D_P[i]
-
-#                 sigma_K_25D_C = volFunction(self._volatilityFunctionType.value,
-#                                                 self._parameters[i],
-#                                                 self._strikes[i],
-#                                                 self._gaps[i],
-#                                                 self._F0T[i],
-#                                                 self._K_25D_C[i],
-#                                                 self._texp[i])
-
-#                 model = TuringModelBlackScholes(sigma_K_25D_C)
-
-#                 # THIS DELTA SHOULD BE +0.25
-#                 delta_call = call.delta(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)[self._deltaMethodString]
-
-#                 sigma_K_25D_P = volFunction(self._volatilityFunctionType.value,
-#                                                 self._parameters[i],
-#                                                 self._strikes[i],
-#                                                 self._gaps[i],
-#                                                 self._F0T[i],
-#                                                 self._K_25D_P[i],
-#                                                 self._texp[i])
-
-#                 model = TuringModelBlackScholes(sigma_K_25D_P)
-
-#                 # THIS DELTA SHOULD BE -0.25
-#                 delta_put = put.delta(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)[self._deltaMethodString]
-
-#                 if verbose:
-#                     print("K_25D_C: %9.7f  VOL: %9.6f  DELTA: % 9.6f"
-#                           % (self._K_25D_C[i], 100.0*sigma_K_25D_C, delta_call))
-
-#                     print("K_25D_P: %9.7f  VOL: %9.6f  DELTA: % 9.6f"
-#                           % (self._K_25D_P[i], 100.0*sigma_K_25D_P, delta_put))
-
-#                 sigma_RR = sigma_K_25D_C - sigma_K_25D_P
-
-#                 if verbose:
-#                     print("==========================================================")
-#                     print("RR = VOL_K_25_C - VOL_K_25_P => RR_IN: %9.6f %% RR_OUT: %9.6f %%"
-#                       % (100.0 * self._riskReversal25DeltaVols[i], 100.0*sigma_RR))
-#                     print("==========================================================")
-
-#                 diff = sigma_RR - self._riskReversal25DeltaVols[i]
-
-#                 if np.abs(diff) > tol:
-#                     print("FAILED FIT TO 25D RRV IN: % 9.6f  OUT: % 9.6f  DIFF: % 9.6f"%
-#                           (self._riskReversal25DeltaVols[i]*100.0,
-#                            sigma_RR*100.0,
-#                            diff*100.0))
-
-#             ###################################################################
-#             # NOW WE ASSIGN THE SAME VOLATILITY TO THE MS STRIKES
-#             # THESE STRIKES ARE DETERMINED BY SETTING DELTA TO 0.10/-0.10
-#             ###################################################################
-
-#             if self._useMS10DVol:
-
-#                 msVol = self._atmVols[i] + self._butterfly10DeltaVols[i]
-
-#                 if verbose:
-
-#                     print("==========================================================")
-#                     print("MKT STRANGLE 10D VOL IN: %9.6f %%"
-#                           % (100.0*self._butterfly10DeltaVols[i]))
-
-#                 call._strikeFXRate = self._K_10D_C_MS[i]
-#                 put._strikeFXRate = self._K_10D_P_MS[i]
-
-#                 model = TuringModelBlackScholes(msVol)
-
-#                 delta_call = call.delta(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)[self._deltaMethodString]
-
-#                 delta_put = put.delta(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)[self._deltaMethodString]
-
-#                 if verbose:
-#                     print("K_10D_C_MS: %9.6f  ATM + MSVOL: %9.6f %%   DELTA: %9.6f"
-#                           % (self._K_10D_C_MS[i], 100.0*msVol, delta_call))
-
-#                     print("K_10D_P_MS: %9.6f  ATM + MSVOL: %9.6f %%   DELTA: %9.6f"
-#                           % (self._K_10D_P_MS[i], 100.0*msVol, delta_put))
-
-#                 call_value = call.value(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)['v']
-
-#                 put_value = put.value(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)['v']
-
-#                 butterflyValue = call_value + put_value
-
-#                 if verbose:
-#                     print("CALL_VALUE: %9.6f  PUT_VALUE: %9.6f  MS_VALUE: % 9.6f"
-#                           % (call_value, put_value, butterflyValue))
-
-#                 ###################################################################
-#                 # NOW WE ASSIGN A DIFFERENT VOLATILITY TO THE MS STRIKES
-#                 # THE DELTAS WILL NO LONGER EQUAL 0.25, -0.25
-#                 ###################################################################
-
-#                 # CALL
-#                 sigma_K_10D_C_MS = volFunction(self._volatilityFunctionType.value,
-#                                                    self._parameters[i],
-#                                                    self._strikes[i],
-#                                                    self._gaps[i],
-#                                                    self._F0T[i],
-#                                                    self._K_10D_C_MS[i],
-#                                                    self._texp[i])
-
-#                 model = TuringModelBlackScholes(sigma_K_10D_C_MS)
-#                 call_value = call.value(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)['v']
-
-#                 # THIS IS NOT GOING TO BE 0.10 AS WE HAVE USED A DIFFERENT SKEW VOL
-#                 delta_call = call.delta(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)[self._deltaMethodString]
-
-#                 # PUT
-#                 sigma_K_10D_P_MS = volFunction(self._volatilityFunctionType.value,
-#                                                    self._parameters[i],
-#                                                    self._strikes[i],
-#                                                    self._gaps[i],
-#                                                    self._F0T[i],
-#                                                    self._K_10D_P_MS[i],
-#                                                    self._texp[i])
-
-#                 model = TuringModelBlackScholes(sigma_K_10D_P_MS)
-#                 put_value = put.value(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)['v']
-
-#                 # THIS IS NOT GOING TO BE -0.10 AS WE HAVE USED A DIFFERENT SKEW VOL
-#                 delta_put = put.delta(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)[self._deltaMethodString]
-
-#                 butterflyValueSkew = call_value + put_value
-
-#                 if verbose:
-#                     print("K_10D_C_MS: %9.6f  SURFACE_VOL: %9.6f %%   DELTA: %9.6f"
-#                           % (self._K_10D_C_MS[i], 100.0*sigma_K_10D_C_MS, delta_call))
-
-#                     print("K_10D_P_MS: %9.6f  SURFACE_VOL: %9.6f %%   DELTA: %9.6f"
-#                           % (self._K_10D_P_MS[i], 100.0*sigma_K_10D_P_MS, delta_put))
-
-#                     print("CALL_VALUE: %9.6f  PUT_VALUE: %9.6f  MS_SKEW_VALUE: % 9.6f"
-#                           % (call_value, put_value, butterflyValueSkew))
-
-#                 diff = butterflyValue - butterflyValueSkew
-#                 if np.abs(diff) > tol:
-#                     print("FAILED FIT TO 10D MS VAL: %9.6f  OUT: %9.6f  DIFF: % 9.6f"%
-#                           (butterflyValue, butterflyValueSkew, diff))
-
-#                 ###################################################################
-#                 # NOW WE SHIFT STRIKES SO THAT DELTAS NOW EQUAL 0.10, -0.10
-#                 ###################################################################
-
-#                 call._strikeFXRate = self._K_10D_C[i]
-#                 put._strikeFXRate = self._K_10D_P[i]
-
-#                 sigma_K_10D_C = volFunction(self._volatilityFunctionType.value,
-#                                                 self._parameters[i],
-#                                                 self._strikes[i],
-#                                                 self._gaps[i],
-#                                                 self._F0T[i],
-#                                                 self._K_10D_C[i],
-#                                                 self._texp[i])
-
-#                 model = TuringModelBlackScholes(sigma_K_10D_C)
-
-#                 # THIS DELTA SHOULD BE +0.25
-#                 delta_call = call.delta(self._valueDate,
-#                                         self._spotFXRate,
-#                                         self._domDiscountCurve,
-#                                         self._forDiscountCurve,
-#                                         model)[self._deltaMethodString]
-
-#                 sigma_K_10D_P = volFunction(self._volatilityFunctionType.value,
-#                                                 self._parameters[i],
-#                                                 self._strikes[i],
-#                                                 self._gaps[i],
-#                                                 self._F0T[i],
-#                                                 self._K_10D_P[i],
-#                                                 self._texp[i])
-
-#                 model = TuringModelBlackScholes(sigma_K_10D_P)
-
-#                 # THIS DELTA SHOULD BE -0.25
-#                 delta_put = put.delta(self._valueDate,
-#                                       self._spotFXRate,
-#                                       self._domDiscountCurve,
-#                                       self._forDiscountCurve,
-#                                       model)[self._deltaMethodString]
-
-#                 if verbose:
-#                     print("K_10D_C: %9.7f  VOL: %9.6f  DELTA: % 9.6f"
-#                           % (self._K_10D_C[i], 100.0*sigma_K_10D_C, delta_call))
-
-#                     print("K_10D_P: %9.7f  VOL: %9.6f  DELTA: % 9.6f"
-#                           % (self._K_10D_P[i], 100.0*sigma_K_10D_P, delta_put))
-
-#                 sigma_RR = sigma_K_10D_C - sigma_K_10D_P
-
-#                 if verbose:
-#                     print("==========================================================")
-#                     print("RR = VOL_K_10D_C - VOL_K_10D_P => RR_IN: %9.6f %% RR_OUT: %9.6f %%"
-#                       % (100.0 * self._riskReversal10DeltaVols[i], 100.0*sigma_RR))
-#                     print("==========================================================")
-
-#                 diff = sigma_RR - self._riskReversal10DeltaVols[i]
-
-#                 if np.abs(diff) > tol:
-#                     print("FAILED FIT TO 10D RRV IN: % 9.6f  OUT: % 9.6f  DIFF: % 9.6f"%
-#                           (self._riskReversal10DeltaVols[i]*100.0,
-#                            sigma_RR*100.0,
-#                            diff*100.0))
-
-# ###############################################################################
-
-#     def impliedDbns(self, lowFX, highFX, numIntervals):
-#         ''' Calculate the pdf for each tenor horizon. Returns a list of
-#         TuringDistribution objects, one for each tenor horizon. '''
-
-#         dbns = []
-
-#         for iTenor in range(0, len(self._tenors)):
-
-#             f = self._F0T[iTenor]
-#             t = self._texp[iTenor]
-
-#             dFX = (highFX - lowFX)/ numIntervals
-
-#             domDF = self._domDiscountCurve._df(t)
-#             forDF = self._forDiscountCurve._df(t)
-
-#             rd = -np.log(domDF) / t
-#             rf = -np.log(forDF) / t
-
-#             Ks = []
-#             vols = []
-
-#             for iK in range(0, numIntervals):
-
-#                 k = lowFX + iK*dFX
-
-#                 vol = volFunction(self._volatilityFunctionType.value,
-#                                       self._parameters[iTenor],
-#                                       self._strikes[iTenor],
-#                                       self._gaps[iTenor],
-#                                       f, k, t)
-
-#                 Ks.append(k)
-#                 vols.append(vol)
-
-#             Ks = np.array(Ks)
-#             vols = np.array(vols)
-
-#             density = optionImpliedDbn(self._spotFXRate, t, rd, rf, Ks, vols)
-
-#             dbn = TuringDistribution(Ks, density)
-#             dbns.append(dbn)
-
-#         return dbns
 
 ###############################################################################
 
@@ -1434,7 +881,7 @@ class TuringFXVolSurfaceVV():
             bfVol10 = self._butterfly10DeltaVols[tenorIndex]*100
             rrVol10 = self._riskReversal10DeltaVols[tenorIndex]*100
             strikes = self._strikes[tenorIndex]
-            #
+
             # gaps = self._gaps[tenorIndex]
             if self._alpha > 0:
                 lowK = self._K_25D_P[tenorIndex] * 0.90
@@ -1488,14 +935,10 @@ class TuringFXVolSurfaceVV():
             keyStrikes = []
             if self._alpha > 0:
                 keyStrikes.append(self._K_25D_P[tenorIndex])
-                # keyStrikes.append(self._K_25D_P_MS[tenorIndex])
                 keyStrikes.append(self._K_25D_C[tenorIndex])
-                # keyStrikes.append(self._K_25D_C_MS[tenorIndex])
             else:
                 keyStrikes.append(self._K_10D_P[tenorIndex])
-                # keyStrikes.append(self._K_25D_P_MS[tenorIndex])
                 keyStrikes.append(self._K_10D_C[tenorIndex])
-                # keyStrikes.append(self._K_25D_C_MS[tenorIndex])
 
             keyVols = []
             for K in keyStrikes:
@@ -1533,7 +976,7 @@ class TuringFXVolSurfaceVV():
             s += to_string("FWD FX", self._F0T[i])
 
             s += to_string("ATM VOLS", self._atmVols[i] * 100.0)
-            s += to_string("MS VOLS", self._butterfly25DeltaVols[i] * 100.)
+            s += to_string("BF VOLS", self._butterfly25DeltaVols[i] * 100.)
             s += to_string("RR VOLS", self._riskReversal25DeltaVols[i] * 100.)
 
             s += to_string("ATM Strike", self._K_ATM[i])
@@ -1541,14 +984,10 @@ class TuringFXVolSurfaceVV():
 
             s += to_string("K_ATM", self._K_ATM[i])
 
-            s += to_string("MS 25D Call Strike", self._K_25D_C_MS[i])
-            s += to_string("MS 25D Put Strike", self._K_25D_P_MS[i])
             s += to_string("SKEW 25D CALL STRIKE", self._K_25D_C[i])
             s += to_string("SKEW 25D PUT STRIKE", self._K_25D_P[i])
             s += to_string("PARAMS", self._parameters[i])
 
-            s += to_string("MS 10D Call Strike", self._K_10D_C_MS[i])
-            s += to_string("MS 10D Put Strike", self._K_10D_P_MS[i])
             s += to_string("SKEW 10D CALL STRIKE", self._K_10D_C[i])
             s += to_string("SKEW 10D PUT STRIKE", self._K_10D_P[i])
 
