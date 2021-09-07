@@ -66,6 +66,15 @@ class FXVanillaOption(FXOption):
     def __post_init__(self):
         super().__post_init__()
 
+    def rate_domestic(self):
+        return self.rd
+
+    def rate_foreign(self):
+        return self.rf
+
+    def spot_ex(self):
+        return self.exchange_rate
+
     def price(self):
         """ This function calculates the value of the option using a specified
         model with the resulting value being in domestic i.e. ccy2 terms.
@@ -351,7 +360,7 @@ class FXVanillaOption(FXOption):
 
     def resolve_param(self):
         if self.underlier_symbol and not self.underlier:
-            self.underlier = Turing.get_fx_symbol_to_id(_id='USD/CNY').get('asset_id')
+            self.underlier = Turing.get_fx_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
         if self.underlier:
             if not self.exchange_rate:
                 ex_rate = FxApi.get_exchange_rate(gurl=None,

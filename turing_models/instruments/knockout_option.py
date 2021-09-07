@@ -2,15 +2,16 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from fundamental.turing_db.data import Turing
 from fundamental.turing_db.option_data import OptionApi
 from turing_models.instruments.equity_option import EqOption
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
     TuringGBMNumericalScheme
+from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringKnockOutTypes, TuringOptionType
 from turing_models.utilities.global_variables import gNumObsInYear, gDaysInYear
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
-from turing_models.utilities.error import TuringError
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -102,27 +103,27 @@ class KnockOutOption(EqOption):
         if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
             if b > k:
                 c_ui = s0 * dq * N(x1) - k * df * N(x1 - sigma_root_t) \
-                    - s0 * dq * pow(h_over_s, 2.0 * l) * (N(-y) - N(-y1)) \
-                    + k * df * pow(h_over_s, 2.0 * l - 2.0) * \
-                    (N(-y + sigma_root_t) - N(-y1 + sigma_root_t))
+                       - s0 * dq * pow(h_over_s, 2.0 * l) * (N(-y) - N(-y1)) \
+                       + k * df * pow(h_over_s, 2.0 * l - 2.0) * \
+                       (N(-y + sigma_root_t) - N(-y1 + sigma_root_t))
                 price = participation_rate * (c - c_ui) + rebate * whole_term ** flag * s0 * df * (
-                    1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
+                        1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
             else:
                 price = rebate * whole_term ** flag * s0 * df * (
-                    1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
+                        1 - N(sigma_root_t - x1) + pow(h_over_s, 2.0 * l - 2.0) * N(-y1 + sigma_root_t))
 
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
             if b >= k:
                 price = rebate * whole_term ** flag * s0 * df * (
-                    1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
+                        1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
             else:
                 p_di = -s0 * dq * N(-x1) \
-                    + k * df * N(-x1 + sigma_root_t) \
-                    + s0 * dq * pow(h_over_s, 2.0 * l) * (N(y) - N(y1)) \
+                       + k * df * N(-x1 + sigma_root_t) \
+                       + s0 * dq * pow(h_over_s, 2.0 * l) * (N(y) - N(y1)) \
                        - k * df * pow(h_over_s, 2.0 * l - 2.0) * \
-                    (N(y - sigma_root_t) - N(y1 - sigma_root_t))
+                       (N(y - sigma_root_t) - N(y1 - sigma_root_t))
                 price = participation_rate * (p - p_di) + rebate * whole_term ** flag * s0 * df * (
-                    1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
+                        1 - N(x1 - sigma_root_t) + pow(h_over_s, 2.0 * l - 2.0) * N(y1 - sigma_root_t))
         else:
             raise TuringError("Unknown barrier option type." +
                               str(knock_out_type))
@@ -176,12 +177,12 @@ class KnockOutOption(EqOption):
 
         if knock_out_type == TuringKnockOutTypes.UP_AND_OUT_CALL:
             payoff = np.maximum((Sall[:, -1] - k) / s0, 0.0) * \
-                participation_rate * (ones - barrier_crossed_from_below) + \
-                rebate * texp ** flag * (ones * barrier_crossed_from_below)
+                     participation_rate * (ones - barrier_crossed_from_below) + \
+                     rebate * texp ** flag * (ones * barrier_crossed_from_below)
         elif knock_out_type == TuringKnockOutTypes.DOWN_AND_OUT_PUT:
             payoff = np.maximum((k - Sall[:, -1]) / s0, 0.0) * \
-                participation_rate * (ones - barrier_crossed_from_above) + \
-                rebate * texp ** flag * (ones * barrier_crossed_from_above)
+                     participation_rate * (ones - barrier_crossed_from_above) + \
+                     rebate * texp ** flag * (ones * barrier_crossed_from_above)
 
         return payoff.mean() * np.exp(- r * texp) * notional
 
@@ -197,9 +198,14 @@ class KnockOutOption(EqOption):
                     and self.participation_rate \
                     and self.multiplier:
                 self.number_of_options = (
-                    self.notional / self.initial_spot) / self.participation_rate / self.multiplier
+                                                 self.notional / self.initial_spot) / self.participation_rate / self.multiplier
             else:
                 self.number_of_options = 1.0
+        self.resolve_param()
+
+    def resolve_param(self):
+        if self.underlier_symbol and not self.underlier:
+            self.underlier = Turing.get_stock_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
         if self.underlier:
             if not self.stock_price_:
                 setattr(self, "stock_price", OptionApi.stock_price(

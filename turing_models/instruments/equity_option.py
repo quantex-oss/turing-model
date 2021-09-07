@@ -3,28 +3,26 @@ from dataclasses import dataclass, field
 from typing import List, Any, Union
 
 import numpy as np
-from loguru import logger
 
 from fundamental.turing_db.utils import to_snake
-
 from turing_models.instruments.common import greek, bump, Currency, Eq
-from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.global_types import TuringOptionType
-from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.instruments.core import InstrumentBase
-from turing_models.utilities.helper_functions import to_string
-from turing_models.utilities.error import TuringError
 from turing_models.market.curves import TuringDiscountCurveFlat, \
     TuringDiscountCurveZeros
+from turing_models.models.model_black_scholes import TuringModelBlackScholes
+from turing_models.utilities.error import TuringError
+from turing_models.utilities.global_types import TuringOptionType
+from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.helper_functions import convert_argument_type
+from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.turing_date import TuringDate
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class EqOption(Eq, InstrumentBase):
-
     asset_id: str = None
     underlier: Union[str, List[str]] = None
+    underlier_symbol: str = None
     product_type: str = None
     option_type: Union[str, TuringOptionType] = None
     notional: float = None
