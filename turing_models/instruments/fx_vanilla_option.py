@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
 import numpy as np
+from loguru import logger
 from scipy import optimize
 
+from fundamental.turing_db.data import Turing
 from fundamental.turing_db.fx_data import FxApi
 from fundamental.turing_db.option_data import FxOptionApi
 from turing_models.instruments.fx_option import FXOption
@@ -348,6 +350,8 @@ class FXVanillaOption(FXOption):
         self.resolve_param()
 
     def resolve_param(self):
+        if self.underlier_symbol and not self.underlier:
+            self.underlier = Turing.get_fx_symbol_to_id(_id='USD/CNY').get('asset_id')
         if self.underlier:
             if not self.exchange_rate:
                 ex_rate = FxApi.get_exchange_rate(gurl=None,
