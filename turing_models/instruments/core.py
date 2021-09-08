@@ -48,20 +48,19 @@ class InstrumentBase:
                     call_func_name="calc",
                     func_params={"risk_measure": risk_measure}
                 ).calc()
-            if isinstance(risk_measure, str) and risk_measure in RiskMeasure.__members__:
-                risk_measure = RiskMeasure.__members__[risk_measure]
             if not isinstance(risk_measure, Iterable):
-                result = getattr(self, risk_measure.value)() if not option_all else getattr(self, risk_measure.value)(
-                    option_all)
+                rs = risk_measure.value if isinstance(risk_measure, RiskMeasure) else risk_measure
+                result = getattr(self, rs)() if not option_all else getattr(self, rs)(option_all)
                 result = self._calc(risk_measure, result)
                 return result
             for risk in risk_measure:
-                res = getattr(self, risk.value)()
+                rs = risk.value if isinstance(risk, RiskMeasure) else risk
+                res = getattr(self, rs)()
                 res = self._calc(risk, res)
                 result.append(res)
             return result
         except Exception as e:
-            traceback.format_exc()
+            traceback.print_exc()
             return ""
 
     def _calc(self, risk, value):

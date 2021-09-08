@@ -5,6 +5,7 @@ from loguru import logger
 from typing import Union, List
 from urllib.parse import urljoin
 from turing_models import config
+from copy import deepcopy
 from turing_models.constants import ParallelType, EnvInfo
 from turing_models.exceptions import ParallelProxyException, ApiSenderException
 from turing_models.instruments.common import RiskMeasure
@@ -46,14 +47,14 @@ class YrParallelCalcMixin:
             return ""
 
     @staticmethod
-    def get_results_with_yr(calc_list, timeout=3):
+    def get_results_with_yr(calc_list, timeout=30):
         import yuanrong
         return yuanrong.get(calc_list, timeout)
 
 
 class Sender:
 
-    def __init__(self, timeout=10):
+    def __init__(self, timeout=30):
         self.url_domain = self.get_url_domain_from_cfg()
         self.url = urljoin(self.url_domain, config.remote_rpc_path)
         self.timeout = timeout
@@ -70,8 +71,9 @@ class Sender:
                     f"status_code is {resp.status_code}, "
                     f"err_msg is {resp.text}"
                 )
+            logger.info(resp.json())
             return resp.json()["data"]["result"]
-        except ApiSenderException as error:
+        except (ApiSenderException, BaseException) as error:
             logger.error(
                 f"Request has error, url:{self.url}, "
                 f"params:{api_data}, error:\n" + str(error)
@@ -81,7 +83,7 @@ class Sender:
 
 class RemoteApiCaller:
 
-    def __init__(self, *, instance, call_func_name, func_params, timeout=5):
+    def __init__(self, *, instance, call_func_name, func_params, timeout=30):
         self.instance = instance
         self.sender = Sender(timeout)
         self.api_data = {
@@ -126,7 +128,7 @@ class InnerParallelCalcMixin:
 class ParallelCalcProxy(YrParallelCalcMixin, InnerParallelCalcMixin):
 
     def __init__(self, instance, parallel_type,
-                 call_func_name, func_params, timeout=3):
+                 call_func_name, func_params, timeout=30):
         self.instance = instance
         self.parallel_type = parallel_type
         self.call_func_name = call_func_name
@@ -135,10 +137,15 @@ class ParallelCalcProxy(YrParallelCalcMixin, InnerParallelCalcMixin):
 
     @staticmethod
     def trim_func_params(func_params):
-        for k, v in func_params.items():
+        func_params_ = deepcopy(func_params)
+        for k, v in func_params_.items():
             if isinstance(v, Enum):
-                func_params[k] = v.name
-        return func_params
+                func_params_[k] = v.value
+            if isinstance(v, list):
+                for i, v_ in enumerate(v):
+                    if isinstance(v_, RiskMeasure):
+                        func_params_[k][i] = v_.value
+        return func_params_
 
     def calc(self):
         if self.parallel_type == ParallelType.YR:
