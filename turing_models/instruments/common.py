@@ -705,3 +705,18 @@ class FX(Priceable, metaclass=ABCMeta):
     @abstractmethod
     def fx_volga(self):
         pass
+
+
+class IR(Priceable, metaclass=ABCMeta):
+
+    @abstractmethod
+    def dv01(self):
+        pass
+
+    @abstractmethod
+    def dollar_duration(self):
+        pass
+
+    @abstractmethod
+    def dollar_convexity(self):
+        pass
