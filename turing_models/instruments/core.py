@@ -7,7 +7,7 @@ from fundamental import PricingContext
 from fundamental.base import ctx, Context
 from turing_models.constants import ParallelType
 from turing_models.instruments.common import RiskMeasure
-from turing_models.instruments.parallel_proxy import ParallelCalcProxy
+from turing_models.parallel.parallel_proxy import ParallelCalcProxy
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.utilities import TuringFrequencyTypes
 from turing_models.utilities.error import TuringError

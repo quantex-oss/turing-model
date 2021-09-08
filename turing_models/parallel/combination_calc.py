@@ -4,7 +4,7 @@ from typing import Union, List
 from turing_models.constants import ParallelType
 from turing_models.instruments.common import RiskMeasure
 from turing_models.exceptions import CalcResultException, CombinationCalcException
-from turing_models.instruments.parallel_proxy import ParallelCalcProxy
+from turing_models.parallel.parallel_proxy import ParallelCalcProxy
 
 
 class CombinationCalc:
