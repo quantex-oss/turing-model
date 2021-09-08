@@ -390,7 +390,7 @@ class BondFixedRate(Bond):
     def _resolve(self):
         # Bond_ 为自定义时自动生成
         if self.asset_id and not self.asset_id.startswith("Bond_"):
-            bond = BondApi.fetch_one_bond(asset_id=self.asset_id)
+            bond = BondApi.fetch_one_bond_orm(asset_id=self.asset_id)
             for k, v in bond.items():
                 if not getattr(self, k, None) and v:
                     setattr(self, k, v)
