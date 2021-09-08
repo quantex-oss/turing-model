@@ -60,8 +60,8 @@ class InstrumentBase:
                 res = self._calc(risk, res)
                 result.append(res)
             return result
-        except Exception as e:
-            traceback.format_exc()
+        except:
+            print(traceback.format_exc())
             return ""
 
     def _calc(self, risk, value):
