@@ -313,9 +313,9 @@ class TuringFXVolSurfaceVV():
                  finSolverType: TuringSolverTypes = TuringSolverTypes.NELDER_MEAD,
                  tol: float = 1e-8):
         ''' Create the TuringFXVolSurfacePlus object by passing in market vol data
-        for ATM, 25 Delta and 10 Delta strikes. The alpha weight shifts the
+        for ATM, 25 Delta and 10 Delta strikes. The alpha shifts the
         fitting between 25D and 10D. Alpha = 0.0 is 100% 25D while alpha = 1.0
-        is 100% 10D. An alpha of 0.50 is equally weighted. '''
+        is 100% 10D. '''
 
         # I want to allow Nones for some of the market inputs
         if butterfly10DeltaVols is None:
