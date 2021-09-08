@@ -1,7 +1,6 @@
 import datetime
 from typing import List
 
-import pandas
 from loguru import logger
 import numpy as np
 import pandas as pd
@@ -134,9 +133,9 @@ class FXIRCurve:
 class FXOptionImpliedVolatilitySurface:
     def __init__(self,
                  fx_symbol: (str, CurrencyPair),  # 货币对symbol，例如：'USD/CNY'
-                 strike_min: float,  # 行权价最小值
-                 strike_max: float,  # 行权价最大值
-                 num_strike: int,  # 参与计算的行权价个数（即：从[strike_min, strike_max]中等间隔取的点的个数）
+                 delta_min: float,  # 行权价最小值
+                 delta_max: float,  # 行权价最大值
+                 num_delta: int,  # 参与计算的行权价个数（即：从[strike_min, strike_max]中等间隔取的点的个数）
                  expiry_min: TuringDate,  # 最近到期日
                  expiry_max: TuringDate,  # 最远到期日
                  frequency_type: TuringFrequencyTypes = TuringFrequencyTypes.DAILY,  # 到期日时间间隔，默认是每个交易日逐个计算
@@ -148,9 +147,9 @@ class FXOptionImpliedVolatilitySurface:
             self.fx_symbol = fx_symbol
         else:
             raise TuringError('Please check the input of fx_symbol')
-        self.strike_min = strike_min
-        self.strike_max = strike_max
-        self.num_strike = num_strike
+        self.delta_min = delta_min
+        self.delta_max = delta_max
+        self.num_delta = num_delta
         if expiry_max < expiry_min or expiry_min < base_date:
             raise TuringError("Please: expiry_max >= expiry_min and expiry_min >= base_date")
         self.expiry_min = expiry_min
@@ -257,7 +256,7 @@ class FXOptionImpliedVolatilitySurface:
         """获取波动率曲面的DataFrame"""
         datas = {}
         bus_days = self.bus_days
-        strikes = np.linspace(self.strike_min, self.strike_max, self.num_strike)
+        strikes = np.linspace(self.delta_min, self.delta_max, self.num_delta)
         volatility_surface = self.volatility_surface
         for expiry in bus_days:
             dt = expiry.datetime()
@@ -275,9 +274,9 @@ if __name__ == '__main__':
     print(fx_curve.get_ccy1_curve())
     print(fx_curve.get_ccy2_curve())
     fx_vol_surface = FXOptionImpliedVolatilitySurface(fx_symbol=CurrencyPair.USDCNY,
-                                                      strike_min=5,
-                                                      strike_max=7,
-                                                      num_strike=20,
+                                                      delta_min=5,
+                                                      delta_max=7,
+                                                      num_delta=20,
                                                       expiry_min=TuringDate(2021, 9, 17),
                                                       expiry_max=TuringDate(2021, 10, 20))
     print(fx_vol_surface.get_vol_surface())

@@ -337,7 +337,7 @@ class TuringFXVolSurfaceVV():
         self._currencyPair = currencyPair
 
         if len(currencyPair) != 7:
-            raise TuringError("Currency pair must be 6 characters.")
+            raise TuringError("Currency pair must be in ***/***format.")
 
         self._forName = self._currencyPair[0:3]
         self._domName = self._currencyPair[4:7]
@@ -528,7 +528,7 @@ class TuringFXVolSurfaceVV():
 
 ###############################################################################
 
-    def deltaToStrike(self, callDelta, expiryDate, deltaMethod):
+    def deltaToStrike(self, callDelta, expiryDate, deltaMethod=None):
         ''' Interpolates the strike at a delta and expiry date. Linear
         interpolation is used in strike.'''
 

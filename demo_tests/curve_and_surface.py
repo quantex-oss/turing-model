@@ -9,9 +9,9 @@ fx_curve = FXIRCurve(fx_symbol=CurrencyPair.USDCNY,
 print(fx_curve.get_ccy1_curve())  # Series格式
 print(fx_curve.get_ccy2_curve())  # Series格式
 fx_vol_surface = FXOptionImpliedVolatilitySurface(fx_symbol=CurrencyPair.USDCNY,
-                                                  strike_min=5,
-                                                  strike_max=7,
-                                                  num_strike=20,
+                                                  delta_min=5,
+                                                  delta_max=7,
+                                                  num_delta=20,
                                                   expiry_min=TuringDate(2021, 9, 17),
                                                   expiry_max=TuringDate(2021, 10, 20))
 print(fx_vol_surface.get_vol_surface())  # DataFrame格式

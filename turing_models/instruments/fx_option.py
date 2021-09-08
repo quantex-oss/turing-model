@@ -5,7 +5,7 @@ from typing import List, Any
 import numpy as np
 from loguru import logger
 
-from turing_models.instruments.common import FX, Currency
+from turing_models.instruments.common import FX, Currency, CurrencyPair
 from turing_models.instruments.core import InstrumentBase
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
@@ -34,7 +34,7 @@ class FXOption(FX, InstrumentBase):
     asset_id: str = None
     product_type: str = None  # VANILLA
     underlier: str = None
-    underlier_symbol: str = None  # USD/CNY (外币/本币)
+    underlier_symbol: (str, CurrencyPair) = None  # USD/CNY (外币/本币)
     notional: float = None
     notional_currency: (str, Currency) = None
     strike: float = None
@@ -73,14 +73,20 @@ class FXOption(FX, InstrumentBase):
                 raise TuringError(
                     "Final delivery date must be on or after expiry.")
 
-        if self.underlier_symbol and len(self.underlier_symbol) != 7:
-            raise TuringError("Currency pair must be 7 characters.")
+        if self.underlier_symbol:
+            if isinstance(self.underlier_symbol, CurrencyPair):
+                self.underlier_symbol = self.underlier_symbol.value
+            elif isinstance(self.underlier_symbol, str):
+                if len(self.underlier_symbol) != 7:
+                    raise TuringError("Currency pair must be in ***/***format.")
+            else:
+                raise TuringError('Please check the input of underlier_symbol')
+
+            self.foreign_name = self.underlier_symbol[0:3]
+            self.domestic_name = self.underlier_symbol[4:7]
 
         if self.strike and np.any(self.strike < 0.0):
             raise TuringError("Negative strike.")
-        if self.underlier_symbol:
-            self.foreign_name = self.underlier_symbol[0:3]
-            self.domestic_name = self.underlier_symbol[4:7]
 
         if self.notional_currency and isinstance(self.notional_currency, Currency):
             self.notional_currency = self.notional_currency.value
