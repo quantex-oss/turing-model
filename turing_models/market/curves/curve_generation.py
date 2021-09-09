@@ -133,12 +133,8 @@ class FXIRCurve:
 class FXOptionImpliedVolatilitySurface:
     def __init__(self,
                  fx_symbol: (str, CurrencyPair),  # 货币对symbol，例如：'USD/CNY'
-                 delta_min: float,  # 行权价最小值
-                 delta_max: float,  # 行权价最大值
-                 num_delta: int,  # 参与计算的行权价个数（即：从[strike_min, strike_max]中等间隔取的点的个数）
-                 expiry_min: TuringDate,  # 最近到期日
-                 expiry_max: TuringDate,  # 最远到期日
-                 frequency_type: TuringFrequencyTypes = TuringFrequencyTypes.DAILY,  # 到期日时间间隔，默认是每个交易日逐个计算
+                 delta: (list, np.ndarray) = None,  # 行权价最小值 np.linspace(0.1, 0.9, 17)
+                 tenors: list = None,  # 期限（年化） [1/12, 2/12, 0.25, 0.5, 1, 2]
                  base_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
 
         if isinstance(fx_symbol, CurrencyPair):
@@ -147,15 +143,19 @@ class FXOptionImpliedVolatilitySurface:
             self.fx_symbol = fx_symbol
         else:
             raise TuringError('Please check the input of fx_symbol')
-        self.delta_min = delta_min
-        self.delta_max = delta_max
-        self.num_delta = num_delta
-        if expiry_max < expiry_min or expiry_min < base_date:
-            raise TuringError("Please: expiry_max >= expiry_min and expiry_min >= base_date")
-        self.expiry_min = expiry_min
-        self.expiry_max = expiry_max
-        self.frequency_type = frequency_type
+
+        if delta:
+            self.delta = delta
+        else:
+            self.delta = np.linspace(0.1, 0.9, 17)
+
+        if tenors:
+            self.tenors = tenors
+        else:
+            self.tenors = [1/12, 2/12, 0.25, 0.5, 1, 2]
+
         self.base_date = base_date
+        self.expiry = base_date.addYears(self.tenors)
         self.fx_asset_id = Turing.get_fx_symbol_to_id(_id=self.fx_symbol)['asset_id']
         self.exchange_rate = Turing.get_exchange_rate(asset_ids=[self.fx_asset_id])[0]['exchange_rate']
 
@@ -171,6 +171,19 @@ class FXOptionImpliedVolatilitySurface:
         self.butterfly_10delta_vols = None
         self.risk_reversal_10delta_vols = None
         self._get_fx_volatility()
+
+        self.volatility_surface = TuringFXVolSurfaceVV(self.base_date,
+                                                       self.exchange_rate,
+                                                       self.fx_symbol,
+                                                       self.fx_symbol[-3:],
+                                                       self.ccy2_curve,
+                                                       self.ccy1_curve,
+                                                       self.vol_tenors,
+                                                       self.atm_vols,
+                                                       self.butterfly_25delta_vols,
+                                                       self.risk_reversal_25delta_vols,
+                                                       self.butterfly_10delta_vols,
+                                                       self.risk_reversal_10delta_vols)
 
     def _get_fx_volatility(self, volatility_types=None):
         """
@@ -227,44 +240,21 @@ class FXOptionImpliedVolatilitySurface:
             logger.debug(str(e))
             return None
 
-    @property
-    def volatility_surface(self):
-        return TuringFXVolSurfaceVV(self.base_date,
-                                    self.exchange_rate,
-                                    self.fx_symbol,
-                                    self.fx_symbol[-3:],
-                                    self.ccy2_curve,
-                                    self.ccy1_curve,
-                                    self.vol_tenors,
-                                    self.atm_vols,
-                                    self.butterfly_25delta_vols,
-                                    self.risk_reversal_25delta_vols,
-                                    self.butterfly_10delta_vols,
-                                    self.risk_reversal_10delta_vols)
-
-    @property
-    def bus_days(self) -> List[TuringDate]:
-        """生成从估值日到到期日的交易日时间表（包含首尾日）"""
-        schedule_daily = TuringSchedule(self.expiry_min,
-                                        self.expiry_max,
-                                        freqType=self.frequency_type,
-                                        calendarType=TuringCalendarTypes.CHINA_SSE)
-        # return [day.datetime() for day in schedule_daily._adjustedDates]
-        return schedule_daily._adjustedDates
-
     def get_vol_surface(self):
         """获取波动率曲面的DataFrame"""
         datas = {}
-        bus_days = self.bus_days
-        strikes = np.linspace(self.delta_min, self.delta_max, self.num_delta)
+        expiry = self.expiry
+        tenors = self.tenors
+        delta = self.delta
         volatility_surface = self.volatility_surface
-        for expiry in bus_days:
-            dt = expiry.datetime()
-            datas[dt] = []
-            for strike in strikes:
-                v = volatility_surface.volatilityFromStrikeDate(strike, expiry)
-                datas[dt].append(v)
-        return pd.DataFrame(datas, index=strikes)
+        for i in range(len(tenors)):
+            ex = expiry[i]
+            tenor = tenors[i]
+            datas[tenor] = []
+            for de in delta:
+                v = volatility_surface.volatilityFromDeltaDate(de, ex)[0]
+                datas[tenor].append(v)
+        return pd.DataFrame(datas, index=delta)
 
 
 if __name__ == '__main__':
@@ -273,11 +263,6 @@ if __name__ == '__main__':
                          spot_rate_type=SpotExchangeRateType.Central)
     print(fx_curve.get_ccy1_curve())
     print(fx_curve.get_ccy2_curve())
-    fx_vol_surface = FXOptionImpliedVolatilitySurface(fx_symbol=CurrencyPair.USDCNY,
-                                                      delta_min=5,
-                                                      delta_max=7,
-                                                      num_delta=20,
-                                                      expiry_min=TuringDate(2021, 9, 17),
-                                                      expiry_max=TuringDate(2021, 10, 20))
+    fx_vol_surface = FXOptionImpliedVolatilitySurface(fx_symbol=CurrencyPair.USDCNY)
     print(fx_vol_surface.get_vol_surface())
 

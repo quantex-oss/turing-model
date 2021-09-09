@@ -135,7 +135,6 @@ class BondFixedRate(Bond):
         p2 = self.full_price_from_ytm()
         self.__ytm__ = None
         dv = -(p2 - p0) / 2.0
-        print('=====', dv)
         return dv
 
     def macauley_duration(self):
