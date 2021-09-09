@@ -185,7 +185,7 @@ class FXOptionImpliedVolatilitySurface:
                                                        self.butterfly_10delta_vols,
                                                        self.risk_reversal_10delta_vols)
 
-    def _get_fx_volatility(self, volatility_types=None):
+    def _get_fx_volatility(self):
         """
             https://yapi.iquantex.com/project/569/interface/api/33713 （外汇期权隐含波动率曲线查询）
             1、请求字段volatility_type为ATM的时候，取返回结果的tenor和volatility，分别拼成独立的列表，依次对应 vol_tenors 和atm_vols
@@ -242,7 +242,7 @@ class FXOptionImpliedVolatilitySurface:
 
     def get_vol_surface(self):
         """获取波动率曲面的DataFrame"""
-        datas = {}
+        data = {}
         expiry = self.expiry
         tenors = self.tenors
         delta = self.delta
@@ -250,11 +250,11 @@ class FXOptionImpliedVolatilitySurface:
         for i in range(len(tenors)):
             ex = expiry[i]
             tenor = tenors[i]
-            datas[tenor] = []
+            data[tenor] = []
             for de in delta:
                 v = volatility_surface.volatilityFromDeltaDate(de, ex)[0]
-                datas[tenor].append(v)
-        return pd.DataFrame(datas, index=delta)
+                data[tenor].append(v)
+        return pd.DataFrame(data, index=delta)
 
 
 if __name__ == '__main__':
