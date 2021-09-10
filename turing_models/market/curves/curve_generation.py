@@ -9,6 +9,7 @@ from fundamental.turing_db.data import Turing
 from turing_models.instruments.common import CurrencyPair, RMBIRCurveType, SpotExchangeRateType
 from turing_models.market.curves import TuringDiscountCurveZeros
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
+from turing_models.market.volatility.fx_vol_surface_plus import TuringFXVolSurfacePlus
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.error import TuringError
@@ -20,7 +21,8 @@ class CurveGeneration:
     def __init__(self,
                  annualized_term: list,
                  spot_rate: list,
-                 base_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3])),
+                 base_date: TuringDate = TuringDate(
+                     *(datetime.date.today().timetuple()[:3])),
                  frequency_type: TuringFrequencyTypes = TuringFrequencyTypes.ANNUAL,
                  number_of_days: int = 730):
         self.term = base_date.addYears(annualized_term)
@@ -28,7 +30,8 @@ class CurveGeneration:
         self.base_date = base_date
         self.frequency_type = frequency_type  # 传入利率的frequency type，默认是年化的
         self.number_of_days = number_of_days  # 默认是两年的自然日：365*2
-        self.curve = TuringDiscountCurveZeros(self.base_date, self.term, self.spot_rate, self.frequency_type)
+        self.curve = TuringDiscountCurveZeros(
+            self.base_date, self.term, self.spot_rate, self.frequency_type)
         self._generate_nature_day()
         self._generate_nature_day_rate()
 
@@ -57,11 +60,16 @@ class CurveGeneration:
 class FXIRCurve:
     """通过外币隐含利率曲线查询接口获取期限（年）、外币隐含利率和人民币利率，
     进而采用分段三次Hermite插值（PCHIP）方式获取逐日曲线数据"""
+
     def __init__(self,
                  fx_symbol: (str, CurrencyPair),  # 货币对symbol，例如：'USD/CNY'
-                 curve_type: (str, RMBIRCurveType) = RMBIRCurveType.Shibor3M,  # 人民币利率曲线类型（'Shibor'、'Shibor3M'、'FR007'）
-                 spot_rate_type: (str, SpotExchangeRateType) = SpotExchangeRateType.Central,  # 即期汇率类型（'central'-中间价、'average'-即期询价报价均值）
-                 base_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3])),
+                 # 人民币利率曲线类型（'Shibor'、'Shibor3M'、'FR007'）
+                 curve_type: (str, RMBIRCurveType) = RMBIRCurveType.Shibor3M,
+                 # 即期汇率类型（'central'-中间价、'average'-即期询价报价均值）
+                 spot_rate_type: (
+                     str, SpotExchangeRateType) = SpotExchangeRateType.Central,
+                 base_date: TuringDate = TuringDate(
+                     *(datetime.date.today().timetuple()[:3])),
                  number_of_days: int = 730):
         if isinstance(fx_symbol, CurrencyPair):
             self.fx_symbol = fx_symbol.value
@@ -86,7 +94,8 @@ class FXIRCurve:
 
         self.base_date = base_date
         self.number_of_days = number_of_days
-        self.fx_asset_id = Turing.get_fx_symbol_to_id(_id=self.fx_symbol)['asset_id']
+        self.fx_asset_id = Turing.get_fx_symbol_to_id(_id=self.fx_symbol)[
+            'asset_id']
         self.tenors = None
         self.ccy1_cc_rates = None
         self.ccy2_cc_rates = None
@@ -99,8 +108,10 @@ class FXIRCurve:
                                               spot_rate_type=self.spot_rate_type)[0].get('iuir_curve_data')
         if curves_remote:
             self.set_property_list(curves_remote, "tenors", "tenor")
-            self.set_property_list(curves_remote, "ccy1_cc_rates", "implied_interest_rate")
-            self.set_property_list(curves_remote, "ccy2_cc_rates", "cny_implied_interest_rate")
+            self.set_property_list(
+                curves_remote, "ccy1_cc_rates", "implied_interest_rate")
+            self.set_property_list(
+                curves_remote, "ccy2_cc_rates", "cny_implied_interest_rate")
 
     def set_property_list(self, curves_date, _property, key):
         _list = []
@@ -133,7 +144,8 @@ class FXIRCurve:
 class FXOptionImpliedVolatilitySurface:
     def __init__(self,
                  fx_symbol: (str, CurrencyPair),  # 货币对symbol，例如：'USD/CNY'
-                 delta: (list, np.ndarray) = None,  # 行权价最小值 np.linspace(0.1, 0.9, 17)
+                 # 行权价最小值 np.linspace(0.1, 0.9, 17)
+                 delta: (list, np.ndarray) = None,
                  tenors: list = None,  # 期限（年化） [1/12, 2/12, 0.25, 0.5, 1, 2]
                  base_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
 
@@ -156,8 +168,10 @@ class FXOptionImpliedVolatilitySurface:
 
         self.base_date = base_date
         self.expiry = base_date.addYears(self.tenors)
-        self.fx_asset_id = Turing.get_fx_symbol_to_id(_id=self.fx_symbol)['asset_id']
-        self.exchange_rate = Turing.get_exchange_rate(asset_ids=[self.fx_asset_id])[0]['exchange_rate']
+        self.fx_asset_id = Turing.get_fx_symbol_to_id(_id=self.fx_symbol)[
+            'asset_id']
+        self.exchange_rate = Turing.get_exchange_rate(
+            asset_ids=[self.fx_asset_id])[0]['exchange_rate']
 
         self.fx_ir_curve = FXIRCurve(self.fx_symbol)
         self.ccy1_curve = self.fx_ir_curve.ccy1_curve_gen.curve  # 外币
@@ -172,20 +186,20 @@ class FXOptionImpliedVolatilitySurface:
         self.risk_reversal_10delta_vols = None
         self._get_fx_volatility()
 
-        self.volatility_surface = TuringFXVolSurfaceVV(self.base_date,
-                                                       self.exchange_rate,
-                                                       self.fx_symbol,
-                                                       self.fx_symbol[-3:],
-                                                       self.ccy2_curve,
-                                                       self.ccy1_curve,
-                                                       self.vol_tenors,
-                                                       self.atm_vols,
-                                                       self.butterfly_25delta_vols,
-                                                       self.risk_reversal_25delta_vols,
-                                                       self.butterfly_10delta_vols,
-                                                       self.risk_reversal_10delta_vols)
+        self.volatility_surface = TuringFXVolSurfacePlus(self.base_date,
+                                                         self.exchange_rate,
+                                                         self.fx_symbol,
+                                                         self.fx_symbol[-3:],
+                                                         self.ccy2_curve,
+                                                         self.ccy1_curve,
+                                                         self.vol_tenors,
+                                                         self.atm_vols,
+                                                         self.butterfly_25delta_vols,
+                                                         self.risk_reversal_25delta_vols,
+                                                         self.butterfly_10delta_vols,
+                                                         self.risk_reversal_10delta_vols)
 
-    def _get_fx_volatility(self, volatility_types=None):
+    def _get_fx_volatility(self):
         """
             https://yapi.iquantex.com/project/569/interface/api/33713 （外汇期权隐含波动率曲线查询）
             1、请求字段volatility_type为ATM的时候，取返回结果的tenor和volatility，分别拼成独立的列表，依次对应 vol_tenors 和atm_vols
@@ -216,20 +230,28 @@ class FXOptionImpliedVolatilitySurface:
                                 setattr(self, 'atm_vols', atm_vols)
                         if x.get("volatility_type") == "25D BF":
                             for data in x.get("curve_data"):
-                                butterfly_25delta_vols.append(data.get("volatility"))
-                                setattr(self, 'butterfly_25delta_vols', butterfly_25delta_vols)
+                                butterfly_25delta_vols.append(
+                                    data.get("volatility"))
+                                setattr(self, 'butterfly_25delta_vols',
+                                        butterfly_25delta_vols)
                         if x.get("volatility_type") == "25D RR":
                             for data in x.get("curve_data"):
-                                risk_reversal_25delta_vols.append(data.get("volatility"))
-                                setattr(self, 'risk_reversal_25delta_vols', risk_reversal_25delta_vols)
+                                risk_reversal_25delta_vols.append(
+                                    data.get("volatility"))
+                                setattr(self, 'risk_reversal_25delta_vols',
+                                        risk_reversal_25delta_vols)
                         if x.get("volatility_type") == "10D BF":
                             for data in x.get("curve_data"):
-                                butterfly_10delta_vols.append(data.get("volatility"))
-                                setattr(self, 'butterfly_10delta_vols', butterfly_10delta_vols)
+                                butterfly_10delta_vols.append(
+                                    data.get("volatility"))
+                                setattr(self, 'butterfly_10delta_vols',
+                                        butterfly_10delta_vols)
                         if x.get("volatility_type") == "10D RR":
                             for data in x.get("curve_data"):
-                                risk_reversal_10delta_vols.append(data.get("volatility"))
-                                setattr(self, 'risk_reversal_10delta_vols', risk_reversal_10delta_vols)
+                                risk_reversal_10delta_vols.append(
+                                    data.get("volatility"))
+                                setattr(self, 'risk_reversal_10delta_vols',
+                                        risk_reversal_10delta_vols)
 
     @staticmethod
     def fetch_fx_volatility(fx_asset_id=None, volatility_types=None):
@@ -242,7 +264,7 @@ class FXOptionImpliedVolatilitySurface:
 
     def get_vol_surface(self):
         """获取波动率曲面的DataFrame"""
-        datas = {}
+        data = {}
         expiry = self.expiry
         tenors = self.tenors
         delta = self.delta
@@ -250,11 +272,11 @@ class FXOptionImpliedVolatilitySurface:
         for i in range(len(tenors)):
             ex = expiry[i]
             tenor = tenors[i]
-            datas[tenor] = []
+            data[tenor] = []
             for de in delta:
                 v = volatility_surface.volatilityFromDeltaDate(de, ex)[0]
-                datas[tenor].append(v)
-        return pd.DataFrame(datas, index=delta)
+                data[tenor].append(v)
+        return pd.DataFrame(data, index=delta)
 
 
 if __name__ == '__main__':
@@ -263,6 +285,6 @@ if __name__ == '__main__':
                          spot_rate_type=SpotExchangeRateType.Central)
     print(fx_curve.get_ccy1_curve())
     print(fx_curve.get_ccy2_curve())
-    fx_vol_surface = FXOptionImpliedVolatilitySurface(fx_symbol=CurrencyPair.USDCNY)
+    fx_vol_surface = FXOptionImpliedVolatilitySurface(
+        fx_symbol=CurrencyPair.USDCNY)
     print(fx_vol_surface.get_vol_surface())
-

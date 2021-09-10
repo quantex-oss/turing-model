@@ -871,7 +871,7 @@ class TuringFXVolSurfacePlus():
                  riskReversal25DeltaVols: (list, np.ndarray),
                  mktStrangle10DeltaVols: (list, np.ndarray),
                  riskReversal10DeltaVols: (list, np.ndarray),
-                 alpha: float,
+                 alpha: float = 0,
                  atmMethod: TuringFXATMMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL,
                  deltaMethod: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
                  volatilityFunctionType: TuringVolFunctionTypes = TuringVolFunctionTypes.CLARK,
