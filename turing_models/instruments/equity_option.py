@@ -20,6 +20,9 @@ from turing_models.utilities.turing_date import TuringDate
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class EqOption(Eq, InstrumentBase):
+    """
+        self.ctx_ 开头属性为 What if 使用
+    """
     asset_id: str = None
     underlier: Union[str, List[str]] = None
     underlier_symbol: str = None
@@ -60,7 +63,7 @@ class EqOption(Eq, InstrumentBase):
 
     @property
     def value_date_(self):
-        date = self._value_date or self.ctx.pricing_date or self.value_date
+        date = self._value_date or self.ctx_pricing_date or self.value_date
         return date if date >= self.start_date else self.start_date
 
     @value_date_.setter
@@ -69,7 +72,7 @@ class EqOption(Eq, InstrumentBase):
 
     @property
     def stock_price_(self) -> float:
-        return self._stock_price or getattr(self.ctx, f"spot_{self.underlier}") or self.stock_price
+        return self._stock_price or self.ctx_spot or self.stock_price
 
     @stock_price_.setter
     def stock_price_(self, value: float):
@@ -77,15 +80,15 @@ class EqOption(Eq, InstrumentBase):
 
     @property
     def volatility_(self) -> float:
-        return getattr(self.ctx, f"volatility_{self.underlier}") or self.volatility
+        return self.ctx_volatility or self.volatility
 
     @property
     def interest_rate_(self) -> float:
-        return self.ctx.interest_rate or self.interest_rate
+        return self.ctx_interest_rate or self.interest_rate
 
     @property
     def dividend_yield_(self) -> Union[float, List[float]]:
-        return self.ctx.dividend_yield or self.dividend_yield
+        return self.ctx_dividend_yield or self.dividend_yield
 
     @property
     def model(self) -> TuringModelBlackScholes:

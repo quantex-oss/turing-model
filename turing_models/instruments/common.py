@@ -452,7 +452,6 @@ class Currency(Enum):
 
 
 class CurrencyPair(Enum):
-
     USDCNY = 'USD/CNY'
     JPYCNY = 'JPY/CNY'
     GBPCNY = 'GBP/CNY'
@@ -483,7 +482,6 @@ class CurrencyPair(Enum):
 
 
 class RMBIRCurveType(Enum):
-
     Shibor = 'Shibor'
     Shibor3M = 'Shibor3M'
     FR007 = 'FR007'
@@ -493,7 +491,6 @@ class RMBIRCurveType(Enum):
 
 
 class SpotExchangeRateType(Enum):
-
     Central = 'central'
     Average = 'average'
 
@@ -642,7 +639,26 @@ class AssetType(Enum):
 
 
 class Priceable:
-    pass
+
+    @property
+    def ctx_spot(self):
+        return getattr(self.ctx, f"spot_{self.underlier_symbol}")
+
+    @property
+    def ctx_volatility(self):
+        return getattr(self.ctx, f"volatility_{self.underlier_symbol}")
+
+    @property
+    def ctx_interest_rate(self):
+        return self.ctx.interest_rate
+
+    @property
+    def ctx_dividend_yield(self):
+        return self.ctx.dividend_yield
+
+    @property
+    def ctx_pricing_date(self):
+        return self.ctx.pricing_date
 
 
 class Eq(Priceable, metaclass=ABCMeta):
