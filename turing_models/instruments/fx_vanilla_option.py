@@ -157,15 +157,27 @@ class FXVanillaOption(FXOption):
         tdel = self.tdel
         v = self.volatility_
         option_type = self.option_type_
+        vpctf = bs_value(S0, texp, K, rd, rf, v, option_type.value, tdel) / S0
+
+        notional_currency = self.notional_currency
+        domestic_name = self.domestic_name
+        foreign_name = self.foreign_name
+        if notional_currency == domestic_name:
+            notional_dom = notional
+            notional_for = notional / K
+        elif notional_currency == foreign_name:
+            notional_dom = notional * K
+            notional_for = notional
+        else:
+            raise TuringError("Invalid notional currency.")
 
         pips_spot_delta = bs_delta(
             S0, texp, K, rd, rf, v, option_type.value, tdel)
-        # pips_fwd_delta = pips_spot_delta * np.exp(rf * tdel)
-        # vpctf = bs_value(S0, texp, K, rd, rf, v, option_type.value, tdel) / S0
-        # pct_spot_delta_prem_adj = pips_spot_delta - vpctf
-        # pct_fwd_delta_prem_adj = np.exp(rf * tdel) * (pips_spot_delta - vpctf)
+        pips_fwd_delta = pips_spot_delta * np.exp(rf * tdel)
+        pct_spot_delta_prem_adj = pips_spot_delta - vpctf
+        pct_fwd_delta_prem_adj = np.exp(rf * tdel) * (pips_spot_delta - vpctf)
 
-        return pips_spot_delta * (notional / S0)
+        return pips_spot_delta * (notional_dom / S0)
         # return {"pips_spot_delta": pips_spot_delta,
         #         "pips_fwd_delta": pips_fwd_delta,
         #         "pct_spot_delta_prem_adj": pct_spot_delta_prem_adj,
@@ -199,8 +211,20 @@ class FXVanillaOption(FXOption):
         d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
         gamma = np.exp(-rf * texp) * nprime(d1)
         gamma = gamma / S0 / den
+        notional_currency = self.notional_currency
+        domestic_name = self.domestic_name
+        foreign_name = self.foreign_name
 
-        return gamma * (notional / S0)
+        if notional_currency == domestic_name:
+            notional_dom = notional
+            notional_for = notional / K
+        elif notional_currency == foreign_name:
+            notional_dom = notional * K
+            notional_for = notional
+        else:
+            raise TuringError("Invalid notional currency.")
+
+        return gamma * (notional_dom / S0)
 
     def fx_vega(self):
         """ This function calculates the FX Option Vega using the spot delta. """
@@ -220,8 +244,20 @@ class FXVanillaOption(FXOption):
         v2 = v * v
         d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
         vega = S0 * sqrtT * np.exp(-rf * texp) * nprime(d1)
+        notional_currency = self.notional_currency
+        domestic_name = self.domestic_name
+        foreign_name = self.foreign_name
 
-        return vega * (notional / S0)
+        if notional_currency == domestic_name:
+            notional_dom = notional
+            notional_for = notional / K
+        elif notional_currency == foreign_name:
+            notional_dom = notional * K
+            notional_for = notional
+        else:
+            raise TuringError("Invalid notional currency.")
+
+        return vega * (notional_dom / S0)
 
     def fx_theta(self):
         """ This function calculates the time decay of the FX option. """
@@ -254,7 +290,20 @@ class FXVanillaOption(FXOption):
         else:
             raise TuringError("Unknown option type")
 
-        return v * (notional / S0)
+        notional_currency = self.notional_currency
+        domestic_name = self.domestic_name
+        foreign_name = self.foreign_name
+
+        if notional_currency == domestic_name:
+            notional_dom = notional
+            notional_for = notional / K
+        elif notional_currency == foreign_name:
+            notional_dom = notional * K
+            notional_for = notional
+        else:
+            raise TuringError("Invalid notional currency.")
+
+        return v * (notional_dom / S0)
 
     def fx_vanna(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
@@ -275,8 +324,20 @@ class FXVanillaOption(FXOption):
         d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
         d2 = (lnS0k + (mu - v2 / 2.0) * texp) / den
         vanna = - np.exp(-rf * texp) * d2 / v * nprime(d1)
+        notional_currency = self.notional_currency
+        domestic_name = self.domestic_name
+        foreign_name = self.foreign_name
 
-        return vanna * (notional / S0)
+        if notional_currency == domestic_name:
+            notional_dom = notional
+            notional_for = notional / K
+        elif notional_currency == foreign_name:
+            notional_dom = notional * K
+            notional_for = notional
+        else:
+            raise TuringError("Invalid notional currency.")
+
+        return vanna * (notional_dom / S0)
 
     def fx_volga(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
@@ -297,8 +358,20 @@ class FXVanillaOption(FXOption):
         d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
         d2 = (lnS0k + (mu - v2 / 2.0) * texp) / den
         volga = S0 * np.exp(-rf * texp) * sqrtT * d1 * d2 / v * nprime(d1)
+        notional_currency = self.notional_currency
+        domestic_name = self.domestic_name
+        foreign_name = self.foreign_name
 
-        return volga * (notional / S0)
+        if notional_currency == domestic_name:
+            notional_dom = notional
+            notional_for = notional / K
+        elif notional_currency == foreign_name:
+            notional_dom = notional * K
+            notional_for = notional
+        else:
+            raise TuringError("Invalid notional currency.")
+
+        return volga * (notional_dom / S0)
 
     def implied_volatility(self):
         """ This function determines the implied volatility of an FX option
@@ -366,7 +439,8 @@ class FXVanillaOption(FXOption):
 
     def _resolve(self):
         if self.asset_id and not self.asset_id.startswith("OPTION_"):
-            temp_dict = FxOptionApi.fetch_fx_option(gurl=None, asset_id=self.asset_id)
+            temp_dict = FxOptionApi.fetch_fx_option(
+                gurl=None, asset_id=self.asset_id)
             for k, v in temp_dict.items():
                 if not getattr(self, k, None) and v:
                     setattr(self, k, v)

@@ -314,7 +314,7 @@ class TuringFXVolSurfaceVV():
                  tol: float = 1e-8):
         ''' Create the TuringFXVolSurfacePlus object by passing in market vol data
         for ATM, 25 Delta and 10 Delta strikes. The alpha shifts the
-        fitting between 25D and 10D. Alpha = 0.0 is 100% 25D while alpha = 1.0
+        fitting between 25D and 10D. Alpha = 1.0 is 100% 25D while alpha = 0.0
         is 100% 10D. '''
 
         # I want to allow Nones for some of the market inputs
@@ -794,20 +794,11 @@ class TuringFXVolSurfaceVV():
         for i in range(0, numVolCurves):
 
             atmVol = self._atmVols[i]
-
-            # if self._alpha > 0:
             bf25 = self._butterfly25DeltaVols[i]
             rr25 = self._riskReversal25DeltaVols[i]
-            # else:
-            #     bf25 = 0.0
-            #     rr25 = 0.0
 
-            # if self._alpha == 0:
             bf10 = self._butterfly10DeltaVols[i]
             rr10 = self._riskReversal10DeltaVols[i]
-            # else:
-            #     bf10 = 0.0
-            #     rr10 = 0.0
 
             # https://quantpie.co.uk/fx/fx_rr_str.php
 
