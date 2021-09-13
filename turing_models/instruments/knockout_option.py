@@ -197,13 +197,13 @@ class KnockOutOption(EqOption):
                     and self.initial_spot \
                     and self.participation_rate \
                     and self.multiplier:
-                self.number_of_options = (
-                                                 self.notional / self.initial_spot) / self.participation_rate / self.multiplier
+                self.number_of_options = (self.notional / self.initial_spot) / self.participation_rate / self.multiplier
             else:
                 self.number_of_options = 1.0
         self.resolve_param()
 
     def resolve_param(self):
+        self.check_underlier()
         if self.underlier_symbol and not self.underlier:
             self.underlier = Turing.get_stock_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
         if self.underlier:

@@ -38,7 +38,7 @@ class InstrumentBase:
         getattr(self, '_')
 
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type=ParallelType.NULL,
-             option_all=None):
+             option_all=None, timeout=None):
         result: Union[float, List] = []
         try:
             if ParallelType.valid(parallel_type):
@@ -46,7 +46,8 @@ class InstrumentBase:
                     instance=self,
                     parallel_type=parallel_type,
                     call_func_name="calc",
-                    func_params={"risk_measure": risk_measure}
+                    func_params={"risk_measure": risk_measure},
+                    timeout=timeout or 30
                 ).calc()
             if not isinstance(risk_measure, Iterable):
                 rs = risk_measure.value if isinstance(risk_measure, RiskMeasure) else risk_measure

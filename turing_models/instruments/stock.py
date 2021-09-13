@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
+from fundamental.turing_db.data import Turing
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.helper_functions import to_string
 from turing_models.instruments.common import Currency, Eq
@@ -11,6 +12,7 @@ class Stock(Eq, InstrumentBase):
     asset_id: str = None
     quantity: float = None  # 股数
     asset_type: str = None
+    comb_symbol: str = None
     symbol: str = None
     name_cn: str = None
     name_en: str = None
@@ -18,14 +20,14 @@ class Stock(Eq, InstrumentBase):
     currency: Union[str, Currency] = None
     name: str = None
     stock_price: float = None
-    volatility: float = None
 
     def __post_init__(self):
         super().__init__()
+        self.check_comb_symbol()
 
     @property
     def stock_price_(self) -> float:
-        return getattr(self.ctx, f"spot_{self.asset_id}") or self.stock_price
+        return self.ctx_spot or self.stock_price
 
     def price(self):
         return self.stock_price_
@@ -50,6 +52,10 @@ class Stock(Eq, InstrumentBase):
 
     def eq_rho_q(self):
         return 0
+
+    def check_comb_symbol(self):
+        if self.comb_symbol and not self.asset_id:
+            self.asset_id = Turing.get_stock_symbol_to_id(_id=self.comb_symbol).get('asset_id')
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)

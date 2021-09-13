@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 
+
 bump = 1e-4
 
 
@@ -452,7 +453,6 @@ class Currency(Enum):
 
 
 class CurrencyPair(Enum):
-
     USDCNY = 'USD/CNY'
     JPYCNY = 'JPY/CNY'
     GBPCNY = 'GBP/CNY'
@@ -483,7 +483,6 @@ class CurrencyPair(Enum):
 
 
 class RMBIRCurveType(Enum):
-
     Shibor = 'Shibor'
     Shibor3M = 'Shibor3M'
     FR007 = 'FR007'
@@ -493,7 +492,6 @@ class RMBIRCurveType(Enum):
 
 
 class SpotExchangeRateType(Enum):
-
     Central = 'central'
     Average = 'average'
 
@@ -642,7 +640,52 @@ class AssetType(Enum):
 
 
 class Priceable:
-    pass
+
+    @property
+    def ctx_spot(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(self, 'asset_id', None)
+        return getattr(self.ctx, f"spot_{asset_id}")
+
+    @property
+    def ctx_volatility(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(self, 'asset_id', None)
+        return getattr(self.ctx, f"volatility_{asset_id}")
+
+    @property
+    def ctx_interest_rate(self):
+        return self.ctx.interest_rate
+
+    @property
+    def ctx_dividend_yield(self):
+        return self.ctx.dividend_yield
+
+    @property
+    def ctx_pricing_date(self):
+        return self.ctx.pricing_date
+
+    @property
+    def ctx_ytm(self):
+        return self.ctx.ytm
+
+    @property
+    def ctx_parallel_shift(self):
+        return getattr(self.ctx, f"parallel_shift_{self.curve_code}")
+
+    @property
+    def ctx_curve_shift(self):
+        return getattr(self.ctx, f"curve_shift_{self.curve_code}")
+
+    @property
+    def ctx_pivot_point(self):
+        return getattr(self.ctx, f"pivot_point_{self.curve_code}")
+
+    @property
+    def ctx_tenor_start(self):
+        return getattr(self.ctx, f"tenor_start_{self.curve_code}")
+
+    @property
+    def ctx_tenor_end(self):
+        return getattr(self.ctx, f"tenor_end_{self.curve_code}")
 
 
 class Eq(Priceable, metaclass=ABCMeta):
