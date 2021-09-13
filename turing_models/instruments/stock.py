@@ -11,6 +11,7 @@ class Stock(Eq, InstrumentBase):
     asset_id: str = None
     quantity: float = None  # 股数
     asset_type: str = None
+    comb_symbol: str = None
     symbol: str = None
     name_cn: str = None
     name_en: str = None
@@ -18,14 +19,13 @@ class Stock(Eq, InstrumentBase):
     currency: Union[str, Currency] = None
     name: str = None
     stock_price: float = None
-    volatility: float = None
 
     def __post_init__(self):
         super().__init__()
 
     @property
     def stock_price_(self) -> float:
-        return getattr(self.ctx, f"spot_{self.asset_id}") or self.stock_price
+        return self.ctx_spot or self.stock_price
 
     def price(self):
         return self.stock_price_

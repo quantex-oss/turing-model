@@ -131,7 +131,7 @@ cbc = CombinationCalc(
     # 行计算或内部并行计算或者不走并行计算，默认值
     # 为None，表示不进行并行计算，可不指定。
     parallel_type=ParallelType.INNER,
-    timeout=3
+    timeout=50
 )
 cbc.add(model_calc1)
 cbc.add(model_calc2)

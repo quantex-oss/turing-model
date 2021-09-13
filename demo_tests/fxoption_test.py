@@ -1,8 +1,9 @@
 import time
 
 import numpy as np
+from fundamental.pricing_context import PricingContext
 
-from turing_models.instruments.common import Currency, CurrencyPair
+from turing_models.instruments.common import Currency, CurrencyPair, RiskMeasure
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.instruments.fx_vanilla_option import FXVanillaOption
@@ -24,6 +25,7 @@ fxoption = FXVanillaOption(start_date=TuringDate(2021, 9, 1),
                            delivery_date=TuringDate(2021, 9, 2),
                            value_date=TuringDate(2021, 9, 8),
                            #    volatility=0.1411,
+                           underlier='FX00000001',
                            underlier_symbol=CurrencyPair.USDCNY,
                            exchange_rate=6.4683,
                            strike=6.8,
@@ -43,20 +45,27 @@ fxoption = FXVanillaOption(start_date=TuringDate(2021, 9, 1),
                            risk_reversal_10delta_vols=risk_reversal_10delta_vols
                            )
 
-price = fxoption.price()
-delta = fxoption.fx_delta()
-gamma = fxoption.fx_gamma()
-vega = fxoption.fx_vega()
-theta = fxoption.fx_theta()
-vanna = fxoption.fx_vanna()
-volga = fxoption.fx_volga()
+price = fxoption.calc(RiskMeasure.Price)
+delta = fxoption.calc(RiskMeasure.FxDelta)
+gamma = fxoption.calc(RiskMeasure.FxGamma)
+vega = fxoption.calc(RiskMeasure.FxVega)
+theta = fxoption.calc(RiskMeasure.FxTheta)
+vanna = fxoption.calc(RiskMeasure.FxVanna)
+volga = fxoption.calc(RiskMeasure.FxVolga)
 print(price, delta, gamma, vega, theta, vanna, volga)
-# for spotFXRate in np.arange(100, 200, 10)/100.0:
-#     fxoption.spot_fx_rate = spotFXRate
 
-#     value = fxoption.price()
-#     valuemc = fxoption.price_mc()
-#     fxoption.market_price = value
-#     impliedVol = fxoption.implied_volatility()
 
-#     print(spotFXRate, value, valuemc, impliedVol)
+scenario_extreme = PricingContext(spot=[
+    {"symbol": "USD/CNY", "value": 100}
+]
+)
+
+with scenario_extreme:
+    price = fxoption.calc(RiskMeasure.Price)
+    delta = fxoption.calc(RiskMeasure.FxDelta)
+    gamma = fxoption.calc(RiskMeasure.FxGamma)
+    vega = fxoption.calc(RiskMeasure.FxVega)
+    theta = fxoption.calc(RiskMeasure.FxTheta)
+    vanna = fxoption.calc(RiskMeasure.FxVanna)
+    volga = fxoption.calc(RiskMeasure.FxVolga)
+    print(price, delta, gamma, vega, theta, vanna, volga)

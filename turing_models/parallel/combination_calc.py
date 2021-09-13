@@ -41,7 +41,7 @@ class CombinationCalc:
 
     async def async_run(self):
         await asyncio.gather(
-            *[model_calc_obj.async_run(self.parallel_type)
+            *[model_calc_obj.async_run(self.parallel_type, self.timeout)
               for model_calc_obj in self.source_list]
         )
         self.results.extend(
@@ -77,18 +77,18 @@ class ModelCalc:
     def sync_process_result(self, parallel_type, timeout):
         return self.process_result(parallel_type, timeout)
 
-    async def async_run(self, parallel_type):
+    async def async_run(self, parallel_type, timeout=None):
         if self.subdivide:
             self.process.extend(
                 await asyncio.gather(
-                    *[self.async_calc(r, parallel_type) for r in self.risk_measures]
+                    *[self.async_calc(r, parallel_type, timeout) for r in self.risk_measures]
                 )
             )
         else:
             self.process.append(await self.async_calc(self.risk_measures, parallel_type))
 
-    async def async_calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type):
-        return self.model.calc(risk_measure, parallel_type)
+    async def async_calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type, timeout=None):
+        return self.model.calc(risk_measure, parallel_type, timeout)
 
     async def async_process_result(self, parallel_type, timeout):
         return self.process_result(parallel_type, timeout)

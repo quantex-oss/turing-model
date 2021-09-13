@@ -44,52 +44,32 @@ class BondFixedRate(Bond):
 
     @property
     def __ytm__(self):
-        return self._ytm or self.ctx.ytm or self.ytm or self.yield_to_maturity()
+        return self._ytm or self.ctx_ytm or self.ytm or self.yield_to_maturity()
 
     @__ytm__.setter
     def __ytm__(self, value: float):
         self._ytm = value
 
-    @property
-    def parallel_shift(self):
-        return getattr(self.ctx, f"parallel_shift_{self.curve_code}")
-
-    @property
-    def curve_shift(self):
-        return getattr(self.ctx, f"curve_shift_{self.curve_code}")
-
-    @property
-    def pivot_point(self):
-        return getattr(self.ctx, f"pivot_point_{self.curve_code}")
-
-    @property
-    def tenor_start(self):
-        return getattr(self.ctx, f"tenor_start_{self.curve_code}")
-
-    @property
-    def tenor_end(self):
-        return getattr(self.ctx, f"tenor_end_{self.curve_code}")
-
     def curve_adjust(self):
         ca = CurveAdjust(self.zero_dates,
                          self.zero_rates,
-                         self.parallel_shift,
-                         self.curve_shift,
-                         self.pivot_point,
-                         self.tenor_start,
-                         self.tenor_end)
+                         self.ctx_parallel_shift,
+                         self.ctx_curve_shift,
+                         self.ctx_pivot_point,
+                         self.ctx_tenor_start,
+                         self.ctx_tenor_end)
         return ca.get_dates_result(), ca.get_rates_result()
 
     @property
     def _zero_dates(self):
-        if self.parallel_shift:
+        if self.ctx_parallel_shift:
             return self.curve_adjust()[0]
         else:
             return self.zero_dates
 
     @property
     def _zero_rates(self):
-        if self.parallel_shift:
+        if self.ctx_parallel_shift:
             return self.curve_adjust()[1]
         else:
             return self.zero_rates
