@@ -95,7 +95,7 @@ class Bond(IR, InstrumentBase):
 
     @property
     def settlement_date_(self):
-        return self.ctx.pricing_date or self.settlement_date
+        return self.ctx_pricing_date or self.settlement_date
 
     def _calculate_flow_dates(self):
         """ Determine the bond cashflow payment dates."""

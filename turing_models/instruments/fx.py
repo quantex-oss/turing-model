@@ -18,7 +18,7 @@ class ForeignExchange(FX, InstrumentBase):
 
     @property
     def exchange_rate_(self) -> float:
-        return getattr(self.ctx, f"exchange_rate_{self.asset_id}") or self.exchange_rate
+        return self.ctx_spot or self.exchange_rate
 
     def price(self):
         return self.exchange_rate_

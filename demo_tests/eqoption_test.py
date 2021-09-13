@@ -3,6 +3,7 @@ import time
 
 import numpy as np
 
+from turing_models.instruments.equity_option import EqOption
 from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.market.curves import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes

@@ -124,12 +124,17 @@ class FXOption(FX, InstrumentBase):
 
     @property
     def value_date_(self):
-        date = self._value_date or self.ctx.pricing_date or self.value_date
+        date = self._value_date or self.ctx_pricing_date or self.value_date
         return date if date >= self.start_date else self.start_date
 
     @value_date_.setter
     def value_date_(self, value: TuringDate):
         self._value_date = value
+
+    @property
+    def exchange_rate_(self):
+        print(self.ctx_spot)
+        return self.ctx_spot or self.exchange_rate
 
     @property
     def tenors_(self):
@@ -151,7 +156,7 @@ class FXOption(FX, InstrumentBase):
     @property
     def volatility_surface(self):
         return TuringFXVolSurfaceVV(self.value_date_,
-                                    self.exchange_rate,
+                                    self.exchange_rate_,
                                     self.underlier_symbol,
                                     self.notional_currency,
                                     self.domestic_discount_curve,
@@ -194,7 +199,9 @@ class FXOption(FX, InstrumentBase):
 
     @property
     def volatility_(self):
-        if self.volatility:
+        if self.ctx_volatility:
+            v = self.ctx_volatility
+        elif self.volatility:
             v = self.model._volatility
         elif self.vol_tenors:
             v = self.volatility_surface.volatilityFromStrikeDate(
