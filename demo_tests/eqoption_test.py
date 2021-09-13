@@ -2,6 +2,7 @@ import cProfile
 import time
 
 import numpy as np
+from fundamental.pricing_context import PricingContext
 
 from turing_models.instruments.equity_option import EqOption
 from turing_models.market.data.china_money_yield_curve import dates, rates
@@ -25,7 +26,8 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 
 
 european_option = EuropeanOption(asset_id='OPTIONCN00000001',
-                                 underlier='STOCKCN00000001',
+                                 # underlier='STOCKCN00000011',
+                                 underlier_symbol="600059.SH",
                                  option_type=TuringOptionType.CALL,
                                  start_date=TuringDate(2021, 6, 3),
                                  expiry=TuringDate(2021, 9, 3),
@@ -41,7 +43,7 @@ european_option = EuropeanOption(asset_id='OPTIONCN00000001',
                                  dividend_yield=0)
 
 american_option = AmericanOption(asset_id='OPTIONCN00000001',
-                                 underlier='STOCKCN00000001',
+                                 underlier='STOCKCN00000011',
                                  option_type=TuringOptionType.CALL,
                                  expiry=TuringDate(2021, 9, 3),
                                  start_date=TuringDate(2021, 6, 3),
@@ -57,7 +59,7 @@ american_option = AmericanOption(asset_id='OPTIONCN00000001',
                                  dividend_yield=0)
 
 asian_option = AsianOption(asset_id='OPTIONCN00000001',
-                           underlier='STOCKCN00000001',
+                           underlier='STOCKCN00000011',
                            option_type=TuringOptionType.CALL,
                            expiry=TuringDate(2021, 9, 3),
                            start_date=TuringDate(2021, 6, 3),
@@ -97,7 +99,7 @@ snowball_option = SnowballOption(asset_id='OPTIONCN00000001',
                                  dividend_yield=0)
 
 knockout_option = KnockOutOption(asset_id='OPTIONCN00000001',
-                                 underlier='STOCKCN00000001',
+                                 underlier='STOCKCN00000011',
                                  option_type=TuringOptionType.CALL,
                                  start_date=TuringDate(2021, 6, 3),
                                  expiry=TuringDate(2021, 9, 3),
@@ -115,10 +117,10 @@ knockout_option = KnockOutOption(asset_id='OPTIONCN00000001',
                                  dividend_yield=0)
 
 print_result(european_option)
-print_result(american_option)
-print_result(asian_option)
-print_result(snowball_option)
-print_result(knockout_option)
+# print_result(american_option)
+# print_result(asian_option)
+# print_result(snowball_option)
+# print_result(knockout_option)
 
 #########################################
 betas = np.ones(5) * 0.1
@@ -134,7 +136,7 @@ basket_snowball_option = BasketSnowballOption(option_type=TuringOptionType.CALL,
                                               notional=1000000,
                                               rebate=0.2,
                                               untriggered_rebate=0.2,
-                                              underlier=["STOCKCN00000001", "STOCKCN00000002", "STOCKCN00000003", "STOCKCN00000004", "STOCKCN00000005"],
+                                              underlier=["STOCKCN00000011", "STOCKCN00000002", "STOCKCN00000003", "STOCKCN00000004", "STOCKCN00000005"],
                                               knock_in_type='SPREADS',
                                               knock_in_strike1=5.3,
                                               knock_in_strike2=5.4,
@@ -151,7 +153,12 @@ start = time.time()
 price1 = basket_snowball_option.price()
 end = time.time()
 print(price1, end-start)
-start = time.time()
-price2 = basket_snowball_option.price_3dim()
-end = time.time()
-print(price2, end-start)
+
+scenario_extreme = PricingContext(spot=[
+    # {"symbol": "600059.SH", "value": 3.5},
+    {"symbol": "600059.SH", "value": 5.3}
+]
+)
+
+with scenario_extreme:
+    print_result(european_option)

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
+from fundamental.turing_db.data import Turing
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.helper_functions import to_string
 from turing_models.instruments.common import Currency, Eq
@@ -22,6 +23,7 @@ class Stock(Eq, InstrumentBase):
 
     def __post_init__(self):
         super().__init__()
+        self.check_comb_symbol()
 
     @property
     def stock_price_(self) -> float:
@@ -50,6 +52,10 @@ class Stock(Eq, InstrumentBase):
 
     def eq_rho_q(self):
         return 0
+
+    def check_comb_symbol(self):
+        if self.comb_symbol and not self.asset_id:
+            self.asset_id = Turing.get_stock_symbol_to_id(_id=self.comb_symbol).get('asset_id')
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)

@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 
 import numpy as np
-from loguru import logger
 from scipy import optimize
 
-from fundamental.turing_db.data import Turing
 from fundamental.turing_db.fx_data import FxApi
 from fundamental.turing_db.option_data import FxOptionApi
 from turing_models.instruments.fx_option import FXOption
@@ -65,7 +63,6 @@ class FXVanillaOption(FXOption):
 
     def __post_init__(self):
         super().__post_init__()
-        self.check_underlier()
 
     def rate_domestic(self):
         return self.rd
@@ -350,10 +347,6 @@ class FXVanillaOption(FXOption):
                     _list.append(cu.get(key))
         setattr(self, _property, _list)
         return _list
-
-    def check_underlier(self):
-        if self.underlier_symbol and not self.underlier:
-            self.underlier = Turing.get_fx_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
 
     def _resolve(self):
         if self.asset_id and not self.asset_id.startswith("OPTION_"):

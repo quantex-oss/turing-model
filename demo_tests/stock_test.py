@@ -3,8 +3,9 @@ from fundamental.pricing_context import PricingContext
 from turing_models.instruments.stock import Stock
 from turing_models.instruments.common import RiskMeasure, Currency
 
-stock = Stock(asset_id="STOCKCN00000011",
-              # comb_symbol="600059.SH",
+stock = Stock(
+              # asset_id="STOCKCN00000011",
+              comb_symbol="600059.SH",
               currency=Currency.CNY,
               stock_price=5.23)
 

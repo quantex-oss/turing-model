@@ -1,10 +1,11 @@
 import datetime
 from dataclasses import dataclass, field
 from typing import List, Any
+from enum import Enum
 
 import numpy as np
-from loguru import logger
 
+from fundamental.turing_db.data import Turing
 from turing_models.instruments.common import FX, Currency, CurrencyPair
 from turing_models.instruments.core import InstrumentBase
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
@@ -65,6 +66,7 @@ class FXOption(FX, InstrumentBase):
 
     def __post_init__(self):
         super().__init__()
+        self.check_underlier()
         self.domestic_name = None
         self.foreign_name = None
         if self.expiry:
@@ -133,7 +135,6 @@ class FXOption(FX, InstrumentBase):
 
     @property
     def exchange_rate_(self):
-        print(self.ctx_spot)
         return self.ctx_spot or self.exchange_rate
 
     @property
@@ -237,6 +238,13 @@ class FXOption(FX, InstrumentBase):
 
     def fx_volga(self):
         return 0.0
+
+    def check_underlier(self):
+        if self.underlier_symbol and not self.underlier:
+            if isinstance(self.underlier_symbol, Enum):
+                self.underlier = Turing.get_fx_symbol_to_id(_id=self.underlier_symbol.value).get('asset_id')
+            else:
+                self.underlier = Turing.get_fx_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)

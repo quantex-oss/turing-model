@@ -25,7 +25,7 @@ fxoption = FXVanillaOption(start_date=TuringDate(2021, 9, 1),
                            delivery_date=TuringDate(2021, 9, 2),
                            value_date=TuringDate(2021, 9, 8),
                            #    volatility=0.1411,
-                           underlier='FX00000001',
+                           # underlier='FX00000001',
                            underlier_symbol=CurrencyPair.USDCNY,
                            exchange_rate=6.4683,
                            strike=6.8,
@@ -56,7 +56,7 @@ print(price, delta, gamma, vega, theta, vanna, volga)
 
 
 scenario_extreme = PricingContext(spot=[
-    {"symbol": "USD/CNY", "value": 100}
+    {"symbol": "USD/CNY", "value": 7}
 ]
 )
 

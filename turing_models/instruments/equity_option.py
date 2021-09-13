@@ -5,6 +5,7 @@ from typing import List, Any, Union
 import numpy as np
 
 from fundamental.turing_db.utils import to_snake
+from fundamental.turing_db.data import Turing
 from turing_models.instruments.common import greek, bump, Currency, Eq
 from turing_models.instruments.core import InstrumentBase
 from turing_models.market.curves import TuringDiscountCurveFlat, \
@@ -57,6 +58,7 @@ class EqOption(Eq, InstrumentBase):
 
     def __post_init__(self):
         super().__init__()
+        self.check_underlier()
         convert_argument_type(self, self.__init__, self.__dict__)
         self.number_of_options = self.number_of_options or 1
         self.multiplier = self.multiplier or 1
@@ -183,6 +185,10 @@ class EqOption(Eq, InstrumentBase):
     def eq_rho_q(self) -> float:
         return greek(self, self.price, "dividend_curve",
                      cus_inc=(self.dividend_curve.bump, bump))
+
+    def check_underlier(self):
+        if self.underlier_symbol and not self.underlier:
+            self.underlier = Turing.get_stock_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
 
     def put_zero_dates(self, curve):
         zero_dates = []

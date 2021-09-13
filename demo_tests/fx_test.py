@@ -1,12 +1,26 @@
+from enum import Enum
+
+from fundamental.pricing_context import PricingContext
 from turing_models.instruments.fx import ForeignExchange
 
 
-fx = ForeignExchange(exchange_rate=6)
+fx = ForeignExchange(
+                     asset_id='FX00000001',
+                     exchange_rate=6,
+                     # symbol='USD/CNY'
+)
 
 print(fx.price())
 print(fx.fx_delta())
-print(fx.fx_gamma())
-print(fx.fx_theta())
-print(fx.fx_vega())
-print(fx.fx_volga())
-print(fx.fx_vanna())
+
+scenario_extreme = PricingContext(spot=[
+    # {"symbol": "600059.SH", "value": 3.5},
+    {"symbol": "USD/CNY", "value": 5.3}
+]
+)
+
+with scenario_extreme:
+    print(fx.price())
+    print(fx.fx_delta())
+
+
