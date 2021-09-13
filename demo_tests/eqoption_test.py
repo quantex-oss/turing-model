@@ -26,7 +26,7 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 
 
 european_option = EuropeanOption(asset_id='OPTIONCN00000001',
-                                 # underlier='STOCKCN00000011',
+                                 underlier='STOCKCN00000011',
                                  underlier_symbol="600059.SH",
                                  option_type=TuringOptionType.CALL,
                                  start_date=TuringDate(2021, 6, 3),
@@ -156,7 +156,7 @@ print(price1, end-start)
 
 scenario_extreme = PricingContext(spot=[
     # {"symbol": "600059.SH", "value": 3.5},
-    {"symbol": "600059.SH", "value": 5.3}
+    {"asset_id": "STOCKCN00000011", "value": 5.3}
 ]
 )
 

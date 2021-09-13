@@ -52,7 +52,8 @@ vega = fxoption.calc(RiskMeasure.FxVega)
 theta = fxoption.calc(RiskMeasure.FxTheta)
 vanna = fxoption.calc(RiskMeasure.FxVanna)
 volga = fxoption.calc(RiskMeasure.FxVolga)
-print(price, delta, gamma, vega, theta, vanna, volga)
+delta_bump = fxoption.fx_delta_bump()
+print(price, delta, gamma, vega, theta, vanna, volga, delta_bump)
 
 
 scenario_extreme = PricingContext(spot=[

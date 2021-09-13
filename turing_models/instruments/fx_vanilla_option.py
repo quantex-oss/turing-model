@@ -5,6 +5,7 @@ from scipy import optimize
 
 from fundamental.turing_db.fx_data import FxApi
 from fundamental.turing_db.option_data import FxOptionApi
+from turing_models.instruments.common import greek
 from turing_models.instruments.fx_option import FXOption
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
@@ -71,7 +72,7 @@ class FXVanillaOption(FXOption):
         return self.rf
 
     def spot_ex(self):
-        return self.exchange_rate
+        return self.exchange_rate_
 
     def price(self):
         """ This function calculates the value of the option using a specified
@@ -79,7 +80,7 @@ class FXVanillaOption(FXOption):
         Recall that Domestic = CCY2 and Foreign = CCY1 and FX rate is in
         price in domestic of one unit of foreign currency. """
 
-        S0 = self.exchange_rate
+        S0 = self.exchange_rate_
         K = self.strike
         rd = self.rd
         rf = self.rf
@@ -147,7 +148,7 @@ class FXVanillaOption(FXOption):
         definitions can be found on Page 44 of Foreign Exchange Option Pricing
         by Iain Clark, published by Wiley Finance. """
 
-        S0 = self.exchange_rate
+        S0 = self.exchange_rate_
         K = self.strike
         rd = self.rd
         rf = self.rf
@@ -169,10 +170,19 @@ class FXVanillaOption(FXOption):
         #         "pct_spot_delta_prem_adj": pct_spot_delta_prem_adj,
         #         "pct_fwd_delta_prem_adj": pct_fwd_delta_prem_adj}
 
+    def fx_delta_bump(self):
+        """ Calculation of the FX option delta by bumping the spot FX rate by
+        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        bump_local = 0.0001 * self.exchange_rate_
+
+        return greek(self, self.price, "exchange_rate_", bump=bump_local)
+
     def fx_gamma(self):
         """ This function calculates the FX Option Gamma using the spot delta. """
 
-        S0 = self.exchange_rate
+        S0 = self.exchange_rate_
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -193,7 +203,7 @@ class FXVanillaOption(FXOption):
     def fx_vega(self):
         """ This function calculates the FX Option Vega using the spot delta. """
 
-        S0 = self.exchange_rate
+        S0 = self.exchange_rate_
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -213,7 +223,7 @@ class FXVanillaOption(FXOption):
     def fx_theta(self):
         """ This function calculates the time decay of the FX option. """
 
-        S0 = self.exchange_rate
+        S0 = self.exchange_rate_
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -245,7 +255,7 @@ class FXVanillaOption(FXOption):
     def fx_vanna(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
-        S0 = self.exchange_rate
+        S0 = self.exchange_rate_
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -266,7 +276,7 @@ class FXVanillaOption(FXOption):
     def fx_volga(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
-        S0 = self.exchange_rate
+        S0 = self.exchange_rate_
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -305,7 +315,7 @@ class FXVanillaOption(FXOption):
 
         v = self.volatility_
         K = self.strike
-        spot_fx_rate = self.exchange_rate
+        spot_fx_rate = self.exchange_rate_
         option_type = self.option_type_
 
         np.random.seed(self.seed)
@@ -359,7 +369,7 @@ class FXVanillaOption(FXOption):
     def resolve_param(self):
         self.check_underlier()
         if self.underlier:
-            if not self.exchange_rate:
+            if not self.exchange_rate_:
                 ex_rate = FxApi.get_exchange_rate(gurl=None,
                                                   underlier=self.underlier)
                 if ex_rate:

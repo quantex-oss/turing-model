@@ -63,6 +63,7 @@ class FXOption(FX, InstrumentBase):
     volatility: float = None
     market_price = None
     _value_date = None
+    _exchange_rate = None
 
     def __post_init__(self):
         super().__init__()
@@ -135,7 +136,11 @@ class FXOption(FX, InstrumentBase):
 
     @property
     def exchange_rate_(self):
-        return self.ctx_spot or self.exchange_rate
+        return self._exchange_rate or self.ctx_spot or self.exchange_rate
+
+    @exchange_rate_.setter
+    def exchange_rate_(self, value: float):
+        self._exchange_rate = value
 
     @property
     def tenors_(self):
