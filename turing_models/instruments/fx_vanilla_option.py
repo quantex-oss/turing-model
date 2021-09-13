@@ -150,6 +150,7 @@ class FXVanillaOption(FXOption):
 
         S0 = self.exchange_rate_
         K = self.strike
+        notional = self.notional
         rd = self.rd
         rf = self.rf
         texp = self.texp
@@ -159,12 +160,12 @@ class FXVanillaOption(FXOption):
 
         pips_spot_delta = bs_delta(
             S0, texp, K, rd, rf, v, option_type.value, tdel)
-        pips_fwd_delta = pips_spot_delta * np.exp(rf * tdel)
-        vpctf = bs_value(S0, texp, K, rd, rf, v, option_type.value, tdel) / S0
-        pct_spot_delta_prem_adj = pips_spot_delta - vpctf
-        pct_fwd_delta_prem_adj = np.exp(rf * tdel) * (pips_spot_delta - vpctf)
+        # pips_fwd_delta = pips_spot_delta * np.exp(rf * tdel)
+        # vpctf = bs_value(S0, texp, K, rd, rf, v, option_type.value, tdel) / S0
+        # pct_spot_delta_prem_adj = pips_spot_delta - vpctf
+        # pct_fwd_delta_prem_adj = np.exp(rf * tdel) * (pips_spot_delta - vpctf)
 
-        return pips_spot_delta
+        return pips_spot_delta * (notional / S0)
         # return {"pips_spot_delta": pips_spot_delta,
         #         "pips_fwd_delta": pips_fwd_delta,
         #         "pct_spot_delta_prem_adj": pct_spot_delta_prem_adj,
@@ -184,6 +185,7 @@ class FXVanillaOption(FXOption):
 
         S0 = self.exchange_rate_
         K = self.strike
+        notional = self.notional
         texp = self.texp
         v = self.volatility_
         rd = self.rd
@@ -198,13 +200,14 @@ class FXVanillaOption(FXOption):
         gamma = np.exp(-rf * texp) * nprime(d1)
         gamma = gamma / S0 / den
 
-        return gamma
+        return gamma * (notional / S0)
 
     def fx_vega(self):
         """ This function calculates the FX Option Vega using the spot delta. """
 
         S0 = self.exchange_rate_
         K = self.strike
+        notional = self.notional
         texp = self.texp
         v = self.volatility_
         rd = self.rd
@@ -218,13 +221,14 @@ class FXVanillaOption(FXOption):
         d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
         vega = S0 * sqrtT * np.exp(-rf * texp) * nprime(d1)
 
-        return vega
+        return vega * (notional / S0)
 
     def fx_theta(self):
         """ This function calculates the time decay of the FX option. """
 
         S0 = self.exchange_rate_
         K = self.strike
+        notional = self.notional
         texp = self.texp
         v = self.volatility_
         option_type = self.option_type_
@@ -250,13 +254,14 @@ class FXVanillaOption(FXOption):
         else:
             raise TuringError("Unknown option type")
 
-        return v
+        return v * (notional / S0)
 
     def fx_vanna(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
         S0 = self.exchange_rate_
         K = self.strike
+        notional = self.notional
         texp = self.texp
         v = self.volatility_
         rd = self.rd
@@ -271,13 +276,14 @@ class FXVanillaOption(FXOption):
         d2 = (lnS0k + (mu - v2 / 2.0) * texp) / den
         vanna = - np.exp(-rf * texp) * d2 / v * nprime(d1)
 
-        return vanna
+        return vanna * (notional / S0)
 
     def fx_volga(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
         S0 = self.exchange_rate_
         K = self.strike
+        notional = self.notional
         texp = self.texp
         v = self.volatility_
         rd = self.rd
@@ -292,7 +298,7 @@ class FXVanillaOption(FXOption):
         d2 = (lnS0k + (mu - v2 / 2.0) * texp) / den
         volga = S0 * np.exp(-rf * texp) * sqrtT * d1 * d2 / v * nprime(d1)
 
-        return volga
+        return volga * (notional / S0)
 
     def implied_volatility(self):
         """ This function determines the implied volatility of an FX option

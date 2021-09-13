@@ -116,10 +116,14 @@ knockout_option = KnockOutOption(asset_id='OPTIONCN00000001',
                                  zero_rates=rates,
                                  dividend_yield=0)
 
-print_result(european_option)
+# print_result(european_option)
 # print_result(american_option)
 # print_result(asian_option)
+start = time.time()
 # print_result(snowball_option)
+price = snowball_option.price()
+end = time.time()
+print(end-start)
 # print_result(knockout_option)
 
 #########################################
@@ -149,10 +153,10 @@ basket_snowball_option = BasketSnowballOption(option_type=TuringOptionType.CALL,
                                               weights=[0.2, 0.2, 0.2, 0.2, 0.2],
                                               correlation_matrix=corr_matrix)
 
-start = time.time()
-price1 = basket_snowball_option.price()
-end = time.time()
-print(price1, end-start)
+# start = time.time()
+# price1 = basket_snowball_option.price()
+# end = time.time()
+# print(price1, end-start)
 
 scenario_extreme = PricingContext(spot=[
     # {"symbol": "600059.SH", "value": 3.5},
