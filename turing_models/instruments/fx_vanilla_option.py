@@ -65,6 +65,7 @@ class FXVanillaOption(FXOption):
 
     def __post_init__(self):
         super().__post_init__()
+        self.check_underlier()
 
     def rate_domestic(self):
         return self.rd
@@ -350,6 +351,10 @@ class FXVanillaOption(FXOption):
         setattr(self, _property, _list)
         return _list
 
+    def check_underlier(self):
+        if self.underlier_symbol and not self.underlier:
+            self.underlier = Turing.get_fx_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
+
     def _resolve(self):
         if self.asset_id and not self.asset_id.startswith("OPTION_"):
             temp_dict = FxOptionApi.fetch_fx_option(gurl=None, asset_id=self.asset_id)
@@ -359,8 +364,7 @@ class FXVanillaOption(FXOption):
         self.resolve_param()
 
     def resolve_param(self):
-        if self.underlier_symbol and not self.underlier:
-            self.underlier = Turing.get_fx_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
+        self.check_underlier()
         if self.underlier:
             if not self.exchange_rate:
                 ex_rate = FxApi.get_exchange_rate(gurl=None,
