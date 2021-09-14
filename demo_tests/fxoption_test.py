@@ -22,7 +22,6 @@ risk_reversal_10delta_vols = [-0.01258, -
 fxoption = FXVanillaOption(start_date=TuringDate(2021, 9, 1),
                            expiry=TuringDate(2021, 9, 1).addMonths(4),
                            cut_off_time=TuringDate(2021, 12, 30),
-                           delivery_date=TuringDate(2021, 9, 2),
                            value_date=TuringDate(2021, 9, 8),
                            #    volatility=0.1411,
                            # underlier='FX00000001',
