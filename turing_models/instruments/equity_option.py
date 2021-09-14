@@ -1,4 +1,5 @@
 import datetime
+from abc import ABCMeta
 from dataclasses import dataclass, field
 from typing import List, Any, Union
 
@@ -20,7 +21,7 @@ from turing_models.utilities.turing_date import TuringDate
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class EqOption(Eq, InstrumentBase):
+class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
     """
         self.ctx_ 开头属性为 What if 使用
     """
@@ -158,10 +159,6 @@ class EqOption(Eq, InstrumentBase):
     @v.setter
     def v(self, value: float):
         self._volatility = value
-
-    def price(self) -> float:
-        print("You should not be here!")
-        return 0.0
 
     def eq_delta(self) -> float:
         return greek(self, self.price, "stock_price_")
