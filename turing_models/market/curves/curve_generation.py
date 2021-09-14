@@ -9,9 +9,6 @@ from fundamental.turing_db.data import Turing
 from turing_models.instruments.common import CurrencyPair, RMBIRCurveType, SpotExchangeRateType
 from turing_models.market.curves import TuringDiscountCurveZeros
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
-from turing_models.market.volatility.fx_vol_surface_plus import TuringFXVolSurfacePlus
-from turing_models.utilities.schedule import TuringSchedule
-from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.frequency import TuringFrequencyTypes
@@ -186,7 +183,7 @@ class FXOptionImpliedVolatilitySurface:
         self.risk_reversal_10delta_vols = None
         self._get_fx_volatility()
 
-        self.volatility_surface = TuringFXVolSurfacePlus(self.base_date,
+        self.volatility_surface = TuringFXVolSurfaceVV(self.base_date,
                                                          self.exchange_rate,
                                                          self.fx_symbol,
                                                          self.fx_symbol[-3:],
@@ -283,8 +280,8 @@ if __name__ == '__main__':
     fx_curve = FXIRCurve(fx_symbol=CurrencyPair.USDCNY,
                          curve_type=RMBIRCurveType.Shibor3M,
                          spot_rate_type=SpotExchangeRateType.Central)
-    print(fx_curve.get_ccy1_curve())
-    print(fx_curve.get_ccy2_curve())
+    print('CCY1 Curve\n', fx_curve.get_ccy1_curve())
+    print('CCY2 Curve\n', fx_curve.get_ccy2_curve())
     fx_vol_surface = FXOptionImpliedVolatilitySurface(
         fx_symbol=CurrencyPair.USDCNY)
-    print(fx_vol_surface.get_vol_surface())
+    print('Volatility Surface\n', fx_vol_surface.get_vol_surface())

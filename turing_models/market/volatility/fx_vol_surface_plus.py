@@ -901,11 +901,11 @@ class TuringFXVolSurfacePlus():
         self._spotFXRate = spotFXRate
         self._currencyPair = currencyPair
 
-        if len(currencyPair) != 6:
-            raise TuringError("Currency pair must be 6 characters.")
+        if len(currencyPair) != 7:
+            raise TuringError("Currency pair must be in ***/***format.")
 
         self._forName = self._currencyPair[0:3]
-        self._domName = self._currencyPair[3:6]
+        self._domName = self._currencyPair[4:7]
 
         self._notionalCurrency = notionalCurrency
         self._domDiscountCurve = domDiscountCurve
