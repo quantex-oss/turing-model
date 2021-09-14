@@ -90,6 +90,7 @@ class FXVanillaOption(FXOption):
         option_type = self.option_type_
         notional_dom = self.notional_dom
         notional_for = self.notional_for
+        premium_currency = self.premium_currency
 
         if option_type == TuringOptionTypes.EUROPEAN_CALL:
 
@@ -117,7 +118,10 @@ class FXVanillaOption(FXOption):
         pct_dom = vdf / K
         pct_for = vdf / S0
 
-        return cash_dom
+        if premium_currency == self.foreign_name:
+            return cash_for
+        elif premium_currency == self.domestic_name:
+            return cash_dom
         # return {'v': vdf,
         #         "cash_dom": cash_dom,
         #         "cash_for": cash_for,
