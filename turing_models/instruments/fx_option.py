@@ -40,9 +40,8 @@ class FXOption(FX, InstrumentBase):
     notional_currency: (str, Currency) = None
     strike: float = None
     expiry: TuringDate = None
-    delivery_date: TuringDate = None
     cut_off_time: TuringDate = None
-    exercise_type: (str, TuringExerciseType) = None  # EUROPEAN
+    exercise_type: (str, TuringExerciseType) = TuringExerciseType.EUROPEAN  # EUROPEAN
     option_type: (str, TuringOptionType) = None  # CALL/PUT
     start_date: TuringDate = None
     # 1 unit of foreign in domestic
@@ -70,6 +69,8 @@ class FXOption(FX, InstrumentBase):
         self.check_underlier()
         self.domestic_name = None
         self.foreign_name = None
+        self.notional_dom = None
+        self.notional_for = None
         if self.expiry:
             self.final_delivery = self.expiry.addWeekDays(self.spot_days)
             if self.final_delivery < self.expiry:
@@ -100,6 +101,16 @@ class FXOption(FX, InstrumentBase):
         if self.domestic_name and self.foreign_name and self.premium_currency and \
                 self.premium_currency != self.domestic_name and self.premium_currency != self.foreign_name:
             raise TuringError("Premium currency not in currency pair.")
+
+        if self.notional_currency and self.domestic_name and self.foreign_name and self.notional and self.strike:
+            if self.notional_currency == self.domestic_name:
+                self.notional_dom = self.notional
+                self.notional_for = self.notional / self.strike
+            elif self.notional_currency == self.foreign_name:
+                self.notional_for = self.notional
+                self.notional_dom = self.notional * self.strike
+            else:
+                raise TuringError("Invalid notional currency.")
 
         if self.exchange_rate and np.any(self.exchange_rate <= 0.0):
             raise TuringError(error_str3)
@@ -261,13 +272,12 @@ class FXOption(FX, InstrumentBase):
         s += to_string("Notional Currency", self.notional_currency)
         s += to_string("Strike", self.strike)
         s += to_string("Expiry", self.expiry)
-        s += to_string("Delivery Date", self.delivery_date)
         s += to_string("Cut Off Time", self.cut_off_time)
         s += to_string("Exercise Type", self.exercise_type)
         s += to_string("Option Type", self.option_type)
         s += to_string("Currency Pair", self.underlier_symbol)
         s += to_string("Start Date", self.start_date)
         s += to_string("Premium Currency", self.premium_currency)
-        s += to_string("Exchange Rate", self.exchange_rate)
-        s += to_string("Volatility", self.volatility)
+        s += to_string("Exchange Rate", self.exchange_rate_)
+        s += to_string("Volatility", self.volatility_)
         return s
