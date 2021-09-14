@@ -134,8 +134,8 @@ cbc = CombinationCalc(
     timeout=30
 )
 cbc.add(model_calc1)
-# cbc.add(model_calc2)
-# cbc.add(model_calc3)
+cbc.add(model_calc2)
+cbc.add(model_calc3)
 result = cbc.run(is_async=True)
 time_end = time.time()
 print("耗时：", time_end - time_start)
