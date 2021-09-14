@@ -118,7 +118,7 @@ model_calc2 = ModelCalc(
 )
 
 model_calc3 = ModelCalc(
-    snowball_option1,
+    snowball_option2,
     risk_measures=risk_measures,
     title="snowball_option2",  # 可选参数，不传在结果相关的打印中会取类名
 )
@@ -130,12 +130,12 @@ cbc = CombinationCalc(
     # parallel_type为可选参数，可以指定走元戎并
     # 行计算或内部并行计算或者不走并行计算，默认值
     # 为None，表示不进行并行计算，可不指定。
-    parallel_type=ParallelType.INNER,
-    timeout=50
+    parallel_type=ParallelType.NULL,
+    timeout=30
 )
 cbc.add(model_calc1)
-cbc.add(model_calc2)
-cbc.add(model_calc3)
+# cbc.add(model_calc2)
+# cbc.add(model_calc3)
 result = cbc.run(is_async=True)
 time_end = time.time()
 print("耗时：", time_end - time_start)
