@@ -87,12 +87,9 @@ class FXVanillaOption(FXOption):
         v = self.volatility_
         texp = self.texp
         tdel = self.tdel
-        notional = self.notional
-        premium_currency = self.premium_currency
-        notional_currency = self.notional_currency
-        domestic_name = self.domestic_name
-        foreign_name = self.foreign_name
         option_type = self.option_type_
+        notional_dom = self.notional_dom
+        notional_for = self.notional_for
 
         if option_type == TuringOptionTypes.EUROPEAN_CALL:
 
@@ -110,15 +107,6 @@ class FXVanillaOption(FXOption):
         # The option value v is in domestic currency terms but the value of
         # the option may be quoted in either currency terms and so we calculate
         # these
-
-        if notional_currency == domestic_name:
-            notional_dom = notional
-            notional_for = notional / K
-        elif notional_currency == foreign_name:
-            notional_dom = notional * K
-            notional_for = notional
-        else:
-            raise TuringError("Invalid notional currency.")
 
         pips_dom = vdf
         pips_for = vdf / (S0 * K)
@@ -150,26 +138,14 @@ class FXVanillaOption(FXOption):
 
         S0 = self.exchange_rate_
         K = self.strike
-        notional = self.notional
         rd = self.rd
         rf = self.rf
         texp = self.texp
         tdel = self.tdel
         v = self.volatility_
         option_type = self.option_type_
+        notional_dom = self.notional_dom
         vpctf = bs_value(S0, texp, K, rd, rf, v, option_type.value, tdel) / S0
-
-        notional_currency = self.notional_currency
-        domestic_name = self.domestic_name
-        foreign_name = self.foreign_name
-        if notional_currency == domestic_name:
-            notional_dom = notional
-            notional_for = notional / K
-        elif notional_currency == foreign_name:
-            notional_dom = notional * K
-            notional_for = notional
-        else:
-            raise TuringError("Invalid notional currency.")
 
         pips_spot_delta = bs_delta(
             S0, texp, K, rd, rf, v, option_type.value, tdel)
@@ -197,7 +173,6 @@ class FXVanillaOption(FXOption):
 
         S0 = self.exchange_rate_
         K = self.strike
-        notional = self.notional
         texp = self.texp
         v = self.volatility_
         rd = self.rd
@@ -211,18 +186,7 @@ class FXVanillaOption(FXOption):
         d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
         gamma = np.exp(-rf * texp) * nprime(d1)
         gamma = gamma / S0 / den
-        notional_currency = self.notional_currency
-        domestic_name = self.domestic_name
-        foreign_name = self.foreign_name
-
-        if notional_currency == domestic_name:
-            notional_dom = notional
-            notional_for = notional / K
-        elif notional_currency == foreign_name:
-            notional_dom = notional * K
-            notional_for = notional
-        else:
-            raise TuringError("Invalid notional currency.")
+        notional_dom = self.notional_dom
 
         return gamma * (notional_dom / S0)
 
@@ -231,7 +195,6 @@ class FXVanillaOption(FXOption):
 
         S0 = self.exchange_rate_
         K = self.strike
-        notional = self.notional
         texp = self.texp
         v = self.volatility_
         rd = self.rd
@@ -244,18 +207,7 @@ class FXVanillaOption(FXOption):
         v2 = v * v
         d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
         vega = S0 * sqrtT * np.exp(-rf * texp) * nprime(d1)
-        notional_currency = self.notional_currency
-        domestic_name = self.domestic_name
-        foreign_name = self.foreign_name
-
-        if notional_currency == domestic_name:
-            notional_dom = notional
-            notional_for = notional / K
-        elif notional_currency == foreign_name:
-            notional_dom = notional * K
-            notional_for = notional
-        else:
-            raise TuringError("Invalid notional currency.")
+        notional_dom = self.notional_dom
 
         return vega * (notional_dom / S0)
 
@@ -264,7 +216,6 @@ class FXVanillaOption(FXOption):
 
         S0 = self.exchange_rate_
         K = self.strike
-        notional = self.notional
         texp = self.texp
         v = self.volatility_
         option_type = self.option_type_
@@ -290,18 +241,7 @@ class FXVanillaOption(FXOption):
         else:
             raise TuringError("Unknown option type")
 
-        notional_currency = self.notional_currency
-        domestic_name = self.domestic_name
-        foreign_name = self.foreign_name
-
-        if notional_currency == domestic_name:
-            notional_dom = notional
-            notional_for = notional / K
-        elif notional_currency == foreign_name:
-            notional_dom = notional * K
-            notional_for = notional
-        else:
-            raise TuringError("Invalid notional currency.")
+        notional_dom = self.notional_dom
 
         return v * (notional_dom / S0)
 
@@ -310,7 +250,6 @@ class FXVanillaOption(FXOption):
 
         S0 = self.exchange_rate_
         K = self.strike
-        notional = self.notional
         texp = self.texp
         v = self.volatility_
         rd = self.rd
@@ -324,18 +263,7 @@ class FXVanillaOption(FXOption):
         d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
         d2 = (lnS0k + (mu - v2 / 2.0) * texp) / den
         vanna = - np.exp(-rf * texp) * d2 / v * nprime(d1)
-        notional_currency = self.notional_currency
-        domestic_name = self.domestic_name
-        foreign_name = self.foreign_name
-
-        if notional_currency == domestic_name:
-            notional_dom = notional
-            notional_for = notional / K
-        elif notional_currency == foreign_name:
-            notional_dom = notional * K
-            notional_for = notional
-        else:
-            raise TuringError("Invalid notional currency.")
+        notional_dom = self.notional_dom
 
         return vanna * (notional_dom / S0)
 
@@ -344,7 +272,6 @@ class FXVanillaOption(FXOption):
 
         S0 = self.exchange_rate_
         K = self.strike
-        notional = self.notional
         texp = self.texp
         v = self.volatility_
         rd = self.rd
@@ -358,18 +285,8 @@ class FXVanillaOption(FXOption):
         d1 = (lnS0k + (mu + v2 / 2.0) * texp) / den
         d2 = (lnS0k + (mu - v2 / 2.0) * texp) / den
         volga = S0 * np.exp(-rf * texp) * sqrtT * d1 * d2 / v * nprime(d1)
-        notional_currency = self.notional_currency
-        domestic_name = self.domestic_name
-        foreign_name = self.foreign_name
 
-        if notional_currency == domestic_name:
-            notional_dom = notional
-            notional_for = notional / K
-        elif notional_currency == foreign_name:
-            notional_dom = notional * K
-            notional_for = notional
-        else:
-            raise TuringError("Invalid notional currency.")
+        notional_dom = self.notional_dom
 
         return volga * (notional_dom / S0)
 

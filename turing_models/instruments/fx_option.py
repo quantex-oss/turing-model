@@ -69,6 +69,8 @@ class FXOption(FX, InstrumentBase):
         self.check_underlier()
         self.domestic_name = None
         self.foreign_name = None
+        self.notional_dom = None
+        self.notional_for = None
         if self.expiry:
             self.final_delivery = self.expiry.addWeekDays(self.spot_days)
             if self.final_delivery < self.expiry:
@@ -99,6 +101,16 @@ class FXOption(FX, InstrumentBase):
         if self.domestic_name and self.foreign_name and self.premium_currency and \
                 self.premium_currency != self.domestic_name and self.premium_currency != self.foreign_name:
             raise TuringError("Premium currency not in currency pair.")
+
+        if self.notional_currency and self.domestic_name and self.foreign_name and self.notional and self.strike:
+            if self.notional_currency == self.domestic_name:
+                self.notional_dom = self.notional
+                self.notional_for = self.notional / self.strike
+            elif self.notional_currency == self.foreign_name:
+                self.notional_for = self.notional
+                self.notional_dom = self.notional * self.strike
+            else:
+                raise TuringError("Invalid notional currency.")
 
         if self.exchange_rate and np.any(self.exchange_rate <= 0.0):
             raise TuringError(error_str3)
