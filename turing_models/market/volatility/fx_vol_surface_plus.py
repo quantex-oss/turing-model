@@ -916,7 +916,7 @@ class TuringFXVolSurfacePlus():
         if len(atmVols) != self._numVolCurves:
             raise TuringError("Number ATM vols must equal number of tenors")
 
-        self._atmVols = np.array(atmVols)/100.0
+        self._atmVols = np.array(atmVols)
 
         self._useMS25DVol = True
         self._useRR25DVol = True
@@ -968,10 +968,10 @@ class TuringFXVolSurfacePlus():
             raise TuringError(
                 "No MS and RR. You must provide 10D or 25D MS + RR.")
 
-        self._mktStrangle25DeltaVols = np.array(mktStrangle25DeltaVols)/100.0
-        self._riskReversal25DeltaVols = np.array(riskReversal25DeltaVols)/100.0
-        self._mktStrangle10DeltaVols = np.array(mktStrangle10DeltaVols)/100.0
-        self._riskReversal10DeltaVols = np.array(riskReversal10DeltaVols)/100.0
+        self._mktStrangle25DeltaVols = np.array(mktStrangle25DeltaVols)
+        self._riskReversal25DeltaVols = np.array(riskReversal25DeltaVols)
+        self._mktStrangle10DeltaVols = np.array(mktStrangle10DeltaVols)
+        self._riskReversal10DeltaVols = np.array(riskReversal10DeltaVols)
 
         if alpha < 0.0 or alpha > 1.0:
             raise TuringError("Alpha must be between 0.0 and 1.0")
