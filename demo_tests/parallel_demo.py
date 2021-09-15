@@ -77,7 +77,7 @@ snowball_option2 = SnowballOption(asset_id='OPTIONCN00000001',
                                   initial_spot=5.2,
                                   untriggered_rebate=0.2,
                                   knock_in_type='SPREADS',
-                                  knock_out_obs_days_whole=[TuringDate(2021, 6, 3), TuringDate(2021, 7, 5), TuringDate(2021, 8, 3), TuringDate(2021, 9, 3)],
+                                  knock_out_obs_days_whole=["2021-06-03", "2021-07-05", "2021-08-03", "2021-09-03"],
                                   knock_in_strike1=5.3,
                                   knock_in_strike2=5.4,
                                   # value_date=TuringDate(2021, 8, 13),
@@ -103,24 +103,28 @@ model_calc0 = ModelCalc(
     european_option1,
     risk_measures=risk_measures,
     title="european_option1",  # 可选参数，不传在结果相关的打印中会取类名
+    subdivide=True
 )
 
 model_calc1 = ModelCalc(
     european_option2,
     risk_measures=risk_measures,
     title="european_option2",  # 可选参数，不传在结果相关的打印中会取类名
+    subdivide=True
 )
 
 model_calc2 = ModelCalc(
     snowball_option1,
     risk_measures=risk_measures,
     title="snowball_option1",  # 可选参数，不传在结果相关的打印中会取类名
+    subdivide=True
 )
 
 model_calc3 = ModelCalc(
-    snowball_option1,
+    snowball_option2,
     risk_measures=risk_measures,
     title="snowball_option2",  # 可选参数，不传在结果相关的打印中会取类名
+    subdivide=True
 )
 
 
@@ -131,7 +135,7 @@ cbc = CombinationCalc(
     # 行计算或内部并行计算或者不走并行计算，默认值
     # 为None，表示不进行并行计算，可不指定。
     parallel_type=ParallelType.INNER,
-    timeout=50
+    timeout=100
 )
 cbc.add(model_calc1)
 cbc.add(model_calc2)

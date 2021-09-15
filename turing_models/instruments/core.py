@@ -49,7 +49,7 @@ class InstrumentBase:
                     func_params={"risk_measure": risk_measure},
                     timeout=timeout or 30
                 ).calc()
-            if not isinstance(risk_measure, Iterable):
+            if not isinstance(risk_measure, Iterable) or isinstance(risk_measure, str):
                 rs = risk_measure.value if isinstance(risk_measure, RiskMeasure) else risk_measure
                 result = getattr(self, rs)() if not option_all else getattr(self, rs)(option_all)
                 result = self._calc(risk_measure, result)

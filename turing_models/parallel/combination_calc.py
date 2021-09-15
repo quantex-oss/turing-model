@@ -1,6 +1,8 @@
 import json
 import asyncio
+import traceback
 from typing import Union, List
+from loguru import logger
 from turing_models.constants import ParallelType
 from turing_models.instruments.common import RiskMeasure
 from turing_models.exceptions import CalcResultException, CombinationCalcException
@@ -85,37 +87,40 @@ class ModelCalc:
                 )
             )
         else:
-            self.process.append(await self.async_calc(self.risk_measures, parallel_type))
+            self.process.append(await self.async_calc(self.risk_measures, parallel_type, timeout))
 
     async def async_calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type, timeout=None):
-        return self.model.calc(risk_measure, parallel_type, timeout)
+        return self.model.calc(risk_measure, parallel_type, timeout=timeout)
 
     async def async_process_result(self, parallel_type, timeout):
         return self.process_result(parallel_type, timeout)
 
     def process_result(self, parallel_type, timeout):
-        if parallel_type == ParallelType.YR:
-            result = ParallelCalcProxy.get_results_with_yr(
-                self.process, timeout)
-            if not self.subdivide:
-                result = result[0]
+        try:
+            if parallel_type == ParallelType.YR:
+                result = ParallelCalcProxy.get_results_with_yr(
+                    self.process, timeout)
+                if not self.subdivide:
+                    result = result[0]
 
-            self.result.update_fields(
-                {
-                    risk_measure.value: result[idx] for
-                    idx, risk_measure in enumerate(self.risk_measures)
-                }
-            )
-        else:
-            if not self.subdivide:
-                self.process = self.process[0]
+                self.result.update_fields(
+                    {
+                        risk_measure.value: result[idx] for
+                        idx, risk_measure in enumerate(self.risk_measures)
+                    }
+                )
+            else:
+                if not self.subdivide:
+                    self.process = self.process[0]
 
-            self.result.update_fields(
-                {
-                    risk_measure.value: self.process[idx] for
-                    idx, risk_measure in enumerate(self.risk_measures)
-                }
-            )
+                self.result.update_fields(
+                    {
+                        risk_measure.value: self.process[idx] for
+                        idx, risk_measure in enumerate(self.risk_measures)
+                    }
+                )
+        except Exception as error:
+            logger.warning(traceback.format_exc())
         return self.result
 
 

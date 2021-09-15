@@ -1,40 +1,18 @@
-from fundamental.portfolio.portfolio import Portfolio
-from turing_models.instruments.bond_fixed_rate import BondFixedRate
-from turing_models.instruments.common import RiskMeasure
+from pprint import pprint
 
-# portfolio = Portfolio(portfolio_name="模型组债券测试")
-#
-# portfolio.calc(
-#     [RiskMeasure.Dv01, RiskMeasure.DollarDuration, RiskMeasure.DollarConvexity])
-#
-# portfolio.show_table()
-namelist = ["BONDCN00000021",
-            "BONDCN00000022",
-            "BONDCN00000023",
-            "BONDCN00000024",
-            "BONDCN00000025",
-            "BONDCN00000026",
-            "BONDCN00000027",
-            "BONDCN00000028",
-            "BONDCN00000029",
-            "BONDCN00000030",
-            "BONDCN00000031",
-            "BONDCN00000032",
-            "BONDCN00000033",
-            "BONDCN00000034",
-            "BONDCN00000035",
-            "BONDCN00000036",
-            "BONDCN00000037",
-            "BONDCN00000038"
-]
-result = []
-for i in range(len(namelist)):
-    bond_fr = BondFixedRate(asset_id=namelist[i])
-    bond_fr._resolve()
-    full_price = bond_fr.full_price_from_discount_curve()
-    clean_price = bond_fr.clean_price_from_discount_curve()
-    ytm = bond_fr.yield_to_maturity()
-    duration  =  bond_fr.dollar_duration()
-    convexity = bond_fr.dollar_convexity()
-    result.append([namelist[i], bond_fr.frequency, full_price, clean_price, ytm, duration, convexity])
-print(result)
+from fundamental.turing_db.data import Turing
+
+
+exchange_rate = Turing.get_exchange_rate(symbols=['USD/CNY'])
+exchange_rate_history = Turing.get_exchange_rate_history(symbols=['USD/CNY'], start='2021-09-01', end='2021-09-13')
+# stock_price_history = Turing.get_market_stock_price_history(symbols=['600067.SH'], start='2021-09-01', end='2021-09-13')
+stock_price = Turing.get_market_stock_price(symbols=['600067.SH'])
+iuir_curve = Turing.get_iuir_curve(symbols=['USD/CNY'], curve_type='Shibor3M', spot_rate_type='central')
+volatility_curve = Turing.get_volatility_curve(symbols=['USD/CNY'],
+                                               volatility_type=['ATM', '25D CALL', '25D PUT', '10D CALL', '10D PUT', '25D RR', '25D BF', '10D RR', '10D BF'])
+print(exchange_rate)
+print(exchange_rate_history)
+# print(stock_price_history)
+print(stock_price)
+pprint(iuir_curve)
+pprint(volatility_curve)

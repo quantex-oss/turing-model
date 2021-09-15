@@ -1,4 +1,5 @@
 import datetime
+from abc import ABCMeta
 from dataclasses import dataclass, field
 from typing import List, Any
 from enum import Enum
@@ -31,7 +32,7 @@ error_str3 = "Exchange Rate must be greater than zero."
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class FXOption(FX, InstrumentBase):
+class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     asset_id: str = None
     product_type: str = None  # VANILLA
     underlier: str = None
@@ -233,27 +234,6 @@ class FXOption(FX, InstrumentBase):
 
     def vol(self):
         return self.volatility_
-
-    def price(self):
-        return 0.0
-
-    def fx_delta(self):
-        return 0.0
-
-    def fx_gamma(self):
-        return 0.0
-
-    def fx_vega(self):
-        return 0.0
-
-    def fx_theta(self):
-        return 0.0
-
-    def fx_vanna(self):
-        return 0.0
-
-    def fx_volga(self):
-        return 0.0
 
     def check_underlier(self):
         if self.underlier_symbol and not self.underlier:
