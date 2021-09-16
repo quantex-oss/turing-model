@@ -790,7 +790,12 @@ class TuringFXVolSurfaceVV():
         #######################################################################
         # THE ACTUAL COMPUTATION LOOP STARTS HERE
         #######################################################################
-
+        d25C = []
+        d25ATM = []
+        d25P = []
+        d10C = []
+        d10ATM = []
+        d10P = []
         for i in range(0, numVolCurves):
 
             atmVol = self._atmVols[i]
@@ -802,13 +807,13 @@ class TuringFXVolSurfaceVV():
 
             # https://quantpie.co.uk/fx/fx_rr_str.php
 
-            d25C = atmVol + bf25 + rr25/2.0  # 25D Call
-            d25ATM = atmVol                   # ATM
-            d25P = atmVol + bf25 - rr25/2.0  # 25D Put (75D Call)
+            d25C.append(atmVol + bf25 + rr25/2.0)  # 25D Call
+            d25ATM.append(atmVol)                   # ATM
+            d25P.append(atmVol + bf25 - rr25/2.0)  # 25D Put (75D Call)
 
-            d10C = atmVol + bf10 + rr10/2.0  # 10D Call
-            d10ATM = atmVol                   # ATM
-            d10P = atmVol + bf10 - rr10/2.0  # 10D Put (90D Call)
+            d10C.append(atmVol + bf10 + rr10/2.0)  # 10D Call
+            d10ATM.append(atmVol)                    # ATM
+            d10P.append(atmVol + bf10 - rr10/2.0)  # 10D Put (90D Call)
 
         deltaMethodValue = self._deltaMethod.value
         volTypeValue = self._volatilityFunctionType.value
@@ -838,19 +843,19 @@ class TuringFXVolSurfaceVV():
                 rr10DVol = -999.0
 
             res = _solveToHorizon(s, t, rd, rf,
-                                  bf25DVol, bf10DVol, d25P,
-                                  d25ATM, d25C, d10P, d10ATM,
-                                  d10C)
+                                  bf25DVol, bf10DVol, d25P[i],
+                                  d25ATM[i], d25C[i], d10P[i], d10ATM[i],
+                                  d10C[i])
 
             if bf25DVol != -999.0:
                 self._K_25D_P[i], self._K_ATM[i], self._K_25D_C[i] = res
                 params = [self._K_25D_P[i], self._K_ATM[i],
-                          self._K_25D_C[i], d25P, d25ATM, d25C]
+                          self._K_25D_C[i], d25P[i], d25ATM[i], d25C[i]]
                 self._parameters[i, :] = np.array(params)
             elif bf10DVol != -999.0:
                 self._K_10D_P[i], self._K_ATM[i], self._K_10D_C[i] = res
                 params = [self._K_10D_P[i], self._K_ATM[i],
-                          self._K_10D_C[i], d10P, d10ATM, d10C]
+                          self._K_10D_C[i], d10P[i], d10ATM[i], d10C[i]]
                 self._parameters[i, :] = np.array(params)
 
 
