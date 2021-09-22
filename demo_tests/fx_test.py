@@ -1,7 +1,7 @@
 from enum import Enum
 
 from fundamental.pricing_context import PricingContext
-from turing_models.instruments.fx import ForeignExchange
+from turing_models.instruments.fx.fx import ForeignExchange
 
 
 fx = ForeignExchange(

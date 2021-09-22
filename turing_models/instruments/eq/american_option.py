@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.models.model_crr_tree import crrTreeValAvg
-from turing_models.instruments.equity_option import EqOption
+from turing_models.instruments.eq.equity_option import EqOption
 from turing_models.utilities.global_types import TuringOptionType, TuringOptionTypes
 from turing_models.utilities.error import TuringError
 

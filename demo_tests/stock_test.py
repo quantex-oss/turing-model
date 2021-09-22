@@ -1,6 +1,6 @@
 from fundamental.pricing_context import PricingContext
 
-from turing_models.instruments.stock import Stock
+from turing_models.instruments.eq.stock import Stock
 from turing_models.instruments.common import RiskMeasure, Currency
 
 stock = Stock(

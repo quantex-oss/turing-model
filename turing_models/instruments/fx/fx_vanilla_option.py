@@ -6,7 +6,7 @@ from scipy import optimize
 from fundamental.turing_db.fx_data import FxApi
 from fundamental.turing_db.option_data import FxOptionApi
 from turing_models.instruments.common import greek
-from turing_models.instruments.fx_option import FXOption
+from turing_models.instruments.fx.fx_option import FXOption
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
