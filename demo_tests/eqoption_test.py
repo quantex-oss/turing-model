@@ -116,15 +116,15 @@ knockout_option = KnockOutOption(asset_id='OPTIONCN00000001',
                                  zero_rates=rates,
                                  dividend_yield=0)
 
-# print_result(european_option)
-# print_result(american_option)
-# print_result(asian_option)
+print_result(european_option)
+print_result(american_option)
+print_result(asian_option)
 start = time.time()
-# print_result(snowball_option)
+print_result(snowball_option)
 price = snowball_option.price()
 end = time.time()
 print(end-start)
-# print_result(knockout_option)
+print_result(knockout_option)
 
 #########################################
 betas = np.ones(5) * 0.1

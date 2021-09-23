@@ -18,6 +18,7 @@ from turing_models.products.rates.float_leg import TuringFloatLeg
 from turing_models.products.rates.ibor_deposit import TuringIborDeposit
 from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instruments.core import InstrumentBase
+from turing_models.instruments.common import IR
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
 
@@ -119,7 +120,7 @@ def create_ibor_single_curve(value_date: TuringDate,
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class IRS(InstrumentBase):
+class IRS(IR, InstrumentBase):
     asset_id: str = None
     irs_type: str = None
     effective_date: TuringDate = None
@@ -314,6 +315,12 @@ class IRS(InstrumentBase):
         dv01 = (pv_bumpup - pv_bumpdown) / 10
         self.libor_curve = libor_curve
         return dv01
+
+    def dollar_duration(self):
+        pass
+
+    def dollar_convexity(self):
+        pass
 
     def pv01(self):
         """ Calculate the value of 1 basis point coupon on the fixed leg. """
