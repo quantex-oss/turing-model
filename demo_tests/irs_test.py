@@ -370,9 +370,9 @@ irs = IRS(effective_date=TuringDate(2021, 7, 22),
           fixed_leg_type_curve=TuringSwapTypes.PAY,
           reset_freq_type=TuringFrequencyTypes.WEEKLY)
 
-# print(irs.price())
-# print(irs.pv01())
-# print(irs.swap_rate())
+print(irs.price())
+print(irs.pv01())
+print(irs.swap_rate())
 
 # from turing_models.instruments.irs import create_ibor_single_curve
 # curve = create_ibor_single_curve(value_date=TuringDate(2021, 8, 17),

@@ -763,3 +763,18 @@ class IR(Priceable, metaclass=ABCMeta):
     @abstractmethod
     def dollar_convexity(self):
         pass
+
+
+class CD(Priceable, metaclass=ABCMeta):
+
+    @abstractmethod
+    def dv01(self):
+        pass
+
+    @abstractmethod
+    def dollar_duration(self):
+        pass
+
+    @abstractmethod
+    def dollar_convexity(self):
+        pass
