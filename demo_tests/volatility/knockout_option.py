@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from turing_models.instruments.knockout_option import KnockOutOption
+from turing_models.instruments.eq.knockout_option import KnockOutOption
 from turing_models.utilities import to_string
 
 

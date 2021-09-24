@@ -5,7 +5,7 @@ import numpy as np
 from scipy import optimize
 
 from fundamental.turing_db.bond_data import BondApi
-from turing_models.instruments.bond import Bond, dy
+from turing_models.instruments.credit.bond import Bond, dy
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.error import TuringError
@@ -13,6 +13,7 @@ from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.helper_functions import to_string
 from turing_models.market.curves.curve_adjust import CurveAdjust
 from turing_models.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
+from turing_models.market.curves.curve_generation import CurveAdjust
 
 
 def _f(y, *args):

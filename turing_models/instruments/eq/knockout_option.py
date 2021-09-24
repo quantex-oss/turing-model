@@ -4,7 +4,7 @@ import numpy as np
 
 from fundamental.turing_db.data import Turing
 from fundamental.turing_db.option_data import OptionApi
-from turing_models.instruments.equity_option import EqOption
+from turing_models.instruments.eq.equity_option import EqOption
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
     TuringGBMNumericalScheme
 from turing_models.utilities.error import TuringError

@@ -1,13 +1,13 @@
 from dataclasses import dataclass, field
-from typing import List, Any, Union
+from typing import List, Any
 
 import numpy as np
 
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.gbm_process import TuringGBMProcess
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
-    TuringGBMNumericalScheme, TuringHestonNumericalScheme
-from turing_models.instruments.snowball_option import SnowballOption
+    TuringGBMNumericalScheme
+from turing_models.instruments.eq.snowball_option import SnowballOption
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
 

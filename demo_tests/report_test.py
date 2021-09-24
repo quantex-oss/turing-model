@@ -1,14 +1,12 @@
 from loguru import logger
 
-from turing_models.market.data.china_money_yield_curve import dates, rates
 from fundamental.portfolio.portfolio import Portfolio
 from fundamental.portfolio.position import Position
 from fundamental.pricing_context import PricingContext
 from fundamental.report.web_report import WhatIfReport, WhatIfReportContent
-from turing_models.instruments.knockout_option import KnockOutOption
+from turing_models.instruments.eq.knockout_option import KnockOutOption
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.common import RiskMeasure
-from turing_models.utilities.global_types import TuringKnockOutTypes
 from turing_models.utilities.global_types import TuringOptionType
 
 portfolio = Portfolio(portfolio_name="CICC")

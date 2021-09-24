@@ -7,7 +7,7 @@ from turing_models.utilities.global_variables import gNumObsInYear
 from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta, \
     bs_vega, bs_gamma, bs_rho, bs_psi, bs_theta, bsImpliedVolatility
-from turing_models.instruments.equity_option import EqOption
+from turing_models.instruments.eq.equity_option import EqOption
 from turing_models.utilities.error import TuringError
 
 

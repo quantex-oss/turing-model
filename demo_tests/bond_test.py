@@ -4,7 +4,7 @@ from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.instruments.bond_fixed_rate import BondFixedRate
+from turing_models.instruments.credit.bond_fixed_rate import BondFixedRate
 from turing_models.instruments.common import RiskMeasure
 
 

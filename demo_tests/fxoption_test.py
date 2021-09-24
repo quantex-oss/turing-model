@@ -1,12 +1,8 @@
-import time
-
-import numpy as np
 from fundamental.pricing_context import PricingContext
 
 from turing_models.instruments.common import Currency, CurrencyPair, RiskMeasure
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.instruments.fx_vanilla_option import FXVanillaOption
+from turing_models.instruments.fx.fx_vanilla_option import FXVanillaOption
 # from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
 

@@ -1,24 +1,18 @@
-import cProfile
 import time
 
 import numpy as np
 from fundamental.pricing_context import PricingContext
 
-from turing_models.instruments.equity_option import EqOption
 from turing_models.market.data.china_money_yield_curve import dates, rates
-from turing_models.market.curves import TuringDiscountCurveFlat
-from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.products.equity import TuringEquitySnowballOption
-from turing_models.products.equity.equity_basket_snowball import TuringSnowballBasketOption
 
 from turing_models.utilities.print import print_result
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.instruments.european_option import EuropeanOption
-from turing_models.instruments.american_option import AmericanOption
-from turing_models.instruments.asian_option import AsianOption
-from turing_models.instruments.snowball_option import SnowballOption
-from turing_models.instruments.knockout_option import KnockOutOption
-from turing_models.instruments.basket_snowball_option import BasketSnowballOption
+from turing_models.instruments.eq.european_option import EuropeanOption
+from turing_models.instruments.eq.american_option import AmericanOption
+from turing_models.instruments.eq.asian_option import AsianOption
+from turing_models.instruments.eq.snowball_option import SnowballOption
+from turing_models.instruments.eq.knockout_option import KnockOutOption
+from turing_models.instruments.eq.basket_snowball_option import BasketSnowballOption
 from turing_models.utilities.global_types import TuringOptionType
 from turing_models.instruments.common import Currency
 from turing_models.utilities.helper_functions import betaVectorToCorrMatrix

@@ -2,9 +2,9 @@ import time
 
 from fundamental.pricing_context import PricingContext
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.instruments.european_option import EuropeanOption
-from turing_models.instruments.snowball_option import SnowballOption
-from turing_models.instruments.knockout_option import KnockOutOption
+from turing_models.instruments.eq.european_option import EuropeanOption
+from turing_models.instruments.eq.snowball_option import SnowballOption
+from turing_models.instruments.eq.knockout_option import KnockOutOption
 from turing_models.instruments.common import RiskMeasure
 
 USE_YR = False

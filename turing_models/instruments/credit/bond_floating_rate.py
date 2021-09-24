@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from scipy import optimize
 
-from turing_models.instruments.bond import Bond, dy
+from turing_models.instruments.credit.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError

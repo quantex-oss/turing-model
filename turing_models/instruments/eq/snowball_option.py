@@ -9,7 +9,7 @@ from turing_models.utilities.global_types import TuringOptionTypes, \
     TuringKnockInTypes, TuringOptionType
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
     TuringGBMNumericalScheme
-from turing_models.instruments.equity_option import EqOption
+from turing_models.instruments.eq.equity_option import EqOption
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
