@@ -4,6 +4,7 @@ from rich.panel import Panel
 from turing_models.instruments.common import RiskMeasure
 
 
+# TODO: 支持其他instruments
 def print_result(option):
     print(Panel.fit(f"price: {round(option.calc(RiskMeasure.Price), 3)}\n"
                     f"delta: {round(option.calc(RiskMeasure.EqDelta), 3)}\n"

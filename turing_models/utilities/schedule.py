@@ -265,16 +265,6 @@ class TuringSchedule(object):
         s += to_string("ADJUST TERM DATE", self._adjustTerminationDate)
         s += to_string("END OF MONTH", self._endOfMonthFlag, "")
 
-        if 1==0:
-            if len(self._adjustedDates) > 0:
-                s += "\n\n"
-                s += to_string("EFF", self._adjustedDates[0], "")
-
-            if len(self._adjustedDates) > 1:
-                s += "\n"
-                s += to_string("FLW", self._adjustedDates[1:], "",
-                               listFormat=True)
-
         return s
 
 ###############################################################################
