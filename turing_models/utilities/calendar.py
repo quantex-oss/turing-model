@@ -513,6 +513,117 @@ precomputedChinaHolidays = [TuringDate(y=1999, m=1, d=1),
                             TuringDate(y=2025, m=10, d=3),
                             TuringDate(y=2025, m=10, d=4)]
 
+precomputedChinaAdjustedWorkdays = [TuringDate(2005, 2, 5),
+                                    TuringDate(2005, 2, 6),
+                                    TuringDate(2005, 4, 30),
+                                    TuringDate(2005, 5, 8),
+                                    TuringDate(2005, 10, 8),
+                                    TuringDate(2005, 10, 9),
+                                    TuringDate(2005, 12, 31),
+                                    TuringDate(2006, 1, 28),
+                                    TuringDate(2006, 4, 29),
+                                    TuringDate(2006, 4, 30),
+                                    TuringDate(2006, 9, 30),
+                                    TuringDate(2006, 12,30),
+                                    TuringDate(2006, 12,31),
+                                    TuringDate(2007, 2, 17),
+                                    TuringDate(2007, 2, 25),
+                                    TuringDate(2007, 4, 28),
+                                    TuringDate(2007, 4, 29),
+                                    TuringDate(2007, 9, 29),
+                                    TuringDate(2007, 9, 30),
+                                    TuringDate(2007, 12, 29),
+                                    TuringDate(2008, 2, 2),
+                                    TuringDate(2008, 2, 3),
+                                    TuringDate(2008, 5, 4),
+                                    TuringDate(2008, 9, 27),
+                                    TuringDate(2008, 9, 28),
+                                    TuringDate(2009, 1, 4),
+                                    TuringDate(2009, 1, 24),
+                                    TuringDate(2009, 2, 1),
+                                    TuringDate(2009, 5, 31),
+                                    TuringDate(2009, 9, 27),
+                                    TuringDate(2009, 10, 10),
+                                    TuringDate(2010, 2, 20),
+                                    TuringDate(2010, 2, 21),
+                                    TuringDate(2010, 6, 12),
+                                    TuringDate(2010, 6, 13),
+                                    TuringDate(2010, 9, 19),
+                                    TuringDate(2010, 9, 25),
+                                    TuringDate(2010, 9, 26),
+                                    TuringDate(2010, 10, 9),
+                                    TuringDate(2011, 1, 30),
+                                    TuringDate(2011, 2, 12),
+                                    TuringDate(2011, 4, 2),
+                                    TuringDate(2011, 10, 8),
+                                    TuringDate(2011, 10, 9),
+                                    TuringDate(2011, 12, 31),
+                                    TuringDate(2012, 1, 21),
+                                    TuringDate(2012, 1, 29),
+                                    TuringDate(2012, 3, 31),
+                                    TuringDate(2012, 4, 1),
+                                    TuringDate(2012, 4, 28),
+                                    TuringDate(2012, 9, 29),
+                                    TuringDate(2013, 1, 5),
+                                    TuringDate(2013, 1, 6),
+                                    TuringDate(2013, 2, 16),
+                                    TuringDate(2013, 2, 17),
+                                    TuringDate(2013, 4, 7),
+                                    TuringDate(2013, 4, 27),
+                                    TuringDate(2013, 4, 28),
+                                    TuringDate(2013, 6, 8),
+                                    TuringDate(2013, 6, 9),
+                                    TuringDate(2013, 9, 22),
+                                    TuringDate(2013, 9, 29),
+                                    TuringDate(2013, 10, 12),
+                                    TuringDate(2014, 1, 26),
+                                    TuringDate(2014, 2, 8),
+                                    TuringDate(2014, 5, 4),
+                                    TuringDate(2014, 9, 28),
+                                    TuringDate(2014, 10, 11),
+                                    TuringDate(2015, 1, 4),
+                                    TuringDate(2015, 2, 15),
+                                    TuringDate(2015, 2, 28),
+                                    TuringDate(2015, 9, 6),
+                                    TuringDate(2015, 10, 10),
+                                    TuringDate(2016, 2, 6),
+                                    TuringDate(2016, 2, 14),
+                                    TuringDate(2016, 6, 12),
+                                    TuringDate(2016, 9, 18),
+                                    TuringDate(2016, 10, 8),
+                                    TuringDate(2016, 10, 9),
+                                    TuringDate(2017, 1, 22),
+                                    TuringDate(2017, 2, 4),
+                                    TuringDate(2017, 4, 1),
+                                    TuringDate(2017, 5, 27),
+                                    TuringDate(2017, 9, 30),
+                                    TuringDate(2018, 2, 11),
+                                    TuringDate(2018, 2, 24),
+                                    TuringDate(2018, 4, 8),
+                                    TuringDate(2018, 4, 28),
+                                    TuringDate(2018, 9, 29),
+                                    TuringDate(2018, 9, 30),
+                                    TuringDate(2018, 12, 29),
+                                    TuringDate(2019, 2, 2),
+                                    TuringDate(2019, 2, 3),
+                                    TuringDate(2019, 4, 28),
+                                    TuringDate(2019, 5, 5),
+                                    TuringDate(2019, 9, 29),
+                                    TuringDate(2019, 10, 12),
+                                    TuringDate(2020, 1, 19),
+                                    TuringDate(2020, 4, 26),
+                                    TuringDate(2020, 5, 9),
+                                    TuringDate(2020, 6, 28),
+                                    TuringDate(2020, 9, 27),
+                                    TuringDate(2020, 10, 10),
+                                    TuringDate(2021, 2, 7),
+                                    TuringDate(2021, 2, 20),
+                                    TuringDate(2021, 4, 25),
+                                    TuringDate(2021, 5, 8),
+                                    TuringDate(2021, 9, 18),
+                                    TuringDate(2021, 9, 26),
+                                    TuringDate(2021, 10, 9)]
+
 
 class TuringBusDayAdjustTypes(Enum):
     NONE = 1
@@ -539,6 +650,7 @@ class TuringCalendarTypes(Enum):
     UNITED_STATES = 14
     UNITED_KINGDOM = 15
     CHINA_SSE = 16
+    CHINA_IB = 17
 
 
 class TuringDateGenRuleTypes(Enum):
@@ -688,8 +800,12 @@ class TuringCalendar(object):
 
         # For all calendars so far, SAT and SUN are not business days
         # If this ever changes I will need to add a filter here.
-        if dt.isWeekend():
-            return False
+        if self._type == TuringCalendarTypes.CHINA_IB:
+            if dt.isWeekend() and dt not in precomputedChinaAdjustedWorkdays:
+                return False
+        else:
+            if dt.isWeekend():
+                return False
 
         if self.isHoliday(dt) is True:
             return False
@@ -747,6 +863,8 @@ class TuringCalendar(object):
             return self.HOLIDAY_UNITED_STATES()
         elif self._type == TuringCalendarTypes.CHINA_SSE:
             return self.HOLIDAY_CHINA_SSE()
+        elif self._type == TuringCalendarTypes.CHINA_IB:
+            return self.HOLIDAY_CHINA_IB()
         else:
             print(self._type)
             raise TuringError("Unknown calendar")
@@ -760,6 +878,13 @@ class TuringCalendar(object):
             return True
         else:
             return False
+
+###############################################################################
+
+    def HOLIDAY_CHINA_IB(self):
+        """Holidays for IB."""
+
+        return self.HOLIDAY_CHINA_SSE()
 
 ###############################################################################
 
