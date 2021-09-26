@@ -857,7 +857,7 @@ class TuringFXVolSurfaceVV():
                 params = [self._K_10D_P[i], self._K_ATM[i],
                           self._K_10D_C[i], d10P[i], d10ATM[i], d10C[i]]
                 self._parameters[i, :] = np.array(params)
-
+        # print("once", self._parameters)
 
 ###############################################################################
 

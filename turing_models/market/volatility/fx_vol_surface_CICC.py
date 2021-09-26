@@ -68,7 +68,7 @@ def _g(K, *args):
 ###############################################################################
 
 
-@njit(float64(float64[:], float64, float64, float64), cache=True, fastmath=True)
+# @njit(float64(float64[:], float64, float64, float64), cache=True, fastmath=True)
 def volFunction(params, f, k, t):
     ''' Return the volatility for a strike using CICC method. '''
 
@@ -79,7 +79,7 @@ def volFunction(params, f, k, t):
 ###############################################################################
 
 
-@njit(cache=True, fastmath=True)
+# @njit(cache=True, fastmath=True)
 def _deltaFit(k, *args):
     ''' This is the objective function used in the determination of the FX
     Option implied strike which is computed in the class below. I map it into
@@ -111,9 +111,9 @@ def _deltaFit(k, *args):
 ###############################################################################
 
 
-@njit(float64(float64, float64, float64, float64, int64, float64,
-              int64, float64, float64[:]),
-      fastmath=True)
+# @njit(float64(float64, float64, float64, float64, int64, float64,
+#               int64, float64, float64[:]),
+#       fastmath=True)
 def _solveForSmileStrike(s, t, rd, rf,
                          optionTypeValue,
                          deltaTarget,
@@ -142,8 +142,8 @@ def _solveForSmileStrike(s, t, rd, rf,
 ###############################################################################
 
 
-@njit(float64(float64, float64, float64, float64, int64, float64,
-              int64, float64), fastmath=True)
+# @njit(float64(float64, float64, float64, float64, int64, float64,
+#               int64, float64), fastmath=True)
 def solveForStrike(spotFXRate,
                    tdel, rd, rf,
                    optionTypeValue,
@@ -760,7 +760,7 @@ class TuringFXVolSurfaceCICC():
             params = [self._K_10D_P[i], self._K_25D_P[i], self._K_ATM[i],
                       self._K_25D_C[i], self._K_10D_C[i], d10P, d25P, dATM, d25C, d10C]
             self._parameters[i, :] = np.array(params)
-
+        print(self._parameters)
 
 ###############################################################################
 

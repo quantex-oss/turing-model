@@ -172,7 +172,11 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def future_tenors_(self):
         """把年化的时间列表转换为TuringDate格式"""
-        return self.value_date_.addYears(self.future_tenors)
+        future_tenors = self.future_tenors
+        if isinstance(tenors[0], str):
+            return self.value_date_.addTenor(future_tenors)
+        else:
+            return self.value_date_.addYears(self.future_tenors)
 
     @property
     def fx_forward_curve(self):

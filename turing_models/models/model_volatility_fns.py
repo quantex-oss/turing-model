@@ -274,8 +274,8 @@ def volFunctionVV(params, f, k, t):
     return vol
 
 
-@njit(float64(float64[:], float64, float64, float64),
-      fastmath=True, cache=True)
+# @njit(float64(float64[:], float64, float64, float64),
+#       fastmath=True, cache=True)
 def volFunctionCICC(params, f, k, t):
 
     K_10D_P, K_25D_P, K_ATM, K_25D_C, K_10D_C, d10P, d25P, dATM, d25C, d10C = params
