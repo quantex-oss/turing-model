@@ -9,8 +9,11 @@ import numpy as np
 from fundamental.turing_db.data import Turing
 from turing_models.instruments.common import FX, Currency, CurrencyPair
 from turing_models.instruments.core import InstrumentBase
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
+from turing_models.market.volatility.fx_vol_surface_CICC import TuringFXVolSurfaceCICC
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequencyTypes
@@ -42,7 +45,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     strike: float = None
     expiry: TuringDate = None
     cut_off_time: TuringDate = None
-    exercise_type: (str, TuringExerciseType) = TuringExerciseType.EUROPEAN  # EUROPEAN
+    exercise_type: (
+        str, TuringExerciseType) = TuringExerciseType.EUROPEAN  # EUROPEAN
     option_type: (str, TuringOptionType) = None  # CALL/PUT
     start_date: TuringDate = None
     # 1 unit of foreign in domestic
@@ -51,8 +55,9 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))
     exchange_rate: float = None  # 1 unit of foreign in domestic
+    future_quotes: List[Any] = field(default_factory=list)
+    future_tenors: List[Any] = field(default_factory=list)
     tenors: List[Any] = field(default_factory=list)
-    ccy1_cc_rates: List[Any] = field(default_factory=list)  # 外币
     ccy2_cc_rates: List[Any] = field(default_factory=list)  # 本币
     vol_tenors: List[Any] = field(default_factory=list)
     atm_vols: List[Any] = field(default_factory=list)
@@ -83,7 +88,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                 self.underlier_symbol = self.underlier_symbol.value
             elif isinstance(self.underlier_symbol, str):
                 if len(self.underlier_symbol) != 7:
-                    raise TuringError("Currency pair must be in ***/***format.")
+                    raise TuringError(
+                        "Currency pair must be in ***/***format.")
             else:
                 raise TuringError('Please check the input of underlier_symbol')
 
@@ -164,37 +170,52 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             return self.value_date_.addYears(tenors)
 
     @property
-    def foreign_discount_curve(self):
-        if self.tenors_ and self.ccy1_cc_rates:
-            return TuringDiscountCurveZeros(
-                self.value_date_, self.tenors_, self.ccy1_cc_rates, TuringFrequencyTypes.CONTINUOUS)
+    def future_tenors_(self):
+        """把年化的时间列表转换为TuringDate格式"""
+        return self.value_date_.addYears(self.future_tenors)
 
     @property
+    def fx_forward_curve(self):
+        if self.future_tenors_ and self.future_quotes:
+            self.fwd_dfs = []
+            for x in self.future_quotes:
+                self.fwd_dfs.append(1 + self.exchange_rate /
+                                    (self.exchange_rate + x))
+            return TuringDiscountCurve(
+                self.value_date_, self.tenors_, self.fwd_dfs)
+
+    @ property
     def domestic_discount_curve(self):
         if self.tenors_ and self.ccy2_cc_rates:
             return TuringDiscountCurveZeros(
                 self.value_date_, self.tenors_, self.ccy2_cc_rates, TuringFrequencyTypes.CONTINUOUS)
 
-    @property
-    def volatility_surface(self):
-        return TuringFXVolSurfaceVV(self.value_date_,
-                                    self.exchange_rate_,
-                                    self.underlier_symbol,
-                                    self.notional_currency,
-                                    self.domestic_discount_curve,
-                                    self.foreign_discount_curve,
-                                    self.vol_tenors,
-                                    self.atm_vols,
-                                    self.butterfly_25delta_vols,
-                                    self.risk_reversal_25delta_vols,
-                                    self.butterfly_10delta_vols,
-                                    self.risk_reversal_10delta_vols)
+    @ property
+    def foreign_discount_curve(self):
+        if self.tenors_ and self.fx_forward_curve and self.ccy2_cc_rates:
+            return TuringDiscountCurveFXImplied(
+                self.value_date_, self.tenors_, self.domestic_discount_curve, self.fx_forward_curve, TuringFrequencyTypes.CONTINUOUS)
 
-    @property
+    @ property
+    def volatility_surface(self):
+        return TuringFXVolSurfaceCICC(self.value_date_,
+                                      self.exchange_rate_,
+                                      self.underlier_symbol,
+                                      self.notional_currency,
+                                      self.domestic_discount_curve,
+                                      self.foreign_discount_curve,
+                                      self.vol_tenors,
+                                      self.atm_vols,
+                                      self.butterfly_25delta_vols,
+                                      self.risk_reversal_25delta_vols,
+                                      self.butterfly_10delta_vols,
+                                      self.risk_reversal_10delta_vols)
+
+    @ property
     def model(self):
         return TuringModelBlackScholes(self.volatility)
 
-    @property
+    @ property
     def tdel(self):
         spot_date = self.value_date_.addWeekDays(self.spot_days)
         td = (self.final_delivery - spot_date) / gDaysInYear
@@ -203,23 +224,23 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         td = np.maximum(td, 1e-10)
         return td
 
-    @property
+    @ property
     def texp(self):
         return (self.cut_off_time - self.value_date_) / gDaysInYear
 
-    @property
+    @ property
     def rd(self):
         texp = self.texp
         domDF = self.domestic_discount_curve._df(texp)
         return -np.log(domDF) / texp
 
-    @property
+    @ property
     def rf(self):
         texp = self.texp
         forDF = self.foreign_discount_curve._df(texp)
         return -np.log(forDF) / texp
 
-    @property
+    @ property
     def volatility_(self):
         if self.ctx_volatility:
             v = self.ctx_volatility
@@ -242,9 +263,11 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def check_underlier(self):
         if self.underlier_symbol and not self.underlier:
             if isinstance(self.underlier_symbol, Enum):
-                self.underlier = Turing.get_fx_symbol_to_id(_id=self.underlier_symbol.value).get('asset_id')
+                self.underlier = Turing.get_fx_symbol_to_id(
+                    _id=self.underlier_symbol.value).get('asset_id')
             else:
-                self.underlier = Turing.get_fx_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
+                self.underlier = Turing.get_fx_symbol_to_id(
+                    _id=self.underlier_symbol).get('asset_id')
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)
