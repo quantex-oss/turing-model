@@ -102,8 +102,6 @@ class InstrumentBase:
             self.ctx.context = context
         """api默认入口"""
         scenario = PricingContext()
-        if not assetId.startswith("OPTION") and not assetId.startswith("BOND"):
-            raise Exception("不支持的asset_id")
         setattr(self, 'asset_id', assetId)
         getattr(self, '_resolve')()
 
