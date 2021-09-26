@@ -358,6 +358,9 @@ class FXVanillaOption(FXOption):
         setattr(self, _property, _list)
         return _list
 
+    def spot_path(self):
+        return 'turing_models.instruments.fx.fx.ForeignExchange'
+
     def _resolve(self):
         if self.asset_id and not self.asset_id.startswith("OPTION_"):
             temp_dict = FxOptionApi.fetch_fx_option(

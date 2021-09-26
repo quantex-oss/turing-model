@@ -186,6 +186,9 @@ class KnockOutOption(EqOption):
 
         return payoff.mean() * np.exp(- r * texp) * notional
 
+    def spot_path(self):
+        return 'turing_models.instruments.eq.stock.Stock'
+
     def _resolve(self):
         if self.asset_id and not self.asset_id.startswith("OPTION_"):
             temp_dict = OptionApi.fetch_Option(asset_id=self.asset_id)

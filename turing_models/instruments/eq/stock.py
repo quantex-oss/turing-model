@@ -1,10 +1,12 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Union
 
 from fundamental.turing_db.data import Turing
+from fundamental.turing_db.stock_data import StockApi
+from turing_models.instruments.common import Currency, Eq
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.helper_functions import to_string
-from turing_models.instruments.common import Currency, Eq
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -56,6 +58,27 @@ class Stock(Eq, InstrumentBase):
     def check_comb_symbol(self):
         if self.comb_symbol and not self.asset_id:
             self.asset_id = Turing.get_stock_symbol_to_id(_id=self.comb_symbol).get('asset_id')
+
+    def check_symbol(self):
+        if self.symbol and not self.asset_id:
+            if isinstance(self.symbol, Enum):
+                self.asset_id = Turing.get_stock_symbol_to_id(_id=self.symbol.value).get('asset_id')
+            else:
+                self.asset_id = Turing.get_stock_symbol_to_id(_id=self.symbol).get('asset_id')
+
+    def _resolve(self):
+        if self.asset_id:
+            _stock = StockApi.fetch_orm(self=self, gurl=None)
+            for k, v in _stock.items():
+                if not getattr(self, k, None) and v:
+                    setattr(self, k, v)
+
+        if self.asset_id:
+            if not self.stock_price:
+                _price = StockApi.get_stock_price(gurl=None,
+                                                  underlier=self.asset_id)
+                if _price:
+                    setattr(self, "stock_price", _price)
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)
