@@ -385,7 +385,7 @@ class FXVanillaOption(FXOption):
                                               volatility_types=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])
 
         if not self.product_type:
-            setattr(self, 'product_type', 'FX_VANILLA')
+            setattr(self, 'product_type', 'VANILLA')
         self.__post_init__()
 
 
