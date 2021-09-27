@@ -12,11 +12,12 @@ fx_curve = FXIRCurve(fx_symbol=CurrencyPair.USDCNY,
 print(fx_curve.get_ccy1_curve())  # Series格式
 print(fx_curve.get_ccy2_curve())  # Series格式
 
-fx_vol_surface = FXOptionImpliedVolatilitySurface(fx_symbol=CurrencyPair.USDCNY)
+fx_vol_surface = FXOptionImpliedVolatilitySurface(
+    fx_symbol=CurrencyPair.USDCNY)
 data = fx_vol_surface.get_vol_surface()  # DataFrame格式
 trace = go.Surface(x=data.index.values, y=data.columns.values, z=data)
 data = [trace]
 layout = go.Layout(title='3D Surface plot')
 fig = go.Figure(data=data, layout=layout)
 iplot(fig)
-# fig.show()
+fig.show()

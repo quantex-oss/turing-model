@@ -8,6 +8,7 @@ from fundamental.turing_db.data import Turing
 from turing_models.instruments.common import CurrencyPair
 from turing_models.market.curves.curve_generation import FXIRCurve
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
+from turing_models.market.volatility.fx_vol_surface_CICC import TuringFXVolSurfaceCICC
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 
@@ -57,18 +58,18 @@ class FXOptionImpliedVolatilitySurface:
         self.risk_reversal_10delta_vols = None
         self._get_fx_volatility()
 
-        self.volatility_surface = TuringFXVolSurfaceVV(self.base_date,
-                                                       self.exchange_rate,
-                                                       self.fx_symbol,
-                                                       self.fx_symbol[-3:],
-                                                       self.ccy2_curve,
-                                                       self.ccy1_curve,
-                                                       self.vol_tenors,
-                                                       self.atm_vols,
-                                                       self.butterfly_25delta_vols,
-                                                       self.risk_reversal_25delta_vols,
-                                                       self.butterfly_10delta_vols,
-                                                       self.risk_reversal_10delta_vols)
+        self.volatility_surface = TuringFXVolSurfaceCICC(self.base_date,
+                                                         self.exchange_rate,
+                                                         self.fx_symbol,
+                                                         self.fx_symbol[-3:],
+                                                         self.ccy2_curve,
+                                                         self.ccy1_curve,
+                                                         self.vol_tenors,
+                                                         self.atm_vols,
+                                                         self.butterfly_25delta_vols,
+                                                         self.risk_reversal_25delta_vols,
+                                                         self.butterfly_10delta_vols,
+                                                         self.risk_reversal_10delta_vols)
 
     def _get_fx_volatility(self):
         """

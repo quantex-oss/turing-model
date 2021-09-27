@@ -26,7 +26,7 @@ class TuringDiscountCurve():
     def __init__(self,
                  valuationDate: TuringDate,
                  dfDates: (list, np.ndarray),
-                 dfValues: np.ndarray,
+                 dfValues: (list, np.ndarray),
                  interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES):
         ''' Create the discount curve from a vector of times and discount
         factors with an anchor date and specify an interpolation scheme. As we
@@ -186,6 +186,7 @@ class TuringDiscountCurve():
 
 ###############################################################################
 
+
     def ccRate(self,
                dts: (list, TuringDate),
                dayCountType: TuringDayCountTypes = TuringDayCountTypes.SIMPLE):
@@ -193,7 +194,8 @@ class TuringDiscountCurve():
         function can return a vector of cc rates given a vector of
         dates so must use Numpy functions. '''
 
-        ccRates = self.zeroRate(dts, TuringFrequencyTypes.CONTINUOUS, dayCountType)
+        ccRates = self.zeroRate(
+            dts, TuringFrequencyTypes.CONTINUOUS, dayCountType)
         return ccRates
 
 ###############################################################################
@@ -221,9 +223,11 @@ class TuringDiscountCurve():
             raise TuringError("Invalid Frequency type.")
 
         if freqType == TuringFrequencyTypes.SIMPLE:
-            raise TuringError("Cannot calculate par rate with simple yield freq.")
+            raise TuringError(
+                "Cannot calculate par rate with simple yield freq.")
         elif freqType == TuringFrequencyTypes.CONTINUOUS:
-            raise TuringError("Cannot calculate par rate with continuous freq.")
+            raise TuringError(
+                "Cannot calculate par rate with continuous freq.")
 
         if isinstance(maturityDate, TuringDate):
             maturityDates = [maturityDate]
@@ -235,7 +239,8 @@ class TuringDiscountCurve():
         for maturityDt in maturityDates:
 
             if maturityDt <= effectiveDate:
-                raise TuringError("Maturity date is before the swap start date.")
+                raise TuringError(
+                    "Maturity date is before the swap start date.")
 
             schedule = TuringSchedule(effectiveDate,
                                       maturityDt,
@@ -296,14 +301,14 @@ class TuringDiscountCurve():
             self._interpType is TuringInterpTypes.LINEAR_ZERO_RATES or\
                 self._interpType is TuringInterpTypes.LINEAR_FWD_RATES:
 
-                    df = interpolate(t,
-                                     self._times,
-                                     self._dfs,
-                                     self._interpType.value)
+            df = interpolate(t,
+                             self._times,
+                             self._dfs,
+                             self._interpType.value)
 
         else:
 
-             df = self._interpolator.interpolate(t)
+            df = self._interpolator.interpolate(t)
 
         return df
 
@@ -349,6 +354,7 @@ class TuringDiscountCurve():
 
 
 ###############################################################################
+
 
     def _fwd(self,
              times: (np.ndarray, float)):
@@ -441,7 +447,7 @@ class TuringDiscountCurve():
         s += to_string("DATES", "DISCOUNT FACTORS")
         for i in range(0, numPoints):
             s += to_string("%12s" % self._dfDates[i],
-                               "%12.8f" % self._dfs[i])
+                           "%12.8f" % self._dfs[i])
 
         return s
 

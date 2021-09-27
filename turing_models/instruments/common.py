@@ -477,6 +477,7 @@ class CurrencyPair(Enum):
     CNYSEK = 'CNY/SEK'
     CNYTRY = 'CNY/TRY'
     CNYTHB = 'CNY/THB'
+    EURUSD = 'EUR/USD'
 
     def __repr__(self):
         return self.value
@@ -643,12 +644,14 @@ class Priceable:
 
     @property
     def ctx_spot(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(self, 'asset_id', None)
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
         return getattr(self.ctx, f"spot_{asset_id}")
 
     @property
     def ctx_volatility(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(self, 'asset_id', None)
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
         return getattr(self.ctx, f"volatility_{asset_id}")
 
     @property

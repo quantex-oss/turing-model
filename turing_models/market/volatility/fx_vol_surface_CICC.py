@@ -19,7 +19,7 @@ from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 
-from turing_models.models.model_volatility_fns import volFunctionClark, volFunctionVV
+from turing_models.models.model_volatility_fns import volFunctionClark, volFunctionCICC
 from turing_models.models.model_volatility_fns import volFunctionBloomberg
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.models.model_sabr import volFunctionSABR
@@ -38,7 +38,7 @@ from turing_models.utilities.global_types import TuringSolverTypes
 ###############################################################################
 
 
-@njit(fastmath=True, cache=True)
+# @njit(fastmath=True, cache=True)
 def _g(K, *args):
     ''' This is the objective function used in the determination of the FX
     option implied strike which is computed in the class below. '''
@@ -60,85 +60,26 @@ def _g(K, *args):
     objFn = deltaTarget - deltaOut
     return objFn
 
-###############################################################################
-
-
-def _solveToHorizon(s, t, rd, rf,
-                    bf25DVol, bf10DVol, d25P,
-                    d25ATM, d25C, d10P, d10ATM,
-                    d10C):
-
     ###########################################################################
     # Determine strikes of the key points on the curve.
     ###########################################################################
 
-    use10D = True
-    use25D = True
-
-    if bf25DVol == -999.0:
-        use25D = False
-
-    if bf10DVol == -999.0:
-        use10D = False
-
-    if use25D is True:
-
-        Df = np.exp(-np.multiply(rf, t))
-        delta = 0.25
-        alpha = -sci.norm.ppf(delta * np.reciprocal(Df))
-        mu = rd - rf
-        F = s * np.exp(np.multiply(mu, t))
-
-        # Strikes
-        KATM = np.array([])
-        K25DeltaCall = np.array([])
-        K25DeltaPut = np.array([])
-
-        K25DeltaPut = np.append(K25DeltaPut, F * math.exp(
-            -(alpha * d25P * math.sqrt(t)) + (0.5 * d25P ** 2) * t))
-        KATM = np.append(KATM, F * math.exp(0.5 * t * (d25ATM) ** 2))
-        K25DeltaCall = np.append(K25DeltaCall, F * math.exp(
-            alpha * d25C * math.sqrt(t) + (0.5 * d25C ** 2) * t))
-
-        return K25DeltaPut, KATM, K25DeltaCall
-
-    elif use10D is True:
-
-        Df = np.exp(-np.multiply(rf, t))
-        delta = 0.10
-        alpha = -sci.norm.ppf(delta * np.reciprocal(Df))
-        mu = rd - rf
-        F = s * np.exp(np.multiply(mu, t))
-
-        # Strikes
-        KATM = np.array([])
-        K10DeltaCall = np.array([])
-        K10DeltaPut = np.array([])
-
-        K10DeltaPut = np.append(K10DeltaPut, F * math.exp(
-            -(alpha * d10P * math.sqrt(t)) + (0.5 * d10P ** 2) * t))
-        KATM = np.append(KATM, F * math.exp(0.5 * t * (d10ATM) ** 2))
-        K10DeltaCall = np.append(K10DeltaCall, F * math.exp(
-            alpha * d10C * math.sqrt(t) + (0.5 * d10C ** 2) * t))
-
-        return K10DeltaPut, KATM, K10DeltaCall
-
 
 ###############################################################################
 
 
-@njit(float64(float64[:], float64, float64, float64), cache=True, fastmath=True)
+# @njit(float64(float64[:], float64, float64, float64), cache=True, fastmath=True)
 def volFunction(params, f, k, t):
-    ''' Return the volatility for a strike using vanna-volga method. '''
+    ''' Return the volatility for a strike using CICC method. '''
 
 #    print("volFunction", volFunctionTypeValue)
-    vol = volFunctionVV(params, f, k, t)
+    vol = volFunctionCICC(params, f, k, t)
     return vol
 
 ###############################################################################
 
 
-@njit(cache=True, fastmath=True)
+# @njit(cache=True, fastmath=True)
 def _deltaFit(k, *args):
     ''' This is the objective function used in the determination of the FX
     Option implied strike which is computed in the class below. I map it into
@@ -170,9 +111,9 @@ def _deltaFit(k, *args):
 ###############################################################################
 
 
-@njit(float64(float64, float64, float64, float64, int64, float64,
-              int64, float64, float64[:]),
-      fastmath=True)
+# @njit(float64(float64, float64, float64, float64, int64, float64,
+#               int64, float64, float64[:]),
+#       fastmath=True)
 def _solveForSmileStrike(s, t, rd, rf,
                          optionTypeValue,
                          deltaTarget,
@@ -201,8 +142,8 @@ def _solveForSmileStrike(s, t, rd, rf,
 ###############################################################################
 
 
-@njit(float64(float64, float64, float64, float64, int64, float64,
-              int64, float64), fastmath=True)
+# @njit(float64(float64, float64, float64, float64, int64, float64,
+#               int64, float64), fastmath=True)
 def solveForStrike(spotFXRate,
                    tdel, rd, rf,
                    optionTypeValue,
@@ -285,7 +226,7 @@ def solveForStrike(spotFXRate,
 ###############################################################################
 
 
-class TuringFXVolSurfaceVV():
+class TuringFXVolSurfaceCICC():
     ''' Class to perform a calibration of a chosen parametrised surface to the
     prices of FX options at different strikes and expiry tenors. Thes
     calibration inputs are the ATM and 25 and 10 Delta volatilities in terms of
@@ -306,15 +247,14 @@ class TuringFXVolSurfaceVV():
                  riskReversal25DeltaVols: (list, np.ndarray),
                  butterfly10DeltaVols: (list, np.ndarray),
                  riskReversal10DeltaVols: (list, np.ndarray),
-                 alpha: float = 1,
-                 atmMethod: TuringFXATMMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL,
+                 atmMethod: TuringFXATMMethod = TuringFXATMMethod.FWD,
                  deltaMethod: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
-                 volatilityFunctionType: TuringVolFunctionTypes = TuringVolFunctionTypes.VANNA_VOLGA,
+                 volatilityFunctionType: TuringVolFunctionTypes = TuringVolFunctionTypes.CICC,
                  finSolverType: TuringSolverTypes = TuringSolverTypes.NELDER_MEAD,
                  tol: float = 1e-8):
         ''' Create the TuringFXVolSurfacePlus object by passing in market vol data
         for ATM, 25 Delta and 10 Delta strikes. The alpha shifts the
-        fitting between 25D and 10D. Alpha = 1.0 is 100% 25D while alpha = 0.0
+        fitting between 25D and 10D. Alpha = 0.0 is 100% 25D while alpha = 1.0
         is 100% 10D. '''
 
         # I want to allow Nones for some of the market inputs
@@ -353,11 +293,6 @@ class TuringFXVolSurfaceVV():
 
         self._atmVols = np.array(atmVols)
 
-        self._useMS25DVol = True
-        self._useRR25DVol = True
-        self._useMS10DVol = True
-        self._useRR10DVol = True
-
         # Some of these can be missing which is signified by length zero
         n = len(butterfly25DeltaVols)
 
@@ -380,38 +315,10 @@ class TuringFXVolSurfaceVV():
         if n != self._numVolCurves and n != 0:
             raise TuringError("Number MS10D vols must equal number of tenors")
 
-        if n == 0:
-            self._useMS10DVol = False
-
-        n = len(riskReversal10DeltaVols)
-
-        if n != self._numVolCurves and n != 0:
-            raise TuringError("Number RR10D vols must equal number of tenors")
-
-        if n == 0:
-            self._useRR10DVol = False
-
-        if self._useMS10DVol != self._useRR10DVol:
-            raise TuringError(
-                "You must provide both 10D RR + 10D MS or neither")
-
-        if self._useMS25DVol != self._useRR25DVol:
-            raise TuringError(
-                "You must provide both 25D RR + 25D MS or neither")
-
-        if self._useMS10DVol is False and self._useMS25DVol is False:
-            raise TuringError(
-                "No MS and RR. You must provide 10D or 25D MS + RR.")
-
         self._butterfly25DeltaVols = np.array(butterfly25DeltaVols)
         self._riskReversal25DeltaVols = np.array(riskReversal25DeltaVols)
         self._butterfly10DeltaVols = np.array(butterfly10DeltaVols)
         self._riskReversal10DeltaVols = np.array(riskReversal10DeltaVols)
-
-        if alpha < 0.0 or alpha > 1.0:
-            raise TuringError("Alpha must be between 0.0 and 1.0")
-
-        self._alpha = alpha
 
         self._atmMethod = atmMethod
         self._deltaMethod = deltaMethod
@@ -495,7 +402,6 @@ class TuringFXVolSurfaceVV():
 
         t0 = self._texp[index0]
         t1 = self._texp[index1]
-
         vol0 = volFunction(self._parameters[index0],
                            fwd0, K, t0)
 
@@ -735,7 +641,7 @@ class TuringFXVolSurfaceVV():
 
         s = self._spotFXRate
         numVolCurves = self._numVolCurves
-        numParameters = 6
+        numParameters = 10
         self._parameters = np.zeros([numVolCurves, numParameters])
 
         numStrikes = 5
@@ -790,15 +696,15 @@ class TuringFXVolSurfaceVV():
         #######################################################################
         # THE ACTUAL COMPUTATION LOOP STARTS HERE
         #######################################################################
-        d25C = []
-        d25ATM = []
-        d25P = []
-        d10C = []
-        d10ATM = []
-        d10P = []
+        # d25C = []
+        # dATM = []
+        # d25P = []
+        # d10C = []
+        # d10P = []
         for i in range(0, numVolCurves):
 
             atmVol = self._atmVols[i]
+
             bf25 = self._butterfly25DeltaVols[i]
             rr25 = self._riskReversal25DeltaVols[i]
 
@@ -807,57 +713,53 @@ class TuringFXVolSurfaceVV():
 
             # https://quantpie.co.uk/fx/fx_rr_str.php
 
-            d25C.append(atmVol + bf25 + rr25/2.0)  # 25D Call
-            d25ATM.append(atmVol)                   # ATM
-            d25P.append(atmVol + bf25 - rr25/2.0)  # 25D Put (75D Call)
+            d25C = (atmVol + bf25 + rr25/2.0)  # 25D Call
+            dATM = (atmVol)                   # ATM
+            d25P = (atmVol + bf25 - rr25/2.0)  # 25D Put (75D Call)
 
-            d10C.append(atmVol + bf10 + rr10/2.0)  # 10D Call
-            d10ATM.append(atmVol)                    # ATM
-            d10P.append(atmVol + bf10 - rr10/2.0)  # 10D Put (90D Call)
+            d10C = (atmVol + bf10 + rr10/2.0)  # 10D Call
+            d10P = (atmVol + bf10 - rr10/2.0)  # 10D Put (90D Call)
 
-        deltaMethodValue = self._deltaMethod.value
-        volTypeValue = self._volatilityFunctionType.value
-
-        for i in range(0, numVolCurves):
+        # deltaMethodValue = self._deltaMethod.value
+        # volTypeValue = self._volatilityFunctionType.value
 
             t = self._texp[i]
             rd = self._rd[i]
             rf = self._rf[i]
-            K_ATM = self._K_ATM[i]
-            atmVol = self._atmVols[i]
+            KATM = self._K_ATM[i]
 
-            # If the data has not been provided, pass a dummy value
-            # as I don't want more arguments and Numpy needs floats
-            if self._alpha > 0:
-                bf25DVol = self._butterfly25DeltaVols[i]
-                rr25DVol = self._riskReversal25DeltaVols[i]
+            Df = np.exp(-np.multiply(rf, t))
+            if True == True:
+                alpha25 = -sci.norm.ppf(0.25 * np.reciprocal(Df))
+                alpha10 = -sci.norm.ppf(0.10 * np.reciprocal(Df))
             else:
-                bf25DVol = -999.0
-                rr25DVol = -999.0
+                alpha25 = -sci.norm.ppf(0.25)
+                alpha10 = -sci.norm.ppf(0.10)
+            mu = rd - rf
+            F = s * np.exp(np.multiply(mu, t))
 
-            if self._alpha == 0:
-                bf10DVol = self._butterfly10DeltaVols[i]
-                rr10DVol = self._riskReversal10DeltaVols[i]
-            else:
-                bf10DVol = -999.0
-                rr10DVol = -999.0
+            # Strikes
+            # K25DeltaCall = np.array([])
+            # K25DeltaPut = np.array([])
+            # K10DeltaCall = np.array([])
+            # K10DeltaPut = np.array([])
 
-            res = _solveToHorizon(s, t, rd, rf,
-                                  bf25DVol, bf10DVol, d25P[i],
-                                  d25ATM[i], d25C[i], d10P[i], d10ATM[i],
-                                  d10C[i])
+            self._K_25D_P[i] = (F * math.exp(
+                -(alpha25 * d25P * math.sqrt(t)) + (0.5 * d25P ** 2) * t))
 
-            if bf25DVol != -999.0:
-                self._K_25D_P[i], self._K_ATM[i], self._K_25D_C[i] = res
-                params = [self._K_25D_P[i], self._K_ATM[i],
-                          self._K_25D_C[i], d25P[i], d25ATM[i], d25C[i]]
-                self._parameters[i, :] = np.array(params)
-            elif bf10DVol != -999.0:
-                self._K_10D_P[i], self._K_ATM[i], self._K_10D_C[i] = res
-                params = [self._K_10D_P[i], self._K_ATM[i],
-                          self._K_10D_C[i], d10P[i], d10ATM[i], d10C[i]]
-                self._parameters[i, :] = np.array(params)
-        # print("once", self._parameters)
+            self._K_25D_C[i] = (F * math.exp(
+                alpha25 * d25C * math.sqrt(t) + (0.5 * d25C ** 2) * t))
+
+            self._K_10D_P[i] = (F * math.exp(
+                -(alpha10 * d10P * math.sqrt(t)) + (0.5 * d10P ** 2) * t))
+            self._K_10D_C[i] = (F * math.exp(
+                alpha10 * d10C * math.sqrt(t) + (0.5 * d10C ** 2) * t))
+
+            self._K_ATM[i] = KATM
+
+            params = [self._K_10D_P[i], self._K_25D_P[i], self._K_ATM[i],
+                      self._K_25D_C[i], self._K_10D_C[i], d10P, d25P, dATM, d25C, d10C]
+            self._parameters[i, :] = np.array(params)
 
 ###############################################################################
 
