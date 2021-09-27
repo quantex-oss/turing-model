@@ -69,6 +69,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     market_price = None
     _value_date = None
     _exchange_rate = None
+    _volatility = None
 
     def __post_init__(self):
         super().__init__()
@@ -247,7 +248,9 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @ property
     def volatility_(self):
-        if self.ctx_volatility:
+        if self._volatility:
+            v = self._volatility
+        elif self.ctx_volatility:
             v = self.ctx_volatility
         elif self.volatility:
             v = self.model._volatility
@@ -261,6 +264,10 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             return v
         else:
             raise TuringError(error_str2)
+
+    @volatility_.setter
+    def volatility_(self, value: float):
+        self._volatility = value
 
     def vol(self):
         return self.volatility_
