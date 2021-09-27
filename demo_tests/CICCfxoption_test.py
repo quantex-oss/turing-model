@@ -54,13 +54,13 @@ fxoption = FXVanillaOptionCICC(start_date=TuringDate(2021, 4, 20),
                                )
 
 price = fxoption.price()
-delta = fxoption.fx_delta()
-gamma = fxoption.fx_gamma()
-vega = fxoption.fx_vega()
-theta = fxoption.fx_theta()
-vanna = fxoption.fx_vanna()
-volga = fxoption.fx_volga()
-print(price, delta, gamma, vega, theta, vanna, volga)
+delta = fxoption.fx_delta_bump()
+gamma = fxoption.fx_gamma_bump()
+vega = fxoption.fx_vega_bump()
+theta = fxoption.fx_theta_bump()
+# vanna = fxoption.fx_vanna()
+# volga = fxoption.fx_volga()
+print(price, delta, gamma, vega, theta)
 # for spotFXRate in np.arange(100, 200, 10)/100.0:
 #     fxoption.spot_fx_rate = spotFXRate
 

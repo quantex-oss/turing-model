@@ -156,8 +156,9 @@ class FXVanillaOptionCICC(FXOption):
         pips_fwd_delta = pips_spot_delta * np.exp(rf * tdel)
         pct_spot_delta_prem_adj = pips_spot_delta - vpctf
         pct_fwd_delta_prem_adj = np.exp(rf * tdel) * (pips_spot_delta - vpctf)
+        return pips_spot_delta
+        # return pips_spot_delta * (notional_dom / S0)
 
-        return pips_spot_delta * (notional_dom / S0)
         # return {"pips_spot_delta": pips_spot_delta,
         #         "pips_fwd_delta": pips_fwd_delta,
         #         "pct_spot_delta_prem_adj": pct_spot_delta_prem_adj,
@@ -168,9 +169,38 @@ class FXVanillaOptionCICC(FXOption):
         1 cent of its value. This gives the FX spot delta. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
-        bump_local = 0.0001 * self.exchange_rate_
+        bump_local = 0.0001
+        self.fx_delta_bump = greek(
+            self, self.price, "exchange_rate_", bump=bump_local) * bump_local
+        return self.fx_delta_bump
 
-        return greek(self, self.price, "exchange_rate_", bump=bump_local)
+    def fx_gamma_bump(self):
+        """ Calculation of the FX option delta by bumping the spot FX rate by
+        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        bump_local = 0.0001
+
+        return greek(self, self.price, "fx_delta_bump", bump=bump_local) * bump_local
+
+    def fx_vega_bump(self):
+        """ Calculation of the FX option delta by bumping the spot FX rate by
+        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        bump_local = 0.01
+
+        return greek(self, self.price, "volatility_", bump=bump_local) * bump_local
+
+    def fx_theta_bump(self):
+        """ Calculation of the FX option delta by bumping the spot FX rate by
+        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        day_diff = 1
+        bump_local = day_diff / gDaysInYear
+
+        return greek(self, self.price, "value_date_", bump=bump_local, cus_inc=(self.value_date_.addDays, day_diff))
 
     def fx_gamma(self):
         """ This function calculates the FX Option Gamma using the spot delta. """
@@ -192,7 +222,7 @@ class FXVanillaOptionCICC(FXOption):
         gamma = gamma / S0 / den
         notional_dom = self.notional_dom
 
-        return gamma * (notional_dom / S0)
+        return gamma
 
     def fx_vega(self):
         """ This function calculates the FX Option Vega using the spot delta. """
@@ -213,7 +243,7 @@ class FXVanillaOptionCICC(FXOption):
         vega = S0 * sqrtT * np.exp(-rf * texp) * nprime(d1)
         notional_dom = self.notional_dom
 
-        return vega * (notional_dom / S0)
+        return vega
 
     def fx_theta(self):
         """ This function calculates the time decay of the FX option. """
@@ -247,7 +277,7 @@ class FXVanillaOptionCICC(FXOption):
 
         notional_dom = self.notional_dom
 
-        return v * (notional_dom / S0)
+        return v
 
     def fx_vanna(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
@@ -269,7 +299,7 @@ class FXVanillaOptionCICC(FXOption):
         vanna = - np.exp(-rf * texp) * d2 / v * nprime(d1)
         notional_dom = self.notional_dom
 
-        return vanna * (notional_dom / S0)
+        return vanna
 
     def fx_volga(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
@@ -292,7 +322,7 @@ class FXVanillaOptionCICC(FXOption):
 
         notional_dom = self.notional_dom
 
-        return volga * (notional_dom / S0)
+        return volga
 
     def implied_volatility(self):
         """ This function determines the implied volatility of an FX option
