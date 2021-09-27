@@ -12,26 +12,27 @@ from turing_models.utilities.global_types import TuringOptionType, TuringExercis
 mkt_file = '/home/turing/workspace/turing-model/turing_models/market/data/market data 20210420.xlsx'
 
 USDLibor3M_data = pd.read_excel(mkt_file, 'USDLibor3M')
-dom_rates = USDLibor3M_data['Rate'] / 100
-tenors = USDLibor3M_data['Tenor']
+dom_rates = [x / 100 for x in USDLibor3M_data['Rate'].values.tolist()]
+tenors = USDLibor3M_data['Tenor'].values.tolist()
 fwd_data = pd.read_excel(mkt_file, 'EURUSD_Futures')
-fwd_tenors = fwd_data['Tenor']
-fwd_quotes = fwd_data['Spread'] / 10000
+fwd_tenors = fwd_data['Tenor'].values.tolist()
+fwd_quotes = [x / 10000 for x in fwd_data['Spread'].values.tolist()]
 vol_data = pd.read_excel(mkt_file, 'EURUSD_vols')
 
 
-vol_tenors = vol_data['Tenor']
-atm_vols = vol_data['ATM']
-butterfly_25delta_vols = vol_data['25DBF']
-risk_reversal_25delta_vols = vol_data['25DRR']
-butterfly_10delta_vols = vol_data['10DBF']
-risk_reversal_10delta_vols = vol_data['10DRR']
+vol_tenors = vol_data['Tenor'].values.tolist()
+atm_vols = vol_data['ATM'].values.tolist()
+butterfly_25delta_vols = vol_data['25DBF'].values.tolist()
+risk_reversal_25delta_vols = vol_data['25DRR'].values.tolist()
+butterfly_10delta_vols = vol_data['10DBF'].values.tolist()
+risk_reversal_10delta_vols = vol_data['10DRR'].values.tolist()
 
 fxoption = FXVanillaOptionCICC(start_date=TuringDate(2021, 4, 20),
                                expiry=TuringDate(2021, 7, 20),
                                cut_off_time=TuringDate(2021, 7, 20),
                                #    delivery_date=TuringDate(2021, 7, 20),
                                value_date=TuringDate(2021, 4, 20),
+                               underlier='FX00000001',
                                underlier_symbol=CurrencyPair.EURUSD,
                                exchange_rate=1.2036,
                                strike=1.2036,

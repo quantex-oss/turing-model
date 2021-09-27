@@ -760,7 +760,6 @@ class TuringFXVolSurfaceCICC():
             params = [self._K_10D_P[i], self._K_25D_P[i], self._K_ATM[i],
                       self._K_25D_C[i], self._K_10D_C[i], d10P, d25P, dATM, d25C, d10C]
             self._parameters[i, :] = np.array(params)
-        print(self._parameters)
 
 ###############################################################################
 
