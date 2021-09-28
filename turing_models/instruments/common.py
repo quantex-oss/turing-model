@@ -32,11 +32,13 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         setattr(obj, attr, None)
 
     if order == 1:
-        p0 = price()
         increment(attr_value)
         p_up = price()
         clear()
-        return (p_up - p0) / bump
+        decrement(attr_value)
+        p_down = price()
+        clear()
+        return (p_up - p_down) / (bump * 2)
     elif order == 2:
         p0 = price()
         decrement(attr_value)
