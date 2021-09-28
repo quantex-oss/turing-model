@@ -285,7 +285,7 @@ def solveForStrike(spotFXRate,
 ###############################################################################
 
 
-class TuringFXVolSurfaceVV():
+class TuringFXVolSurfaceVV:
     ''' Class to perform a calibration of a chosen parametrised surface to the
     prices of FX options at different strikes and expiry tenors. Thes
     calibration inputs are the ATM and 25 and 10 Delta volatilities in terms of
@@ -297,7 +297,6 @@ class TuringFXVolSurfaceVV():
                  valueDate: TuringDate,
                  spotFXRate: float,
                  currencyPair: str,
-                 notionalCurrency: str,
                  domDiscountCurve: TuringDiscountCurve,
                  forDiscountCurve: TuringDiscountCurve,
                  tenors: (list),
@@ -342,7 +341,6 @@ class TuringFXVolSurfaceVV():
         self._forName = self._currencyPair[0:3]
         self._domName = self._currencyPair[4:7]
 
-        self._notionalCurrency = notionalCurrency
         self._domDiscountCurve = domDiscountCurve
         self._forDiscountCurve = forDiscountCurve
         self._numVolCurves = len(tenors)
@@ -955,7 +953,6 @@ class TuringFXVolSurfaceVV():
         s += to_string("VALUE DATE", self._valueDate)
         s += to_string("FX RATE", self._spotFXRate)
         s += to_string("CCY PAIR", self._currencyPair)
-        s += to_string("NOTIONAL CCY", self._notionalCurrency)
         s += to_string("NUM TENORS", self._numVolCurves)
         s += to_string("ATM METHOD", self._atmMethod)
         s += to_string("DELTA METHOD", self._deltaMethod)

@@ -1,4 +1,5 @@
 import datetime
+from enum import Enum
 
 from loguru import logger
 import numpy as np
@@ -6,9 +7,13 @@ import pandas as pd
 
 from fundamental.turing_db.data import Turing
 from turing_models.instruments.common import CurrencyPair
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.curve_generation import FXIRCurve
-from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
 from turing_models.market.volatility.fx_vol_surface_CICC import TuringFXVolSurfaceCICC
+from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
+from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
+from turing_models.products.fx.fx_mkt_conventions import TuringFXATMMethod, TuringFXDeltaMethod
+from turing_models.utilities.global_types import TuringSolverTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 
@@ -58,18 +63,17 @@ class FXOptionImpliedVolatilitySurface:
         self.risk_reversal_10delta_vols = None
         self._get_fx_volatility()
 
-        self.volatility_surface = TuringFXVolSurfaceCICC(self.base_date,
-                                                         self.exchange_rate,
-                                                         self.fx_symbol,
-                                                         self.fx_symbol[-3:],
-                                                         self.ccy2_curve,
-                                                         self.ccy1_curve,
-                                                         self.vol_tenors,
-                                                         self.atm_vols,
-                                                         self.butterfly_25delta_vols,
-                                                         self.risk_reversal_25delta_vols,
-                                                         self.butterfly_10delta_vols,
-                                                         self.risk_reversal_10delta_vols)
+        self.volatility_surface = TuringFXVolSurfaceVV(self.base_date,
+                                                       self.exchange_rate,
+                                                       self.fx_symbol,
+                                                       self.ccy2_curve,
+                                                       self.ccy1_curve,
+                                                       self.vol_tenors,
+                                                       self.atm_vols,
+                                                       self.butterfly_25delta_vols,
+                                                       self.risk_reversal_25delta_vols,
+                                                       self.butterfly_10delta_vols,
+                                                       self.risk_reversal_10delta_vols)
 
     def _get_fx_volatility(self):
         """
@@ -149,6 +153,91 @@ class FXOptionImpliedVolatilitySurface:
                 v = volatility_surface.volatilityFromDeltaDate(de, ex)[0]
                 data[tenor].append(v)
         return pd.DataFrame(data, index=delta)
+
+
+class FXVolSurfaceGen:
+    def __init__(self,
+                 currency_pair: str,
+                 domestic_discount_curve: TuringDiscountCurve,
+                 foreign_discount_curve: TuringDiscountCurve,
+                 value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3])),
+                 alpha: float = 1,
+                 atm_method: TuringFXATMMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL,
+                 delta_method: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
+                 volatility_function_type: TuringVolFunctionTypes = TuringVolFunctionTypes.VANNA_VOLGA,
+                 solver_type: TuringSolverTypes = TuringSolverTypes.NELDER_MEAD,
+                 tol: float = 1e-8):
+
+        if isinstance(currency_pair, CurrencyPair):
+            self.currency_pair = currency_pair.value
+        elif isinstance(currency_pair, str):
+            if len(currency_pair) != 7:
+                raise TuringError("Currency pair must be in ***/***format.")
+            self.currency_pair = currency_pair
+        else:
+            raise TuringError("Please check the input of currency_pair")
+
+        self.domestic_discount_curve = domestic_discount_curve
+        self.foreign_discount_curve = foreign_discount_curve
+        self.value_date = value_date
+        self.alpha = alpha
+        self.atm_method = atm_method
+        self.delta_method = delta_method
+        self.volatility_function_type = volatility_function_type
+        self.solver_type = solver_type
+        self.tol = tol
+
+        self.fx_asset_id = Turing.get_fx_symbol_to_id(_id=self.currency_pair)["asset_id"]
+        self.exchange_rate = Turing.get_exchange_rate(asset_ids=[self.fx_asset_id])[0]["exchange_rate"]
+
+        curve_date = Turing.fx_implied_volatility_curve(asset_id=self.fx_asset_id,
+                                                        volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])[self.fx_asset_id]
+        self.tenors = curve_date["tenor"]
+        self.atm_vols = curve_date["ATM"]
+        self.butterfly_25delta_vols = curve_date["25D BF"]
+        self.risk_reversal_25delta_vols = curve_date["25D RR"]
+        self.butterfly_10delta_vols = curve_date["10D BF"]
+        self.risk_reversal_10delta_vols = curve_date["10D RR"]
+
+    def volatility_surface(self):
+        """根据volatility function type区分初始化不同的曲面"""
+        if self.volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
+            return TuringFXVolSurfaceVV(self.value_date,
+                                        self.exchange_rate,
+                                        self.currency_pair,
+                                        self.domestic_discount_curve,
+                                        self.foreign_discount_curve,
+                                        self.tenors,
+                                        self.atm_vols,
+                                        self.butterfly_25delta_vols,
+                                        self.risk_reversal_25delta_vols,
+                                        self.butterfly_10delta_vols,
+                                        self.risk_reversal_10delta_vols,
+                                        self.alpha,
+                                        self.atm_method,
+                                        self.delta_method,
+                                        self.volatility_function_type,
+                                        self.solver_type,
+                                        self.tol)
+
+        elif self.volatility_function_type == TuringVolFunctionTypes.CICC:
+            return TuringFXVolSurfaceVV(self.value_date,
+                                        self.exchange_rate,
+                                        self.currency_pair,
+                                        self.domestic_discount_curve,
+                                        self.foreign_discount_curve,
+                                        self.tenors,
+                                        self.atm_vols,
+                                        self.butterfly_25delta_vols,
+                                        self.risk_reversal_25delta_vols,
+                                        self.butterfly_10delta_vols,
+                                        self.risk_reversal_10delta_vols,
+                                        self.alpha,
+                                        self.atm_method,
+                                        self.delta_method,
+                                        self.volatility_function_type,
+                                        self.solver_type,
+                                        self.tol)
 
 
 if __name__ == '__main__':

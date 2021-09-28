@@ -426,9 +426,3 @@ class FXVanillaOptionCICC(FXOption):
         if not self.product_type:
             setattr(self, 'product_type', 'FX_VANILLA')
         self.__post_init__()
-
-
-if __name__ == '__main__':
-    fxo = FXVanillaOption(asset_id="OPTIONCN00000170")
-    fxo._resolve()
-    fxo.price()
