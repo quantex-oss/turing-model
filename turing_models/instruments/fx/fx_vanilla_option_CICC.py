@@ -180,9 +180,7 @@ class FXVanillaOptionCICC(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-        self.fx_delta_bump = greek(
-            self, self.price, "exchange_rate_", bump=bump_local) * bump_local
-        return self.fx_delta_bump
+        return greek(self, self.price, "exchange_rate_", bump=bump_local) * bump_local
 
     def fx_gamma_bump(self):
         """ Calculation of the FX option delta by bumping the spot FX rate by
@@ -190,7 +188,6 @@ class FXVanillaOptionCICC(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-
         return greek(self, self.price, "exchange_rate_", bump=bump_local, order=2) * bump_local ** 2
 
     def fx_vega_bump(self):
@@ -199,7 +196,6 @@ class FXVanillaOptionCICC(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.01
-
         return greek(self, self.price, "volatility_", bump=bump_local) * bump_local
 
     def fx_theta_bump(self):
@@ -208,8 +204,6 @@ class FXVanillaOptionCICC(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         day_diff = 1
-        bump_local = day_diff / gDaysInYear
-
         return greek(self, self.price, "value_date_", bump=day_diff, cus_inc=(self.value_date_.addDays, day_diff))
 
     def fx_rho_bump(self):
@@ -218,8 +212,8 @@ class FXVanillaOptionCICC(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-
-        return greek(self, self.price, "rd",  bump=bump_local) * bump_local
+        return greek(self, self.price, "domestic_discount_curve",  bump=bump_local,
+                     cus_inc=(self.domestic_discount_curve.bump, bump_local)) * bump_local
 
     def fx_phi_bump(self):
         """ Calculation of the FX option delta by bumping the spot FX rate by
@@ -227,8 +221,8 @@ class FXVanillaOptionCICC(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-
-        return greek(self, self.price, "rf",  bump=bump_local) * bump_local
+        return greek(self, self.price, "foreign_discount_curve",  bump=bump_local,
+                     cus_inc=(self.foreign_discount_curve.bump, bump_local)) * bump_local
 
     def fx_gamma(self):
         """ This function calculates the FX Option Gamma using the spot delta. """

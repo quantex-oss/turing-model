@@ -70,8 +70,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     _value_date = None
     _exchange_rate = None
     _volatility = None
-    _rf = None
-    _rd = None
+    _domestic_discount_curve = None
+    _foreign_discount_curve = None
 
     def __post_init__(self):
         super().__init__()
@@ -192,19 +192,31 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             return TuringDiscountCurve(
                 self.value_date_, self.future_tenors_, self.fwd_dfs)
 
-    @ property
+    @property
     def domestic_discount_curve(self):
-        if self.tenors_ and self.ccy2_cc_rates:
+        if self._domestic_discount_curve:
+            return self._domestic_discount_curve
+        elif self.tenors_ and self.ccy2_cc_rates:
             return TuringDiscountCurveZeros(
                 self.value_date_, self.tenors_, self.ccy2_cc_rates, TuringFrequencyTypes.CONTINUOUS)
 
-    @ property
+    @domestic_discount_curve.setter
+    def domestic_discount_curve(self, value: TuringDiscountCurve):
+        self._domestic_discount_curve = value
+
+    @property
     def foreign_discount_curve(self):
-        if self.tenors_ and self.fx_forward_curve and self.ccy2_cc_rates:
+        if self._foreign_discount_curve:
+            return self._foreign_discount_curve
+        elif self.tenors_ and self.fx_forward_curve:
             return TuringDiscountCurveFXImplied(
                 self.value_date_, self.tenors_, self.domestic_discount_curve, self.fx_forward_curve, TuringFrequencyTypes.CONTINUOUS)
 
-    @ property
+    @foreign_discount_curve.setter
+    def foreign_discount_curve(self, value: TuringDiscountCurve):
+        self._foreign_discount_curve = value
+
+    @property
     def volatility_surface(self):
         return TuringFXVolSurfaceCICC(self.value_date_,
                                       self.exchange_rate_,
@@ -218,11 +230,11 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                       self.butterfly_10delta_vols,
                                       self.risk_reversal_10delta_vols)
 
-    @ property
+    @property
     def model(self):
         return TuringModelBlackScholes(self.volatility)
 
-    @ property
+    @property
     def tdel(self):
         spot_date = self.value_date_.addWeekDays(self.spot_days)
         td = (self.final_delivery - spot_date) / gDaysInYear
@@ -231,37 +243,23 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         td = np.maximum(td, 1e-10)
         return td
 
-    @ property
+    @property
     def texp(self):
         return (self.cut_off_time - self.value_date_) / gDaysInYear
 
-    @ property
+    @property
     def rd(self):
-        if self._rd:
-            return self._rd
-        else:
-            texp = self.texp
-            domDF = self.domestic_discount_curve._df(texp)
-            return -np.log(domDF) / texp
+        texp = self.texp
+        domDF = self.domestic_discount_curve._df(texp)
+        return -np.log(domDF) / texp
 
-    @rd.setter
-    def rd(self, value: float):
-        self._rd = value
-
-    @ property
+    @property
     def rf(self):
-        if self._rf:
-            return self._rf
-        else:
-            texp = self.texp
-            forDF = self.foreign_discount_curve._df(texp)
-            return -np.log(forDF) / texp
+        texp = self.texp
+        forDF = self.foreign_discount_curve._df(texp)
+        return -np.log(forDF) / texp
 
-    @rf.setter
-    def rf(self, value: float):
-        self._rf = value
-
-    @ property
+    @property
     def volatility_(self):
         if self._volatility:
             v = self._volatility
