@@ -201,7 +201,7 @@ class FXVanillaOptionCICC(FXOption):
         day_diff = 1
         bump_local = day_diff / gDaysInYear
 
-        return greek(self, self.price, "value_date_", bump=bump_local, cus_inc=(self.value_date_.addDays, day_diff))
+        return greek(self, self.price, "value_date_", bump=day_diff, cus_inc=(self.value_date_.addDays, day_diff))
 
     def fx_gamma(self):
         """ This function calculates the FX Option Gamma using the spot delta. """

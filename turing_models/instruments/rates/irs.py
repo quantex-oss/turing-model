@@ -81,10 +81,10 @@ def modify_leg_type(leg_type):
 
 
 def create_ibor_single_curve(value_date: TuringDate,
-                             deposit_term: float,
-                             deposit_rate: float,
+                             deposit_terms: (float, list),
+                             deposit_rates: (float, list),
                              deposit_day_count_type: TuringDayCountTypes,
-                             swap_curve_dates: List[TuringDate],
+                             swap_curve_dates: List,
                              fixed_leg_type_curve: TuringSwapTypes,
                              swap_curve_rates: List[float],
                              fixed_freq_type_curve: TuringFrequencyTypes,
@@ -94,13 +94,19 @@ def create_ibor_single_curve(value_date: TuringDate,
     depos = []
     fras = []
     swaps = []
-
-    due_date = value_date.addYears(deposit_term)
-    depo1 = TuringIborDeposit(value_date,
-                              due_date,
-                              deposit_rate,
-                              deposit_day_count_type)
+    if isinstance(deposit_terms[0], str):
+        due_dates = value_date.addTenor(deposit_terms)
+    else:
+        due_dates = value_date.addYears(deposit_terms)
+    for i in range(len(deposit_terms)):
+        depo1 = TuringIborDeposit(value_date,
+                                  due_dates[i],
+                                  deposit_rates[i],
+                                  deposit_day_count_type)
     depos.append(depo1)
+
+    if isinstance(swap_curve_dates[0], str):
+        swap_curve_dates = value_date.addTenor(swap_curve_dates)
 
     for i in range(len(swap_curve_dates)):
         swap = IRS(effective_date=value_date,

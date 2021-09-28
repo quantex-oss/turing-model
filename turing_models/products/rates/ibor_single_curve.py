@@ -200,12 +200,14 @@ class TuringIborSingleCurve(TuringDiscountCurve):
             for depo in iborDeposits:
 
                 if isinstance(depo, TuringIborDeposit) is False:
-                    raise TuringError("Deposit is not of type TuringIborDeposit")
+                    raise TuringError(
+                        "Deposit is not of type TuringIborDeposit")
 
                 startDate = depo._startDate
 
                 if startDate < self._valuationDate:
-                    raise TuringError("First deposit starts before valuation date.")
+                    raise TuringError(
+                        "First deposit starts before valuation date.")
 
                 if startDate < depoStartDate:
                     depoStartDate = startDate
@@ -214,7 +216,8 @@ class TuringIborSingleCurve(TuringDiscountCurve):
                 startDt = depo._startDate
                 endDt = depo.maturity_date
                 if startDt >= endDt:
-                    raise TuringError("First deposit ends on or before it begins")
+                    raise TuringError(
+                        "First deposit ends on or before it begins")
 
         # Ensure order of depos
         if numDepos > 1:
@@ -223,7 +226,8 @@ class TuringIborSingleCurve(TuringDiscountCurve):
             for depo in iborDeposits[1:]:
                 nextDt = depo.maturity_date
                 if nextDt <= prevDt:
-                    raise TuringError("Deposits must be in increasing maturity")
+                    raise TuringError(
+                        "Deposits must be in increasing maturity")
                 prevDt = nextDt
 
         # REMOVED THIS AS WE WANT TO ANCHOR CURVE AT VALUATION DATE
@@ -295,7 +299,8 @@ class TuringIborSingleCurve(TuringDiscountCurve):
                 numFlows = len(swapCpnDates)
                 for iFlow in range(0, numFlows):
                     if swapCpnDates[iFlow] != longestSwapCpnDates[iFlow]:
-                        raise TuringError("Swap coupons are not on the same date grid.")
+                        raise TuringError(
+                            "Swap coupons are not on the same date grid.")
 
         #######################################################################
         # Now we have ensure they are in order check for overlaps and the like
@@ -446,8 +451,8 @@ class TuringIborSingleCurve(TuringDiscountCurve):
 
         argtuple = (self)
 
-        res = optimize.minimize(_costFunction, self._dfs, method = 'BFGS',
-                                args = argtuple, options = {'gtol':1e-3})
+        res = optimize.minimize(_costFunction, self._dfs, method='BFGS',
+                                args=argtuple, options={'gtol': 1e-3})
 
         self._dfs = np.array(res.x)
 
@@ -540,7 +545,8 @@ class TuringIborSingleCurve(TuringDiscountCurve):
                 break
 
         if foundStart is False:
-            raise TuringError("Found start is false. Swaps payments inside FRAs")
+            raise TuringError(
+                "Found start is false. Swaps payments inside FRAs")
 
         swapRates = []
         swapTimes = []
@@ -654,7 +660,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
         s += to_string("GRID TIMES", "GRID DFS")
         for i in range(0, numPoints):
             s += to_string("% 10.6f" % self._times[i],
-                               "%12.10f" % self._dfs[i])
+                           "%12.10f" % self._dfs[i])
 
         return s
 

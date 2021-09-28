@@ -8,6 +8,7 @@ from numba import njit, float64, int64
 
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.products.fx.fx_vanilla_option import TuringFXVanillaOption
@@ -247,6 +248,7 @@ class TuringFXVolSurfaceCICC():
                  riskReversal25DeltaVols: (list, np.ndarray),
                  butterfly10DeltaVols: (list, np.ndarray),
                  riskReversal10DeltaVols: (list, np.ndarray),
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_365F,
                  atmMethod: TuringFXATMMethod = TuringFXATMMethod.FWD,
                  deltaMethod: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
                  volatilityFunctionType: TuringVolFunctionTypes = TuringVolFunctionTypes.CICC,
@@ -315,6 +317,7 @@ class TuringFXVolSurfaceCICC():
         if n != self._numVolCurves and n != 0:
             raise TuringError("Number MS10D vols must equal number of tenors")
 
+        self._daycounter = TuringDayCount(dayCountType)
         self._butterfly25DeltaVols = np.array(butterfly25DeltaVols)
         self._riskReversal25DeltaVols = np.array(riskReversal25DeltaVols)
         self._butterfly10DeltaVols = np.array(butterfly10DeltaVols)
