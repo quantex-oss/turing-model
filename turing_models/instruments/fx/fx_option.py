@@ -209,7 +209,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         return TuringFXVolSurfaceCICC(self.value_date_,
                                       self.exchange_rate_,
                                       self.underlier_symbol,
-                                      self.notional_currency,
                                       self.domestic_discount_curve,
                                       self.foreign_discount_curve,
                                       self.vol_tenors,
