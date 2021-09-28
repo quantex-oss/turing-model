@@ -140,9 +140,7 @@ class FXVanillaOptionCICC(FXOption):
         S0 = self.exchange_rate_
         rd = self.rd
         rf = self.rf
-        v = self.volatility_
         texp = self.texp
-        tdel = self.tdel
         atm = S0 * np.exp(-rf * texp) / np.exp(-rd * texp)
         return atm
 
@@ -213,6 +211,24 @@ class FXVanillaOptionCICC(FXOption):
         bump_local = day_diff / gDaysInYear
 
         return greek(self, self.price, "value_date_", bump=day_diff, cus_inc=(self.value_date_.addDays, day_diff))
+
+    def fx_rho_bump(self):
+        """ Calculation of the FX option delta by bumping the spot FX rate by
+        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        bump_local = 0.0001
+
+        return greek(self, self.price, "rd",  bump=bump_local) * bump_local
+
+    def fx_phi_bump(self):
+        """ Calculation of the FX option delta by bumping the spot FX rate by
+        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        bump_local = 0.0001
+
+        return greek(self, self.price, "rf",  bump=bump_local) * bump_local
 
     def fx_gamma(self):
         """ This function calculates the FX Option Gamma using the spot delta. """

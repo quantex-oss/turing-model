@@ -70,6 +70,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     _value_date = None
     _exchange_rate = None
     _volatility = None
+    _rf = None
+    _rd = None
 
     def __post_init__(self):
         super().__init__()
@@ -236,15 +238,29 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @ property
     def rd(self):
-        texp = self.texp
-        domDF = self.domestic_discount_curve._df(texp)
-        return -np.log(domDF) / texp
+        if self._rd:
+            return self._rd
+        else:
+            texp = self.texp
+            domDF = self.domestic_discount_curve._df(texp)
+            return -np.log(domDF) / texp
+
+    @rd.setter
+    def rd(self, value: float):
+        self._rd = value
 
     @ property
     def rf(self):
-        texp = self.texp
-        forDF = self.foreign_discount_curve._df(texp)
-        return -np.log(forDF) / texp
+        if self._rf:
+            return self._rf
+        else:
+            texp = self.texp
+            forDF = self.foreign_discount_curve._df(texp)
+            return -np.log(forDF) / texp
+
+    @rf.setter
+    def rf(self, value: float):
+        self._rf = value
 
     @ property
     def volatility_(self):
