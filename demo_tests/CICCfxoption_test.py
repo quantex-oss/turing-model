@@ -27,7 +27,7 @@ swap_curve_rates = shibor_swap_mkt_data.values.tolist()[0]
 tenors = deposit_terms + swap_curve_dates
 dom_rates = create_ibor_single_curve(value_date, deposit_terms, deposit_rates, TuringDayCountTypes.ACT_365F,
                                      swap_curve_dates, TuringSwapTypes.PAY, swap_curve_rates, TuringFrequencyTypes.QUARTERLY, TuringDayCountTypes.ACT_365F, 0).ccRate(value_date.addTenor(tenors)).tolist()
-                                     
+
 fwd_data = pd.read_excel(mkt_file, 'USDCNY_Futures')
 fwd_tenors = fwd_data['Tenor'].values.tolist()
 fwd_quotes = [x / 10000 for x in fwd_data['Spread'].values.tolist()]
@@ -66,14 +66,15 @@ fxoption = FXVanillaOptionCICC(start_date=TuringDate(2021, 4, 20),
                                butterfly_10delta_vols=butterfly_10delta_vols,
                                risk_reversal_10delta_vols=risk_reversal_10delta_vols
                                )
-
+atm = fxoption.atm()
 price = fxoption.price()
 delta = fxoption.fx_delta_bump()
 gamma = fxoption.fx_gamma_bump()
 vega = fxoption.fx_vega_bump()
 theta = fxoption.fx_theta_bump()
-vanna = fxoption.fx_vanna()
+# vanna = fxoption.fx_vanna()
 # volga = fxoption.fx_volga()
+print("atm", atm,"sigma", fxoption.volatility_)
 print("price:", price, "delta:", delta, "gamma:",
       gamma, "vega:", vega, "theta:", theta)
 # for spotFXRate in np.arange(100, 200, 10)/100.0:

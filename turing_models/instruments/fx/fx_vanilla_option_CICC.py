@@ -135,6 +135,17 @@ class FXVanillaOptionCICC(FXOption):
         #         "ccy_dom": self.domestic_name,
         #         "ccy_for": self.foreign_name}
 
+    def atm(self):
+
+        S0 = self.exchange_rate_
+        rd = self.rd
+        rf = self.rf
+        v = self.volatility_
+        texp = self.texp
+        tdel = self.tdel
+        atm = S0 * np.exp(-rf * texp) / np.exp(-rd * texp)
+        return atm
+
     def fx_delta(self):
         """ Calculation of the FX Option delta. There are several definitions
         of delta and so we are required to return a dictionary of values. The
@@ -182,7 +193,7 @@ class FXVanillaOptionCICC(FXOption):
 
         bump_local = 0.0001
 
-        return greek(self, self.price, "fx_delta_bump", bump=bump_local) * bump_local
+        return greek(self, self.price, "exchange_rate_", bump=bump_local, order=2) * bump_local ** 2
 
     def fx_vega_bump(self):
         """ Calculation of the FX option delta by bumping the spot FX rate by
