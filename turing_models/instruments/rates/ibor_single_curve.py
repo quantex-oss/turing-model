@@ -363,12 +363,14 @@ class TuringIborSingleCurve(TuringDiscountCurve):
         self._interpolator = TuringInterpolator(self._interpType)
         self._times = np.array([])
         self._dfs = np.array([])
+        self._dfDates = np.array([])
 
         # time zero is now.
         tmat = 0.0
         dfMat = 1.0
         self._times = np.append(self._times, 0.0)
         self._dfs = np.append(self._dfs, dfMat)
+        self._dfDates = np.append(self._dfDates, self._valuationDate.addYears(tmat))
         self._interpolator.fit(self._times, self._dfs)
 
         for depo in self._usedDeposits:
@@ -376,6 +378,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
             dfMat = depo._maturityDf() * dfSettle
             tmat = (depo.maturity_date - self._valuationDate) / gDaysInYear
             self._times = np.append(self._times, tmat)
+            self._dfDates = np.append(self._dfDates, self._valuationDate.addYears(tmat))
             self._dfs = np.append(self._dfs, dfMat)
             self._interpolator.fit(self._times, self._dfs)
 
@@ -392,6 +395,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
             if tset < oldtmat and tmat > oldtmat:
                 dfMat = fra.maturityDf(self)
                 self._times = np.append(self._times, tmat)
+                self._dfDates = np.append(self._dfDates, self._valuationDate.addYears(tmat))
                 self._dfs = np.append(self._dfs, dfMat)
             else:
                 self._times = np.append(self._times, tmat)
@@ -408,6 +412,7 @@ class TuringIborSingleCurve(TuringDiscountCurve):
             tmat = (maturityDate - self._valuationDate) / gDaysInYear
 
             self._times = np.append(self._times, tmat)
+            self._dfDates = np.append(self._dfDates, self._valuationDate.addYears(tmat))
             self._dfs = np.append(self._dfs, dfMat)
 
             argtuple = (self, self._valuationDate, swap)

@@ -43,11 +43,10 @@ from turing_models.utilities.global_types import TuringOptionType, TuringExercis
 value_date = TuringDate(2021, 9, 29)
 fxoption = FXVanillaOptionCICC(start_date=TuringDate(2021, 4, 20),
                                expiry=TuringDate(2022, 9, 16),
-                               cut_off_time=TuringDate(2021, 9, 16),
+                               cut_off_time=TuringDate(2022, 9, 16),
                                #    delivery_date=TuringDate(2021, 7, 20),
                                value_date=value_date,
                                underlier_symbol=CurrencyPair.USDCNY,
-                               exchange_rate=6.5,
                                strike=6.6,
                                notional=50000000.00,
                                notional_currency=Currency.USD,

@@ -386,9 +386,9 @@ class TuringDiscountCurve():
         for i in range(0, n):
             t = times[i]
             values[i] = values[i] * np.exp(-bumpSize*t)
-
+        dfdays = self._dfDates.copy()
         discCurve = TuringDiscountCurve(self._valuationDate,
-                                        times,
+                                        dfdays,
                                         values,
                                         self._interpType)
 
