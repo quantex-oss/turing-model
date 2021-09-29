@@ -2,12 +2,17 @@ import datetime
 
 import pandas as pd
 
-from fundamental.turing_db.data import Turing
+from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import CurrencyPair, RMBIRCurveType, SpotExchangeRateType
-from turing_models.market.curves import TuringDiscountCurveZeros
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
+from turing_models.utilities.global_types import TuringSwapTypes
+from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.instruments.rates.irs import create_ibor_single_curve
 
 
 class CurveGeneration:
@@ -134,125 +139,63 @@ class FXIRCurve:
         return pd.Series(data=self.ccy2_curve_gen.get_rates(), index=self.ccy2_curve_gen.get_dates())
 
 
-class CurveAdjust:
-
+class DomDiscountCurveGen:
+    """生成本币折现曲线"""
     def __init__(self,
-                 dates: list,
-                 rates: list,
-                 parallel_shift=None,
-                 curve_shift=None,
-                 pivot_point=None,
-                 tenor_start=None,
-                 tenor_end=None):
-        self.dates = dates
-        self.rates = rates
-        if parallel_shift:
-            self.parallel_shift = parallel_shift * 0.0001
-        if curve_shift:
-            self.curve_shift = curve_shift * 0.0001
-        self.pivot_point = pivot_point  # 单位：年
-        self.tenor_start = tenor_start  # 单位：年
-        self.tenor_end = tenor_end  # 单位：年
+                 value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
+        self.value_date = value_date
+        shibor_curve = TuringDB.shibor_curve()
+        shibor_deposit_tenors = shibor_curve['tenor'][:5]
+        shibor_deposit_rates = shibor_curve['rate'][:5]
+        shibor_3m_curve = TuringDB.irs_curve(curve_type='Shibor3M')['Shibor3M']
+        swap_curve_tenors = shibor_3m_curve['tenor']
+        swap_curve_rates = shibor_3m_curve['average']
 
-        self.today = TuringDate(*(datetime.date.today().timetuple()[:3]))
-        self.pivot_rate = None
-        self.start_rate = None
-        self.end_rate = None
-        self.pivot_index = None
-        self.start_index = None
-        self.end_index = None
-        self.curve_parallel_shift()
+        self.tenors = shibor_deposit_tenors + swap_curve_tenors
+        # 转成TuringDate格式
+        self.dates = value_date.addYears(self.tenors)
+        self.dom_rates = create_ibor_single_curve(value_date,
+                                                  shibor_deposit_tenors,
+                                                  shibor_deposit_rates,
+                                                  TuringDayCountTypes.ACT_365F,
+                                                  swap_curve_tenors,
+                                                  TuringSwapTypes.PAY,
+                                                  swap_curve_rates,
+                                                  TuringFrequencyTypes.QUARTERLY,
+                                                  TuringDayCountTypes.ACT_365F, 0).ccRate(value_date.addYears(self.tenors)).tolist()
 
-        if curve_shift:
-            if not self.pivot_point:
-                self.pivot_point = self.dates[0]
+    @property
+    def discount_curve(self):
+        return TuringDiscountCurveZeros(
+            self.value_date, self.dates, self.dom_rates, TuringFrequencyTypes.CONTINUOUS)
 
-            if self.pivot_point > self.dates[-1] or self.pivot_point < self.dates[0]:
-                raise TuringError("Please check the input of pivot_point")
 
-            self.confirm_center_point()
-            self.modify_data()
-            self.get_data_index()
-            self.rotate_curve()
+class ForDiscountCurveGen:
+    """生成外币折现曲线"""
+    def __init__(self,
+                 currency_pair: str,
+                 value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
+        self.value_date = value_date
+        future_tenors = ['1D', '2D', '3D', '1W', '2W', '3W', '1M', '2M', '3M', '4M', '5M', '6M', '9M', '1Y', '18M', '2Y', '3Y', '4Y', '5Y']
+        future_quotes = [0.001151, 0.000409, 0.000413, 0.00283, 0.00654, 0.0097, 0.01368, 0.02995, 0.0425, 0.0548, 0.069, 0.0848, 0.1215, 0.1583, 0.2307, 0.293, 0.393, 0.5, 0.605]
+        self.future_dates = value_date.addTenor(future_tenors)
+        exchange_rate = TuringDB.exchange_rate(symbol=currency_pair)
+        self.fwd_dfs = []
+        for quote in future_quotes:
+            self.fwd_dfs.append(exchange_rate / (exchange_rate + quote))
+        dom_discount_curve_gen = DomDiscountCurveGen(value_date)
+        self.domestic_discount_curve = dom_discount_curve_gen.discount_curve
+        _tenors = dom_discount_curve_gen.tenors
+        self.dates = value_date.addTenor(_tenors)
+        self.fx_forward_curve = TuringDiscountCurve(value_date, self.future_dates, self.fwd_dfs)
 
-    def curve_parallel_shift(self):
-        if hasattr(self, "parallel_shift"):
-            self.rates = [x + self.parallel_shift for x in self.rates]
-
-    def confirm_center_point(self):
-        dates = self.today.addYears(self.dates)
-        curve = TuringDiscountCurveZeros(self.today, dates, self.rates)
-        point_date = self.today.addYears(self.pivot_point)
-        self.pivot_rate = curve.zeroRate(
-            point_date, freqType=TuringFrequencyTypes.ANNUAL)
-
-        if self.tenor_start:
-            start_date = self.today.addYears(self.tenor_start)
-            self.start_rate = curve.zeroRate(
-                start_date, freqType=TuringFrequencyTypes.ANNUAL)
-        else:
-            self.tenor_start = self.dates[0]
-            self.start_rate = self.rates[0]
-
-        if self.tenor_end:
-            end_date = self.today.addYears(self.tenor_end)
-            self.end_rate = curve.zeroRate(
-                end_date, freqType=TuringFrequencyTypes.ANNUAL)
-        else:
-            self.tenor_end = self.dates[-1]
-            self.end_rate = self.rates[-1]
-
-    def modify_data(self):
-        if self.pivot_point not in self.dates:
-            dates_copy = self.dates.copy()
-            for i in range(len(dates_copy)):
-                if dates_copy[i] > self.pivot_point:
-                    break
-            self.dates.insert(i, self.pivot_point)
-            self.rates.insert(i, self.pivot_rate)
-
-        if self.tenor_start not in self.dates:
-            dates_copy = self.dates.copy()
-            for i in range(len(dates_copy)):
-                if dates_copy[i] > self.tenor_start:
-                    break
-            self.dates.insert(i, self.tenor_start)
-            self.rates.insert(i, self.start_rate)
-
-        if self.tenor_end not in self.dates:
-            dates_copy = self.dates.copy()
-            for i in range(len(dates_copy)):
-                if dates_copy[i] > self.tenor_end:
-                    break
-            self.dates.insert(i, self.tenor_end)
-            self.rates.insert(i, self.end_rate)
-
-    def get_data_index(self):
-        self.pivot_index = self.dates.index(self.pivot_point)
-        self.start_index = self.dates.index(self.tenor_start)
-        self.end_index = self.dates.index(self.tenor_end)
-
-    def rotate_curve(self):
-        rates_copy = self.rates.copy()
-        dr = self.curve_shift / (self.end_index - self.start_index)
-        for i in range(len(rates_copy)):
-            if i >= self.start_index and i <= self.end_index:
-                self.rates[i] = (i - self.pivot_index) * dr + rates_copy[i]
-            elif i < self.start_index:
-                self.rates[i] = (self.start_index -
-                                 self.pivot_index) * dr + rates_copy[i]
-            elif i > self.end_index:
-                self.rates[i] = (self.end_index -
-                                 self.pivot_index) * dr + rates_copy[i]
-
-    def get_dates_result(self):
-        return self.dates
-
-    def get_rates_result(self):
-        return self.rates
-
-    def get_data_dict(self):
-        return dict(zip(self.dates, self.rates))
+    @property
+    def discount_curve(self):
+        return TuringDiscountCurveFXImplied(self.value_date,
+                                            self.dates,
+                                            self.domestic_discount_curve,
+                                            self.fx_forward_curve,
+                                            TuringFrequencyTypes.CONTINUOUS)
 
 
 if __name__ == '__main__':
