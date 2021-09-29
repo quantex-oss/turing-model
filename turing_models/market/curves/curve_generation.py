@@ -179,14 +179,14 @@ class ForDiscountCurveGen:
         future_tenors = ['1D', '2D', '3D', '1W', '2W', '3W', '1M', '2M', '3M', '4M', '5M', '6M', '9M', '1Y', '18M', '2Y', '3Y', '4Y', '5Y']
         future_quotes = [0.001151, 0.000409, 0.000413, 0.00283, 0.00654, 0.0097, 0.01368, 0.02995, 0.0425, 0.0548, 0.069, 0.0848, 0.1215, 0.1583, 0.2307, 0.293, 0.393, 0.5, 0.605]
         self.future_dates = value_date.addTenor(future_tenors)
-        exchange_rate = TuringDB.exchange_rate(symbol=currency_pair)
+        exchange_rate = TuringDB.exchange_rate(symbol=currency_pair)[currency_pair]
         self.fwd_dfs = []
         for quote in future_quotes:
             self.fwd_dfs.append(exchange_rate / (exchange_rate + quote))
         dom_discount_curve_gen = DomDiscountCurveGen(value_date)
         self.domestic_discount_curve = dom_discount_curve_gen.discount_curve
         _tenors = dom_discount_curve_gen.tenors
-        self.dates = value_date.addTenor(_tenors)
+        self.dates = value_date.addYears(_tenors)
         self.fx_forward_curve = TuringDiscountCurve(value_date, self.future_dates, self.fwd_dfs)
 
     @property

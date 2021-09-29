@@ -107,6 +107,8 @@ def create_ibor_single_curve(value_date: TuringDate,
 
     if isinstance(swap_curve_dates[0], str):
         swap_curve_dates = value_date.addTenor(swap_curve_dates)
+    else:
+        swap_curve_dates = value_date.addYears(swap_curve_dates)
 
     for i in range(len(swap_curve_dates)):
         swap = IRS(effective_date=value_date,

@@ -23,9 +23,7 @@ from turing_models.market.volatility.vol_surface_generation import FXOptionImpli
 # fig.show()
 
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.market.curves.curve_generation import DomDiscountCurveGen, ForDiscountCurveGen
 
 value_date = TuringDate(2021, 9, 29)
