@@ -13,34 +13,34 @@ from turing_models.utilities.global_types import TuringSwapTypes
 # from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
 
-mkt_file = '../turing_models/market/data/market data 20210820.xlsx'
+# mkt_file = '../turing_models/market/data/market data 20210820.xlsx'
+# shibor_deposit_mkt_data = pd.read_excel(mkt_file, 'Shibor Deposit Rate')
+# shibor_deposit_mkt_data.iloc[0, :] /= 100
+# deposit_terms = shibor_deposit_mkt_data.columns.values.tolist()
+# deposit_rates = shibor_deposit_mkt_data.values.tolist()[0]
+# shibor_swap_mkt_data = pd.read_excel(mkt_file, 'Shibor Swap Rate')
+# shibor_swap_mkt_data.iloc[0, :] /= 100
+# swap_curve_dates = shibor_swap_mkt_data.columns.values.tolist()
+# swap_curve_rates = shibor_swap_mkt_data.values.tolist()[0]
+#
+# tenors = deposit_terms + swap_curve_dates
+# dom_rates = create_ibor_single_curve(value_date, deposit_terms, deposit_rates, TuringDayCountTypes.ACT_365F,
+#                                      swap_curve_dates, TuringSwapTypes.PAY, swap_curve_rates, TuringFrequencyTypes.QUARTERLY, TuringDayCountTypes.ACT_365F, 0).ccRate(value_date.addTenor(tenors)).tolist()
+#
+# fwd_data = pd.read_excel(mkt_file, 'USDCNY_Futures')
+# fwd_tenors = fwd_data['Tenor'].values.tolist()
+# fwd_quotes = [x / 10000 for x in fwd_data['Spread'].values.tolist()]
+#
+# vol_data = pd.read_excel(mkt_file, 'USDCNY_vols')
+# vol_data[['ATM', '25DRR', '25DBF', '10DRR', '10DBF']] /= 100
+# vol_tenors = vol_data['Tenor'].values.tolist()
+# atm_vols = vol_data['ATM'].values.tolist()
+# butterfly_25delta_vols = vol_data['25DBF'].values.tolist()
+# risk_reversal_25delta_vols = vol_data['25DRR'].values.tolist()
+# butterfly_10delta_vols = vol_data['10DBF'].values.tolist()
+# risk_reversal_10delta_vols = vol_data['10DRR'].values.tolist()
+
 value_date = TuringDate(2021, 8, 20)
-shibor_deposit_mkt_data = pd.read_excel(mkt_file, 'Shibor Deposit Rate')
-shibor_deposit_mkt_data.iloc[0, :] /= 100
-deposit_terms = shibor_deposit_mkt_data.columns.values.tolist()
-deposit_rates = shibor_deposit_mkt_data.values.tolist()[0]
-shibor_swap_mkt_data = pd.read_excel(mkt_file, 'Shibor Swap Rate')
-shibor_swap_mkt_data.iloc[0, :] /= 100
-swap_curve_dates = shibor_swap_mkt_data.columns.values.tolist()
-swap_curve_rates = shibor_swap_mkt_data.values.tolist()[0]
-
-tenors = deposit_terms + swap_curve_dates
-dom_rates = create_ibor_single_curve(value_date, deposit_terms, deposit_rates, TuringDayCountTypes.ACT_365F,
-                                     swap_curve_dates, TuringSwapTypes.PAY, swap_curve_rates, TuringFrequencyTypes.QUARTERLY, TuringDayCountTypes.ACT_365F, 0).ccRate(value_date.addTenor(tenors)).tolist()
-
-fwd_data = pd.read_excel(mkt_file, 'USDCNY_Futures')
-fwd_tenors = fwd_data['Tenor'].values.tolist()
-fwd_quotes = [x / 10000 for x in fwd_data['Spread'].values.tolist()]
-
-vol_data = pd.read_excel(mkt_file, 'USDCNY_vols')
-vol_data[['ATM', '25DRR', '25DBF', '10DRR', '10DBF']] /= 100
-vol_tenors = vol_data['Tenor'].values.tolist()
-atm_vols = vol_data['ATM'].values.tolist()
-butterfly_25delta_vols = vol_data['25DBF'].values.tolist()
-risk_reversal_25delta_vols = vol_data['25DRR'].values.tolist()
-butterfly_10delta_vols = vol_data['10DBF'].values.tolist()
-risk_reversal_10delta_vols = vol_data['10DRR'].values.tolist()
-
 fxoption = FXVanillaOptionCICC(start_date=TuringDate(2021, 4, 20),
                                expiry=TuringDate(2021, 9, 16),
                                cut_off_time=TuringDate(2021, 9, 16),

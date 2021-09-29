@@ -191,11 +191,11 @@ class FXVolSurfaceGen:
         self.solver_type = solver_type
         self.tol = tol
 
-        self.fx_asset_id = Turing.get_fx_symbol_to_id(_id=self.currency_pair)["asset_id"]
-        self.exchange_rate = Turing.get_exchange_rate(asset_ids=[self.fx_asset_id])[0]["exchange_rate"]
+        self.fx_asset_id = Turing.get_fx_asset_id_by_symbol(symbol=self.currency_pair)
+        self.exchange_rate = TuringDB.exchange_rate(symbol=self.currency_pair)[self.currency_pair]
 
         curve_date = TuringDB.fx_implied_volatility_curve(asset_id=self.fx_asset_id,
-                                                        volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])[self.fx_asset_id]
+                                                          volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])[self.fx_asset_id]
         self.tenors = curve_date["tenor"]
         self.atm_vols = curve_date["ATM"]
         self.butterfly_25delta_vols = curve_date["25D BF"]
