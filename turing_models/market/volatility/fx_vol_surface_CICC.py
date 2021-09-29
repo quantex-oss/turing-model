@@ -248,15 +248,14 @@ class TuringFXVolSurfaceCICC:
                  butterfly10DeltaVols: (list, np.ndarray),
                  riskReversal10DeltaVols: (list, np.ndarray),
                  dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_365F,
+                 excludePremium: bool = True,
                  atmMethod: TuringFXATMMethod = TuringFXATMMethod.FWD,
                  deltaMethod: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
                  volatilityFunctionType: TuringVolFunctionTypes = TuringVolFunctionTypes.CICC,
                  finSolverType: TuringSolverTypes = TuringSolverTypes.NELDER_MEAD,
                  tol: float = 1e-8):
         ''' Create the TuringFXVolSurfacePlus object by passing in market vol data
-        for ATM, 25 Delta and 10 Delta strikes. The alpha shifts the
-        fitting between 25D and 10D. Alpha = 0.0 is 100% 25D while alpha = 1.0
-        is 100% 10D. '''
+        for ATM, 25 Delta and 10 Delta strikes. '''
 
         # I want to allow Nones for some of the market inputs
         if butterfly10DeltaVols is None:
@@ -316,6 +315,7 @@ class TuringFXVolSurfaceCICC:
             raise TuringError("Number MS10D vols must equal number of tenors")
 
         self._daycounter = TuringDayCount(dayCountType)
+        self.excludePremium = excludePremium
         self._butterfly25DeltaVols = np.array(butterfly25DeltaVols)
         self._riskReversal25DeltaVols = np.array(riskReversal25DeltaVols)
         self._butterfly10DeltaVols = np.array(butterfly10DeltaVols)
@@ -697,11 +697,7 @@ class TuringFXVolSurfaceCICC:
         #######################################################################
         # THE ACTUAL COMPUTATION LOOP STARTS HERE
         #######################################################################
-        # d25C = []
-        # dATM = []
-        # d25P = []
-        # d10C = []
-        # d10P = []
+
         for i in range(0, numVolCurves):
 
             atmVol = self._atmVols[i]
@@ -730,7 +726,7 @@ class TuringFXVolSurfaceCICC:
             KATM = self._K_ATM[i]
 
             Df = np.exp(-np.multiply(rf, t))
-            if True == True:
+            if self.excludePremium == True:
                 alpha25 = -sci.norm.ppf(0.25 * np.reciprocal(Df))
                 alpha10 = -sci.norm.ppf(0.10 * np.reciprocal(Df))
             else:
@@ -832,12 +828,11 @@ class TuringFXVolSurfaceCICC:
             plt.plot(keyStrikes, keyVols, 'ko', markersize=4)
 
             keyStrikes = []
-            if self._alpha > 0:
-                keyStrikes.append(self._K_25D_P[tenorIndex])
-                keyStrikes.append(self._K_25D_C[tenorIndex])
-            else:
-                keyStrikes.append(self._K_10D_P[tenorIndex])
-                keyStrikes.append(self._K_10D_C[tenorIndex])
+
+            keyStrikes.append(self._K_25D_P[tenorIndex])
+            keyStrikes.append(self._K_25D_C[tenorIndex])
+            keyStrikes.append(self._K_10D_P[tenorIndex])
+            keyStrikes.append(self._K_10D_C[tenorIndex])
 
             keyVols = []
             for K in keyStrikes:

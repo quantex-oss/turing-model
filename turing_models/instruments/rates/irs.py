@@ -138,7 +138,7 @@ class IRS(IR, InstrumentBase):
     notional: float = 1000000.0
     float_spread: float = 0.0
     float_freq_type: Union[str, TuringFrequencyTypes] = '按季付息'
-    float_day_count_type: Union[str, TuringDayCountTypes] = '30/360'
+    float_day_count_type: Union[str, TuringDayCountTypes] = 'ACT/360'
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))  # 估值日期
     swap_curve_code: str = None
