@@ -196,8 +196,7 @@ class ForDiscountCurveGen:
         return TuringDiscountCurveFXImplied(self.value_date,
                                             self.dates,
                                             self.domestic_discount_curve,
-                                            self.fx_forward_curve,
-                                            TuringFrequencyTypes.CONTINUOUS)
+                                            self.fx_forward_curve)
 
 
 if __name__ == '__main__':

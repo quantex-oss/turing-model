@@ -32,9 +32,9 @@ class TuringDiscountCurveFXImplied(TuringDiscountCurve):
                  domDates: (list, np.ndarray),
                  domCurve: TuringDiscountCurve,
                  fxFwdCurve: TuringDiscountCurve,
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.ANNUAL,
-                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA,
-                 interpType: TuringInterpTypes = TuringInterpTypes.PCHIP_LOG_DISCOUNT):
+                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
+                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_365F,
+                 interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES):
         ''' Create the discount curve from a vector of dates and zero rates
         factors. The first date is the curve anchor. Then a vector of zero
         dates and then another same-length vector of rates. The rate is to the
