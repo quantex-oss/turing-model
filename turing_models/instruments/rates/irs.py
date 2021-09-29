@@ -13,10 +13,10 @@ from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.global_types import TuringSwapTypes
-from turing_models.products.rates.fixed_leg import TuringFixedLeg
-from turing_models.products.rates.float_leg import TuringFloatLeg
-from turing_models.products.rates.ibor_deposit import TuringIborDeposit
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.instruments.rates.fixed_leg import TuringFixedLeg
+from turing_models.instruments.rates.float_leg import TuringFloatLeg
+from turing_models.instruments.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instruments.core import InstrumentBase
 from turing_models.instruments.common import IR
 from turing_models.utilities.helper_functions import to_string
@@ -140,7 +140,7 @@ class IRS(IR, InstrumentBase):
     notional: float = 1000000.0
     float_spread: float = 0.0
     float_freq_type: Union[str, TuringFrequencyTypes] = '按季付息'
-    float_day_count_type: Union[str, TuringDayCountTypes] = '30/360'
+    float_day_count_type: Union[str, TuringDayCountTypes] = 'ACT/360'
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))  # 估值日期
     swap_curve_code: str = None

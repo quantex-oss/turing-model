@@ -183,32 +183,31 @@ class FXVanillaOptionCICC(FXOption):
         return greek(self, self.price, "exchange_rate_", bump=bump_local) * bump_local
 
     def fx_gamma_bump(self):
-        """ Calculation of the FX option delta by bumping the spot FX rate by
-        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        """ Calculation of the FX option gamma by bumping the spot FX rate by
+        1 cent of its value. This gives the FX spot gamma. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
         return greek(self, self.price, "exchange_rate_", bump=bump_local, order=2) * bump_local ** 2
 
     def fx_vega_bump(self):
-        """ Calculation of the FX option delta by bumping the spot FX rate by
-        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        """ Calculation of the FX option vega by bumping the spot FX volatility by
+        1 cent of its value. This gives the FX spot vega. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.01
         return greek(self, self.price, "volatility_", bump=bump_local) * bump_local
 
     def fx_theta_bump(self):
-        """ Calculation of the FX option delta by bumping the spot FX rate by
-        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        """ Calculation of the FX option delta by bumping 1 day. This gives the FX spot theta. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
         day_diff = 1
         return greek(self, self.price, "value_date_", bump=day_diff, cus_inc=(self.value_date_.addDays, day_diff))
 
     def fx_rho_bump(self):
-        """ Calculation of the FX option delta by bumping the spot FX rate by
-        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        """ Calculation of the FX option delta by bumping the domestic discount curve by
+        1 cent of its value. This gives the FX spot rho. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
@@ -216,8 +215,8 @@ class FXVanillaOptionCICC(FXOption):
                      cus_inc=(self.domestic_discount_curve.bump, bump_local)) * bump_local
 
     def fx_phi_bump(self):
-        """ Calculation of the FX option delta by bumping the spot FX rate by
-        1 cent of its value. This gives the FX spot delta. For speed we prefer
+        """ Calculation of the FX option delta by bumping the foreign discount curve by
+        1 cent of its value. This gives the FX spot phi. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
