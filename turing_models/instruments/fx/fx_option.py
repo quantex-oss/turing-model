@@ -6,7 +6,7 @@ from enum import Enum
 
 import numpy as np
 
-from fundamental.turing_db.data import Turing
+from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import FX, Currency, CurrencyPair
 from turing_models.instruments.core import InstrumentBase
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
@@ -57,7 +57,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     spot_days: int = 2
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))
-    exchange_rate: float = None  # 1 unit of foreign in domestic
     volatility: float = None
     market_price = None
     _value_date = None
@@ -115,9 +114,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             else:
                 raise TuringError("Invalid notional currency.")
 
-        if self.exchange_rate and np.any(self.exchange_rate <= 0.0):
-            raise TuringError(error_str3)
-
         if not self.cut_off_time or not isinstance(self.cut_off_time, TuringDate):
             self.cut_off_time = self.expiry
 
@@ -147,6 +143,10 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @value_date_.setter
     def value_date_(self, value: TuringDate):
         self._value_date = value
+
+    @cached_property
+    def exchange_rate(self):
+        return TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_)[self.underlier_symbol]
 
     @property
     def exchange_rate_(self):
