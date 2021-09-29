@@ -40,10 +40,10 @@ from turing_models.utilities.global_types import TuringOptionType, TuringExercis
 # butterfly_10delta_vols = vol_data['10DBF'].values.tolist()
 # risk_reversal_10delta_vols = vol_data['10DRR'].values.tolist()
 
-value_date = TuringDate(2021, 8, 20)
+value_date = TuringDate(2021, 9, 29)
 fxoption = FXVanillaOptionCICC(start_date=TuringDate(2021, 4, 20),
-                               expiry=TuringDate(2021, 9, 16),
-                               cut_off_time=TuringDate(2021, 9, 16),
+                               expiry=TuringDate(2022, 9, 16),
+                               cut_off_time=TuringDate(2022, 9, 16),
                                #    delivery_date=TuringDate(2021, 7, 20),
                                value_date=value_date,
                                underlier_symbol=CurrencyPair.USDCNY,
@@ -61,8 +61,6 @@ vega = fxoption.fx_vega_bump()
 theta = fxoption.fx_theta_bump()
 rho = fxoption.fx_rho_bump()
 phi = fxoption.fx_phi_bump()
-# vanna = fxoption.fx_vanna()
-# volga = fxoption.fx_volga()
 print("atm", atm, "sigma", fxoption.volatility_)
 print("price:", price, "delta:", delta, "gamma:",
       gamma, "vega:", vega, "theta:", theta, "rho:", rho, "phi:", phi)

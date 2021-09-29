@@ -22,7 +22,7 @@ from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.utilities.turing_date import TuringDate
 
 asset_id = 'FX00000001'  # USD/CNY
-value_date = TuringDate(2021, 9, 29)
+value_date = TuringDate(2021, 8, 20)
 data = TuringDB.fx_implied_volatility_curve(asset_id=asset_id, volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"], date=value_date)[asset_id]
 print(data)
 data = TuringDB.irs_curve(curve_type="Shibor3M", date=value_date)["Shibor3M"]
