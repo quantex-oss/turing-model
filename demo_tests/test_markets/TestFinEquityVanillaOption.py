@@ -6,11 +6,10 @@ sys.path.append("..")
 import numpy as np
 
 from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.products.equity.equity_vanilla_option import TuringEquityVanillaOption
+from turing_models.instruments.archive.equity import TuringEquityVanillaOption
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.error import TuringError
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

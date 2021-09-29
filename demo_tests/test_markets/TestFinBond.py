@@ -5,11 +5,11 @@ import sys
 sys.path.append("..")
 
 from turing_models.utilities.global_types import TuringSwapTypes
-from turing_models.products.bonds.bond import TuringYTMCalcType
-from turing_models.products.bonds.bond import TuringBond
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
-from turing_models.products.rates.ibor_deposit import TuringIborDeposit
-from turing_models.products.rates.ibor_swap import TuringIborSwap
+from turing_models.instruments.archive.bonds import TuringYTMCalcType
+from turing_models.instruments.archive.bonds import TuringBond
+from turing_models.instruments.archive.rates import TuringIborSingleCurve
+from turing_models.instruments.archive.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.archive.rates import TuringIborSwap
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.turing_date import TuringDate, fromDatetime
 from turing_models.utilities.day_count import TuringDayCountTypes

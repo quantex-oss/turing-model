@@ -9,11 +9,11 @@ from turing_models.utilities.turing_date import TuringDate
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
-from turing_models.products.bonds.bond import TuringBond
+from turing_models.instruments.archive.bonds import TuringBond
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.products.bonds.bond_option import TuringBondOption
+from turing_models.instruments.archive.bonds import TuringBondOption
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.models.model_rates_bk import TuringModelRatesBK
 

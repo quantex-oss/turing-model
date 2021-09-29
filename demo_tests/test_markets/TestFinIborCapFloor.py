@@ -5,11 +5,10 @@ import sys
 sys.path.append("..")
 
 from turing_models.utilities.global_types import TuringCapFloorTypes
-from turing_models.products.rates.ibor_cap_floor import TuringIborCapFloor
-from turing_models.products.rates.ibor_swap import TuringIborSwap
-from turing_models.products.rates.ibor_swap import TuringSwapTypes
-from turing_models.products.rates.ibor_deposit import TuringIborDeposit
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.instruments.archive.rates import TuringIborCapFloor
+from turing_models.instruments.archive.rates import TuringIborSwap
+from turing_models.instruments.archive.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.archive.rates import TuringIborSingleCurve
 
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes

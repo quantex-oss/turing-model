@@ -2,7 +2,7 @@ import sys
 sys.path.append("..")
 
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.products.inflation.inflation_index_curve import TuringInflationIndexCurve
+from turing_models.instruments.archive.inflation.inflation_index_curve import TuringInflationIndexCurve
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

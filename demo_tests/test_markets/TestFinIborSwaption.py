@@ -7,10 +7,10 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 
-from turing_models.products.rates.ibor_deposit import TuringIborDeposit
-from turing_models.products.rates.ibor_swap import TuringIborSwap
-from turing_models.products.rates.ibor_swaption import TuringIborSwaption
-from turing_models.products.rates.ibor_swaption import TuringSwapTypes
+from turing_models.instruments.archive.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.archive.rates import TuringIborSwap
+from turing_models.instruments.archive.rates import TuringIborSwaption
+from turing_models.instruments.archive.rates import TuringSwapTypes
 
 from turing_models.models.model_black import TuringModelBlack
 from turing_models.models.model_black_shifted import TuringModelBlackShifted
@@ -20,7 +20,7 @@ from turing_models.models.model_rates_hw import TuringModelRatesHW
 from turing_models.models.model_rates_bk import TuringModelRatesBK
 from turing_models.models.model_rates_bdt import TuringModelRatesBDT
 
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.instruments.archive.rates import TuringIborSingleCurve
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from fundamental.market.curves.interpolator import TuringInterpTypes

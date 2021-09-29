@@ -3,7 +3,7 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turing_models.products.equity.equity_basket_option import TuringEquityBasketOption
+from turing_models.instruments.archive.equity import TuringEquityBasketOption
 from turing_models.utilities.global_types import TuringOptionTypes
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.helper_functions import betaVectorToCorrMatrix

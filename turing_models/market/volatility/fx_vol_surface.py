@@ -8,10 +8,10 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.products.fx.fx_vanilla_option import TuringFXVanillaOption
+from turing_models.instruments.archive.fx.fx_vanilla_option import TuringFXVanillaOption
 from turing_models.models.model_option_implied_dbn import optionImpliedDbn
-from turing_models.products.fx.fx_mkt_conventions import TuringFXATMMethod
-from turing_models.products.fx.fx_mkt_conventions import TuringFXDeltaMethod
+from turing_models.instruments.archive.fx.fx_mkt_conventions import TuringFXATMMethod
+from turing_models.instruments.archive.fx.fx_mkt_conventions import TuringFXDeltaMethod
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
@@ -27,7 +27,7 @@ from turing_models.models.model_sabr import volFunctionSABR_BETA_HALF
 from turing_models.utilities.mathematics import norminvcdf
 
 from turing_models.models.model_black_scholes_analytical import bs_value
-from turing_models.products.fx.fx_vanilla_option import fastDelta
+from turing_models.instruments.archive.fx.fx_vanilla_option import fastDelta
 from turing_models.utilities.distribution import TuringDistribution
 
 from turing_models.utilities.solvers_1d import newton_secant

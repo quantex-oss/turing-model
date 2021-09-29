@@ -2,12 +2,12 @@ import numpy as np
 import sys
 sys.path.append("..")
 
-from turing_models.products.credit.cds_option import TuringCDSOption
-from turing_models.products.credit.cds import TuringCDS
-from turing_models.products.rates.ibor_swap import TuringIborSwap
-from turing_models.products.rates.ibor_deposit import TuringIborDeposit
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
-from turing_models.products.credit.cds_curve import TuringCDSCurve
+from turing_models.instruments.archive.credit import TuringCDSOption
+from turing_models.instruments.archive.credit.cds import TuringCDS
+from turing_models.instruments.archive.rates import TuringIborSwap
+from turing_models.instruments.archive.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.archive.rates import TuringIborSingleCurve
+from turing_models.instruments.archive.credit.cds_curve import TuringCDSCurve
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.turing_date import TuringDate

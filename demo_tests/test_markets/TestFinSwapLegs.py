@@ -6,12 +6,11 @@ from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.amount import TuringAmount
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.products.rates.fixed_leg import TuringFixedLeg
-from turing_models.products.rates.float_leg import TuringFloatLeg
+from turing_models.instruments.archive.rates import TuringFixedLeg
+from turing_models.instruments.archive.rates.float_leg import TuringFloatLeg
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

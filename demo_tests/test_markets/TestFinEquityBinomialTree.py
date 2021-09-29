@@ -4,10 +4,10 @@ import time
 import sys
 sys.path.append("..")
 
-from turing_models.products.equity.equity_binomial_tree import TuringEquityBinomialTree
-from turing_models.products.equity.equity_binomial_tree import TuringEquityTreeExerciseTypes
-from turing_models.products.equity.equity_binomial_tree import TuringEquityTreePayoffTypes
-from turing_models.products.equity.equity_vanilla_option import TuringEquityVanillaOption
+from turing_models.instruments.archive.equity import TuringEquityBinomialTree
+from turing_models.instruments.archive.equity import TuringEquityTreeExerciseTypes
+from turing_models.instruments.archive.equity import TuringEquityTreePayoffTypes
+from turing_models.instruments.archive.equity import TuringEquityVanillaOption
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
