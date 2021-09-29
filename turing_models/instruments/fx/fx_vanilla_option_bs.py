@@ -55,7 +55,7 @@ error_str3 = "Spot FX Rate must be greater than zero."
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class FXVanillaOptionOld(FXOption):
+class FXVanillaOptionBS(FXOption):
     """ This is a class for an FX Option trade. It permits the user to
     calculate the price of an FX Option trade which can be expressed in a
     number of ways depending on the investor or hedger's currency. It aslo
@@ -387,9 +387,3 @@ class FXVanillaOptionOld(FXOption):
         if not self.product_type:
             setattr(self, 'product_type', 'VANILLA')
         self.__post_init__()
-
-
-if __name__ == '__main__':
-    fxo = FXVanillaOption(asset_id="OPTIONCN00000170")
-    fxo._resolve()
-    fxo.price()

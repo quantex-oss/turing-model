@@ -18,7 +18,7 @@ from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 
 from turing_models.utilities.mathematics import norminvcdf
 
-from turing_models.instruments.fx.fx_vanilla_option_fp import fastDelta
+from turing_models.instruments.common import fastDelta
 
 from turing_models.utilities.solvers_1d import newton_secant
 from turing_models.utilities.global_types import TuringSolverTypes

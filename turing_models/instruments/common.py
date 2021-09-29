@@ -1,6 +1,12 @@
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 
+from numba import njit
+import numpy as np
+
+from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
+from turing_models.utilities.error import TuringError
+
 
 bump = 1e-4
 
@@ -47,6 +53,30 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         p_up = price()
         clear()
         return (p_up - 2.0 * p0 + p_down) / bump / bump
+
+@njit(fastmath=True, cache=True)
+def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
+    ''' Calculation of the FX Option delta. Used in the determination of
+    the volatility surface. Avoids discount curve interpolation so it
+    should be slightly faster than the full calculation of delta. '''
+
+    pips_spot_delta = bs_delta(s, t, k, rd, rf, vol, optionTypeValue, False)
+
+    if deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA.value:
+        return pips_spot_delta
+    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA.value:
+        pips_fwd_delta = pips_spot_delta * np.exp(rf*t)
+        return pips_fwd_delta
+    elif deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
+        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
+        pct_spot_delta_prem_adj = pips_spot_delta - vpctf
+        return pct_spot_delta_prem_adj
+    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
+        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
+        pct_fwd_delta_prem_adj = np.exp(rf*t) * (pips_spot_delta - vpctf)
+        return pct_fwd_delta_prem_adj
+    else:
+        raise TuringError("Unknown TuringFXDeltaMethod")
 
 
 class RiskMeasure(Enum):
