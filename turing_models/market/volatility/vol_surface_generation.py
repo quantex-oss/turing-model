@@ -192,17 +192,14 @@ class FXVolSurfaceGen:
         self.tol = tol
 
         self.fx_asset_id = Turing.get_fx_asset_id_by_symbol(symbol=self.currency_pair)
-        self.exchange_rate = getattr(self, 'exchange_rate_data') or TuringDB.exchange_rate(symbol=self.currency_pair, date=value_date)[self.currency_pair]
+        self.exchange_rate = getattr(self, 'exchange_rate_data', None) or \
+                             TuringDB.exchange_rate(symbol=self.currency_pair, date=value_date)[self.currency_pair]
 
-        curve_date = getattr(self, 'fx_implied_volatility_curve_data') or \
+        curve_date = getattr(self, 'fx_implied_volatility_curve_data', None) or \
                      TuringDB.fx_implied_volatility_curve(asset_id=self.fx_asset_id,
                                                           volatility_type=["ATM", "25D BF", "25D RR", "10D BF",
                                                                            "10D RR"], date=value_date)[self.fx_asset_id]
-        self.exchange_rate = TuringDB.exchange_rate(symbol=self.currency_pair, date=value_date)[self.currency_pair]
-
-        curve_date = TuringDB.fx_implied_volatility_curve(asset_id=self.fx_asset_id,
-                                                          volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
-                                                          date=value_date)[self.fx_asset_id]
+        print("fx_implied_volatility_curve_data:", curve_date)
         self.tenors = curve_date["tenor"]
         self.atm_vols = curve_date["ATM"]
         self.butterfly_25delta_vols = curve_date["25D BF"]

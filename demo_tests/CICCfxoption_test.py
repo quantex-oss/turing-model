@@ -1,17 +1,8 @@
-import time
-
-import numpy as np
-import pandas as pd
 from turing_models.instruments.common import Currency, CurrencyPair
-from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.instruments.fx.fx_vanilla_option_CICC import FXVanillaOptionCICC
-from turing_models.instruments.rates.irs import create_ibor_single_curve
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.global_types import TuringSwapTypes
+from turing_models.instruments.fx.fx_vanilla_option import FXVanillaOption
 # from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
+from turing_models.utilities.turing_date import TuringDate
 
 # mkt_file = '../turing_models/market/data/market data 20210820.xlsx'
 # shibor_deposit_mkt_data = pd.read_excel(mkt_file, 'Shibor Deposit Rate')
@@ -41,18 +32,18 @@ from turing_models.utilities.global_types import TuringOptionType, TuringExercis
 # risk_reversal_10delta_vols = vol_data['10DRR'].values.tolist()
 
 value_date = TuringDate(2021, 8, 20)
-fxoption = FXVanillaOptionCICC(start_date=TuringDate(2021, 4, 20),
-                               expiry=TuringDate(2021, 9, 16),
-                               cut_off_time=TuringDate(2021, 9, 16),
-                               #    delivery_date=TuringDate(2021, 7, 20),
-                               value_date=value_date,
-                               underlier_symbol=CurrencyPair.USDCNY,
-                               strike=6.6,
-                               notional=50000000.00,
-                               notional_currency=Currency.USD,
-                               option_type=TuringOptionType.CALL,
-                               exercise_type=TuringExerciseType.EUROPEAN,
-                               premium_currency=Currency.CNY)
+fxoption = FXVanillaOption(start_date=TuringDate(2021, 4, 20),
+                           expiry=TuringDate(2021, 9, 16),
+                           cut_off_time=TuringDate(2021, 9, 16),
+                           #    delivery_date=TuringDate(2021, 7, 20),
+                           value_date=value_date,
+                           underlier_symbol=CurrencyPair.USDCNY,
+                           strike=6.6,
+                           notional=50000000.00,
+                           notional_currency=Currency.USD,
+                           option_type=TuringOptionType.CALL,
+                           exercise_type=TuringExerciseType.EUROPEAN,
+                           premium_currency=Currency.CNY)
 atm = fxoption.atm()
 price = fxoption.price()
 delta = fxoption.fx_delta_bump()

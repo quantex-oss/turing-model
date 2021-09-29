@@ -4,15 +4,15 @@ import pandas as pd
 
 from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import CurrencyPair, RMBIRCurveType, SpotExchangeRateType
+from turing_models.instruments.rates.irs import create_ibor_single_curve
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.instruments.rates.irs import create_ibor_single_curve
+from turing_models.utilities.global_types import TuringSwapTypes
+from turing_models.utilities.turing_date import TuringDate
 
 
 class CurveGeneration:
@@ -65,7 +65,7 @@ class FXIRCurve:
                  curve_type: (str, RMBIRCurveType) = RMBIRCurveType.Shibor3M,
                  # 即期汇率类型（'central'-中间价、'average'-即期询价报价均值）
                  spot_rate_type: (
-                     str, SpotExchangeRateType) = SpotExchangeRateType.Central,
+                         str, SpotExchangeRateType) = SpotExchangeRateType.Central,
                  base_date: TuringDate = TuringDate(
                      *(datetime.date.today().timetuple()[:3])),
                  number_of_days: int = 730):
@@ -141,13 +141,17 @@ class FXIRCurve:
 
 class DomDiscountCurveGen:
     """生成本币折现曲线"""
+
     def __init__(self,
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
         self.value_date = value_date
-        shibor_curve = getattr(self, 'shibor_curve_data') or TuringDB.shibor_curve(date=value_date)
+        shibor_curve = getattr(self, 'shibor_curve_data', None) or TuringDB.shibor_curve(date=value_date)
+        print("shibor_curve_data:", shibor_curve)
         shibor_deposit_tenors = shibor_curve['tenor'][:5]
         shibor_deposit_rates = shibor_curve['rate'][:5]
-        shibor_3m_curve = getattr(self, 'irs_curve_data') or TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
+        shibor_3m_curve = getattr(self, 'irs_curve_data', None) or \
+                          TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
+        print("irs_curve_data:", shibor_3m_curve)
         swap_curve_tenors = shibor_3m_curve['tenor']
         swap_curve_rates = shibor_3m_curve['average']
 
@@ -162,7 +166,8 @@ class DomDiscountCurveGen:
                                                   TuringSwapTypes.PAY,
                                                   swap_curve_rates,
                                                   TuringFrequencyTypes.QUARTERLY,
-                                                  TuringDayCountTypes.ACT_365F, 0).ccRate(value_date.addYears(self.tenors)).tolist()
+                                                  TuringDayCountTypes.ACT_365F, 0).ccRate(
+            value_date.addYears(self.tenors)).tolist()
 
     @property
     def discount_curve(self):
@@ -172,16 +177,21 @@ class DomDiscountCurveGen:
 
 class ForDiscountCurveGen:
     """生成外币折现曲线"""
+
     def __init__(self,
                  currency_pair: str,
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
         self.value_date = value_date
         fx_asset_id = Turing.get_fx_asset_id_by_symbol(symbol=currency_pair)
-        future_data = getattr(self, 'swap_curve_data') or TuringDB.swap_curve(asset_id=fx_asset_id, date=value_date)[fx_asset_id]
+        future_data = getattr(self, 'swap_curve_data', None) or \
+                      TuringDB.swap_curve(asset_id=fx_asset_id, date=value_date)[fx_asset_id]
+        print("swap_curve_data:", future_data)
         future_tenors = future_data['tenor']
         future_quotes = future_data['swap_point']
         self.future_dates = value_date.addYears(future_tenors)
-        exchange_rate = getattr(self, 'exchange_rate_data') or TuringDB.exchange_rate(symbol=currency_pair, date=value_date)[currency_pair]
+        exchange_rate = getattr(self, 'exchange_rate_data', None) or \
+                        TuringDB.exchange_rate(symbol=currency_pair, date=value_date)[currency_pair]
+        print("exchange_rate_data:", exchange_rate)
         self.fwd_dfs = []
         for quote in future_quotes:
             self.fwd_dfs.append(exchange_rate / (exchange_rate + quote))
