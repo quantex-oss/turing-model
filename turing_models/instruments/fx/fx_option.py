@@ -30,7 +30,7 @@ from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceG
 # SO EURUSD = 1.30 MEANS 1.30 DOLLARS PER EURO SO DOLLAR IS THE DOMESTIC AND
 # EUR IS THE FOREIGN CURRENCY
 ###############################################################################
-
+from functools import cached_property
 
 error_str = "Time to expiry must be positive."
 error_str2 = "Volatility should not be negative."
@@ -156,29 +156,37 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def exchange_rate_(self, value: float):
         self._exchange_rate = value
 
+    @cached_property
+    def gen_dom_discount(self):
+        return DomDiscountCurveGen(self.value_date_).discount_curve
+
     @property
     def domestic_discount_curve(self):
         if self._domestic_discount_curve:
             return self._domestic_discount_curve
         else:
-            return DomDiscountCurveGen(self.value_date_).discount_curve
+            return self.gen_dom_discount
 
     @domestic_discount_curve.setter
     def domestic_discount_curve(self, value: TuringDiscountCurve):
         self._domestic_discount_curve = value
+
+    @cached_property
+    def gen_for_discount_curve(self):
+        return ForDiscountCurveGen(currency_pair=self.underlier_symbol, value_date=self.value_date_).discount_curve
 
     @property
     def foreign_discount_curve(self):
         if self._foreign_discount_curve:
             return self._foreign_discount_curve
         else:
-            return ForDiscountCurveGen(currency_pair=self.underlier_symbol, value_date=self.value_date_).discount_curve
+            return self.gen_for_discount_curve
 
     @foreign_discount_curve.setter
     def foreign_discount_curve(self, value: TuringDiscountCurve):
         self._foreign_discount_curve = value
 
-    @property
+    @cached_property
     def volatility_surface(self):
         if self.underlier_symbol:
             return FXVolSurfaceGen(currency_pair=self.underlier_symbol,
@@ -267,3 +275,5 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         s += to_string("Exchange Rate", self.exchange_rate_)
         s += to_string("Volatility", self.volatility_)
         return s
+
+
