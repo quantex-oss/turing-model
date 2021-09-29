@@ -13,7 +13,7 @@ from turing_models.utilities.global_types import TuringSwapTypes
 # from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
 
-mkt_file = '/Users/yu/turingmodel/turing-model-src/turing_models/market/data/market data 20210820.xlsx'
+mkt_file = 'C:/Users/Administrator/Desktop/FX Vanilla/FX Vanilla/market data 20210820.xlsx'
 value_date = TuringDate(2021, 8, 20)
 shibor_deposit_mkt_data = pd.read_excel(mkt_file, 'Shibor Deposit Rate')
 shibor_deposit_mkt_data.iloc[0, :] /= 100

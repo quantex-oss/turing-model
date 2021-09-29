@@ -113,9 +113,9 @@ from turing_models.instruments.rates.irs import IRS
 import numpy as np
 
 from turing_models.utilities.mathematics import ONE_MILLION
-from turing_models.instruments.archive.rates import TuringIborSingleCurve
-from turing_models.instruments.archive.rates import TuringIborSwap
-from turing_models.instruments.archive.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.instruments.rates.ibor_swap import TuringIborSwap
+from turing_models.instruments.rates.ibor_deposit import TuringIborDeposit
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendarTypes

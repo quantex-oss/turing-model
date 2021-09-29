@@ -13,10 +13,10 @@ from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.global_types import TuringSwapTypes
-from turing_models.instruments.archive.rates import TuringFixedLeg
-from turing_models.instruments.archive.rates.float_leg import TuringFloatLeg
-from turing_models.instruments.archive.rates.ibor_deposit import TuringIborDeposit
-from turing_models.instruments.archive.rates import TuringIborSingleCurve
+from turing_models.instruments.rates.fixed_leg import TuringFixedLeg
+from turing_models.instruments.rates.float_leg import TuringFloatLeg
+from turing_models.instruments.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instruments.core import InstrumentBase
 from turing_models.instruments.common import IR
 from turing_models.utilities.helper_functions import to_string

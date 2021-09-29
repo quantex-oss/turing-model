@@ -14,7 +14,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.market.curves.interpolator import TuringInterpTypes, TuringInterpolator
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.instruments.rates.ibor_deposit import TuringIborDeposit
-from turing_models.instruments.archive.rates.ibor_fra import TuringIborFRA
+from turing_models.instruments.rates.ibor_fra import TuringIborFRA
 
 swaptol = 1e-10
 

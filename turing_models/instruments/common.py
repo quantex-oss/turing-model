@@ -642,6 +642,20 @@ class AssetType(Enum):
         return self.value
 
 
+class TuringFXATMMethod(Enum):
+    SPOT = 1  # Spot FX Rate
+    FWD = 2  # At the money forward
+    FWD_DELTA_NEUTRAL = 3  # K = F*exp(0.5*sigma*sigma*T)
+    FWD_DELTA_NEUTRAL_PREM_ADJ = 4  # K = F*exp(-0.5*sigma*sigma*T)
+
+
+class TuringFXDeltaMethod(Enum):
+    SPOT_DELTA = 1
+    FORWARD_DELTA = 2
+    SPOT_DELTA_PREM_ADJ = 3
+    FORWARD_DELTA_PREM_ADJ = 4
+
+
 class Priceable:
 
     @property

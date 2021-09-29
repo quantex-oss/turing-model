@@ -13,9 +13,9 @@ from turing_models.market.curves.discount_curve import TuringDiscountCurve
 ##########################################################################
 
 class TuringFixedLeg(object):
-    ''' Class for managing the fixed leg of a swap. A fixed leg is a leg with
+    """ Class for managing the fixed leg of a swap. A fixed leg is a leg with
     a sequence of flows calculated according to an ISDA schedule and with a
-    coupon that is fixed over the life of the swap. '''
+    coupon that is fixed over the life of the swap. """
 
     def __init__(self,
                  effectiveDate: TuringDate,  # Date interest starts to accrue

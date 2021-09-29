@@ -9,8 +9,7 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.instruments.archive.fx.fx_mkt_conventions import TuringFXATMMethod
-from turing_models.instruments.archive.fx.fx_mkt_conventions import TuringFXDeltaMethod
+from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMethod
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
@@ -19,7 +18,7 @@ from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 
 from turing_models.utilities.mathematics import norminvcdf
 
-from turing_models.instruments.archive.fx.fx_vanilla_option import fastDelta
+from turing_models.instruments.fx.fx_vanilla_option_fp import fastDelta
 
 from turing_models.utilities.solvers_1d import newton_secant
 from turing_models.utilities.global_types import TuringSolverTypes

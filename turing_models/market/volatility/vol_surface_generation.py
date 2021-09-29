@@ -10,7 +10,7 @@ from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.curve_generation import FXIRCurve
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
-from turing_models.instruments.archive.fx.fx_mkt_conventions import TuringFXATMMethod, TuringFXDeltaMethod
+from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMethod
 from turing_models.utilities.global_types import TuringSolverTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
