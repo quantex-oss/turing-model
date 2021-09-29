@@ -163,6 +163,7 @@ class FXVolSurfaceGen:
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3])),
                  alpha: float = 1,
                  day_count_type: TuringDayCountTypes = TuringDayCountTypes.ACT_365F,
+                 exclude_premium: bool = True,
                  atm_method: TuringFXATMMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL,
                  delta_method: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
                  volatility_function_type: TuringVolFunctionTypes = TuringVolFunctionTypes.VANNA_VOLGA,
@@ -183,6 +184,7 @@ class FXVolSurfaceGen:
         self.value_date = value_date
         self.alpha = alpha
         self.day_count_type = day_count_type
+        self.exclude_premium = exclude_premium
         self.atm_method = atm_method
         self.delta_method = delta_method
         self.volatility_function_type = volatility_function_type
@@ -201,6 +203,7 @@ class FXVolSurfaceGen:
         self.butterfly_10delta_vols = curve_date["10D BF"]
         self.risk_reversal_10delta_vols = curve_date["10D RR"]
 
+    @property
     def volatility_surface(self):
         """根据volatility function type区分初始化不同的曲面"""
         if self.volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
@@ -235,6 +238,7 @@ class FXVolSurfaceGen:
                                           self.butterfly_10delta_vols,
                                           self.risk_reversal_10delta_vols,
                                           self.day_count_type,
+                                          self.exclude_premium,
                                           self.atm_method,
                                           self.delta_method,
                                           self.volatility_function_type,

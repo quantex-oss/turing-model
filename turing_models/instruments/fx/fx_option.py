@@ -21,6 +21,9 @@ from turing_models.utilities.global_types import TuringOptionTypes, TuringOption
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.turing_date import TuringDate
+from turing_models.market.curves.curve_generation import DomDiscountCurveGen, ForDiscountCurveGen
+from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
+
 
 ###############################################################################
 # ALL CCY RATES MUST BE IN NUM UNITS OF DOMESTIC PER UNIT OF FOREIGN CURRENCY
@@ -55,16 +58,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))
     exchange_rate: float = None  # 1 unit of foreign in domestic
-    future_quotes: List[Any] = field(default_factory=list)
-    future_tenors: List[Any] = field(default_factory=list)
-    tenors: List[Any] = field(default_factory=list)
-    ccy2_cc_rates: List[Any] = field(default_factory=list)  # 本币
-    vol_tenors: List[Any] = field(default_factory=list)
-    atm_vols: List[Any] = field(default_factory=list)
-    butterfly_25delta_vols: List[Any] = field(default_factory=list)
-    risk_reversal_25delta_vols: List[Any] = field(default_factory=list)
-    butterfly_10delta_vols: List[Any] = field(default_factory=list)
-    risk_reversal_10delta_vols: List[Any] = field(default_factory=list)
     volatility: float = None
     market_price = None
     _value_date = None
@@ -164,41 +157,11 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         self._exchange_rate = value
 
     @property
-    def tenors_(self):
-        """把年化的时间列表转换为TuringDate格式"""
-        tenors = self.tenors
-        if isinstance(tenors[0], str):
-            return self.value_date_.addTenor(tenors)
-        else:
-            return self.value_date_.addYears(tenors)
-
-    @property
-    def future_tenors_(self):
-        """把年化的时间列表转换为TuringDate格式"""
-        future_tenors = self.future_tenors
-        if isinstance(future_tenors[0], str):
-            return self.value_date_.addTenor(future_tenors)
-        else:
-            return self.value_date_.addYears(self.future_tenors)
-
-    @property
-    def fx_forward_curve(self):
-        if self.future_tenors_ and self.future_quotes:
-            self.fwd_dfs = []
-            for x in self.future_quotes:
-                self.fwd_dfs.append(self.exchange_rate /
-                                    (self.exchange_rate + x))
-
-            return TuringDiscountCurve(
-                self.value_date_, self.future_tenors_, self.fwd_dfs)
-
-    @property
     def domestic_discount_curve(self):
         if self._domestic_discount_curve:
             return self._domestic_discount_curve
-        elif self.tenors_ and self.ccy2_cc_rates:
-            return TuringDiscountCurveZeros(
-                self.value_date_, self.tenors_, self.ccy2_cc_rates, TuringFrequencyTypes.CONTINUOUS)
+        else:
+            return DomDiscountCurveGen(self.value_date_).discount_curve
 
     @domestic_discount_curve.setter
     def domestic_discount_curve(self, value: TuringDiscountCurve):
@@ -208,9 +171,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def foreign_discount_curve(self):
         if self._foreign_discount_curve:
             return self._foreign_discount_curve
-        elif self.tenors_ and self.fx_forward_curve:
-            return TuringDiscountCurveFXImplied(
-                self.value_date_, self.tenors_, self.domestic_discount_curve, self.fx_forward_curve, TuringFrequencyTypes.CONTINUOUS)
+        else:
+            return ForDiscountCurveGen(currency_pair=self.underlier_symbol, value_date=self.value_date_).discount_curve
 
     @foreign_discount_curve.setter
     def foreign_discount_curve(self, value: TuringDiscountCurve):
@@ -218,17 +180,11 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def volatility_surface(self):
-        return TuringFXVolSurfaceCICC(self.value_date_,
-                                      self.exchange_rate_,
-                                      self.underlier_symbol,
-                                      self.domestic_discount_curve,
-                                      self.foreign_discount_curve,
-                                      self.vol_tenors,
-                                      self.atm_vols,
-                                      self.butterfly_25delta_vols,
-                                      self.risk_reversal_25delta_vols,
-                                      self.butterfly_10delta_vols,
-                                      self.risk_reversal_10delta_vols)
+        if self.underlier_symbol:
+            return FXVolSurfaceGen(currency_pair=self.underlier_symbol,
+                                   domestic_discount_curve=self.domestic_discount_curve,
+                                   foreign_discount_curve=self.foreign_discount_curve,
+                                   value_date=self.value_date_).volatility_surface
 
     @property
     def model(self):
@@ -267,11 +223,9 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             v = self.ctx_volatility
         elif self.volatility:
             v = self.model._volatility
-        elif self.vol_tenors:
+        else:
             v = self.volatility_surface.volatilityFromStrikeDate(
                 self.strike, self.expiry)
-        else:
-            raise TuringError("Volatility does not exist.")
         if np.all(v >= 0.0):
             v = np.maximum(v, 1e-10)
             return v

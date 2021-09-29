@@ -34,4 +34,4 @@ foreign_discount_curve = ForDiscountCurveGen(currency_pair='USD/CNY', value_date
 vol_surface = FXVolSurfaceGen(currency_pair='USD/CNY',
                               domestic_discount_curve=domestic_discount_curve,
                               foreign_discount_curve=foreign_discount_curve,
-                              value_date=value_date)
+                              value_date=value_date).volatility_surface

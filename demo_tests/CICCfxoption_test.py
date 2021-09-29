@@ -53,18 +53,7 @@ fxoption = FXVanillaOptionCICC(start_date=TuringDate(2021, 4, 20),
                                notional_currency=Currency.USD,
                                option_type=TuringOptionType.CALL,
                                exercise_type=TuringExerciseType.EUROPEAN,
-                               premium_currency=Currency.CNY,
-                               future_quotes=fwd_quotes,
-                               future_tenors=fwd_tenors,
-                               tenors=tenors,
-                               ccy2_cc_rates=dom_rates,
-                               vol_tenors=vol_tenors,
-                               atm_vols=atm_vols,
-                               butterfly_25delta_vols=butterfly_25delta_vols,
-                               risk_reversal_25delta_vols=risk_reversal_25delta_vols,
-                               butterfly_10delta_vols=butterfly_10delta_vols,
-                               risk_reversal_10delta_vols=risk_reversal_10delta_vols
-                               )
+                               premium_currency=Currency.CNY)
 atm = fxoption.atm()
 price = fxoption.price()
 delta = fxoption.fx_delta_bump()
