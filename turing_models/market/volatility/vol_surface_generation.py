@@ -166,7 +166,7 @@ class FXVolSurfaceGen:
                  exclude_premium: bool = True,
                  atm_method: TuringFXATMMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL,
                  delta_method: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
-                 volatility_function_type: TuringVolFunctionTypes = TuringVolFunctionTypes.VANNA_VOLGA,
+                 volatility_function_type: TuringVolFunctionTypes = TuringVolFunctionTypes.CICC,
                  solver_type: TuringSolverTypes = TuringSolverTypes.NELDER_MEAD,
                  tol: float = 1e-8):
 
