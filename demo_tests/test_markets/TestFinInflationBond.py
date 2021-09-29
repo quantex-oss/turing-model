@@ -1,14 +1,12 @@
-import numpy as np
-
 import sys
 sys.path.append("..")
 
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.products.inflation.inflation_bond import TuringInflationBond
-from turing_models.products.bonds import TuringYTMCalcType
-from turing_models.products.inflation.inflation_index_curve import TuringInflationIndexCurve
+from turing_models.instruments.archive.inflation.inflation_bond import TuringInflationBond
+from turing_models.instruments.archive.bonds import TuringYTMCalcType
+from turing_models.instruments.archive.inflation.inflation_index_curve import TuringInflationIndexCurve
 from fundamental.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 

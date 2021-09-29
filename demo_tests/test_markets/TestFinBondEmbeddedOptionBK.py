@@ -8,13 +8,12 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 
-from turing_models.products.rates.ibor_swap import TuringIborSwap
-from turing_models.products.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.archive.rates import TuringIborSwap
 
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.instruments.archive.rates import TuringIborSingleCurve
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.products.bonds.bond import TuringBond
-from turing_models.products.bonds.bond_embedded_option import TuringBondEmbeddedOption
+from turing_models.instruments.archive.bonds import TuringBond
+from turing_models.instruments.archive.bonds.bond_embedded_option import TuringBondEmbeddedOption
 from turing_models.utilities.global_types import TuringSwapTypes
 
 from turing_models.models.model_rates_bk import TuringModelRatesBK

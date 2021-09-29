@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import time as time
 
 import sys
 sys.path.append("..")
@@ -8,20 +7,17 @@ sys.path.append("..")
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.calendar import TuringCalendarTypes
-from turing_models.products.rates.ibor_fra import TuringIborFRA
-from turing_models.products.rates.ibor_future import TuringIborFuture
-from turing_models.products.rates.ibor_deposit import TuringIborDeposit
-from turing_models.products.rates.ibor_swap import TuringIborSwap
-from turing_models.utilities.calendar import TuringBusDayAdjustTypes
-from fundamental.market.curves.interpolator import TuringInterpTypes
+from turing_models.instruments.archive.rates import TuringIborFRA
+from turing_models.instruments.archive.rates.ibor_future import TuringIborFuture
+from turing_models.instruments.archive.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.archive.rates import TuringIborSwap
 from turing_models.utilities.mathematics import ONE_MILLION
 from turing_models.utilities.global_types import TuringSwapTypes
 from fundamental.market.curves.interpolator import TuringInterpTypes
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
-from turing_models.products.rates.ibor_dual_curve import TuringIborDualCurve
-from turing_models.products.rates.ois_curve import TuringOISCurve
-from turing_models.products.rates.ois import TuringOIS
+from turing_models.instruments.archive.rates import TuringIborSingleCurve
+from turing_models.instruments.archive.rates import TuringIborDualCurve
+from turing_models.instruments.archive.rates.ois_curve import TuringOISCurve
+from turing_models.instruments.archive.rates import TuringOIS
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

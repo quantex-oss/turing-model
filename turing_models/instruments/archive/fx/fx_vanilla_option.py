@@ -10,7 +10,7 @@ from turing_models.utilities.global_types import TuringOptionTypes
 #from turing_models.products.fx.FinFXModelTypes import FinFXModel
 #from turing_models.products.fx.FinFXModelTypes import FinFXModelBlackScholes
 #from turing_models.products.fx.FinFXModelTypes import FinFXModelSABR
-from turing_models.products.fx.fx_mkt_conventions import TuringFXDeltaMethod
+from turing_models.instruments.archive.fx.fx_mkt_conventions import TuringFXDeltaMethod
 
 from turing_models.models.model_crr_tree import crrTreeValAvg
 from turing_models.models.model_sabr import volFunctionSABR

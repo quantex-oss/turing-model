@@ -9,11 +9,11 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes
-from turing_models.products.rates.ibor_fra import TuringIborFRA
-from turing_models.products.rates.ibor_future import TuringIborFuture
-from turing_models.products.rates.ois import TuringOIS
-from turing_models.products.rates.ois_curve import TuringOISCurve
-from turing_models.products.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.archive.rates import TuringIborFRA
+from turing_models.instruments.archive.rates.ibor_future import TuringIborFuture
+from turing_models.instruments.archive.rates import TuringOIS
+from turing_models.instruments.archive.rates.ois_curve import TuringOISCurve
+from turing_models.instruments.archive.rates.ibor_deposit import TuringIborDeposit
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from fundamental.market.curves.interpolator import TuringInterpTypes
 from turing_models.utilities.global_types import TuringSwapTypes

@@ -3,7 +3,7 @@ import time
 import sys
 sys.path.append("..")
 
-from turing_models.products.equity.equity_american_option import TuringEquityAmericanOption
+from turing_models.instruments.archive.equity import TuringEquityAmericanOption
 from turing_models.utilities.global_types import TuringOptionTypes
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes, TuringModelBlackScholesTypes

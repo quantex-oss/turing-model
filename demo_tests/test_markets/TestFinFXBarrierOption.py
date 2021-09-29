@@ -4,8 +4,8 @@ sys.path.append("..")
 from turing_models.models.process_simulator import TuringProcessTypes
 from turing_models.models.process_simulator import TuringGBMNumericalScheme
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.products.fx.fx_barrier_option import TuringFXBarrierTypes
-from turing_models.products.fx.fx_barrier_option import TuringFXBarrierOption
+from turing_models.instruments.archive.fx.fx_barrier_option import TuringFXBarrierTypes
+from turing_models.instruments.archive.fx.fx_barrier_option import TuringFXBarrierOption
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.turing_date import TuringDate
 

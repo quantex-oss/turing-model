@@ -6,10 +6,10 @@ from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.utilities.global_types import TuringExerciseTypes
-from turing_models.products.rates.ibor_swaption import TuringIborSwaption
-from turing_models.products.rates.ibor_swap import TuringIborSwap
+from turing_models.instruments.archive.rates import TuringIborSwaption
+from turing_models.instruments.archive.rates import TuringIborSwap
 
-from turing_models.products.rates.ibor_bermudan_swaption import TuringIborBermudanSwaption
+from turing_models.instruments.archive.rates import TuringIborBermudanSwaption
 from turing_models.models.model_black import TuringModelBlack
 from turing_models.models.model_rates_bk import TuringModelRatesBK
 from turing_models.models.model_rates_hw import TuringModelRatesHW

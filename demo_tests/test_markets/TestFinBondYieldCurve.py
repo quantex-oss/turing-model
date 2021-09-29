@@ -4,12 +4,8 @@ import os
 import sys
 sys.path.append("..")
 
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.turing_date import TuringDate, fromDatetime
-from turing_models.products.bonds.bond import TuringBond
-from turing_models.products.bonds.bond_yield_curve import TuringBondYieldCurve
-from turing_models.products.bonds.bond_yield_curve_model import *
+from turing_models.utilities.turing_date import fromDatetime
+from turing_models.instruments.archive.bonds.bond_yield_curve_model import *
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

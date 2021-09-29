@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")
 
-from turing_models.products.equity.equity_forward import TuringEquityForward
+from turing_models.instruments.archive.equity import TuringEquityForward
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_types import TuringLongShort
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat

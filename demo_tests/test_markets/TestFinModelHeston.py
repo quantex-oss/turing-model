@@ -6,7 +6,7 @@ sys.path.append("..")
 
 from turing_models.models.model_heston import TuringModelHeston, TuringHestonNumericalScheme
 from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.products.equity.equity_vanilla_option import TuringEquityVanillaOption
+from turing_models.instruments.archive.equity import TuringEquityVanillaOption
 from turing_models.utilities.turing_date import TuringDate
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode

@@ -1,12 +1,11 @@
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 import numpy as np
-import cProfile
 
 import sys
 sys.path.append("..")
 
-from turing_models.products.equity.equity_basket_snowball import TuringSnowballBasketOption
-from turing_models.products.equity.equity_snowball_option import TuringEquitySnowballOption
+from turing_models.instruments.archive.equity import TuringSnowballBasketOption
+from turing_models.instruments.archive.equity import TuringEquitySnowballOption
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.utilities.helper_functions import betaVectorToCorrMatrix

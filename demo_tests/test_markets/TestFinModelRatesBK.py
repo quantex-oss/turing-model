@@ -6,7 +6,7 @@ sys.path.append("..")
 
 from turing_models.utilities.turing_date import TuringDate
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.products.bonds.bond import TuringBond
+from turing_models.instruments.archive.bonds import TuringBond
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.global_variables import gDaysInYear

@@ -4,13 +4,13 @@ import time
 import sys
 sys.path.append("..")
 
-from turing_models.products.credit.cds_tranche import TuringLossDistributionBuilder
-from turing_models.products.credit.cds_index_portfolio import TuringCDSIndexPortfolio
-from turing_models.products.credit.cds_tranche import TuringCDSTranche
-from turing_models.products.credit.cds import TuringCDS
-from turing_models.products.rates.ibor_swap import TuringIborSwap
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
-from turing_models.products.credit.cds_curve import TuringCDSCurve
+from turing_models.instruments.archive.credit import TuringLossDistributionBuilder
+from turing_models.instruments.archive.credit import TuringCDSIndexPortfolio
+from turing_models.instruments.archive.credit import TuringCDSTranche
+from turing_models.instruments.archive.credit.cds import TuringCDS
+from turing_models.instruments.archive.rates import TuringIborSwap
+from turing_models.instruments.archive.rates import TuringIborSingleCurve
+from turing_models.instruments.archive.credit.cds_curve import TuringCDSCurve
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.turing_date import TuringDate

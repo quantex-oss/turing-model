@@ -3,9 +3,8 @@ sys.path.append("..")
 
 from turing_models.utilities.turing_date import TuringDate
 
-from turing_models.products.bonds.bond_mortgage import TuringBondMortgage
-from turing_models.products.bonds.bond_mortgage import TuringBondMortgageTypes
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.instruments.archive.bonds.bond_mortgage import TuringBondMortgage
+from turing_models.instruments.archive.bonds.bond_mortgage import TuringBondMortgageTypes
 
 from TuringTestCases import TuringTestCases, globalTestCaseMode
 testCases = TuringTestCases(__file__, globalTestCaseMode)

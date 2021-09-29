@@ -7,9 +7,9 @@ sys.path.append("..")
 from turing_models.utilities.turing_date import TuringDate
 from fundamental.market.curves.discount_curve import TuringDiscountCurve
 from fundamental.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.products.bonds.bond import TuringBond
-from turing_models.products.rates.ibor_swaption import TuringIborSwaption
-from turing_models.products.rates.ibor_swaption import TuringSwapTypes
+from turing_models.instruments.archive.bonds import TuringBond
+from turing_models.instruments.archive.rates import TuringIborSwaption
+from turing_models.instruments.archive.rates import TuringSwapTypes
 from turing_models.models.model_black import TuringModelBlack
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
