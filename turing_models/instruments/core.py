@@ -86,20 +86,28 @@ class InstrumentBase:
                 response_data.append(response)
         return response_data
 
-    def main(self, context=None, assetId: str = None, pricingContext=None, riskMeasure=None):
+    def api_data(self, **kw):
+        for k, v in kw.items():
+            setattr(self, k, v)
+
+    def main(self, **kw):
+        context = kw.pop('context', '')
         if context:
             self.ctx.context = context
         """api默认入口"""
         scenario = PricingContext()
-        setattr(self, 'asset_id', assetId)
-        getattr(self, '_resolve')()
-
-        if pricingContext:
-            scenario.resolve(pricingContext)
+        asset_id = kw.pop('assetId', '')
+        if asset_id:
+            setattr(self, 'asset_id', asset_id)
+            getattr(self, '_resolve')()
+        pricing_context = kw.pop('pricingContext', '')
+        risk = kw.pop('riskMeasure', '')
+        if pricing_context:
+            scenario.resolve(pricing_context)
             with scenario:
-                return self.api_calc(riskMeasure)
+                return self.api_calc(risk)
         else:
-            return self.api_calc(riskMeasure)
+            return self.api_calc(risk)
 
     def __repr__(self):
         return self.__class__.__name__

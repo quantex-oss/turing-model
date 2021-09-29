@@ -144,10 +144,10 @@ class DomDiscountCurveGen:
     def __init__(self,
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
         self.value_date = value_date
-        shibor_curve = TuringDB.shibor_curve(date=value_date)
+        shibor_curve = getattr(self, 'shibor_curve_data') or TuringDB.shibor_curve(date=value_date)
         shibor_deposit_tenors = shibor_curve['tenor'][:5]
         shibor_deposit_rates = shibor_curve['rate'][:5]
-        shibor_3m_curve = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
+        shibor_3m_curve = getattr(self, 'irs_curve_data') or TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
         swap_curve_tenors = shibor_3m_curve['tenor']
         swap_curve_rates = shibor_3m_curve['average']
 
@@ -176,11 +176,11 @@ class ForDiscountCurveGen:
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
         self.value_date = value_date
         fx_asset_id = Turing.get_fx_asset_id_by_symbol(symbol=currency_pair)
-        future_data = TuringDB.swap_curve(asset_id=fx_asset_id, date=value_date)[fx_asset_id]
+        future_data = getattr(self, 'swap_curve_data') or TuringDB.swap_curve(asset_id=fx_asset_id, date=value_date)[fx_asset_id]
         future_tenors = future_data['tenor']
         future_quotes = future_data['swap_point']
         self.future_dates = value_date.addYears(future_tenors)
-        exchange_rate = TuringDB.exchange_rate(symbol=currency_pair, date=value_date)[currency_pair]
+        exchange_rate = getattr(self, 'exchange_rate_data') or TuringDB.exchange_rate(symbol=currency_pair, date=value_date)[currency_pair]
         self.fwd_dfs = []
         for quote in future_quotes:
             self.fwd_dfs.append(exchange_rate / (exchange_rate + quote))
