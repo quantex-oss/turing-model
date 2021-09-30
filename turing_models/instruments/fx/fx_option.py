@@ -138,8 +138,9 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @cached_property
     def get_exchange_rate(self):
-        self.exchange_rate = TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_)[
-            self.underlier_symbol]
+        self.exchange_rate = getattr(self.ctx, "exchange_rate", None) or \
+                             TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_)[
+                                 self.underlier_symbol]
         return self.exchange_rate
 
     @property
