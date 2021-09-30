@@ -2,6 +2,7 @@ import datetime
 
 import pandas as pd
 
+from fundamental import ctx
 from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import CurrencyPair, RMBIRCurveType, SpotExchangeRateType
 from turing_models.instruments.rates.irs import create_ibor_single_curve
@@ -145,11 +146,10 @@ class DomDiscountCurveGen:
     def __init__(self,
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
         self.value_date = value_date
-        shibor_curve = getattr(self, 'shibor_curve_data', None) or TuringDB.shibor_curve(date=value_date)
+        shibor_curve = getattr(ctx, 'shibor_curve', None) or TuringDB.shibor_curve(date=value_date)
         shibor_deposit_tenors = shibor_curve['tenor'][:5]
         shibor_deposit_rates = shibor_curve['rate'][:5]
-        shibor_3m_curve = getattr(self, 'irs_curve_data', None) or \
-                          TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
+        shibor_3m_curve = getattr(ctx, 'irs_curve', None) or TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
         swap_curve_tenors = shibor_3m_curve['tenor']
         swap_curve_rates = shibor_3m_curve['average']
 
@@ -179,13 +179,11 @@ class ForDiscountCurveGen:
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
         self.value_date = value_date
         fx_asset_id = Turing.get_fx_asset_id_by_symbol(symbol=currency_pair)
-        future_data = getattr(self, 'swap_curve_data', None) or \
-                      TuringDB.swap_curve(asset_id=fx_asset_id, date=value_date)[fx_asset_id]
+        future_data = getattr(ctx, 'swap_curve', None) or TuringDB.swap_curve(asset_id=fx_asset_id, date=value_date)[fx_asset_id]
         future_tenors = future_data['tenor']
         future_quotes = future_data['swap_point']
         self.future_dates = value_date.addYears(future_tenors)
-        exchange_rate = getattr(self, 'exchange_rate_data', None) or \
-                        TuringDB.exchange_rate(symbol=currency_pair, date=value_date)[currency_pair]
+        exchange_rate = getattr(ctx, 'exchange_rate', None) or TuringDB.exchange_rate(symbol=currency_pair, date=value_date)[currency_pair]
         self.fwd_dfs = []
         for quote in future_quotes:
             self.fwd_dfs.append(exchange_rate / (exchange_rate + quote))

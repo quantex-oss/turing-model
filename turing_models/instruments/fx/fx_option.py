@@ -1,36 +1,28 @@
 import datetime
 from abc import ABCMeta
-from dataclasses import dataclass, field
-from typing import List, Any
+from dataclasses import dataclass
 from enum import Enum
-
-import numpy as np
-
-from fundamental.turing_db.data import Turing, TuringDB
-from turing_models.instruments.common import FX, Currency, CurrencyPair
-from turing_models.instruments.core import InstrumentBase
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
-from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
-from turing_models.market.volatility.fx_vol_surface_CICC import TuringFXVolSurfaceCICC
-from turing_models.models.model_black_scholes import TuringModelBlackScholes
-from turing_models.utilities.error import TuringError
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType, TuringExerciseType
-from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.helper_functions import to_string
-from turing_models.utilities.turing_date import TuringDate
-from turing_models.market.curves.curve_generation import DomDiscountCurveGen, ForDiscountCurveGen
-from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
-
-
 ###############################################################################
 # ALL CCY RATES MUST BE IN NUM UNITS OF DOMESTIC PER UNIT OF FOREIGN CURRENCY
 # SO EURUSD = 1.30 MEANS 1.30 DOLLARS PER EURO SO DOLLAR IS THE DOMESTIC AND
 # EUR IS THE FOREIGN CURRENCY
 ###############################################################################
 from functools import cached_property
+
+import numpy as np
+
+from fundamental.turing_db.data import Turing, TuringDB
+from turing_models.instruments.common import FX, Currency, CurrencyPair
+from turing_models.instruments.core import InstrumentBase
+from turing_models.market.curves.curve_generation import DomDiscountCurveGen, ForDiscountCurveGen
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
+from turing_models.models.model_black_scholes import TuringModelBlackScholes
+from turing_models.utilities.error import TuringError
+from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType, TuringExerciseType
+from turing_models.utilities.global_variables import gDaysInYear
+from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.turing_date import TuringDate
 
 error_str = "Time to expiry must be positive."
 error_str2 = "Volatility should not be negative."
@@ -145,12 +137,14 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         self._value_date = value
 
     @cached_property
-    def exchange_rate(self):
-        return TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_)[self.underlier_symbol]
+    def get_exchange_rate(self):
+        self.exchange_rate = TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_)[
+            self.underlier_symbol]
+        return self.exchange_rate
 
     @property
     def exchange_rate_(self):
-        return self._exchange_rate or self.ctx_spot or self.exchange_rate
+        return self._exchange_rate or self.ctx_spot or self.get_exchange_rate
 
     @exchange_rate_.setter
     def exchange_rate_(self, value: float):
@@ -275,5 +269,3 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         s += to_string("Exchange Rate", self.exchange_rate_)
         s += to_string("Volatility", self.volatility_)
         return s
-
-

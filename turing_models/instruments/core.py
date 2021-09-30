@@ -2,6 +2,8 @@ import inspect
 import traceback
 from typing import Union, List, Iterable
 
+from loguru import logger
+
 from fundamental import PricingContext
 from fundamental.base import ctx, Context
 from turing_models.instruments.common import RiskMeasure
@@ -88,9 +90,14 @@ class InstrumentBase:
 
     def api_data(self, **kw):
         for k, v in kw.items():
-            setattr(self, k, v)
+            for _k, _v in self.__dict__.items():
+                if k == _k:
+                    setattr(self, k, v)
+                else:
+                    setattr(self.ctx, k, v)
 
     def main(self, **kw):
+        logger.debug(kw)
         context = kw.pop('context', '')
         if context:
             self.ctx.context = context
@@ -102,6 +109,7 @@ class InstrumentBase:
             getattr(self, '_resolve')()
         pricing_context = kw.pop('pricingContext', '')
         risk = kw.pop('riskMeasure', '')
+        self.api_data(**kw)
         if pricing_context:
             scenario.resolve(pricing_context)
             with scenario:

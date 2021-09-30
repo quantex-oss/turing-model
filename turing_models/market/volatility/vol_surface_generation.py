@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
+from fundamental import ctx
 from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import CurrencyPair
 from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMethod
@@ -192,10 +193,10 @@ class FXVolSurfaceGen:
         self.tol = tol
 
         self.fx_asset_id = Turing.get_fx_asset_id_by_symbol(symbol=self.currency_pair)
-        self.exchange_rate = getattr(self, 'exchange_rate_data', None) or \
+        self.exchange_rate = getattr(ctx, 'exchange_rate', None) or \
                              TuringDB.exchange_rate(symbol=self.currency_pair, date=value_date)[self.currency_pair]
 
-        curve_date = getattr(self, 'fx_implied_volatility_curve_data', None) or \
+        curve_date = getattr(ctx, 'fx_implied_volatility_curve', None) or \
                      TuringDB.fx_implied_volatility_curve(asset_id=self.fx_asset_id,
                                                           volatility_type=["ATM", "25D BF", "25D RR", "10D BF",
                                                                            "10D RR"], date=value_date)[self.fx_asset_id]
