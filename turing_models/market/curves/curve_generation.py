@@ -156,7 +156,7 @@ class DomDiscountCurveGen:
         self.tenors = shibor_deposit_tenors + swap_curve_tenors
         # 转成TuringDate格式
         self.dates = value_date.addYears(self.tenors)
-        self.dom_rates = create_ibor_single_curve(value_date,
+        self.dom_curve = create_ibor_single_curve(value_date,
                                                   shibor_deposit_tenors,
                                                   shibor_deposit_rates,
                                                   TuringDayCountTypes.ACT_365F,
@@ -164,13 +164,11 @@ class DomDiscountCurveGen:
                                                   TuringSwapTypes.PAY,
                                                   swap_curve_rates,
                                                   TuringFrequencyTypes.QUARTERLY,
-                                                  TuringDayCountTypes.ACT_365F, 0).ccRate(
-            value_date.addYears(self.tenors)).tolist()
+                                                  TuringDayCountTypes.ACT_365F, 0)
 
     @property
     def discount_curve(self):
-        return TuringDiscountCurveZeros(
-            self.value_date, self.dates, self.dom_rates, TuringFrequencyTypes.CONTINUOUS)
+        return self.dom_curve
 
 
 class ForDiscountCurveGen:
@@ -202,8 +200,7 @@ class ForDiscountCurveGen:
         return TuringDiscountCurveFXImplied(self.value_date,
                                             self.dates,
                                             self.domestic_discount_curve,
-                                            self.fx_forward_curve,
-                                            TuringFrequencyTypes.CONTINUOUS)
+                                            self.fx_forward_curve)
 
 
 if __name__ == '__main__':
