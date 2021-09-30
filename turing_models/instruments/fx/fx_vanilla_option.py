@@ -420,17 +420,17 @@ class FXVanillaOption(FXOption):
 
     def resolve_param(self):
         self.check_underlier()
-        if self.underlier:
-            if not self.exchange_rate_:
-                ex_rate = FxApi.get_exchange_rate(gurl=None,
-                                                  underlier=self.underlier)
-                if ex_rate:
-                    setattr(self, "exchange_rate", ex_rate)
-            if not self.tenors:
-                FxOptionApi.get_iuir_curve(self)
-            if not self.volatility:
-                FxOptionApi.get_fx_volatility(self=self, gurl=None,
-                                              volatility_types=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])
+        # if self.underlier:
+        #     if not self.exchange_rate_:
+        #         ex_rate = FxApi.get_exchange_rate(gurl=None,
+        #                                           underlier=self.underlier)
+        #         if ex_rate:
+        #             setattr(self, "exchange_rate", ex_rate)
+        #     if not self.tenors:
+        #         FxOptionApi.get_iuir_curve(self)
+        #     if not self.volatility:
+        #         FxOptionApi.get_fx_volatility(self=self, gurl=None,
+        #                                       volatility_types=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])
 
         if not self.product_type:
             setattr(self, 'product_type', 'VANILLA')
