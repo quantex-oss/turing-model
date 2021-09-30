@@ -15,7 +15,7 @@ from turing_models.utilities.turing_date import TuringDate
 # swap_curve_rates = shibor_swap_mkt_data.values.tolist()[0]
 #
 # tenors = deposit_terms + swap_curve_dates
-# dom_rates = create_ibor_single_curve(value_date, deposit_terms, deposit_rates, TuringDayCountTypes.ACT_365F,
+# dom_curve = create_ibor_single_curve(value_date, deposit_terms, deposit_rates, TuringDayCountTypes.ACT_365F,
 #                                      swap_curve_dates, TuringSwapTypes.PAY, swap_curve_rates, TuringFrequencyTypes.QUARTERLY, TuringDayCountTypes.ACT_365F, 0).ccRate(value_date.addTenor(tenors)).tolist()
 #
 # fwd_data = pd.read_excel(mkt_file, 'USDCNY_Futures')

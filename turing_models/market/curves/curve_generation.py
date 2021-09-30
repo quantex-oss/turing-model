@@ -146,19 +146,17 @@ class DomDiscountCurveGen:
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3]))):
         self.value_date = value_date
         shibor_curve = getattr(self, 'shibor_curve_data', None) or TuringDB.shibor_curve(date=value_date)
-        print("shibor_curve_data:", shibor_curve)
         shibor_deposit_tenors = shibor_curve['tenor'][:5]
         shibor_deposit_rates = shibor_curve['rate'][:5]
         shibor_3m_curve = getattr(self, 'irs_curve_data', None) or \
                           TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
-        print("irs_curve_data:", shibor_3m_curve)
         swap_curve_tenors = shibor_3m_curve['tenor']
         swap_curve_rates = shibor_3m_curve['average']
 
         self.tenors = shibor_deposit_tenors + swap_curve_tenors
         # 转成TuringDate格式
         self.dates = value_date.addYears(self.tenors)
-        self.dom_rates = create_ibor_single_curve(value_date,
+        self.dom_curve = create_ibor_single_curve(value_date,
                                                   shibor_deposit_tenors,
                                                   shibor_deposit_rates,
                                                   TuringDayCountTypes.ACT_365F,
@@ -166,13 +164,11 @@ class DomDiscountCurveGen:
                                                   TuringSwapTypes.PAY,
                                                   swap_curve_rates,
                                                   TuringFrequencyTypes.QUARTERLY,
-                                                  TuringDayCountTypes.ACT_365F, 0).ccRate(
-            value_date.addYears(self.tenors)).tolist()
+                                                  TuringDayCountTypes.ACT_365F, 0)
 
     @property
     def discount_curve(self):
-        return TuringDiscountCurveZeros(
-            self.value_date, self.dates, self.dom_rates, TuringFrequencyTypes.CONTINUOUS)
+        return self.dom_curve
 
 
 class ForDiscountCurveGen:
@@ -185,13 +181,11 @@ class ForDiscountCurveGen:
         fx_asset_id = Turing.get_fx_asset_id_by_symbol(symbol=currency_pair)
         future_data = getattr(self, 'swap_curve_data', None) or \
                       TuringDB.swap_curve(asset_id=fx_asset_id, date=value_date)[fx_asset_id]
-        print("swap_curve_data:", future_data)
         future_tenors = future_data['tenor']
         future_quotes = future_data['swap_point']
         self.future_dates = value_date.addYears(future_tenors)
         exchange_rate = getattr(self, 'exchange_rate_data', None) or \
                         TuringDB.exchange_rate(symbol=currency_pair, date=value_date)[currency_pair]
-        print("exchange_rate_data:", exchange_rate)
         self.fwd_dfs = []
         for quote in future_quotes:
             self.fwd_dfs.append(exchange_rate / (exchange_rate + quote))
@@ -206,8 +200,7 @@ class ForDiscountCurveGen:
         return TuringDiscountCurveFXImplied(self.value_date,
                                             self.dates,
                                             self.domestic_discount_curve,
-                                            self.fx_forward_curve,
-                                            TuringFrequencyTypes.CONTINUOUS)
+                                            self.fx_forward_curve)
 
 
 if __name__ == '__main__':
