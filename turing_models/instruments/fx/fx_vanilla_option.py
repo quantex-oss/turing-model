@@ -3,12 +3,10 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 
-from fundamental.turing_db.fx_data import FxApi
 from fundamental.turing_db.option_data import FxOptionApi
 from turing_models.instruments.common import greek
 from turing_models.instruments.fx.fx_option import FXOption
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
-from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.mathematics import N
@@ -211,7 +209,7 @@ class FXVanillaOption(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-        return greek(self, self.price, "domestic_discount_curve",  bump=bump_local,
+        return greek(self, self.price, "domestic_discount_curve", bump=bump_local,
                      cus_inc=(self.domestic_discount_curve.bump, bump_local)) * bump_local
 
     def fx_phi_bump(self):
@@ -220,7 +218,7 @@ class FXVanillaOption(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-        return greek(self, self.price, "foreign_discount_curve",  bump=bump_local,
+        return greek(self, self.price, "foreign_discount_curve", bump=bump_local,
                      cus_inc=(self.foreign_discount_curve.bump, bump_local)) * bump_local
 
     def fx_gamma(self):
@@ -408,6 +406,9 @@ class FXVanillaOption(FXOption):
                     _list.append(cu.get(key))
         setattr(self, _property, _list)
         return _list
+
+    def spot_path(self):
+        return 'turing_models.instruments.fx.fx.ForeignExchange'
 
     def _resolve(self):
         if self.asset_id and not self.asset_id.startswith("OPTION_"):
