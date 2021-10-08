@@ -46,7 +46,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     start_date: TuringDate = None
     # 1 unit of foreign in domestic
     premium_currency: (str, Currency) = None
-    spot_days: int = 2
+    spot_days: int = 0
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))
     volatility: float = None

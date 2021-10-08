@@ -1,14 +1,11 @@
 from dataclasses import dataclass
-from functools import cached_property
 
 import numpy as np
 from scipy import optimize
-import QuantLib as ql
 
 from fundamental.turing_db.option_data import FxOptionApi
 from turing_models.instruments.common import greek
 from turing_models.instruments.fx.fx_option import FXOption
-from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
@@ -57,51 +54,15 @@ error_str3 = "Spot FX Rate must be greater than zero."
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class FXVanillaOption(FXOption):
+class FXVanillaOptionTemp(FXOption):
     """ This is a class for an FX Option trade. It permits the user to
     calculate the price of an FX Option trade which can be expressed in a
     number of ways depending on the investor or hedger's currency. It aslo
     allows the calculation of the option's delta in a number of forms as
     well as the various Greek risk sensitivies. """
-    daycount = ql.Actual365Fixed()
 
     def __post_init__(self):
         super().__post_init__()
-        self.expiry_ql = ql.Date(self.expiry._d, self.expiry._m, self.expiry._y)
-
-    @cached_property
-    def volatility_surface(self):
-        if self.underlier_symbol:
-            return FXVolSurfaceGen(currency_pair=self.underlier_symbol,
-                                   value_date=self.value_date_).volatility_surface
-
-    @property
-    def volatility_(self):
-        if self._volatility:
-            v = self._volatility
-        elif self.ctx_volatility:
-            v = self.ctx_volatility
-        elif self.volatility:
-            v = self.model._volatility
-        else:
-            v = self.volatility_surface.interp_vol(self.expiry_ql, self.strike)
-        if np.all(v >= 0.0):
-            v = np.maximum(v, 1e-10)
-            return v
-        else:
-            raise TuringError(error_str2)
-
-    @volatility_.setter
-    def volatility_(self, value: float):
-        self._volatility = value
-
-    @property
-    def rd(self):
-        return self.domestic_discount_curve.zeroRate(self.expiry_ql, self.daycount, ql.Continuous).rate()
-
-    @property
-    def rf(self):
-        return self.foreign_discount_curve.zeroRate(self.expiry_ql, self.daycount, ql.Continuous).rate()
 
     def rate_domestic(self):
         return self.rd
@@ -242,23 +203,23 @@ class FXVanillaOption(FXOption):
         day_diff = 1
         return greek(self, self.price, "value_date_", bump=day_diff, cus_inc=(self.value_date_.addDays, day_diff))
 
-    # def fx_rho_bump(self):
-    #     """ Calculation of the FX option rho by bumping the domestic discount curve by
-    #     1 cent of its value. This gives the FX spot rho. For speed we prefer
-    #     to use the analytical calculation of the derivative given below. """
-    #
-    #     bump_local = 0.0001
-    #     return greek(self, self.price, "domestic_discount_curve", bump=bump_local,
-    #                  cus_inc=(self.domestic_discount_curve.bump, bump_local)) * bump_local
-    #
-    # def fx_phi_bump(self):
-    #     """ Calculation of the FX option phi by bumping the foreign discount curve by
-    #     1 cent of its value. This gives the FX spot phi. For speed we prefer
-    #     to use the analytical calculation of the derivative given below. """
-    #
-    #     bump_local = 0.0001
-    #     return greek(self, self.price, "foreign_discount_curve", bump=bump_local,
-    #                  cus_inc=(self.foreign_discount_curve.bump, bump_local)) * bump_local
+    def fx_rho_bump(self):
+        """ Calculation of the FX option rho by bumping the domestic discount curve by
+        1 cent of its value. This gives the FX spot rho. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        bump_local = 0.0001
+        return greek(self, self.price, "domestic_discount_curve", bump=bump_local,
+                     cus_inc=(self.domestic_discount_curve.bump, bump_local)) * bump_local
+
+    def fx_phi_bump(self):
+        """ Calculation of the FX option phi by bumping the foreign discount curve by
+        1 cent of its value. This gives the FX spot phi. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        bump_local = 0.0001
+        return greek(self, self.price, "foreign_discount_curve", bump=bump_local,
+                     cus_inc=(self.foreign_discount_curve.bump, bump_local)) * bump_local
 
     def fx_gamma(self):
         """ This function calculates the FX Option Gamma using the spot delta. """

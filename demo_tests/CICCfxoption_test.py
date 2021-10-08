@@ -1,3 +1,5 @@
+from fundamental import PricingContext
+
 from turing_models.instruments.common import Currency, CurrencyPair
 from turing_models.instruments.fx.fx_vanilla_option import FXVanillaOption
 # from turing_models.market.data.china_money_yield_curve import dates, rates
@@ -50,13 +52,39 @@ delta = fxoption.fx_delta_bump()
 gamma = fxoption.fx_gamma_bump()
 vega = fxoption.fx_vega_bump()
 theta = fxoption.fx_theta_bump()
-rho = fxoption.fx_rho_bump()
-phi = fxoption.fx_phi_bump()
+# rho = fxoption.fx_rho_bump()
+# phi = fxoption.fx_phi_bump()
 # vanna = fxoption.fx_vanna()
 # volga = fxoption.fx_volga()
 print("atm", atm, "sigma", fxoption.volatility_)
 print("price:", price, "delta:", delta, "gamma:",
-      gamma, "vega:", vega, "theta:", theta, "rho:", rho, "phi:", phi)
+      gamma, "vega:", vega, "theta:", theta)
+
+scenario_extreme = PricingContext(
+    # pricing_date='2021-8-20',
+    spot=[
+    {"symbol": "USD/CNY", "value": 6.5}
+]
+)
+
+with scenario_extreme:
+    atm = fxoption.atm()
+    price = fxoption.price()
+    delta = fxoption.fx_delta_bump()
+    gamma = fxoption.fx_gamma_bump()
+    vega = fxoption.fx_vega_bump()
+    theta = fxoption.fx_theta_bump()
+    rd = fxoption.rd
+    rf = fxoption.rf
+    # rho = fxoption.fx_rho_bump()
+    # phi = fxoption.fx_phi_bump()
+    # vanna = fxoption.fx_vanna()
+    # volga = fxoption.fx_volga()
+    print("atm", atm, "sigma", fxoption.volatility_)
+    print("price:", price, "delta:", delta, "gamma:",
+          gamma, "vega:", vega, "theta:", theta, 'rd:', rd, 'rf:', rf)
+
+
 # for spotFXRate in np.arange(100, 200, 10)/100.0:
 #     fxoption.spot_fx_rate = spotFXRate
 

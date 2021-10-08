@@ -2,7 +2,7 @@ from fundamental.pricing_context import PricingContext
 
 from turing_models.instruments.common import Currency, CurrencyPair, RiskMeasure
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.instruments.fx.fx_vanilla_option import FXVanillaOption
+from turing_models.instruments.fx.fx_vanilla_option_temp import FXVanillaOption
 from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
 
 
