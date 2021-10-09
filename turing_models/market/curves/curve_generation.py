@@ -179,6 +179,7 @@ class DomDiscountCurveGen:
                                                       TuringFrequencyTypes.QUARTERLY,
                                                       TuringDayCountTypes.ACT_365F, 0)
         elif curve_type == DiscountCurveType.Shibor3M_CICC:
+            ql.Settings.instance().evaluationDate = value_date_ql
             shibor_deposit_origin_tenors = shibor_curve['origin_tenor'][:5]
             shibor_deposit_origin_tenors[0] = '1D'
             shibor_deposit_rates = shibor_curve['rate'][:5]
@@ -187,16 +188,10 @@ class DomDiscountCurveGen:
             swap_curve_origin_tenors = shibor_3m_curve['origin_tenor']
             swap_curve_rates = shibor_3m_curve['average']
             shibor_swap_mkt_data = pd.DataFrame(data=swap_curve_rates, index=swap_curve_origin_tenors).T
-            print('================================')
-            print('shibor_deposit_mkt_data:\n', shibor_deposit_mkt_data)
-            print('shibor_swap_mkt_data:\n', shibor_swap_mkt_data)
-            print('value_date_ql:\n', value_date_ql)
 
             self.dom_curve = Shibor3M(shibor_deposit_mkt_data, shibor_swap_mkt_data, value_date_ql).curve
             daycount = ql.Actual365Fixed()
             expiry = ql.Date(16, 9, 2021)
-            # print(dom.discount_curve.zeroRate(expiry, daycount, ql.Continuous))
-            print('rd', self.dom_curve.zeroRate(expiry, daycount, ql.Continuous))
 
     @property
     def discount_curve(self):
@@ -241,6 +236,7 @@ class ForDiscountCurveGen:
                                                           self.domestic_discount_curve,
                                                           self.fx_forward_curve)
         elif self.curve_type == DiscountCurveType.FX_Implied_CICC:
+            ql.Settings.instance().evaluationDate = self.value_date_ql
             dom_discount_curve_gen = DomDiscountCurveGen(self.value_date_ql, curve_type=DiscountCurveType.Shibor3M_CICC)
             self.domestic_discount_curve = dom_discount_curve_gen.discount_curve
             future_origin_tenors = self.future_data['origin_tenor']

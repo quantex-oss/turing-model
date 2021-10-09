@@ -239,8 +239,8 @@ class FXVanillaOption(FXOption):
         """ Calculation of the FX option theta by bumping 1 day. This gives the FX spot theta. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
-        day_diff = 1
-        return greek(self, self.price, "value_date_", bump=day_diff, cus_inc=(self.value_date_.addDays, day_diff))
+        day_diff = 3
+        return greek(self, self.price, "value_date_", bump=day_diff, cus_inc=(self.value_date_.addDays, day_diff)) * day_diff
 
     # def fx_rho_bump(self):
     #     """ Calculation of the FX option rho by bumping the domestic discount curve by

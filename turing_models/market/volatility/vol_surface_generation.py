@@ -241,6 +241,7 @@ class FXVolSurfaceGen:
                                         self.tol)
 
         elif self.volatility_function_type == TuringVolFunctionTypes.CICC:
+            ql.Settings.instance().evaluationDate = self.value_date_ql
             foreign_name = self.currency_pair[0:3]
             domestic_name = self.currency_pair[4:7]
             data_dict = {'Tenor': self.origin_tenors,

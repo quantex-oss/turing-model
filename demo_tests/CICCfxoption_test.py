@@ -46,19 +46,19 @@ fxoption = FXVanillaOption(start_date=TuringDate(2021, 4, 20),
                            option_type=TuringOptionType.CALL,
                            exercise_type=TuringExerciseType.EUROPEAN,
                            premium_currency=Currency.CNY)
-atm = fxoption.atm()
-price = fxoption.price()
-delta = fxoption.fx_delta_bump()
-gamma = fxoption.fx_gamma_bump()
-vega = fxoption.fx_vega_bump()
-theta = fxoption.fx_theta_bump()
-# rho = fxoption.fx_rho_bump()
-# phi = fxoption.fx_phi_bump()
-# vanna = fxoption.fx_vanna()
-# volga = fxoption.fx_volga()
-print("atm", atm, "sigma", fxoption.volatility_)
-print("price:", price, "delta:", delta, "gamma:",
-      gamma, "vega:", vega, "theta:", theta)
+# atm = fxoption.atm()
+# price = fxoption.price()
+# delta = fxoption.fx_delta_bump()
+# gamma = fxoption.fx_gamma_bump()
+# vega = fxoption.fx_vega_bump()
+# theta = fxoption.fx_theta_bump()
+# # rho = fxoption.fx_rho_bump()
+# # phi = fxoption.fx_phi_bump()
+# # vanna = fxoption.fx_vanna()
+# # volga = fxoption.fx_volga()
+# print("atm", atm, "sigma", fxoption.volatility_)
+# print("price:", price, "delta:", delta, "gamma:",
+#       gamma, "vega:", vega, "theta:", theta)
 
 scenario_extreme = PricingContext(
     # pricing_date='2021-8-20',
