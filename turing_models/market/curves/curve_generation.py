@@ -1,10 +1,10 @@
 import datetime
+from typing import List, Union
 
 import pandas as pd
 import QuantLib as ql
 
-from fundamental import ctx
-from fundamental.turing_db.data import Turing, TuringDB
+from fundamental.turing_db.data import Turing
 from turing_models.instruments.common import CurrencyPair, RMBIRCurveType, SpotExchangeRateType, DiscountCurveType
 from turing_models.instruments.rates.irs import create_ibor_single_curve
 from turing_models.market.curves.curve_cicc import Shibor3M, FXImpliedAssetCurve, FXForwardCurve
@@ -146,7 +146,13 @@ class DomDiscountCurveGen:
     """生成本币折现曲线"""
 
     def __init__(self,
-                 value_date: (TuringDate, ql.Date) = TuringDate(*(datetime.date.today().timetuple()[:3])),
+                 value_date: Union[TuringDate, ql.Date],
+                 shibor_tenors: List[float] = None,
+                 shibor_origin_tenors: List[str] = None,
+                 shibor_rates: List[float] = None,
+                 shibor_swap_tenors: List[float] = None,
+                 shibor_swap_origin_tenors: List[str] = None,
+                 shibor_swap_rates: [float] = None,
                  curve_type: DiscountCurveType = DiscountCurveType.Shibor3M_CICC):
         if isinstance(value_date, ql.Date):
             value_date_turing = TuringDate(value_date.year(), value_date.month(), value_date.dayOfMonth())
@@ -157,41 +163,33 @@ class DomDiscountCurveGen:
         else:
             raise TuringError('value_date: (TuringDate, ql.Date)')
 
-        shibor_curve = getattr(ctx, 'shibor_curve', None) or TuringDB.shibor_curve(date=value_date_turing)
-        shibor_3m_curve = getattr(ctx, 'irs_curve', None) or \
-                          TuringDB.irs_curve(curve_type='Shibor3M', date=value_date_turing)['Shibor3M']
         if curve_type == DiscountCurveType.Shibor3M:
-            shibor_deposit_tenors = shibor_curve['tenor'][:5]
-            shibor_deposit_rates = shibor_curve['rate'][:5]
+            shibor_deposit_tenors = shibor_tenors[:5]
+            shibor_deposit_rates = shibor_rates[:5]
 
-            swap_curve_tenors = shibor_3m_curve['tenor']
-            swap_curve_rates = shibor_3m_curve['average']
-            self.tenors = shibor_deposit_tenors + swap_curve_tenors
+            self.tenors = shibor_deposit_tenors + shibor_swap_tenors
             # 转成TuringDate格式
             self.dates = value_date_turing.addYears(self.tenors)
             self.dom_curve = create_ibor_single_curve(value_date_turing,
                                                       shibor_deposit_tenors,
                                                       shibor_deposit_rates,
                                                       TuringDayCountTypes.ACT_365F,
-                                                      swap_curve_tenors,
+                                                      shibor_swap_tenors,
                                                       TuringSwapTypes.PAY,
-                                                      swap_curve_rates,
+                                                      shibor_swap_rates,
                                                       TuringFrequencyTypes.QUARTERLY,
                                                       TuringDayCountTypes.ACT_365F, 0)
         elif curve_type == DiscountCurveType.Shibor3M_CICC:
             ql.Settings.instance().evaluationDate = value_date_ql
-            shibor_deposit_origin_tenors = shibor_curve['origin_tenor'][:5]
-            shibor_deposit_origin_tenors[0] = '1D'
-            shibor_deposit_rates = shibor_curve['rate'][:5]
+            shibor_deposit_origin_tenors = shibor_origin_tenors[:5]
+            shibor_deposit_origin_tenors[0] = '1D'  # 把'O/N'转换成'1D'，ql不支持'O/N'
+            shibor_deposit_rates = shibor_rates[:5]
+            # 与中金现在的模型代码兼容，故拼成同格式的DataFrame
             shibor_deposit_mkt_data = pd.DataFrame(data=shibor_deposit_rates, index=shibor_deposit_origin_tenors).T
 
-            swap_curve_origin_tenors = shibor_3m_curve['origin_tenor']
-            swap_curve_rates = shibor_3m_curve['average']
-            shibor_swap_mkt_data = pd.DataFrame(data=swap_curve_rates, index=swap_curve_origin_tenors).T
+            shibor_swap_mkt_data = pd.DataFrame(data=shibor_swap_rates, index=shibor_swap_origin_tenors).T
 
             self.dom_curve = Shibor3M(shibor_deposit_mkt_data, shibor_swap_mkt_data, value_date_ql).curve
-            daycount = ql.Actual365Fixed()
-            expiry = ql.Date(16, 9, 2021)
 
     @property
     def discount_curve(self):
@@ -202,57 +200,65 @@ class ForDiscountCurveGen:
     """生成外币折现曲线"""
 
     def __init__(self,
-                 currency_pair: str,
-                 value_date: (TuringDate, ql.Date) = TuringDate(*(datetime.date.today().timetuple()[:3])),
+                 value_date: Union[TuringDate, ql.Date],
+                 exchange_rate: float,
+                 fx_swap_tenors: List[float] = None,
+                 fx_swap_origin_tenors: List[str] = None,
+                 fx_swap_quotes: List[float] = None,
+                 shibor_tenors: List[float] = None,
+                 shibor_origin_tenors: List[str] = None,
+                 shibor_rates: List[float] = None,
+                 shibor_swap_tenors: List[float] = None,
+                 shibor_swap_origin_tenors: List[str] = None,
+                 shibor_swap_rates: [float] = None,
                  curve_type: DiscountCurveType = DiscountCurveType.FX_Implied_CICC):
         if isinstance(value_date, ql.Date):
-            self.value_date_turing = TuringDate(value_date.year(), value_date.month(), value_date.dayOfMonth())
-            self.value_date_ql = value_date
+            value_date_turing = TuringDate(value_date.year(), value_date.month(), value_date.dayOfMonth())
+            value_date_ql = value_date
         elif isinstance(value_date, TuringDate):
-            self.value_date_turing = value_date
-            self.value_date_ql = ql.Date(value_date._d, value_date._m, value_date._y)
+            value_date_turing = value_date
+            value_date_ql = ql.Date(value_date._d, value_date._m, value_date._y)
         else:
             raise TuringError('value_date: (TuringDate, ql.Date)')
 
-        self.curve_type = curve_type
-        fx_asset_id = Turing.get_fx_asset_id_by_symbol(symbol=currency_pair)
-        self.future_data = getattr(ctx, 'swap_curve', None) or TuringDB.swap_curve(asset_id=fx_asset_id, date=self.value_date_turing)[fx_asset_id]
-        self.exchange_rate = getattr(ctx, 'exchange_rate', None) or TuringDB.exchange_rate(symbol=currency_pair, date=self.value_date_turing)[currency_pair]
-
-        if self.curve_type == DiscountCurveType.FX_Implied:
-            dom_discount_curve_gen = DomDiscountCurveGen(self.value_date_turing, curve_type=DiscountCurveType.Shibor3M)
-            self.domestic_discount_curve = dom_discount_curve_gen.discount_curve
+        if curve_type == DiscountCurveType.FX_Implied:
+            dom_discount_curve_gen = DomDiscountCurveGen(value_date_turing, curve_type=DiscountCurveType.Shibor3M)
+            domestic_discount_curve = dom_discount_curve_gen.discount_curve
             _tenors = dom_discount_curve_gen.tenors
-            self.dates = self.value_date_turing.addYears(_tenors)
-            self.future_tenors = self.future_data['tenor']
-            self.future_quotes = self.future_data['swap_point']
-            self.future_dates = self.value_date_turing.addYears(self.future_tenors)
-            self.fwd_dfs = []
-            for quote in self.future_quotes:
-                self.fwd_dfs.append(self.exchange_rate / (self.exchange_rate + quote))
-            self.fx_forward_curve = TuringDiscountCurve(self.value_date_turing, self.future_dates, self.fwd_dfs)
-            self.for_curve = TuringDiscountCurveFXImplied(self.value_date_turing,
-                                                          self.dates,
-                                                          self.domestic_discount_curve,
-                                                          self.fx_forward_curve)
-        elif self.curve_type == DiscountCurveType.FX_Implied_CICC:
-            ql.Settings.instance().evaluationDate = self.value_date_ql
-            dom_discount_curve_gen = DomDiscountCurveGen(self.value_date_ql, curve_type=DiscountCurveType.Shibor3M_CICC)
-            self.domestic_discount_curve = dom_discount_curve_gen.discount_curve
-            future_origin_tenors = self.future_data['origin_tenor']
-            future_origin_tenors[0: 3] = ['1D', '2D', '3D']
-            future_quotes = self.future_data['swap_point']
-            data_dict = {'Tenor': future_origin_tenors, 'Spread': future_quotes}
+            dates = value_date_turing.addYears(_tenors)
+            future_dates = value_date_turing.addYears(fx_swap_tenors)
+            fwd_dfs = []
+            for quote in fx_swap_quotes:
+                fwd_dfs.append(exchange_rate / (exchange_rate + quote))
+            fx_forward_curve = TuringDiscountCurve(value_date_turing, future_dates, fwd_dfs)
+            self.for_curve = TuringDiscountCurveFXImplied(value_date_turing,
+                                                          dates,
+                                                          domestic_discount_curve,
+                                                          fx_forward_curve)
+        elif curve_type == DiscountCurveType.FX_Implied_CICC:
+            ql.Settings.instance().evaluationDate = value_date_ql
+            dom_discount_curve_gen = DomDiscountCurveGen(value_date=value_date_ql,
+                                                         shibor_tenors=shibor_tenors,
+                                                         shibor_origin_tenors=shibor_origin_tenors,
+                                                         shibor_rates=shibor_rates,
+                                                         shibor_swap_tenors=shibor_swap_tenors,
+                                                         shibor_swap_origin_tenors=shibor_swap_origin_tenors,
+                                                         shibor_swap_rates=shibor_swap_rates,
+                                                         curve_type=DiscountCurveType.Shibor3M_CICC)
+            domestic_discount_curve = dom_discount_curve_gen.discount_curve
+            fx_swap_origin_tenors[0: 3] = ['1D', '2D', '3D']  # 把ON', 'TN', 'SN'转换成'1D', '2D', '3D'，ql不支持ON', 'TN', 'SN'
+            # 与中金现在的模型代码兼容，故拼成同格式的DataFrame
+            data_dict = {'Tenor': fx_swap_origin_tenors, 'Spread': fx_swap_quotes}
             fwd_data = pd.DataFrame(data=data_dict)
             # TODO: 去掉硬编码
-            self.fx_forward_curve = FXForwardCurve(self.exchange_rate,
+            self.fx_forward_curve = FXForwardCurve(exchange_rate,
                                                    fwd_data,
-                                                   self.value_date_ql,
+                                                   value_date_ql,
                                                    ql.UnitedStates(),
                                                    ql.Actual365Fixed()).curve
-            self.for_curve = FXImpliedAssetCurve(self.domestic_discount_curve,
+            self.for_curve = FXImpliedAssetCurve(domestic_discount_curve,
                                                  self.fx_forward_curve,
-                                                 self.value_date_ql,
+                                                 value_date_ql,
                                                  ql.UnitedStates(),
                                                  ql.Actual365Fixed()).curve
 
@@ -271,6 +277,6 @@ if __name__ == '__main__':
     daycount = ql.Actual365Fixed()
     expiry = ql.Date(16, 10, 2021)
     # print(dom.discount_curve.zeroRate(expiry, daycount, ql.Continuous))
-    fore = ForDiscountCurveGen(currency_pair='USD/CNY')
-    print(fore.discount_curve.zeroRate(expiry, daycount, ql.Continuous))
+    # fore = ForDiscountCurveGen(currency_pair='USD/CNY')
+    # print(fore.discount_curve.zeroRate(expiry, daycount, ql.Continuous))
 

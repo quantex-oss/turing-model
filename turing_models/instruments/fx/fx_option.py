@@ -12,12 +12,13 @@ from functools import cached_property
 import numpy as np
 
 from fundamental.turing_db.data import Turing, TuringDB
-from turing_models.instruments.common import FX, Currency, CurrencyPair
+from turing_models.instruments.common import FX, Currency, CurrencyPair, DiscountCurveType
 from turing_models.instruments.core import InstrumentBase
 from turing_models.market.curves.curve_generation import DomDiscountCurveGen, ForDiscountCurveGen
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
+from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType, TuringExerciseType
 from turing_models.utilities.global_variables import gDaysInYear
@@ -128,8 +129,14 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             raise TuringError('Please check the input of option_type')
 
     @property
+    def value_date_interface(self):
+        date = self.ctx_pricing_date or self.value_date
+        return date if date >= self.start_date else self.start_date
+
+
+    @property
     def value_date_(self):
-        date = self._value_date or self.ctx_pricing_date or self.value_date
+        date = self._value_date or self.value_date_interface
         return date if date >= self.start_date else self.start_date
 
     @value_date_.setter
@@ -138,22 +145,45 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @cached_property
     def get_exchange_rate(self):
-        self.exchange_rate = getattr(self.ctx, "exchange_rate", None) or \
-                             TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_)[
-                                 self.underlier_symbol]
-        return self.exchange_rate
+        return TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_interface)[self.underlier_symbol]
 
     @property
-    def exchange_rate_(self):
+    def exchange_rate(self):
         return self._exchange_rate or self.ctx_spot or self.get_exchange_rate
 
-    @exchange_rate_.setter
-    def exchange_rate_(self, value: float):
+    @exchange_rate.setter
+    def exchange_rate(self, value: float):
         self._exchange_rate = value
 
     @cached_property
+    def get_shibor_data(self):
+        return TuringDB.shibor_curve(date=self.value_date_interface)
+
+    @cached_property
+    def get_shibor_swap_data(self):
+        return TuringDB.irs_curve(curve_type='Shibor3M', date=self.value_date_interface)['Shibor3M']
+
+    @cached_property
+    def get_fx_swap_data(self):
+        return TuringDB.swap_curve(symbol=self.underlier_symbol, date=self.value_date_interface)[self.underlier_symbol]
+
+    @cached_property
+    def get_fx_implied_vol_data(self):
+        return TuringDB.fx_implied_volatility_curve(symbol=self.underlier_symbol,
+                                                    volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
+                                                    date=self.value_date_interface)[self.underlier_symbol]
+
+
+    @cached_property
     def gen_dom_discount(self):
-        return DomDiscountCurveGen(self.value_date_).discount_curve
+        return DomDiscountCurveGen(value_date=self.value_date_,
+                                   shibor_tenors=self.get_shibor_data['tenor'],
+                                   shibor_origin_tenors=self.get_shibor_data['origin_tenor'],
+                                   shibor_rates=self.get_shibor_data['rate'],
+                                   shibor_swap_tenors=self.get_shibor_swap_data['tenor'],
+                                   shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'],
+                                   shibor_swap_rates=self.get_shibor_swap_data['average'],
+                                   curve_type=DiscountCurveType.Shibor3M_CICC).discount_curve
 
     @property
     def domestic_discount_curve(self):
@@ -168,7 +198,18 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @cached_property
     def gen_for_discount_curve(self):
-        return ForDiscountCurveGen(currency_pair=self.underlier_symbol, value_date=self.value_date_).discount_curve
+        return ForDiscountCurveGen(value_date=self.value_date_,
+                                   exchange_rate=self.exchange_rate,
+                                   fx_swap_tenors=self.get_fx_swap_data['tenor'],
+                                   fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
+                                   fx_swap_quotes=self.get_fx_swap_data['swap_point'],
+                                   shibor_tenors=self.get_shibor_data['tenor'],
+                                   shibor_origin_tenors=self.get_shibor_data['origin_tenor'],
+                                   shibor_rates=self.get_shibor_data['rate'],
+                                   shibor_swap_tenors=self.get_shibor_swap_data['tenor'],
+                                   shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'],
+                                   shibor_swap_rates=self.get_shibor_swap_data['average'],
+                                   curve_type=DiscountCurveType.FX_Implied_CICC).discount_curve
 
     @property
     def foreign_discount_curve(self):
@@ -184,10 +225,19 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @cached_property
     def volatility_surface(self):
         if self.underlier_symbol:
-            return FXVolSurfaceGen(currency_pair=self.underlier_symbol,
+            return FXVolSurfaceGen(value_date=self.value_date_,
+                                   currency_pair=self.underlier_symbol,
+                                   exchange_rate=self.exchange_rate,
                                    domestic_discount_curve=self.domestic_discount_curve,
                                    foreign_discount_curve=self.foreign_discount_curve,
-                                   value_date=self.value_date_).volatility_surface
+                                   tenors=self.get_fx_implied_vol_data["tenor"],
+                                   origin_tenors=self.get_fx_implied_vol_data["origin_tenor"],
+                                   atm_vols=self.get_fx_implied_vol_data["ATM"],
+                                   butterfly_25delta_vols=self.get_fx_implied_vol_data["25D BF"],
+                                   risk_reversal_25delta_vols=self.get_fx_implied_vol_data["25D RR"],
+                                   butterfly_10delta_vols=self.get_fx_implied_vol_data["10D BF"],
+                                   risk_reversal_10delta_vols=self.get_fx_implied_vol_data["10D RR"],
+                                   volatility_function_type=TuringVolFunctionTypes.VANNA_VOLGA).volatility_surface
 
     @property
     def model(self):
@@ -267,6 +317,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         s += to_string("Currency Pair", self.underlier_symbol)
         s += to_string("Start Date", self.start_date)
         s += to_string("Premium Currency", self.premium_currency)
-        s += to_string("Exchange Rate", self.exchange_rate_)
+        s += to_string("Exchange Rate", self.exchange_rate)
         s += to_string("Volatility", self.volatility_)
         return s

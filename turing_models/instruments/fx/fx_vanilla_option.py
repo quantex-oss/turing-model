@@ -6,11 +6,12 @@ from scipy import optimize
 import QuantLib as ql
 
 from fundamental.turing_db.option_data import FxOptionApi
-from turing_models.utilities.mathematics import NVect, NPrimeVect
+from turing_models.utilities.mathematics import NVect
 from turing_models.market.curves.curve_generation import ForDiscountCurveGen
-from turing_models.instruments.common import greek
+from turing_models.instruments.common import greek, DiscountCurveType
 from turing_models.instruments.fx.fx_option import FXOption
 from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
+from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes
@@ -74,8 +75,28 @@ class FXVanillaOption(FXOption):
     @cached_property
     def volatility_surface(self):
         if self.underlier_symbol:
-            return FXVolSurfaceGen(currency_pair=self.underlier_symbol,
-                                   value_date=self.value_date_).volatility_surface
+            return FXVolSurfaceGen(value_date=self.value_date_,
+                                   currency_pair=self.underlier_symbol,
+                                   exchange_rate=self.exchange_rate,
+                                   domestic_discount_curve=self.domestic_discount_curve,
+                                   foreign_discount_curve=self.foreign_discount_curve,
+                                   tenors=self.get_fx_implied_vol_data["tenor"],
+                                   origin_tenors=self.get_fx_implied_vol_data["origin_tenor"],
+                                   atm_vols=self.get_fx_implied_vol_data["ATM"],
+                                   butterfly_25delta_vols=self.get_fx_implied_vol_data["25D BF"],
+                                   risk_reversal_25delta_vols=self.get_fx_implied_vol_data["25D RR"],
+                                   butterfly_10delta_vols=self.get_fx_implied_vol_data["10D BF"],
+                                   risk_reversal_10delta_vols=self.get_fx_implied_vol_data["10D RR"],
+                                   fx_swap_tenors=self.get_fx_swap_data['tenor'],
+                                   fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
+                                   fx_swap_quotes=self.get_fx_swap_data['swap_point'],
+                                   shibor_tenors=self.get_shibor_data['tenor'],
+                                   shibor_origin_tenors=self.get_shibor_data['origin_tenor'],
+                                   shibor_rates=self.get_shibor_data['rate'],
+                                   shibor_swap_tenors=self.get_shibor_swap_data['tenor'],
+                                   shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'],
+                                   shibor_swap_rates=self.get_shibor_swap_data['average'],
+                                   volatility_function_type=TuringVolFunctionTypes.CICC).volatility_surface
 
     @property
     def volatility_(self):
@@ -113,9 +134,20 @@ class FXVanillaOption(FXOption):
     def df_f(self):
         return self.foreign_discount_curve.discount(self.expiry_ql)
     
-    @property
+    @cached_property
     def df_fwd(self):
-        return ForDiscountCurveGen(currency_pair=self.underlier_symbol, value_date=self.value_date_).fx_forward_curve.discount(self.expiry_ql)
+        return ForDiscountCurveGen(value_date=self.value_date_,
+                                   exchange_rate=self.exchange_rate,
+                                   fx_swap_tenors=self.get_fx_swap_data['tenor'],
+                                   fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
+                                   fx_swap_quotes=self.get_fx_swap_data['swap_point'],
+                                   shibor_tenors=self.get_shibor_data['tenor'],
+                                   shibor_origin_tenors=self.get_shibor_data['origin_tenor'],
+                                   shibor_rates=self.get_shibor_data['rate'],
+                                   shibor_swap_tenors=self.get_shibor_swap_data['tenor'],
+                                   shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'],
+                                   shibor_swap_rates=self.get_shibor_swap_data['average'],
+                                   curve_type=DiscountCurveType.FX_Implied_CICC).fx_forward_curve.discount(self.expiry_ql)
 
     def rate_domestic(self):
         return self.rd
@@ -124,7 +156,7 @@ class FXVanillaOption(FXOption):
         return self.rf
 
     def spot_ex(self):
-        return self.exchange_rate_
+        return self.exchange_rate
 
     def price(self):
         """ This function calculates the value of the option using a specified
@@ -132,7 +164,7 @@ class FXVanillaOption(FXOption):
         Recall that Domestic = CCY2 and Foreign = CCY1 and FX rate is in
         price in domestic of one unit of foreign currency. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         df_d = self.df_d
         v = self.volatility_
@@ -188,7 +220,7 @@ class FXVanillaOption(FXOption):
 
     def atm(self):
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         df_fwd = self.df_fwd
         atm = S0 / df_fwd
         return atm
@@ -199,7 +231,7 @@ class FXVanillaOption(FXOption):
         definitions can be found on Page 44 of Foreign Exchange Option Pricing
         by Iain Clark, published by Wiley Finance. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         rd = self.rd
         rf = self.rf
@@ -229,7 +261,7 @@ class FXVanillaOption(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-        return greek(self, self.price, "exchange_rate_", bump=bump_local) * bump_local
+        return greek(self, self.price, "exchange_rate", bump=bump_local) * bump_local
 
     def fx_gamma_bump(self):
         """ Calculation of the FX option gamma by bumping the spot FX rate by
@@ -237,7 +269,7 @@ class FXVanillaOption(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-        return greek(self, self.price, "exchange_rate_", bump=bump_local, order=2) * bump_local ** 2
+        return greek(self, self.price, "exchange_rate", bump=bump_local, order=2) * bump_local ** 2
 
     def fx_vega_bump(self):
         """ Calculation of the FX option vega by bumping the spot FX volatility by
@@ -275,7 +307,7 @@ class FXVanillaOption(FXOption):
     def fx_gamma(self):
         """ This function calculates the FX Option Gamma using the spot delta. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -297,7 +329,7 @@ class FXVanillaOption(FXOption):
     def fx_vega(self):
         """ This function calculates the FX Option Vega using the spot delta. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -318,7 +350,7 @@ class FXVanillaOption(FXOption):
     def fx_theta(self):
         """ This function calculates the time decay of the FX option. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -352,7 +384,7 @@ class FXVanillaOption(FXOption):
     def fx_vanna(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -374,7 +406,7 @@ class FXVanillaOption(FXOption):
     def fx_volga(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -415,7 +447,7 @@ class FXVanillaOption(FXOption):
 
         v = self.volatility_
         K = self.strike
-        spot_fx_rate = self.exchange_rate_
+        spot_fx_rate = self.exchange_rate
         option_type = self.option_type_
 
         np.random.seed(self.seed)
@@ -473,7 +505,7 @@ class FXVanillaOption(FXOption):
     def resolve_param(self):
         self.check_underlier()
         # if self.underlier:
-        #     if not self.exchange_rate_:
+        #     if not self.exchange_rate:
         #         ex_rate = FxApi.get_exchange_rate(gurl=None,
         #                                           underlier=self.underlier)
         #         if ex_rate:
