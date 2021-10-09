@@ -6,6 +6,8 @@ from scipy import optimize
 import QuantLib as ql
 
 from fundamental.turing_db.option_data import FxOptionApi
+from turing_models.utilities.mathematics import NVect, NPrimeVect
+from turing_models.market.curves.curve_generation import ForDiscountCurveGen
 from turing_models.instruments.common import greek
 from turing_models.instruments.fx.fx_option import FXOption
 from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
@@ -102,6 +104,18 @@ class FXVanillaOption(FXOption):
     @property
     def rf(self):
         return self.foreign_discount_curve.zeroRate(self.expiry_ql, self.daycount, ql.Continuous).rate()
+    
+    @property
+    def df_d(self):
+        return self.domestic_discount_curve.discount(self.expiry_ql)
+
+    @property
+    def df_f(self):
+        return self.foreign_discount_curve.discount(self.expiry_ql)
+    
+    @property
+    def df_fwd(self):
+        return ForDiscountCurveGen(currency_pair=self.underlier_symbol, value_date=self.value_date_).fx_forward_curve.discount(self.expiry_ql)
 
     def rate_domestic(self):
         return self.rd
@@ -120,25 +134,25 @@ class FXVanillaOption(FXOption):
 
         S0 = self.exchange_rate_
         K = self.strike
-        rd = self.rd
-        rf = self.rf
+        df_d = self.df_d
         v = self.volatility_
         texp = self.texp
-        tdel = self.tdel
+        atm = self.atm() 
         option_type = self.option_type_
         notional_dom = self.notional_dom
         notional_for = self.notional_for
         premium_currency = self.premium_currency
+        d1 = (np.log(atm / K) + 0.5 * v ** 2 * texp) / (v * np.sqrt(texp))
+        d2 = (np.log(atm / self.strike) - 0.5 * v ** 2 * texp) / (v * np.sqrt(texp))
+        df = df_d 
 
         if option_type == TuringOptionTypes.EUROPEAN_CALL:
 
-            vdf = bs_value(S0, texp, K, rd, rf, v,
-                           TuringOptionTypes.EUROPEAN_CALL.value, tdel)
+            vdf = df * (atm*NVect(d1) - K*NVect(d2))
 
         elif option_type == TuringOptionTypes.EUROPEAN_PUT:
 
-            vdf = bs_value(S0, texp, K, rd, rf, v,
-                           TuringOptionTypes.EUROPEAN_PUT.value, tdel)
+            vdf = df * (K*NVect(-d2) - atm*NVect(-d1))
 
         else:
             raise TuringError("Unknown option type")
@@ -175,10 +189,8 @@ class FXVanillaOption(FXOption):
     def atm(self):
 
         S0 = self.exchange_rate_
-        rd = self.rd
-        rf = self.rf
-        texp = self.texp
-        atm = S0 * np.exp(-rf * texp) / np.exp(-rd * texp)
+        df_fwd = self.df_fwd
+        atm = S0 / df_fwd
         return atm
 
     def fx_delta(self):
