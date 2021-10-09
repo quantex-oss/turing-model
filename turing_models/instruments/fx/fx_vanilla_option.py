@@ -67,7 +67,8 @@ class FXVanillaOption(FXOption):
 
     def __post_init__(self):
         super().__post_init__()
-        self.expiry_ql = ql.Date(self.expiry._d, self.expiry._m, self.expiry._y)
+        if self.expiry:
+            self.expiry_ql = ql.Date(self.expiry._d, self.expiry._m, self.expiry._y)
 
     @cached_property
     def volatility_surface(self):
