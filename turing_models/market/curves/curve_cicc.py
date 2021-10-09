@@ -23,7 +23,6 @@ class Shibor3M:
 
         self.curve = self._build(self.deposit_mkt_data, self.swap_mkt_data, self.today)
 
-
     def _build(self, deposit_mkt_data, swap_mkt_data, today):
         calendar = ql.China(ql.China.IB)
         convention = ql.ModifiedFollowing
@@ -206,3 +205,23 @@ class FXImpliedAssetCurve:
         asset_crv.enableExtrapolation()
 
         return asset_crv
+
+
+if __name__ == '__main__':
+    mkt_file = 'C:/Users/Administrator/Desktop/FX Vanilla/market data 20210820.xlsx'
+
+    today = ql.Date(20, 8, 2021)
+    expiry = ql.Date(16, 9, 2021)
+    daycount = ql.Actual365Fixed()
+    shibor_deposit_mkt_data = pd.read_excel(mkt_file, 'Shibor Deposit Rate')
+    shibor_swap_mkt_data = pd.read_excel(mkt_file, 'Shibor Swap Rate')
+    shibor_fixing_data = pd.read_excel(mkt_file, 'Shibor Fixings')
+    shibor_deposit_mkt_data.iloc[0, :] /= 100
+    shibor_swap_mkt_data.iloc[0, :] /= 100
+    shibor_fixing_data['Fixing'] /= 100
+
+    Shibor3M_obj = Shibor3M(shibor_deposit_mkt_data, shibor_swap_mkt_data, today)
+    disc_crv_CNY = Shibor3M_obj.curve
+    valuation_date = today
+    ql.Settings.instance().evaluationDate = valuation_date
+    print('rd', disc_crv_CNY.zeroRate(expiry, daycount, ql.Continuous).rate())

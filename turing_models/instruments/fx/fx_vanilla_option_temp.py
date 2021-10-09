@@ -71,7 +71,7 @@ class FXVanillaOptionTemp(FXOption):
         return self.rf
 
     def spot_ex(self):
-        return self.exchange_rate_
+        return self.exchange_rate
 
     def price(self):
         """ This function calculates the value of the option using a specified
@@ -79,7 +79,7 @@ class FXVanillaOptionTemp(FXOption):
         Recall that Domestic = CCY2 and Foreign = CCY1 and FX rate is in
         price in domestic of one unit of foreign currency. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         rd = self.rd
         rf = self.rf
@@ -135,7 +135,7 @@ class FXVanillaOptionTemp(FXOption):
 
     def atm(self):
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         rd = self.rd
         rf = self.rf
         texp = self.texp
@@ -148,7 +148,7 @@ class FXVanillaOptionTemp(FXOption):
         definitions can be found on Page 44 of Foreign Exchange Option Pricing
         by Iain Clark, published by Wiley Finance. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         rd = self.rd
         rf = self.rf
@@ -178,7 +178,7 @@ class FXVanillaOptionTemp(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-        return greek(self, self.price, "exchange_rate_", bump=bump_local) * bump_local
+        return greek(self, self.price, "exchange_rate", bump=bump_local) * bump_local
 
     def fx_gamma_bump(self):
         """ Calculation of the FX option gamma by bumping the spot FX rate by
@@ -186,7 +186,7 @@ class FXVanillaOptionTemp(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-        return greek(self, self.price, "exchange_rate_", bump=bump_local, order=2) * bump_local ** 2
+        return greek(self, self.price, "exchange_rate", bump=bump_local, order=2) * bump_local ** 2
 
     def fx_vega_bump(self):
         """ Calculation of the FX option vega by bumping the spot FX volatility by
@@ -224,7 +224,7 @@ class FXVanillaOptionTemp(FXOption):
     def fx_gamma(self):
         """ This function calculates the FX Option Gamma using the spot delta. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -246,7 +246,7 @@ class FXVanillaOptionTemp(FXOption):
     def fx_vega(self):
         """ This function calculates the FX Option Vega using the spot delta. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -267,7 +267,7 @@ class FXVanillaOptionTemp(FXOption):
     def fx_theta(self):
         """ This function calculates the time decay of the FX option. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -301,7 +301,7 @@ class FXVanillaOptionTemp(FXOption):
     def fx_vanna(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -323,7 +323,7 @@ class FXVanillaOptionTemp(FXOption):
     def fx_volga(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
-        S0 = self.exchange_rate_
+        S0 = self.exchange_rate
         K = self.strike
         texp = self.texp
         v = self.volatility_
@@ -364,7 +364,7 @@ class FXVanillaOptionTemp(FXOption):
 
         v = self.volatility_
         K = self.strike
-        spot_fx_rate = self.exchange_rate_
+        spot_fx_rate = self.exchange_rate
         option_type = self.option_type_
 
         np.random.seed(self.seed)
@@ -422,7 +422,7 @@ class FXVanillaOptionTemp(FXOption):
     def resolve_param(self):
         self.check_underlier()
         # if self.underlier:
-        #     if not self.exchange_rate_:
+        #     if not self.exchange_rate:
         #         ex_rate = FxApi.get_exchange_rate(gurl=None,
         #                                           underlier=self.underlier)
         #         if ex_rate:
