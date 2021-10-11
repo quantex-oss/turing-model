@@ -1,13 +1,11 @@
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 
-from numba import njit
 import numpy as np
+from numba import njit
 
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
-from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
-
 
 bump = 1e-4
 
@@ -39,12 +37,6 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         setattr(obj, attr, None)
 
     if order == 1:
-        if isinstance(attr_value, TuringDate):
-            p0 = price()
-            increment(attr_value)
-            p_up = price()
-            clear()
-            return (p_up - p0) / bump
         increment(attr_value)
         p_up = price()
         clear()
@@ -61,6 +53,7 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         clear()
         return (p_up - 2.0 * p0 + p_down) / bump / bump
 
+
 @njit(fastmath=True, cache=True)
 def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
     ''' Calculation of the FX Option delta. Used in the determination of
@@ -72,7 +65,7 @@ def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
     if deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA.value:
         return pips_spot_delta
     elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA.value:
-        pips_fwd_delta = pips_spot_delta * np.exp(rf*t)
+        pips_fwd_delta = pips_spot_delta * np.exp(rf * t)
         return pips_fwd_delta
     elif deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
         vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
@@ -80,7 +73,7 @@ def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
         return pct_spot_delta_prem_adj
     elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
         vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
-        pct_fwd_delta_prem_adj = np.exp(rf*t) * (pips_spot_delta - vpctf)
+        pct_fwd_delta_prem_adj = np.exp(rf * t) * (pips_spot_delta - vpctf)
         return pct_fwd_delta_prem_adj
     else:
         raise TuringError("Unknown TuringFXDeltaMethod")
@@ -700,8 +693,7 @@ class TuringFXDeltaMethod(Enum):
     FORWARD_DELTA_PREM_ADJ = 4
 
 
-class Priceable:
-
+class Ctx:
     @property
     def ctx_spot(self):
         asset_id = getattr(self, 'underlier', None) or getattr(
@@ -713,6 +705,30 @@ class Priceable:
         asset_id = getattr(self, 'underlier', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"volatility_{asset_id}")
+
+    @property
+    def ctx_fx_implied_volatility_curve(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"fx_implied_volatility_curve_{asset_id}")
+
+    @property
+    def ctx_irs_curve(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"irs_curve_{asset_id}")
+
+    @property
+    def ctx_shibor_curve(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"shibor_curve_{asset_id}")
+
+    @property
+    def ctx_swap_curve(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"swap_curve_{asset_id}")
 
     @property
     def ctx_interest_rate(self):
@@ -749,6 +765,10 @@ class Priceable:
     @property
     def ctx_tenor_end(self):
         return getattr(self.ctx, f"tenor_end_{self.curve_code}")
+
+
+class Priceable(Ctx):
+    pass
 
 
 class Eq(Priceable, metaclass=ABCMeta):
