@@ -76,6 +76,9 @@ with scenario_extreme:
     theta = fxoption.fx_theta()
     rd = fxoption.rd
     rf = fxoption.rf
+    vanna = fxoption.fx_vanna()
+    volga = fxoption.fx_volga()
+    
     # rho = fxoption.fx_rho_bump()
     # phi = fxoption.fx_phi_bump()
     # vanna = fxoption.fx_vanna()
@@ -83,6 +86,8 @@ with scenario_extreme:
     print("atm", atm, "sigma", fxoption.volatility_)
     print("price:", price, "delta:", delta, "gamma:",
           gamma, "vega:", vega, "theta:", theta, 'rd:', rd, 'rf:', rf)
+    print("vanna", vanna, "volga",volga)
+
 
 
 # for spotFXRate in np.arange(100, 200, 10)/100.0:

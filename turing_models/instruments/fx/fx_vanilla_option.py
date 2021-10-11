@@ -280,6 +280,22 @@ class FXVanillaOption(FXOption):
         bump_local = 0.01
         return greek(self, self.price, "volatility_", bump=bump_local) * bump_local
 
+    def fx_vanna(self):
+        """ Calculation of the FX option vanna by bumping the spot FX volatility by
+        1 cent of its value. This gives the FX spot vega. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        bump_local = 0.01
+        return greek(self, self.fx_delta, "volatility_", bump=bump_local) * bump_local
+    
+    def fx_volga(self):
+        """ Calculation of the FX option volga by bumping the spot FX volatility by
+        1 cent of its value. This gives the FX spot vega. For speed we prefer
+        to use the analytical calculation of the derivative given below. """
+
+        bump_local = 0.01
+        return greek(self, self.price, "volatility_", bump=bump_local, order=2) * bump_local ** 2
+    
     def fx_theta(self):
         """ Calculation of the FX option theta by bumping 1 day. This gives the FX spot theta. For speed we prefer
         to use the analytical calculation of the derivative given below. """
@@ -386,7 +402,7 @@ class FXVanillaOption(FXOption):
 
         return v
 
-    def fx_vanna(self):
+    def fx_vanna_f(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
         S0 = self.exchange_rate
@@ -408,7 +424,7 @@ class FXVanillaOption(FXOption):
 
         return vanna
 
-    def fx_volga(self):
+    def fx_volga_f(self):
         """ This function calculates the FX Option Vanna using the spot delta. """
 
         S0 = self.exchange_rate
