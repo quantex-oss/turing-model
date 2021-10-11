@@ -5,7 +5,9 @@ import numpy as np
 from numba import njit
 
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
+from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
+
 
 bump = 1e-4
 
@@ -37,6 +39,12 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         setattr(obj, attr, None)
 
     if order == 1:
+        if isinstance(attr_value, TuringDate):
+            p0 = price()
+            increment(attr_value)
+            p_up = price()
+            clear()
+            return (p_up - p0) / bump
         increment(attr_value)
         p_up = price()
         clear()
