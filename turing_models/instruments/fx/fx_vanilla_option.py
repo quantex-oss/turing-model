@@ -226,7 +226,7 @@ class FXVanillaOption(FXOption):
         atm = S0 / df_fwd
         return atm
 
-    def fx_delta(self):
+    def fx_delta_bs(self):
         """ Calculation of the FX Option delta. There are several definitions
         of delta and so we are required to return a dictionary of values. The
         definitions can be found on Page 44 of Foreign Exchange Option Pricing
@@ -256,7 +256,7 @@ class FXVanillaOption(FXOption):
         #         "pct_spot_delta_prem_adj": pct_spot_delta_prem_adj,
         #         "pct_fwd_delta_prem_adj": pct_fwd_delta_prem_adj}
 
-    def fx_delta_bump(self):
+    def fx_delta(self):
         """ Calculation of the FX option delta by bumping the spot FX rate by
         1 cent of its value. This gives the FX spot delta. For speed we prefer
         to use the analytical calculation of the derivative given below. """
@@ -264,7 +264,7 @@ class FXVanillaOption(FXOption):
         bump_local = 0.0001
         return greek(self, self.price, "exchange_rate", bump=bump_local) * bump_local
 
-    def fx_gamma_bump(self):
+    def fx_gamma(self):
         """ Calculation of the FX option gamma by bumping the spot FX rate by
         1 cent of its value. This gives the FX spot gamma. For speed we prefer
         to use the analytical calculation of the derivative given below. """
@@ -272,7 +272,7 @@ class FXVanillaOption(FXOption):
         bump_local = 0.0001
         return greek(self, self.price, "exchange_rate", bump=bump_local, order=2) * bump_local ** 2
 
-    def fx_vega_bump(self):
+    def fx_vega(self):
         """ Calculation of the FX option vega by bumping the spot FX volatility by
         1 cent of its value. This gives the FX spot vega. For speed we prefer
         to use the analytical calculation of the derivative given below. """
@@ -280,7 +280,7 @@ class FXVanillaOption(FXOption):
         bump_local = 0.01
         return greek(self, self.price, "volatility_", bump=bump_local) * bump_local
 
-    def fx_theta_bump(self):
+    def fx_theta(self):
         """ Calculation of the FX option theta by bumping 1 day. This gives the FX spot theta. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
@@ -309,7 +309,7 @@ class FXVanillaOption(FXOption):
     #     return greek(self, self.price, "foreign_discount_curve", bump=bump_local,
     #                  cus_inc=(self.foreign_discount_curve.bump, bump_local)) * bump_local
 
-    def fx_gamma(self):
+    def fx_gamma_f(self):
         """ This function calculates the FX Option Gamma using the spot delta. """
 
         S0 = self.exchange_rate
@@ -331,7 +331,7 @@ class FXVanillaOption(FXOption):
 
         return gamma
 
-    def fx_vega(self):
+    def fx_vega_f(self):
         """ This function calculates the FX Option Vega using the spot delta. """
 
         S0 = self.exchange_rate
@@ -352,7 +352,7 @@ class FXVanillaOption(FXOption):
 
         return vega
 
-    def fx_theta(self):
+    def fx_theta_f(self):
         """ This function calculates the time decay of the FX option. """
 
         S0 = self.exchange_rate
