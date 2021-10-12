@@ -157,7 +157,7 @@ class FXVanillaOption(FXOption):
     def rate_foreign(self):
         return self.rf
 
-    def spot_ex(self):
+    def spot(self):
         return self.exchange_rate
 
     def price(self):
