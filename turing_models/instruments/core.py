@@ -71,6 +71,7 @@ class InstrumentBase:
 
     def api_calc(self, riskMeasure: list):
         """api calc 结果集"""
+        logger.debug(self.__dict__)
         msg = ''
         response_data = []
         if riskMeasure:
@@ -97,7 +98,6 @@ class InstrumentBase:
                     setattr(self.ctx, k, v)
 
     def main(self, **kw):
-        logger.debug(kw)
         context = kw.pop('context', '')
         if context:
             self.ctx.context = context
