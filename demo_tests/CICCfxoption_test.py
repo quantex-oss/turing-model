@@ -7,13 +7,12 @@ from turing_models.utilities.turing_date import TuringDate
 
 
 value_date = TuringDate(2021, 8, 20)
-fxoption = FXVanillaOption(start_date=TuringDate(2021, 4, 20),
-                           expiry=TuringDate(2021, 10, 16),
-                           cut_off_time=TuringDate(2021, 9, 16),
+fxoption = FXVanillaOption(start_date=TuringDate(2021, 5, 18),
+                           expiry=TuringDate(2022, 4, 28),
                            value_date=value_date,
                            underlier_symbol=CurrencyPair.USDCNY,
-                           strike=6.6,
-                           notional=50000000.00,
+                           strike=7.45,
+                           notional=20000000,
                            notional_currency=Currency.USD,
                            option_type=TuringOptionType.CALL,
                            exercise_type=TuringExerciseType.EUROPEAN,
