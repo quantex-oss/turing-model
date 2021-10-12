@@ -3,6 +3,7 @@ from functools import cached_property
 
 import numpy as np
 from scipy import optimize
+from scipy.stats import norm
 import QuantLib as ql
 
 from fundamental.turing_db.option_data import FxOptionApi
@@ -180,12 +181,12 @@ class FXVanillaOption(FXOption):
         df = df_d 
 
         if option_type == TuringOptionTypes.EUROPEAN_CALL:
-
-            vdf = df * (atm*NVect(d1) - K*NVect(d2))
+            
+            vdf = df * (atm*norm.cdf(d1) - K*norm.cdf(d2))
 
         elif option_type == TuringOptionTypes.EUROPEAN_PUT:
 
-            vdf = df * (K*NVect(-d2) - atm*NVect(-d1))
+            vdf = df * (K*norm.cdf(-d2) - atm*norm.cdf(-d1))
 
         else:
             raise TuringError("Unknown option type")
@@ -282,7 +283,7 @@ class FXVanillaOption(FXOption):
 
     def fx_vanna(self):
         """ Calculation of the FX option vanna by bumping the spot FX volatility by
-        1 cent of its value. This gives the FX spot vega. For speed we prefer
+        1 cent of its value. This gives the FX spot vanna. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.01
@@ -290,7 +291,7 @@ class FXVanillaOption(FXOption):
     
     def fx_volga(self):
         """ Calculation of the FX option volga by bumping the spot FX volatility by
-        1 cent of its value. This gives the FX spot vega. For speed we prefer
+        1 cent of its value. This gives the FX spot volga. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.01
