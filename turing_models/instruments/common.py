@@ -1,6 +1,13 @@
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 
+import numpy as np
+from numba import njit
+
+from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
+from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.error import TuringError
+
 
 bump = 1e-4
 
@@ -32,11 +39,19 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         setattr(obj, attr, None)
 
     if order == 1:
-        p0 = price()
+        if isinstance(attr_value, TuringDate):
+            p0 = price()
+            increment(attr_value)
+            p_up = price()
+            clear()
+            return (p_up - p0) / bump
         increment(attr_value)
         p_up = price()
         clear()
-        return (p_up - p0) / bump
+        decrement(attr_value)
+        p_down = price()
+        clear()
+        return (p_up - p_down) / (bump * 2)
     elif order == 2:
         p0 = price()
         decrement(attr_value)
@@ -45,6 +60,31 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         p_up = price()
         clear()
         return (p_up - 2.0 * p0 + p_down) / bump / bump
+
+
+@njit(fastmath=True, cache=True)
+def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
+    ''' Calculation of the FX Option delta. Used in the determination of
+    the volatility surface. Avoids discount curve interpolation so it
+    should be slightly faster than the full calculation of delta. '''
+
+    pips_spot_delta = bs_delta(s, t, k, rd, rf, vol, optionTypeValue, False)
+
+    if deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA.value:
+        return pips_spot_delta
+    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA.value:
+        pips_fwd_delta = pips_spot_delta * np.exp(rf * t)
+        return pips_fwd_delta
+    elif deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
+        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
+        pct_spot_delta_prem_adj = pips_spot_delta - vpctf
+        return pct_spot_delta_prem_adj
+    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
+        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
+        pct_fwd_delta_prem_adj = np.exp(rf * t) * (pips_spot_delta - vpctf)
+        return pct_fwd_delta_prem_adj
+    else:
+        raise TuringError("Unknown TuringFXDeltaMethod")
 
 
 class RiskMeasure(Enum):
@@ -477,6 +517,7 @@ class CurrencyPair(Enum):
     CNYSEK = 'CNY/SEK'
     CNYTRY = 'CNY/TRY'
     CNYTHB = 'CNY/THB'
+    EURUSD = 'EUR/USD'
 
     def __repr__(self):
         return self.value
@@ -489,6 +530,13 @@ class RMBIRCurveType(Enum):
 
     def __repr__(self):
         return self.value
+
+
+class DiscountCurveType(Enum):
+    Shibor3M_CICC = 'Shibor3M_CICC'
+    Shibor3M = 'Shibor3M'
+    FX_Implied_CICC = 'FX_Implied_CICC'
+    FX_Implied = 'FX_Implied'
 
 
 class SpotExchangeRateType(Enum):
@@ -639,17 +687,56 @@ class AssetType(Enum):
         return self.value
 
 
-class Priceable:
+class TuringFXATMMethod(Enum):
+    SPOT = 1  # Spot FX Rate
+    FWD = 2  # At the money forward
+    FWD_DELTA_NEUTRAL = 3  # K = F*exp(0.5*sigma*sigma*T)
+    FWD_DELTA_NEUTRAL_PREM_ADJ = 4  # K = F*exp(-0.5*sigma*sigma*T)
 
+
+class TuringFXDeltaMethod(Enum):
+    SPOT_DELTA = 1
+    FORWARD_DELTA = 2
+    SPOT_DELTA_PREM_ADJ = 3
+    FORWARD_DELTA_PREM_ADJ = 4
+
+
+class Ctx:
     @property
     def ctx_spot(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(self, 'asset_id', None)
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
         return getattr(self.ctx, f"spot_{asset_id}")
 
     @property
     def ctx_volatility(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(self, 'asset_id', None)
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
         return getattr(self.ctx, f"volatility_{asset_id}")
+
+    @property
+    def ctx_fx_implied_volatility_curve(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"fx_implied_volatility_curve_{asset_id}")
+
+    @property
+    def ctx_irs_curve(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"irs_curve_{asset_id}")
+
+    @property
+    def ctx_shibor_curve(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"shibor_curve_{asset_id}")
+
+    @property
+    def ctx_swap_curve(self):
+        asset_id = getattr(self, 'underlier', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"swap_curve_{asset_id}")
 
     @property
     def ctx_interest_rate(self):
@@ -686,6 +773,10 @@ class Priceable:
     @property
     def ctx_tenor_end(self):
         return getattr(self.ctx, f"tenor_end_{self.curve_code}")
+
+
+class Priceable(Ctx):
+    pass
 
 
 class Eq(Priceable, metaclass=ABCMeta):

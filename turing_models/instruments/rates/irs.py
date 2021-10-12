@@ -13,10 +13,10 @@ from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.global_types import TuringSwapTypes
-from turing_models.products.rates.fixed_leg import TuringFixedLeg
-from turing_models.products.rates.float_leg import TuringFloatLeg
-from turing_models.products.rates.ibor_deposit import TuringIborDeposit
-from turing_models.products.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.instruments.rates.fixed_leg import TuringFixedLeg
+from turing_models.instruments.rates.float_leg import TuringFloatLeg
+from turing_models.instruments.rates.ibor_deposit import TuringIborDeposit
+from turing_models.instruments.rates.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instruments.core import InstrumentBase
 from turing_models.instruments.common import IR
 from turing_models.utilities.helper_functions import to_string
@@ -81,10 +81,10 @@ def modify_leg_type(leg_type):
 
 
 def create_ibor_single_curve(value_date: TuringDate,
-                             deposit_term: float,
-                             deposit_rate: float,
+                             deposit_terms: (float, list),
+                             deposit_rates: (float, list),
                              deposit_day_count_type: TuringDayCountTypes,
-                             swap_curve_dates: List[TuringDate],
+                             swap_curve_dates: List,
                              fixed_leg_type_curve: TuringSwapTypes,
                              swap_curve_rates: List[float],
                              fixed_freq_type_curve: TuringFrequencyTypes,
@@ -94,13 +94,21 @@ def create_ibor_single_curve(value_date: TuringDate,
     depos = []
     fras = []
     swaps = []
-
-    due_date = value_date.addYears(deposit_term)
-    depo1 = TuringIborDeposit(value_date,
-                              due_date,
-                              deposit_rate,
-                              deposit_day_count_type)
+    if isinstance(deposit_terms[0], str):
+        due_dates = value_date.addTenor(deposit_terms)
+    else:
+        due_dates = value_date.addYears(deposit_terms)
+    for i in range(len(deposit_terms)):
+        depo1 = TuringIborDeposit(value_date,
+                                  due_dates[i],
+                                  deposit_rates[i],
+                                  deposit_day_count_type)
     depos.append(depo1)
+
+    if isinstance(swap_curve_dates[0], str):
+        swap_curve_dates = value_date.addTenor(swap_curve_dates)
+    else:
+        swap_curve_dates = value_date.addYears(swap_curve_dates)
 
     for i in range(len(swap_curve_dates)):
         swap = IRS(effective_date=value_date,
@@ -132,7 +140,7 @@ class IRS(IR, InstrumentBase):
     notional: float = 1000000.0
     float_spread: float = 0.0
     float_freq_type: Union[str, TuringFrequencyTypes] = '按季付息'
-    float_day_count_type: Union[str, TuringDayCountTypes] = '30/360'
+    float_day_count_type: Union[str, TuringDayCountTypes] = 'ACT/360'
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))  # 估值日期
     swap_curve_code: str = None
