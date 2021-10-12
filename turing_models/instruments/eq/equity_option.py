@@ -160,6 +160,18 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
     def v(self, value: float):
         self._volatility = value
 
+    def spot(self):
+        return self.stock_price_
+
+    def vol(self):
+        return self.v
+
+    def rate(self):
+        return self.r
+
+    def dividend(self):
+        return self.q
+
     def eq_delta(self) -> float:
         return greek(self, self.price, "stock_price_")
 

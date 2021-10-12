@@ -2,11 +2,11 @@ import inspect
 import traceback
 from typing import Union, List, Iterable
 
+from loguru import logger
+
 from fundamental import PricingContext
 from fundamental.base import ctx, Context
-from turing_models.constants import ParallelType
 from turing_models.instruments.common import RiskMeasure
-from turing_models.parallel.parallel_proxy import ParallelCalcProxy
 
 
 class IsPriceable:
@@ -32,18 +32,9 @@ class InstrumentBase:
     def check_param(self):
         getattr(self, '_')
 
-    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], parallel_type=ParallelType.NULL,
-             option_all=None, timeout=None):
+    def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], option_all=None):
         result: Union[float, List] = []
         try:
-            if ParallelType.valid(parallel_type):
-                return ParallelCalcProxy(
-                    instance=self,
-                    parallel_type=parallel_type,
-                    call_func_name="calc",
-                    func_params={"risk_measure": risk_measure},
-                    timeout=timeout or 30
-                ).calc()
             if not isinstance(risk_measure, Iterable) or isinstance(risk_measure, str):
                 rs = risk_measure.value if isinstance(risk_measure, RiskMeasure) else risk_measure
                 result = getattr(self, rs)() if not option_all else getattr(self, rs)(option_all)
@@ -80,6 +71,7 @@ class InstrumentBase:
 
     def api_calc(self, riskMeasure: list):
         """api calc 结果集"""
+        logger.debug(self.__dict__)
         msg = ''
         response_data = []
         if riskMeasure:
@@ -97,20 +89,33 @@ class InstrumentBase:
                 response_data.append(response)
         return response_data
 
-    def main(self, context=None, assetId: str = None, pricingContext=None, riskMeasure=None):
+    def api_data(self, **kw):
+        for k, v in kw.items():
+            for _k, _v in self.__dict__.items():
+                if k == _k:
+                    setattr(self, k, v)
+                else:
+                    setattr(self.ctx, k, v)
+
+    def main(self, **kw):
+        context = kw.pop('context', '')
         if context:
             self.ctx.context = context
         """api默认入口"""
         scenario = PricingContext()
-        setattr(self, 'asset_id', assetId)
-        getattr(self, '_resolve')()
-
-        if pricingContext:
-            scenario.resolve(pricingContext)
+        asset_id = kw.pop('assetId', '')
+        if asset_id:
+            setattr(self, 'asset_id', asset_id)
+            getattr(self, '_resolve')()
+        pricing_context = kw.pop('pricingContext', '')
+        risk = kw.pop('riskMeasure', '')
+        self.api_data(**kw)
+        if pricing_context:
+            scenario.resolve(pricing_context)
             with scenario:
-                return self.api_calc(riskMeasure)
+                return self.api_calc(risk)
         else:
-            return self.api_calc(riskMeasure)
+            return self.api_calc(risk)
 
     def __repr__(self):
         return self.__class__.__name__

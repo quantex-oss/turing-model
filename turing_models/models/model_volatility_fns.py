@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from numba import njit, float64
+from scipy.interpolate import CubicSpline
 
 from turing_models.utilities.mathematics import N
 from turing_models.utilities.error import TuringError
@@ -22,6 +23,7 @@ class TuringVolFunctionTypes(Enum):
     SVI = 6
     SSVI = 7
     VANNA_VOLGA = 8
+    CICC = 9
 
 
 ###############################################################################
@@ -246,6 +248,7 @@ def d_2(F, X, vol, t):
     d2 = d_1(F, X, vol, t) - vol * math.sqrt(t)
     return d2
 
+
 @njit(float64(float64[:], float64, float64, float64),
       fastmath=True, cache=True)
 def volFunctionVV(params, f, k, t):
@@ -270,3 +273,21 @@ def volFunctionVV(params, f, k, t):
 
     return vol
 
+
+# @njit(float64(float64[:], float64, float64, float64),
+#       fastmath=True, cache=True)
+def volFunctionCICC(params, f, k, t):
+
+    K_10D_P, K_25D_P, K_ATM, K_25D_C, K_10D_C, d10P, d25P, dATM, d25C, d10C = params
+    smile = d10P, d25P, dATM, d25C, d10C
+    strikes = K_10D_P, K_25D_P, K_ATM, K_25D_C, K_10D_C
+
+    interp = CubicSpline(strikes, smile, True)
+
+    if k <= strikes[0]:
+        vol = smile[0]
+    elif k >= strikes[-1]:
+        vol = smile[-1]
+    else:
+        vol = interp(k)
+    return vol
