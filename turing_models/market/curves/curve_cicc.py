@@ -5,29 +5,21 @@ Created on Wed Mar 24 09:28:43 2021
 @author: Dingjn
 """
 
-# import numpy as np
+import numpy as np
 import pandas as pd
 import QuantLib as ql
 
-from fundamental.turing_db.data import TuringDB
-from turing_models.utilities.turing_date import TuringDate
-
 
 # shibor3m
+
 class Shibor3M:
 
-    def __init__(self, deposit_mkt_data, swap_mkt_data, today):
+    def __init__(self, deposit_mkt_data, swap_mkt_data, fixing_data, today):
 
         self.name = 'Shibor3M'
         self.deposit_mkt_data = deposit_mkt_data.copy()
         self.swap_mkt_data = swap_mkt_data.copy()
-        date1 = '2019-07-05'
-        date2 = '2019-07-08'
-        date3 = '2019-07-09'
-        rate1 = TuringDB.shibor_curve(date=TuringDate.fromString(date1, '%Y-%m-%d'))['rate'][4]
-        rate2 = TuringDB.shibor_curve(date=TuringDate.fromString(date2, '%Y-%m-%d'))['rate'][4]
-        rate3 = TuringDB.shibor_curve(date=TuringDate.fromString(date3, '%Y-%m-%d'))['rate'][4]
-        self.fixing_data = pd.DataFrame(data={'日期': ['2019-07-05', '2019-07-08', '2019-07-09'], 'Fixing': [rate1, rate2, rate3]})
+        self.fixing_data = fixing_data.copy()
         self.today = today
 
         self.curve, self.index = self._build(self.deposit_mkt_data, self.swap_mkt_data, self.fixing_data, self.today)
@@ -223,26 +215,5 @@ class FXImpliedAssetCurve:
         asset_crv.enableExtrapolation()
 
         return asset_crv
-
-
-if __name__ == '__main__':
-    mkt_file = 'C:/Users/Administrator/Desktop/FX Vanilla/market data 20210820.xlsx'
-
-    today = ql.Date(20, 8, 2021)
-    expiry = ql.Date(18, 1, 2022)
-    daycount = ql.Actual365Fixed()
-    shibor_deposit_mkt_data = pd.read_excel(mkt_file, 'Shibor Deposit Rate')
-    shibor_swap_mkt_data = pd.read_excel(mkt_file, 'Shibor Swap Rate')
-    shibor_fixing_data = pd.read_excel(mkt_file, 'Shibor Fixings')
-    shibor_deposit_mkt_data.iloc[0, :] /= 100
-    shibor_swap_mkt_data.iloc[0, :] /= 100
-    shibor_fixing_data['Fixing'] /= 100
-
-    Shibor3M_obj = Shibor3M(shibor_deposit_mkt_data, shibor_swap_mkt_data, today)
-    disc_crv_CNY = Shibor3M_obj.curve
-    valuation_date = today
-    ql.Settings.instance().evaluationDate = valuation_date
-    print('rd', disc_crv_CNY.zeroRate(expiry, daycount, ql.Continuous).rate())
-
 
 

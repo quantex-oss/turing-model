@@ -4,7 +4,7 @@ from typing import List, Union
 import pandas as pd
 import QuantLib as ql
 
-from fundamental.turing_db.data import Turing
+from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import CurrencyPair, RMBIRCurveType, SpotExchangeRateType, DiscountCurveType
 from turing_models.instruments.rates.irs import create_ibor_single_curve
 from turing_models.market.curves.curve_cicc import Shibor3M, FXImpliedAssetCurve, FXForwardCurve
@@ -189,7 +189,16 @@ class DomDiscountCurveGen:
 
             shibor_swap_mkt_data = pd.DataFrame(data=shibor_swap_rates, index=shibor_swap_origin_tenors).T
 
-            self.dom_curve = Shibor3M(shibor_deposit_mkt_data, shibor_swap_mkt_data, value_date_ql).curve
+            # TODO: 待与中金同事确认后改为从外部传入的格式
+            date1 = '2019-07-05'
+            date2 = '2019-07-08'
+            date3 = '2019-07-09'
+            rate1 = TuringDB.shibor_curve(date=TuringDate.fromString(date1, '%Y-%m-%d'))['rate'][4]
+            rate2 = TuringDB.shibor_curve(date=TuringDate.fromString(date2, '%Y-%m-%d'))['rate'][4]
+            rate3 = TuringDB.shibor_curve(date=TuringDate.fromString(date3, '%Y-%m-%d'))['rate'][4]
+            fixing_data = pd.DataFrame(data={'日期': ['2019-07-05', '2019-07-08', '2019-07-09'], 'Fixing': [rate1, rate2, rate3]})
+
+            self.dom_curve = Shibor3M(shibor_deposit_mkt_data, shibor_swap_mkt_data, fixing_data, value_date_ql).curve
 
     @property
     def discount_curve(self):
