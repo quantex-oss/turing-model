@@ -5,13 +5,15 @@ Created on Wed Mar 24 09:28:43 2021
 @author: Dingjn
 """
 
-import numpy as np
+# import numpy as np
 import pandas as pd
 import QuantLib as ql
 
+from fundamental.turing_db.data import TuringDB
+from turing_models.utilities.turing_date import TuringDate
+
 
 # shibor3m
-
 class Shibor3M:
 
     def __init__(self, deposit_mkt_data, swap_mkt_data, today):
@@ -19,7 +21,13 @@ class Shibor3M:
         self.name = 'Shibor3M'
         self.deposit_mkt_data = deposit_mkt_data.copy()
         self.swap_mkt_data = swap_mkt_data.copy()
-        self.fixing_data = pd.DataFrame(data={'日期': ['2019-07-05', '2019-07-08', '2019-07-09'], 'Fixing':[0.02606, 0.02603, 0.02601]})
+        date1 = '2019-07-05'
+        date2 = '2019-07-08'
+        date3 = '2019-07-09'
+        rate1 = TuringDB.shibor_curve(date=TuringDate.fromString(date1, '%Y-%m-%d'))['rate'][4]
+        rate2 = TuringDB.shibor_curve(date=TuringDate.fromString(date2, '%Y-%m-%d'))['rate'][4]
+        rate3 = TuringDB.shibor_curve(date=TuringDate.fromString(date3, '%Y-%m-%d'))['rate'][4]
+        self.fixing_data = pd.DataFrame(data={'日期': ['2019-07-05', '2019-07-08', '2019-07-09'], 'Fixing': [rate1, rate2, rate3]})
         self.today = today
 
         self.curve, self.index = self._build(self.deposit_mkt_data, self.swap_mkt_data, self.fixing_data, self.today)
