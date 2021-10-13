@@ -282,7 +282,7 @@ class TuringDate():
     def fromString(cls, dateString, formatString='%Y%m%d'):
         '''  Create a TuringDate from a date and format string.
         Example Input:
-        start_date = TuringDate('2018-1-1', '%Y-%m-%d') '''
+        start_date = TuringDate.fromString('2018-1-1', '%Y-%m-%d') '''
 
         y, m, d = parse_date(dateString, formatString)
         return cls(y, m, d)
