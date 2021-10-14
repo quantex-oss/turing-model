@@ -1,27 +1,20 @@
+import math
 import numpy as np
 import scipy.stats as sci
-import math
-
 import matplotlib.pyplot as plt
 
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.global_types import TuringOptionTypes
-from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMethod
+from turing_models.utilities.mathematics import norminvcdf
+from turing_models.utilities.solvers_1d import newton_secant
+from turing_models.utilities.global_types import TuringOptionTypes, TuringSolverTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.models.model_volatility_fns import volFunctionCICC, TuringVolFunctionTypes
+from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMethod, fastDelta
 
-from turing_models.models.model_volatility_fns import volFunctionCICC
-from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
-
-from turing_models.utilities.mathematics import norminvcdf
-
-from turing_models.instruments.common import fastDelta
-
-from turing_models.utilities.solvers_1d import newton_secant
-from turing_models.utilities.global_types import TuringSolverTypes
 ###############################################################################
 
 

@@ -1,16 +1,14 @@
-from numba import njit, float64, int64
+from enum import Enum
+
 import numpy as np
+from numba import njit, float64, int64
+from scipy.interpolate import PchipInterpolator
+from scipy.interpolate import CubicSpline
+
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gSmall
 
-
-from scipy.interpolate import PchipInterpolator
-from scipy.interpolate import interp1d
-from scipy.interpolate import CubicSpline
-
 ###############################################################################
-
-from enum import Enum
 
 
 class TuringInterpTypes(Enum):

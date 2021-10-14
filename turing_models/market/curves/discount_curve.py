@@ -1,7 +1,5 @@
 import numpy as np
 
-from .interpolator import TuringInterpolator, TuringInterpTypes, interpolate
-
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
@@ -9,9 +7,8 @@ from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTy
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.mathematics import testMonotonicity
 from turing_models.utilities.schedule import TuringSchedule
-from turing_models.utilities.helper_functions import checkArgumentTypes
-from turing_models.utilities.helper_functions import timesFromDates
-from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.helper_functions import checkArgumentTypes, timesFromDates, to_string
+from turing_models.market.curves.interpolator import TuringInterpolator, TuringInterpTypes, interpolate
 
 ###############################################################################
 
