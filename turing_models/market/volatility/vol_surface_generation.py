@@ -11,7 +11,7 @@ from turing_models.instruments.common import CurrencyPair, DiscountCurveType
 from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMethod
 from turing_models.market.curves.curve_generation import FXIRCurve, ForDiscountCurveGen, DomDiscountCurveGen
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.market.volatility.fx_vol_surface_demo import FXVolSurface
+from turing_models.market.volatility.fx_vol_surface_ql import FXVolSurface
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.error import TuringError

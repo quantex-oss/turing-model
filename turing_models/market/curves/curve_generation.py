@@ -7,7 +7,7 @@ import QuantLib as ql
 from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import CurrencyPair, RMBIRCurveType, SpotExchangeRateType, DiscountCurveType
 from turing_models.instruments.rates.irs import create_ibor_single_curve
-from turing_models.market.curves.curve_cicc import Shibor3M, FXImpliedAssetCurve, FXForwardCurve
+from turing_models.market.curves.curve_ql import Shibor3M, FXImpliedAssetCurve, FXForwardCurve
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
