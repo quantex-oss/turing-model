@@ -6,7 +6,7 @@ from numba import njit, float64
 from turing_models.utilities.global_types import TuringOptionTypes
 from turing_models.utilities.error import TuringError
 
-from .model_black_scholes_analytical import bs_value
+from turing_models.models.model_black_scholes_analytical import bs_value
 
 ###############################################################################
 # Analytical Black Scholes model implementation and approximations

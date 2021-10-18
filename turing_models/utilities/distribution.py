@@ -1,5 +1,5 @@
 import numpy as np
-from .error import TuringError
+from turing_models.utilities.error import TuringError
 
 
 class TuringDistribution():

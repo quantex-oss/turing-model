@@ -3,7 +3,7 @@ from numba import njit
 import numpy as np
 import operator
 
-from .error import TuringError
+from turing_models.utilities.error import TuringError
 
 ###############################################################################
 ## from https://quanteconpy.readthedocs.io/en/latest/_modules/quantecon/optimize/root_finding.html #####################

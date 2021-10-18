@@ -7,10 +7,10 @@ from turing_models.utilities.error import TuringError
 
 from turing_models.utilities.helper_functions import checkArgumentTypes
 
-from .model import TuringModel
-from .model_crr_tree import crrTreeValAvg
-from .model_black_scholes_analytical import bawValue
-from .model_black_scholes_analytical import bs_value
+from turing_models.models.model import TuringModel
+from turing_models.models.model_crr_tree import crrTreeValAvg
+from turing_models.models.model_black_scholes_analytical import bawValue
+from turing_models.models.model_black_scholes_analytical import bs_value
 
 from enum import Enum
 
