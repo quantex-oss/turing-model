@@ -97,7 +97,7 @@ class InstrumentBase:
                 else:
                     setattr(self.ctx, k, v)
 
-    def main(self, **kw):
+    def main(self, *args, **kw):
         context = kw.pop('context', '')
         if context:
             self.ctx.context = context

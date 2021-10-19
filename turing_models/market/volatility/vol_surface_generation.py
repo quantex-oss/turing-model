@@ -49,7 +49,7 @@ class FXOptionImpliedVolatilitySurface:
         self.fx_asset_id = Turing.get_fx_symbol_to_id(_id=self.fx_symbol)[
             'asset_id']
         self.exchange_rate = Turing.get_exchange_rate(
-            asset_ids=[self.fx_asset_id])[0]['exchange_rate']
+            asset_ids=tuple([self.fx_asset_id]))[0]['exchange_rate']
 
         self.fx_ir_curve = FXIRCurve(self.fx_symbol)
         self.ccy1_curve = self.fx_ir_curve.ccy1_curve_gen.curve  # 外币
@@ -133,7 +133,7 @@ class FXOptionImpliedVolatilitySurface:
     @staticmethod
     def fetch_fx_volatility(fx_asset_id=None, volatility_types=None):
         try:
-            return Turing.get_volatility_curve(asset_ids=[fx_asset_id],
+            return Turing.get_volatility_curve(asset_ids=tuple([fx_asset_id]),
                                                volatility_type=volatility_types)
         except Exception as e:
             logger.debug(str(e))
