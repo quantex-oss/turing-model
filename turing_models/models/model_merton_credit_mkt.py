@@ -6,7 +6,7 @@ from scipy import optimize
 
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.utilities.error import TuringError
-from .model_merton_credit import TuringModelMertonCredit
+from turing_models.models.model_merton_credit import TuringModelMertonCredit
 
 ###############################################################################
 

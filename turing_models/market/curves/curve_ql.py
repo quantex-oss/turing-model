@@ -5,13 +5,10 @@ Created on Wed Mar 24 09:28:43 2021
 @author: Dingjn
 """
 
-import numpy as np
-import pandas as pd
 import QuantLib as ql
 
 
 # shibor3m
-
 class Shibor3M:
 
     def __init__(self, deposit_mkt_data, swap_mkt_data, fixing_data, today):

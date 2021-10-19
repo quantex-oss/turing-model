@@ -5,18 +5,11 @@ Created on Mon Nov 16 15:53:19 2020
 @author: Dingjn
 """
 
-import xlrd
 import math
 import numpy as np
-import pandas as pd
 import QuantLib as ql
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from datetime import datetime
 from scipy.interpolate import CubicSpline
 from scipy.stats import norm
-from matplotlib import cm
-
 
 
 class FXVolSurface:

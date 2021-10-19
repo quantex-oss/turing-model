@@ -1,7 +1,7 @@
 from math import exp, sqrt, fabs, log
 from numba import njit, boolean, int64, float64, vectorize
 import numpy as np
-from .error import TuringError
+from turing_models.utilities.error import TuringError
 
 PI = 3.14159265358979323846
 INVROOT2PI = 0.3989422804014327
