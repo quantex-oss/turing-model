@@ -170,7 +170,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @cached_property
     def get_fx_implied_vol_data(self):
         return TuringDB.fx_implied_volatility_curve(symbol=self.underlier_symbol,
-                                                    volatility_type=tuple(["ATM", "25D BF", "25D RR", "10D BF", "10D RR"]),
+                                                    volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
                                                     date=self.value_date_interface)[self.underlier_symbol]
 
 
