@@ -2,7 +2,6 @@ import numpy as np
 
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.mathematics import testMonotonicity
-from turing_models.utilities.helper_functions import to_string
 
 ###############################################################################
 # TODO: This should be deleted and replaced with TuringEquityVolSurface

@@ -1,5 +1,8 @@
-from turing_models.utilities import TuringSchedule, TuringDate, TuringFrequencyTypes, TuringCalendarTypes, \
-    TuringDateGenRuleTypes
+from turing_models.utilities.schedule import TuringSchedule
+from turing_models.utilities.turing_date import TuringDate
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.calendar import TuringCalendarTypes, TuringDateGenRuleTypes
+
 
 effectiveDate = TuringDate(2020, 10, 1)
 terminationDate = TuringDate(2021, 1, 1)

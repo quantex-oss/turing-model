@@ -5,10 +5,8 @@ import numpy as np
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.helper_functions import to_string
-from turing_models.utilities.helper_functions import checkArgumentTypes
+from turing_models.utilities.helper_functions import to_string, checkArgumentTypes, timesFromDates
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.utilities.helper_functions import timesFromDates
 from turing_models.market.curves.interpolator import TuringInterpTypes
 
 ###############################################################################

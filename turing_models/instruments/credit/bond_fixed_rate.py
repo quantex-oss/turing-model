@@ -12,7 +12,8 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.helper_functions import to_string
 from turing_models.market.curves.curve_adjust import CurveAdjust
-from turing_models.market.curves import TuringDiscountCurveFlat, TuringDiscountCurveZeros
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
 
 def _f(y, *args):
