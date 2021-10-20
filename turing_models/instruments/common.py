@@ -535,6 +535,7 @@ class RMBIRCurveType(Enum):
 class DiscountCurveType(Enum):
     Shibor3M_CICC = 'Shibor3M_CICC'
     Shibor3M = 'Shibor3M'
+    FlatForward_CICC = 'FlatForward_CICC'
     FX_Implied_CICC = 'FX_Implied_CICC'
     FX_Implied = 'FX_Implied'
 

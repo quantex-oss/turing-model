@@ -152,7 +152,8 @@ class DomDiscountCurveGen:
                  shibor_rates: List[float] = None,
                  shibor_swap_tenors: List[float] = None,
                  shibor_swap_origin_tenors: List[str] = None,
-                 shibor_swap_rates: [float] = None,
+                 shibor_swap_rates: List[float] = None,
+                 d_ccy_discount: float = None,
                  curve_type: DiscountCurveType = DiscountCurveType.Shibor3M_CICC):
         if isinstance(value_date, ql.Date):
             value_date_turing = TuringDate(value_date.year(), value_date.month(), value_date.dayOfMonth())
@@ -199,6 +200,11 @@ class DomDiscountCurveGen:
             fixing_data = pd.DataFrame(data={'日期': [date1, date2, date3], 'Fixing': [rate1, rate2, rate3]})
 
             self.dom_curve = Shibor3M(shibor_deposit_mkt_data, shibor_swap_mkt_data, fixing_data, value_date_ql).curve
+        elif curve_type == DiscountCurveType.FlatForward_CICC:
+            ql.Settings.instance().evaluationDate = value_date_ql
+            calendar = ql.China()
+            daycount = ql.Actual365Fixed()
+            self.dom_curve = ql.FlatForward(0, calendar, d_ccy_discount, daycount)
 
     @property
     def discount_curve(self):
