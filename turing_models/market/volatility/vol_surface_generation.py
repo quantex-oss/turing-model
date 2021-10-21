@@ -78,10 +78,17 @@ class FXOptionImpliedVolatilitySurface:
                                                       shibor_swap_rates=shibor_swap_data['average'],
                                                       curve_type=dom_curve_type).discount_curve
 
+        fx_forward_curve = FXForwardCurveGen(value_date=value_date,
+                                             exchange_rate=exchange_rate,
+                                             fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
+                                             fx_swap_quotes=fx_swap_data['swap_point']).discount_curve
+
         foreign_discount_curve = ForDiscountCurveGen(value_date=value_date,
                                                      exchange_rate=exchange_rate,
                                                      fx_swap_tenors=fx_swap_data['tenor'],
                                                      fx_swap_quotes=fx_swap_data['swap_point'],
+                                                     domestic_discount_curve=domestic_discount_curve,
+                                                     fx_forward_curve=fx_forward_curve,
                                                      curve_type=for_curve_type).discount_curve
 
         self.volatility_surface = FXVolSurfaceGen(value_date=value_date,
@@ -252,7 +259,6 @@ class FXVolSurfaceGen:
             disc_crv = dom.discount_curve
             fwd = FXForwardCurveGen(value_date=self.value_date_ql,
                                     exchange_rate=self.exchange_rate,
-                                    fx_swap_tenors=self.fx_swap_tenors,
                                     fx_swap_origin_tenors=self.fx_swap_origin_tenors,
                                     fx_swap_quotes=self.fx_swap_quotes)
             fwd_crv = fwd.discount_curve

@@ -213,11 +213,9 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @cached_property
     def gen_fx_forward_curve(self):
         return FXForwardCurveGen(value_date=self.value_date_,
-                                   exchange_rate=self.exchange_rate,
-                                   fx_swap_tenors=self.get_fx_swap_data['tenor'],
-                                   fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
-                                   fx_swap_quotes=self.get_fx_swap_data['swap_point']
-                                   ).discount_curve
+                                 exchange_rate=self.exchange_rate,
+                                 fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
+                                 fx_swap_quotes=self.get_fx_swap_data['swap_point']).discount_curve
         
     @property
     def foreign_discount_curve(self):
