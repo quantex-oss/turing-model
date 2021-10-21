@@ -86,6 +86,9 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
         if self.strike and np.any(self.strike < 0.0):
             raise TuringError("Negative strike.")
+        
+        if not self.notional_currency and self.underlier_symbol:
+            self.notional_currency = self.foreign_name
 
         if self.notional_currency and isinstance(self.notional_currency, Currency):
             self.notional_currency = self.notional_currency.value

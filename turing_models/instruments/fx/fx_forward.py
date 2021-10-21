@@ -167,7 +167,6 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
         return ForDiscountCurveGen(value_date=self.value_date_,
                                    exchange_rate=self.exchange_rate,
                                    fx_swap_tenors=self.get_fx_swap_data['tenor'],
-                                   fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
                                    fx_swap_quotes=self.get_fx_swap_data['swap_point'],
                                    domestic_discount_curve = self.domestic_discount_curve,
                                    fx_forward_curve = self.fx_forward_curve,

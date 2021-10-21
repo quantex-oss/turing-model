@@ -165,56 +165,38 @@ class FXDigitalOption(FXOption):
         S0 = self.exchange_rate
         K = self.strike
         df_d = self.df_d
+        df_f = self.df_f
         v = self.volatility_
         texp = self.texp
         atm = self.atm() 
         option_type = self.option_type_
-        notional_dom = self.notional_dom
-        notional_for = self.notional_for
         premium_currency = self.premium_currency
         d1 = (np.log(atm / K) + 0.5 * v ** 2 * texp) / (v * np.sqrt(texp))
         d2 = (np.log(atm / self.strike) - 0.5 * v ** 2 * texp) / (v * np.sqrt(texp))
         df = df_d 
-
-        if option_type == TuringOptionTypes.DIGITAL_CALL:
-            
-            vdf = df * norm.cdf(d2) * self.coupon_rate
-
-        elif option_type == TuringOptionTypes.DIGITAL_PUT:
-
-            vdf = df * (K*norm.cdf(-d2) - atm*norm.cdf(-d1))
-
-        else:
-            raise TuringError("Unknown option type")
-
-        # The option value v is in domestic currency terms but the value of
-        # the option may be quoted in either currency terms and so we calculate
-        # these
-
-        pips_dom = vdf
-        pips_for = vdf / (S0 * K)
-
-        cash_dom = vdf * notional_dom / K
-        cash_for = vdf * notional_for / S0
-
-        pct_dom = vdf / K
-        pct_for = vdf / S0
-
         if premium_currency == self.foreign_name:
-            return cash_for
+            if option_type == TuringOptionTypes.EUROPEAN_CALL:
+                
+                vdf = S0 * df_f * norm.cdf(d1) * self.coupon_rate * texp
+
+            elif option_type == TuringOptionTypes.EUROPEAN_PUT:
+
+                vdf = S0 * df_f * norm.cdf(-d1) * self.coupon_rate * texp
+            else:
+                raise TuringError("Unknown option type")
+            
         elif premium_currency == self.domestic_name:
-            return cash_dom
-        # return {'v': vdf,
-        #         "cash_dom": cash_dom,
-        #         "cash_for": cash_for,
-        #         "pips_dom": pips_dom,
-        #         "pips_for": pips_for,
-        #         "pct_dom": pct_dom,
-        #         "pct_for": pct_for,
-        #         "not_dom": notional_dom,
-        #         "not_for": notional_for,
-        #         "ccy_dom": self.domestic_name,
-        #         "ccy_for": self.foreign_name}
+            if option_type == TuringOptionTypes.EUROPEAN_CALL:
+                
+                vdf = df * norm.cdf(d2) * self.coupon_rate * texp
+
+            elif option_type == TuringOptionTypes.EUROPEAN_PUT:
+
+                vdf = df *norm.cdf(-d2) * self.coupon_rate * texp
+            else:
+                raise TuringError("Unknown option type")
+        
+        return vdf * self.notional
 
     def atm(self):
 
