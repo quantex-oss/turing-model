@@ -4,10 +4,10 @@ from typing import Union
 import numpy as np
 from numba import njit, float64
 
-from .day_count import TuringDayCountTypes, TuringDayCount
-from .error import TuringError
-from .global_variables import gDaysInYear, gSmall
-from .turing_date import TuringDate
+from turing_models.utilities.day_count import TuringDayCountTypes, TuringDayCount
+from turing_models.utilities.error import TuringError
+from turing_models.utilities.global_variables import gDaysInYear, gSmall
+from turing_models.utilities.turing_date import TuringDate
 
 
 ###############################################################################

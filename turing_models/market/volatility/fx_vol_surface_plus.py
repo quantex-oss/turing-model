@@ -13,8 +13,6 @@ from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMet
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
-from turing_models.models.model_black_scholes import TuringModelBlackScholes
-
 from turing_models.models.model_volatility_fns import volFunctionClark
 from turing_models.models.model_volatility_fns import volFunctionBloomberg
 from turing_models.models.model_sabr import volFunctionSABR

@@ -1,9 +1,10 @@
 import datetime
 from dataclasses import dataclass
 
-from turing_models.utilities.error import TuringError
 from numba import njit, boolean, int64
 import numpy as np
+
+from turing_models.utilities.error import TuringError
 
 ###############################################################################
 

@@ -9,8 +9,8 @@ from fundamental.turing_db.utils import to_snake
 from fundamental.turing_db.data import Turing
 from turing_models.instruments.common import greek, bump, Currency, Eq
 from turing_models.instruments.core import InstrumentBase
-from turing_models.market.curves import TuringDiscountCurveFlat, \
-    TuringDiscountCurveZeros
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionType

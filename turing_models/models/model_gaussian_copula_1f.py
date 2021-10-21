@@ -5,9 +5,8 @@ import numpy as np
 
 from turing_models.utilities.mathematics import norminvcdf, N, INVROOT2PI
 from turing_models.utilities.error import TuringError
-from .model_loss_dbn_builder import indepLossDbnRecursionGCD
-from .model_loss_dbn_builder import indepLossDbnHeterogeneousAdjBinomial
-from .model_loss_dbn_builder import portfolioGCD
+from turing_models.models.model_loss_dbn_builder import indepLossDbnRecursionGCD, \
+     indepLossDbnHeterogeneousAdjBinomial, portfolioGCD
 
 ###############################################################################
 

@@ -1,7 +1,7 @@
 import datetime
 
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.utilities import TuringFrequencyTypes
+from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 

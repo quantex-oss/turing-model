@@ -81,8 +81,8 @@ def modify_leg_type(leg_type):
 
 
 def create_ibor_single_curve(value_date: TuringDate,
-                             deposit_terms: (float, list),
-                             deposit_rates: (float, list),
+                             deposit_terms: (str, float, list),
+                             deposit_rates: (str, float, list),
                              deposit_day_count_type: TuringDayCountTypes,
                              swap_curve_dates: List,
                              fixed_leg_type_curve: TuringSwapTypes,
@@ -94,20 +94,28 @@ def create_ibor_single_curve(value_date: TuringDate,
     depos = []
     fras = []
     swaps = []
+    if isinstance(deposit_terms, str) or isinstance(deposit_terms, float):
+        temp1 = deposit_terms
+        temp2 = deposit_rates
+        deposit_terms = []
+        deposit_rates = []
+        deposit_terms.append(temp1)
+        deposit_rates.append(temp2)
     if isinstance(deposit_terms[0], str):
         due_dates = value_date.addTenor(deposit_terms)
-    else:
+    elif isinstance(deposit_terms[0], float):
         due_dates = value_date.addYears(deposit_terms)
+        
     for i in range(len(deposit_terms)):
         depo1 = TuringIborDeposit(value_date,
-                                  due_dates[i],
-                                  deposit_rates[i],
-                                  deposit_day_count_type)
+                                due_dates[i],
+                                deposit_rates[i],
+                                deposit_day_count_type)
     depos.append(depo1)
 
     if isinstance(swap_curve_dates[0], str):
         swap_curve_dates = value_date.addTenor(swap_curve_dates)
-    else:
+    elif isinstance(swap_curve_dates[0], float):
         swap_curve_dates = value_date.addYears(swap_curve_dates)
 
     for i in range(len(swap_curve_dates)):
@@ -150,8 +158,8 @@ class IRS(IR, InstrumentBase):
     index_curve_dates: list = None
     index_curve_rates: list = None
     first_fixing_rate: float = None
-    deposit_term: float = None  # 单位：年
-    deposit_rate: float = None
+    deposit_term: Union[float, str, list] = None  # 单位：年
+    deposit_rate: Union[float, list]  = None
     deposit_day_count_type: Union[str, TuringDayCountTypes] = None
     fixed_freq_type_curve: Union[str, TuringFrequencyTypes] = None
     fixed_day_count_type_curve: Union[str, TuringDayCountTypes] = None

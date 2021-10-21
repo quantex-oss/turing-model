@@ -3,7 +3,9 @@ from typing import List, Union
 
 import numpy as np
 
-from turing_models.utilities import TuringSchedule, TuringFrequencyTypes, TuringCalendarTypes, TuringBusDayAdjustTypes
+from turing_models.utilities.schedule import TuringSchedule
+from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes
 from turing_models.utilities.global_variables import gNumObsInYear, gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
     TuringKnockInTypes, TuringOptionType
@@ -34,7 +36,7 @@ class SnowballOption(EqOption):
         super().__post_init__()
         self.num_ann_obs = gNumObsInYear
         self.days_in_year = gDaysInYear
-        self.num_paths = 1000000
+        self.num_paths = 10000
         self.seed = 4242
 
     @property
