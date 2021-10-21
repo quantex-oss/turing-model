@@ -141,7 +141,7 @@ class FXIRCurve:
             rates = self.domestic_discount_curve.zeroRate(nature_days).tolist()
         else:
             raise TuringError('Unsupported domestic discount curve type')
-        
+
         data_dict = {'date': days, 'rate': rates}
         return pd.DataFrame(data=data_dict)
 
@@ -214,7 +214,38 @@ class DomDiscountCurveGen:
     def discount_curve(self):
         return self.dom_curve
 
+class FXForwardCurveGen:
+    def __init__(self,
+                 value_date: Union[TuringDate, ql.Date],
+                 exchange_rate: float,
+                 fx_swap_tenors: List[float] = None,
+                 fx_swap_origin_tenors: List[str] = None,
+                 fx_swap_quotes: List[float] = None,
+                 ):
+        if isinstance(value_date, ql.Date):
+            value_date_turing = TuringDate(value_date.year(), value_date.month(), value_date.dayOfMonth())
+            value_date_ql = value_date
+        elif isinstance(value_date, TuringDate):
+            value_date_turing = value_date
+            value_date_ql = ql.Date(value_date._d, value_date._m, value_date._y)
+        else:
+            raise TuringError('value_date: (TuringDate, ql.Date)')
 
+        ql.Settings.instance().evaluationDate = value_date_ql
+        fx_swap_origin_tenors[0: 3] = ['1D', '2D', '3D']  # 把ON', 'TN', 'SN'转换成'1D', '2D', '3D'，ql不支持ON', 'TN', 'SN'
+        # 与中金现在的模型代码兼容，故拼成同格式的DataFrame
+        data_dict = {'Tenor': fx_swap_origin_tenors, 'Spread': fx_swap_quotes}
+        fwd_data = pd.DataFrame(data=data_dict)
+        # TODO: 去掉硬编码
+
+        self.fx_forward_curve = FXForwardCurve(exchange_rate,
+                                          fwd_data,
+                                          value_date_ql,
+                                          ql.UnitedStates(),
+                                          ql.Actual365Fixed()).curve
+    @property
+    def discount_curve(self):
+        return self.fx_forward_curve
 class ForDiscountCurveGen:
     """生成外币折现曲线"""
 
@@ -222,14 +253,9 @@ class ForDiscountCurveGen:
                  value_date: Union[TuringDate, ql.Date],
                  exchange_rate: float,
                  fx_swap_tenors: List[float] = None,
-                 fx_swap_origin_tenors: List[str] = None,
                  fx_swap_quotes: List[float] = None,
-                 shibor_tenors: List[float] = None,
-                 shibor_origin_tenors: List[str] = None,
-                 shibor_rates: List[float] = None,
-                 shibor_swap_tenors: List[float] = None,
-                 shibor_swap_origin_tenors: List[str] = None,
-                 shibor_swap_rates: [float] = None,
+                 domestic_discount_curve = None,
+                 fx_forward_curve = None,
                  curve_type: DiscountCurveType = DiscountCurveType.FX_Implied_CICC):
         if isinstance(value_date, ql.Date):
             value_date_turing = TuringDate(value_date.year(), value_date.month(), value_date.dayOfMonth())
@@ -256,27 +282,9 @@ class ForDiscountCurveGen:
                                                           fx_forward_curve)
         elif curve_type == DiscountCurveType.FX_Implied_CICC:
             ql.Settings.instance().evaluationDate = value_date_ql
-            dom_discount_curve_gen = DomDiscountCurveGen(value_date=value_date_ql,
-                                                         shibor_tenors=shibor_tenors,
-                                                         shibor_origin_tenors=shibor_origin_tenors,
-                                                         shibor_rates=shibor_rates,
-                                                         shibor_swap_tenors=shibor_swap_tenors,
-                                                         shibor_swap_origin_tenors=shibor_swap_origin_tenors,
-                                                         shibor_swap_rates=shibor_swap_rates,
-                                                         curve_type=DiscountCurveType.Shibor3M_CICC)
-            domestic_discount_curve = dom_discount_curve_gen.discount_curve
-            fx_swap_origin_tenors[0: 3] = ['1D', '2D', '3D']  # 把ON', 'TN', 'SN'转换成'1D', '2D', '3D'，ql不支持ON', 'TN', 'SN'
-            # 与中金现在的模型代码兼容，故拼成同格式的DataFrame
-            data_dict = {'Tenor': fx_swap_origin_tenors, 'Spread': fx_swap_quotes}
-            fwd_data = pd.DataFrame(data=data_dict)
-            # TODO: 去掉硬编码
-            self.fx_forward_curve = FXForwardCurve(exchange_rate,
-                                                   fwd_data,
-                                                   value_date_ql,
-                                                   ql.UnitedStates(),
-                                                   ql.Actual365Fixed()).curve
+
             self.for_curve = FXImpliedAssetCurve(domestic_discount_curve,
-                                                 self.fx_forward_curve,
+                                                 fx_forward_curve,
                                                  value_date_ql,
                                                  ql.UnitedStates(),
                                                  ql.Actual365Fixed()).curve
@@ -296,4 +304,3 @@ if __name__ == '__main__':
     # print(dom.discount_curve.zeroRate(expiry, daycount, ql.Continuous))
     # fore = ForDiscountCurveGen(currency_pair='USD/CNY')
     # print(fore.discount_curve.zeroRate(expiry, daycount, ql.Continuous))
-
