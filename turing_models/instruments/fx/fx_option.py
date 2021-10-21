@@ -14,7 +14,8 @@ import numpy as np
 from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import FX, Currency, CurrencyPair, DiscountCurveType
 from turing_models.instruments.core import InstrumentBase
-from turing_models.market.curves.curve_generation import DomDiscountCurveGen, ForDiscountCurveGen
+from turing_models.market.curves.curve_generation import DomDiscountCurveGen, ForDiscountCurveGen, FXForwardCurveGen
+from turing_models.market.curves.curve_ql import FXForwardCurve
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
@@ -203,14 +204,23 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    fx_swap_tenors=self.get_fx_swap_data['tenor'],
                                    fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
                                    fx_swap_quotes=self.get_fx_swap_data['swap_point'],
-                                   shibor_tenors=self.get_shibor_data['tenor'],
-                                   shibor_origin_tenors=self.get_shibor_data['origin_tenor'],
-                                   shibor_rates=self.get_shibor_data['rate'],
-                                   shibor_swap_tenors=self.get_shibor_swap_data['tenor'],
-                                   shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'],
-                                   shibor_swap_rates=self.get_shibor_swap_data['average'],
+                                   domestic_discount_curve = self.domestic_discount_curve,
+                                   fx_forward_curve = self.fx_forward_curve,
                                    curve_type=DiscountCurveType.FX_Implied_CICC).discount_curve
 
+    @property
+    def fx_forward_curve(self):
+       return self.gen_fx_forward_curve
+
+    @cached_property
+    def gen_fx_forward_curve(self):
+        return FXForwardCurveGen(value_date=self.value_date_,
+                                   exchange_rate=self.exchange_rate,
+                                   fx_swap_tenors=self.get_fx_swap_data['tenor'],
+                                   fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
+                                   fx_swap_quotes=self.get_fx_swap_data['swap_point']
+                                   ).discount_curve
+        
     @property
     def foreign_discount_curve(self):
         if self._foreign_discount_curve:

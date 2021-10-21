@@ -61,16 +61,18 @@ error_str3 = "Spot FX Rate must be greater than zero."
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class FXVanillaOption(FXOption):
+class FXDigitalOption(FXOption):
     """ This is a class for an FX Option trade. It permits the user to
     calculate the price of an FX Option trade which can be expressed in a
     number of ways depending on the investor or hedger's currency. It aslo
     allows the calculation of the option's delta in a number of forms as
     well as the various Greek risk sensitivies. """
     daycount = ql.Actual365Fixed()
+    coupon_rate: float =  None
 
     def __post_init__(self):
         super().__post_init__()
+        
         if self.expiry:
             self.expiry_ql = ql.Date(self.expiry._d, self.expiry._m, self.expiry._y)
 
@@ -174,11 +176,11 @@ class FXVanillaOption(FXOption):
         d2 = (np.log(atm / self.strike) - 0.5 * v ** 2 * texp) / (v * np.sqrt(texp))
         df = df_d 
 
-        if option_type == TuringOptionTypes.EUROPEAN_CALL:
+        if option_type == TuringOptionTypes.DIGITAL_CALL:
             
-            vdf = df * (atm*norm.cdf(d1) - K*norm.cdf(d2))
+            vdf = df * norm.cdf(d2) * self.coupon_rate
 
-        elif option_type == TuringOptionTypes.EUROPEAN_PUT:
+        elif option_type == TuringOptionTypes.DIGITAL_PUT:
 
             vdf = df * (K*norm.cdf(-d2) - atm*norm.cdf(-d1))
 
