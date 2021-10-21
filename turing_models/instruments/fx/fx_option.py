@@ -15,7 +15,6 @@ from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import FX, Currency, CurrencyPair, DiscountCurveType
 from turing_models.instruments.core import InstrumentBase
 from turing_models.market.curves.curve_generation import DomDiscountCurveGen, ForDiscountCurveGen, FXForwardCurveGen
-from turing_models.market.curves.curve_ql import FXForwardCurve
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
@@ -202,7 +201,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         return ForDiscountCurveGen(value_date=self.value_date_,
                                    exchange_rate=self.exchange_rate,
                                    fx_swap_tenors=self.get_fx_swap_data['tenor'],
-                                   fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
                                    fx_swap_quotes=self.get_fx_swap_data['swap_point'],
                                    domestic_discount_curve = self.domestic_discount_curve,
                                    fx_forward_curve = self.fx_forward_curve,

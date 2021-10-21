@@ -254,8 +254,7 @@ class FXVolSurfaceGen:
                                     exchange_rate=self.exchange_rate,
                                     fx_swap_tenors=self.fx_swap_tenors,
                                     fx_swap_origin_tenors=self.fx_swap_origin_tenors,
-                                    fx_swap_quotes=self.fx_swap_quotes
-                                    )
+                                    fx_swap_quotes=self.fx_swap_quotes)
             fwd_crv = fwd.discount_curve
             vol_data = pd.DataFrame(data_dict)
             fore = ForDiscountCurveGen(value_date=self.value_date_ql,

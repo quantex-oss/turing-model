@@ -4,8 +4,8 @@ from typing import List, Union
 import pandas as pd
 import QuantLib as ql
 
-from fundamental.turing_db.data import Turing, TuringDB
-from turing_models.instruments.common import CurrencyPair, RMBIRCurveType, SpotExchangeRateType, DiscountCurveType
+from fundamental.turing_db.data import TuringDB
+from turing_models.instruments.common import CurrencyPair, DiscountCurveType
 from turing_models.instruments.rates.irs import create_ibor_single_curve
 from turing_models.market.curves.curve_ql import Shibor3M, FXImpliedAssetCurve, FXForwardCurve
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
@@ -94,14 +94,7 @@ class FXIRCurve:
         self.foreign_discount_curve = ForDiscountCurveGen(value_date=value_date,
                                                           exchange_rate=exchange_rate,
                                                           fx_swap_tenors=fx_swap_data['tenor'],
-                                                          fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
                                                           fx_swap_quotes=fx_swap_data['swap_point'],
-                                                          shibor_tenors=shibor_data['tenor'],
-                                                          shibor_origin_tenors=shibor_data['origin_tenor'],
-                                                          shibor_rates=shibor_data['rate'],
-                                                          shibor_swap_tenors=shibor_swap_data['tenor'],
-                                                          shibor_swap_origin_tenors=shibor_swap_data['origin_tenor'],
-                                                          shibor_swap_rates=shibor_swap_data['average'],
                                                           curve_type=for_curve_type).discount_curve
 
         self.nature_days = []
