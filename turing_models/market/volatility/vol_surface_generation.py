@@ -4,12 +4,12 @@ from typing import List, Union
 import numpy as np
 import pandas as pd
 import QuantLib as ql
-from loguru import logger
 
-from fundamental.turing_db.data import Turing, TuringDB
+from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.common import CurrencyPair, DiscountCurveType
 from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMethod
-from turing_models.market.curves.curve_generation import FXIRCurve, ForDiscountCurveGen, DomDiscountCurveGen
+from turing_models.market.curves.curve_generation import ForDiscountCurveGen, DomDiscountCurveGen, \
+     FXForwardCurveGen
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.volatility.fx_vol_surface_ql import FXVolSurface
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
@@ -56,7 +56,8 @@ class FXOptionImpliedVolatilitySurface:
 
         fx_swap_data = TuringDB.swap_curve(symbol=fx_symbol, date=value_date)[fx_symbol]
         fx_implied_vol_data = TuringDB.fx_implied_volatility_curve(symbol=fx_symbol,
-                                                                   volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
+                                                                   volatility_type=["ATM", "25D BF", "25D RR", "10D BF",
+                                                                                    "10D RR"],
                                                                    date=value_date)[fx_symbol]
 
         if volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
@@ -80,14 +81,7 @@ class FXOptionImpliedVolatilitySurface:
         foreign_discount_curve = ForDiscountCurveGen(value_date=value_date,
                                                      exchange_rate=exchange_rate,
                                                      fx_swap_tenors=fx_swap_data['tenor'],
-                                                     fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
                                                      fx_swap_quotes=fx_swap_data['swap_point'],
-                                                     shibor_tenors=shibor_data['tenor'],
-                                                     shibor_origin_tenors=shibor_data['origin_tenor'],
-                                                     shibor_rates=shibor_data['rate'],
-                                                     shibor_swap_tenors=shibor_swap_data['tenor'],
-                                                     shibor_swap_origin_tenors=shibor_swap_data['origin_tenor'],
-                                                     shibor_swap_rates=shibor_swap_data['average'],
                                                      curve_type=for_curve_type).discount_curve
 
         self.volatility_surface = FXVolSurfaceGen(value_date=value_date,
@@ -247,21 +241,6 @@ class FXVolSurfaceGen:
                          '25DBF': self.butterfly_25delta_vols,
                          '10DRR': self.risk_reversal_10delta_vols,
                          '10DBF': self.butterfly_10delta_vols}
-            vol_data = pd.DataFrame(data_dict)
-            fore = ForDiscountCurveGen(value_date=self.value_date_ql,
-                                       exchange_rate=self.exchange_rate,
-                                       fx_swap_tenors=self.fx_swap_tenors,
-                                       fx_swap_origin_tenors=self.fx_swap_origin_tenors,
-                                       fx_swap_quotes=self.fx_swap_quotes,
-                                       shibor_tenors=self.shibor_tenors,
-                                       shibor_origin_tenors=self.shibor_origin_tenors,
-                                       shibor_rates=self.shibor_rates,
-                                       shibor_swap_tenors=self.shibor_swap_tenors,
-                                       shibor_swap_origin_tenors=self.shibor_swap_origin_tenors,
-                                       shibor_swap_rates=self.shibor_swap_rates,
-                                       curve_type=DiscountCurveType.FX_Implied_CICC)
-            fwd_crv = fore.fx_forward_curve
-            for_crv = fore.discount_curve
             dom = DomDiscountCurveGen(value_date=self.value_date_ql,
                                       shibor_tenors=self.shibor_tenors,
                                       shibor_origin_tenors=self.shibor_origin_tenors,
@@ -271,6 +250,23 @@ class FXVolSurfaceGen:
                                       shibor_swap_rates=self.shibor_swap_rates,
                                       curve_type=DiscountCurveType.Shibor3M_CICC)
             disc_crv = dom.discount_curve
+            fwd = FXForwardCurveGen(value_date=self.value_date_ql,
+                                    exchange_rate=self.exchange_rate,
+                                    fx_swap_tenors=self.fx_swap_tenors,
+                                    fx_swap_origin_tenors=self.fx_swap_origin_tenors,
+                                    fx_swap_quotes=self.fx_swap_quotes
+                                    )
+            fwd_crv = fwd.discount_curve
+            vol_data = pd.DataFrame(data_dict)
+            fore = ForDiscountCurveGen(value_date=self.value_date_ql,
+                                       exchange_rate=self.exchange_rate,
+                                       fx_swap_tenors=self.fx_swap_tenors,
+                                       fx_swap_quotes=self.fx_swap_quotes,
+                                       domestic_discount_curve=disc_crv,
+                                       fx_forward_curve=fwd_crv)
+
+            for_crv = fore.discount_curve
+
             calendar = ql.China(ql.China.IB)
             convention = ql.Following
             daycount = ql.Actual365Fixed()
