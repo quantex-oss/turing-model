@@ -110,7 +110,7 @@ class FXIRCurve:
             self.nature_days.append(day)
 
     def get_ccy1_curve(self):
-        """获取外币利率曲线的Series"""
+        """获取外币利率曲线的DataFrame"""
         nature_days = self.nature_days
         days = [day.datetime() for day in nature_days]
         if self.for_curve_type == DiscountCurveType.FX_Implied_CICC:
@@ -123,10 +123,12 @@ class FXIRCurve:
             rates = self.foreign_discount_curve.zeroRate(nature_days).tolist()
         else:
             raise TuringError('Unsupported foreign discount curve type')
-        return pd.Series(data=rates, index=days)
+
+        data_dict = {'date': days, 'rate': rates}
+        return pd.DataFrame(data=data_dict)
 
     def get_ccy2_curve(self):
-        """获取人民币利率曲线的Series"""
+        """获取人民币利率曲线的DataFrame"""
         nature_days = self.nature_days
         days = [day.datetime() for day in nature_days]
         if self.dom_curve_type == DiscountCurveType.Shibor3M_CICC:
@@ -139,7 +141,9 @@ class FXIRCurve:
             rates = self.domestic_discount_curve.zeroRate(nature_days).tolist()
         else:
             raise TuringError('Unsupported domestic discount curve type')
-        return pd.Series(data=rates, index=days)
+        
+        data_dict = {'date': days, 'rate': rates}
+        return pd.DataFrame(data=data_dict)
 
 
 class DomDiscountCurveGen:

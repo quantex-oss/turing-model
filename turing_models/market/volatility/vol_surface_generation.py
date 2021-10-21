@@ -39,7 +39,7 @@ class FXOptionImpliedVolatilitySurface:
         if strikes:
             self.strikes = np.array(strikes)
         else:
-            strike_percent = np.linspace(0.5, 2, 16)
+            strike_percent = np.linspace(0.8, 1.2, 16)
             self.strikes = exchange_rate * strike_percent
 
         if not tenors:
