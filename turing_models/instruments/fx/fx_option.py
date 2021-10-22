@@ -1,15 +1,16 @@
-import datetime
-from abc import ABCMeta
-from dataclasses import dataclass
-from enum import Enum
 ###############################################################################
 # ALL CCY RATES MUST BE IN NUM UNITS OF DOMESTIC PER UNIT OF FOREIGN CURRENCY
 # SO EURUSD = 1.30 MEANS 1.30 DOLLARS PER EURO SO DOLLAR IS THE DOMESTIC AND
 # EUR IS THE FOREIGN CURRENCY
 ###############################################################################
+import datetime
+from abc import ABCMeta
+from dataclasses import dataclass
+from enum import Enum
 from functools import cached_property
 
 import numpy as np
+import QuantLib as ql
 
 from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import FX, Currency, CurrencyPair, DiscountCurveType
@@ -47,7 +48,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     start_date: TuringDate = None
     # 1 unit of foreign in domestic
     premium_currency: (str, Currency) = None
-    spot_days: int = 0
+    # spot_days: int = 0
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))
     volatility: float = None
@@ -66,10 +67,11 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         self.notional_dom = None
         self.notional_for = None
         if self.expiry:
-            self.final_delivery = self.expiry.addWeekDays(self.spot_days)
-            if self.final_delivery < self.expiry:
-                raise TuringError(
-                    "Final delivery date must be on or after expiry.")
+            self.expiry_ql = ql.Date(self.expiry._d, self.expiry._m, self.expiry._y)
+            # self.final_delivery = self.expiry.addWeekDays(self.spot_days)
+            # if self.final_delivery < self.expiry:
+            #     raise TuringError(
+            #         "Final delivery date must be on or after expiry.")
 
         if self.underlier_symbol:
             if isinstance(self.underlier_symbol, CurrencyPair):
@@ -113,6 +115,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         if not self.cut_off_time or not isinstance(self.cut_off_time, TuringDate):
             self.cut_off_time = self.expiry
 
+        self.daycount = ql.Actual365Fixed()
         self.num_paths = 100000
         self.seed = 4242
 
@@ -195,7 +198,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             return self.gen_dom_discount
 
     @domestic_discount_curve.setter
-    def domestic_discount_curve(self, value: TuringDiscountCurve):
+    def domestic_discount_curve(self, value):
         self._domestic_discount_curve = value
 
     @cached_property
@@ -208,17 +211,13 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    fx_forward_curve = self.fx_forward_curve,
                                    curve_type=DiscountCurveType.FX_Implied).discount_curve
 
-    @property
-    def fx_forward_curve(self):
-       return self.gen_fx_forward_curve
-
     @cached_property
-    def gen_fx_forward_curve(self):
+    def fx_forward_curve(self):
         return FXForwardCurveGen(value_date=self.value_date_,
                                  exchange_rate=self.exchange_rate,
                                  fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
                                  fx_swap_quotes=self.get_fx_swap_data['swap_point']).discount_curve
-        
+
     @property
     def foreign_discount_curve(self):
         if self._foreign_discount_curve:
@@ -227,7 +226,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             return self.gen_for_discount_curve
 
     @foreign_discount_curve.setter
-    def foreign_discount_curve(self, value: TuringDiscountCurve):
+    def foreign_discount_curve(self, value):
         self._foreign_discount_curve = value
 
     @cached_property
@@ -238,6 +237,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    exchange_rate=self.exchange_rate,
                                    domestic_discount_curve=self.domestic_discount_curve,
                                    foreign_discount_curve=self.foreign_discount_curve,
+                                   fx_forward_curve=self.fx_forward_curve,
                                    tenors=self.get_fx_implied_vol_data["tenor"],
                                    origin_tenors=self.get_fx_implied_vol_data["origin_tenor"],
                                    atm_vols=self.get_fx_implied_vol_data["ATM"],
@@ -245,7 +245,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    risk_reversal_25delta_vols=self.get_fx_implied_vol_data["25D RR"],
                                    butterfly_10delta_vols=self.get_fx_implied_vol_data["10D BF"],
                                    risk_reversal_10delta_vols=self.get_fx_implied_vol_data["10D RR"],
-                                   volatility_function_type=TuringVolFunctionTypes.VANNA_VOLGA).volatility_surface
+                                   volatility_function_type=TuringVolFunctionTypes.QL).volatility_surface
 
     @property
     def model(self):
@@ -253,8 +253,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def tdel(self):
-        spot_date = self.value_date_.addWeekDays(self.spot_days)
-        td = (self.final_delivery - spot_date) / gDaysInYear
+        # spot_date = self.value_date_.addWeekDays(self.spot_days)
+        td = (self.expiry - self.value_date_) / gDaysInYear
         if td < 0.0:
             raise TuringError(error_str)
         td = np.maximum(td, 1e-10)
@@ -266,15 +266,23 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def rd(self):
-        texp = self.texp
-        domDF = self.domestic_discount_curve._df(texp)
-        return -np.log(domDF) / texp
+        return self.domestic_discount_curve.zeroRate(self.expiry_ql, self.daycount, ql.Continuous).rate()
 
     @property
     def rf(self):
-        texp = self.texp
-        forDF = self.foreign_discount_curve._df(texp)
-        return -np.log(forDF) / texp
+        return self.foreign_discount_curve.zeroRate(self.expiry_ql, self.daycount, ql.Continuous).rate()
+
+    @property
+    def df_d(self):
+        return self.domestic_discount_curve.discount(self.expiry_ql)
+
+    @property
+    def df_f(self):
+        return self.foreign_discount_curve.discount(self.expiry_ql)
+
+    @property
+    def df_fwd(self):
+        return self.fx_forward_curve.discount_curve.discount(self.expiry_ql)
 
     @property
     def volatility_(self):
@@ -285,8 +293,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         elif self.volatility:
             v = self.model._volatility
         else:
-            v = self.volatility_surface.volatilityFromStrikeDate(
-                self.strike, self.expiry)
+            v = self.volatility_surface.interp_vol(self.expiry_ql, self.strike)
         if np.all(v >= 0.0):
             v = np.maximum(v, 1e-10)
             return v
@@ -299,6 +306,15 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     def vol(self):
         return self.volatility_
+
+    def rate_domestic(self):
+        return self.rd
+
+    def rate_foreign(self):
+        return self.rf
+
+    def spot(self):
+        return self.exchange_rate
 
     def check_underlier(self):
         if self.underlier_symbol and not self.underlier:

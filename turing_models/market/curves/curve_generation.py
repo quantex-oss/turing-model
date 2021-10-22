@@ -286,7 +286,6 @@ class ForDiscountCurveGen:
                                                           fx_forward_curve)
         elif curve_type == DiscountCurveType.FX_Implied:
             ql.Settings.instance().evaluationDate = value_date_ql
-
             self.for_curve = FXImpliedAssetCurve(domestic_discount_curve,
                                                  fx_forward_curve,
                                                  value_date_ql,
