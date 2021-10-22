@@ -7,7 +7,7 @@ from turing_models.market.volatility.vol_surface_generation import FXOptionImpli
 
 #
 # fx_curve = FXIRCurve(fx_symbol=CurrencyPair.USDCNY,
-#                      curve_type=RMBIRCurveType.Shibor3M,
+#                      curve_type=RMBIRCurveType.Shibor3M_tr,
 #                      spot_rate_type=SpotExchangeRateType.Central)
 # print(fx_curve.get_ccy1_curve())  # Series格式
 # print(fx_curve.get_ccy2_curve())  # Series格式

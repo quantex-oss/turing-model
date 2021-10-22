@@ -136,7 +136,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         date = self.ctx_pricing_date or self.value_date
         return date if date >= self.start_date else self.start_date
 
-
     @property
     def value_date_(self):
         date = self._value_date or self.value_date_interface
@@ -164,7 +163,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @cached_property
     def get_shibor_swap_data(self):
-        return TuringDB.irs_curve(curve_type='Shibor3M', date=self.value_date_interface)['Shibor3M']
+        return TuringDB.irs_curve(curve_type='Shibor3M_tr', date=self.value_date_interface)['Shibor3M_tr']
 
     @cached_property
     def get_fx_swap_data(self):
@@ -186,7 +185,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    shibor_swap_tenors=self.get_shibor_swap_data['tenor'],
                                    shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'],
                                    shibor_swap_rates=self.get_shibor_swap_data['average'],
-                                   curve_type=DiscountCurveType.Shibor3M_CICC).discount_curve
+                                   curve_type=DiscountCurveType.Shibor3M).discount_curve
 
     @property
     def domestic_discount_curve(self):
@@ -207,7 +206,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    fx_swap_quotes=self.get_fx_swap_data['swap_point'],
                                    domestic_discount_curve = self.domestic_discount_curve,
                                    fx_forward_curve = self.fx_forward_curve,
-                                   curve_type=DiscountCurveType.FX_Implied_CICC).discount_curve
+                                   curve_type=DiscountCurveType.FX_Implied).discount_curve
 
     @property
     def fx_forward_curve(self):

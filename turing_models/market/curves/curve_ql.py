@@ -13,7 +13,7 @@ class Shibor3M:
 
     def __init__(self, deposit_mkt_data, swap_mkt_data, fixing_data, today):
 
-        self.name = 'Shibor3M'
+        self.name = 'Shibor3M_tr'
         self.deposit_mkt_data = deposit_mkt_data.copy()
         self.swap_mkt_data = swap_mkt_data.copy()
         self.fixing_data = fixing_data.copy()

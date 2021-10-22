@@ -52,7 +52,7 @@ class FXOptionImpliedVolatilitySurface:
         self.volatility_function_type = volatility_function_type
 
         shibor_data = TuringDB.shibor_curve(date=value_date)
-        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
+        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M_tr', date=value_date)['Shibor3M_tr']
 
         fx_swap_data = TuringDB.swap_curve(symbol=fx_symbol, date=value_date)[fx_symbol]
         fx_implied_vol_data = TuringDB.fx_implied_volatility_curve(symbol=fx_symbol,
@@ -61,11 +61,11 @@ class FXOptionImpliedVolatilitySurface:
                                                                    date=value_date)[fx_symbol]
 
         if volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
+            dom_curve_type = DiscountCurveType.Shibor3M_tr
+            for_curve_type = DiscountCurveType.FX_Implied_tr
+        elif volatility_function_type == TuringVolFunctionTypes.CICC:
             dom_curve_type = DiscountCurveType.Shibor3M
             for_curve_type = DiscountCurveType.FX_Implied
-        elif volatility_function_type == TuringVolFunctionTypes.CICC:
-            dom_curve_type = DiscountCurveType.Shibor3M_CICC
-            for_curve_type = DiscountCurveType.FX_Implied_CICC
         else:
             raise TuringError('Unsupported volatility function type')
 
@@ -255,7 +255,7 @@ class FXVolSurfaceGen:
                                       shibor_swap_tenors=self.shibor_swap_tenors,
                                       shibor_swap_origin_tenors=self.shibor_swap_origin_tenors,
                                       shibor_swap_rates=self.shibor_swap_rates,
-                                      curve_type=DiscountCurveType.Shibor3M_CICC)
+                                      curve_type=DiscountCurveType.Shibor3M)
             disc_crv = dom.discount_curve
             fwd = FXForwardCurveGen(value_date=self.value_date_ql,
                                     exchange_rate=self.exchange_rate,

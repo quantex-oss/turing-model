@@ -7,9 +7,8 @@ from scipy.stats import norm
 import QuantLib as ql
 
 from fundamental.turing_db.option_data import FxOptionApi
-from turing_models.utilities.mathematics import NVect
-from turing_models.market.curves.curve_generation import ForDiscountCurveGen, FXForwardCurveGen
-from turing_models.instruments.common import greek, DiscountCurveType
+from turing_models.market.curves.curve_generation import FXForwardCurveGen
+from turing_models.instruments.common import greek
 from turing_models.instruments.fx.fx_option import FXOption
 from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
@@ -68,7 +67,7 @@ class FXDigitalOption(FXOption):
     allows the calculation of the option's delta in a number of forms as
     well as the various Greek risk sensitivies. """
     daycount = ql.Actual365Fixed()
-    coupon_rate: float =  None
+    coupon_rate: float = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -142,7 +141,6 @@ class FXDigitalOption(FXOption):
     def df_fwd(self):
         return FXForwardCurveGen(value_date=self.value_date_,
                                    exchange_rate=self.exchange_rate,
-                                   fx_swap_tenors=self.get_fx_swap_data['tenor'],
                                    fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
                                    fx_swap_quotes=self.get_fx_swap_data['swap_point']
                                    ).discount_curve.discount(self.expiry_ql)
@@ -517,5 +515,5 @@ class FXDigitalOption(FXOption):
         #                                       volatility_types=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])
 
         if not self.product_type:
-            setattr(self, 'product_type', 'VANILLA')
+            setattr(self, 'product_type', 'Digital')
         self.__post_init__()
