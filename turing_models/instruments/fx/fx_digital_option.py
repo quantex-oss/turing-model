@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from functools import cached_property
 
 import numpy as np
 from scipy import optimize
@@ -7,14 +6,11 @@ from scipy.stats import norm
 import QuantLib as ql
 
 from fundamental.turing_db.option_data import FxOptionApi
-from turing_models.market.curves.curve_generation import FXForwardCurveGen
 from turing_models.instruments.common import greek
 from turing_models.instruments.fx.fx_option import FXOption
-from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
-from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType, TuringExerciseType
 from turing_models.utilities.mathematics import N
 from turing_models.utilities.mathematics import nprime
 
@@ -47,18 +43,6 @@ def f_vega(volatility, *args):
     return fprime
 
 
-###############################################################################
-# ALL CCY RATES MUST BE IN NUM UNITS OF DOMESTIC PER UNIT OF FOREIGN CURRENCY
-# SO EURUSD = 1.30 MEANS 1.30 DOLLARS PER EURO SO DOLLAR IS THE DOMESTIC AND
-# EUR IS THE FOREIGN CURRENCY
-###############################################################################
-
-
-error_str = "Time to expiry must be positive."
-error_str2 = "Volatility should not be negative."
-error_str3 = "Spot FX Rate must be greater than zero."
-
-
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class FXDigitalOption(FXOption):
     """ This is a class for an FX Option trade. It permits the user to
@@ -71,6 +55,21 @@ class FXDigitalOption(FXOption):
 
     def __post_init__(self):
         super().__post_init__()
+
+    @property
+    def option_type_(self) -> TuringOptionTypes:
+        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
+            if self.product_type == "Digital":
+                return TuringOptionTypes.DIGITAL_CALL
+            else:
+                raise TuringError('Please check the input of product_type')
+        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
+            if self.product_type == "Digital":
+                return TuringOptionTypes.DIGITAL_PUT
+            else:
+                raise TuringError('Please check the input of product_type')
+        else:
+            raise TuringError('Please check the input of option_type')
 
     def price(self):
         """ This function calculates the value of the option using a specified
@@ -111,6 +110,9 @@ class FXDigitalOption(FXOption):
                 vdf = df *norm.cdf(-d2) * self.coupon_rate * texp
             else:
                 raise TuringError("Unknown option type")
+
+        else:
+            raise TuringError("Unknown premium_currency")
         
         return vdf * self.notional
 

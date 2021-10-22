@@ -14,7 +14,7 @@ from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceG
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import TuringOptionTypes
+from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType, TuringExerciseType
 from turing_models.utilities.mathematics import N
 from turing_models.utilities.mathematics import nprime
 
@@ -70,6 +70,21 @@ class FXVanillaOption(FXOption):
 
     def __post_init__(self):
         super().__post_init__()
+
+    @property
+    def option_type_(self) -> TuringOptionTypes:
+        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
+            if self.exercise_type == "EUROPEAN" or self.exercise_type == TuringExerciseType.EUROPEAN:
+                return TuringOptionTypes.EUROPEAN_CALL
+            else:
+                raise TuringError('Please check the input of exercise_type')
+        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
+            if self.exercise_type == "EUROPEAN" or self.exercise_type == TuringExerciseType.EUROPEAN:
+                return TuringOptionTypes.EUROPEAN_PUT
+            else:
+                raise TuringError('Please check the input of exercise_type')
+        else:
+            raise TuringError('Please check the input of option_type')
 
     def price(self):
         """ This function calculates the value of the option using a specified

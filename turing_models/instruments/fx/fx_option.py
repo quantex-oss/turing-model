@@ -16,25 +16,19 @@ from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import FX, Currency, CurrencyPair, DiscountCurveType
 from turing_models.instruments.core import InstrumentBase
 from turing_models.market.curves.curve_generation import DomDiscountCurveGen, ForDiscountCurveGen, FXForwardCurveGen
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
-from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType, TuringExerciseType
+from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.turing_date import TuringDate
-
-error_str = "Time to expiry must be positive."
-error_str2 = "Volatility should not be negative."
-error_str3 = "Exchange Rate must be greater than zero."
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     asset_id: str = None
-    product_type: str = None  # VANILLA
+    product_type: str = None  # VANILLA/Digital
     underlier: str = None
     underlier_symbol: (str, CurrencyPair) = None  # USD/CNY (外币/本币)
     notional: float = None
@@ -120,21 +114,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         self.seed = 4242
 
     @property
-    def option_type_(self) -> TuringOptionTypes:
-        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
-            if self.exercise_type == "EUROPEAN" or self.exercise_type == TuringExerciseType.EUROPEAN:
-                return TuringOptionTypes.EUROPEAN_CALL
-            else:
-                raise TuringError('Please check the input of exercise_type')
-        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
-            if self.exercise_type == "EUROPEAN" or self.exercise_type == TuringExerciseType.EUROPEAN:
-                return TuringOptionTypes.EUROPEAN_PUT
-            else:
-                raise TuringError('Please check the input of exercise_type')
-        else:
-            raise TuringError('Please check the input of option_type')
-
-    @property
     def value_date_interface(self):
         date = self.ctx_pricing_date or self.value_date
         return date if date >= self.start_date else self.start_date
@@ -166,7 +145,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @cached_property
     def get_shibor_swap_data(self):
-        return TuringDB.irs_curve(curve_type='Shibor3M_tr', date=self.value_date_interface)['Shibor3M_tr']
+        return TuringDB.irs_curve(curve_type='Shibor3M', date=self.value_date_interface)['Shibor3M']
 
     @cached_property
     def get_fx_swap_data(self):
@@ -177,7 +156,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         return TuringDB.fx_implied_volatility_curve(symbol=self.underlier_symbol,
                                                     volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
                                                     date=self.value_date_interface)[self.underlier_symbol]
-
 
     @cached_property
     def gen_dom_discount(self):
@@ -207,8 +185,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    exchange_rate=self.exchange_rate,
                                    fx_swap_tenors=self.get_fx_swap_data['tenor'],
                                    fx_swap_quotes=self.get_fx_swap_data['swap_point'],
-                                   domestic_discount_curve = self.domestic_discount_curve,
-                                   fx_forward_curve = self.fx_forward_curve,
+                                   domestic_discount_curve=self.domestic_discount_curve,
+                                   fx_forward_curve=self.fx_forward_curve,
                                    curve_type=DiscountCurveType.FX_Implied).discount_curve
 
     @cached_property
@@ -248,15 +226,11 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    volatility_function_type=TuringVolFunctionTypes.QL).volatility_surface
 
     @property
-    def model(self):
-        return TuringModelBlackScholes(self.volatility)
-
-    @property
     def tdel(self):
         # spot_date = self.value_date_.addWeekDays(self.spot_days)
         td = (self.expiry - self.value_date_) / gDaysInYear
         if td < 0.0:
-            raise TuringError(error_str)
+            raise TuringError("Time to expiry must be positive.")
         td = np.maximum(td, 1e-10)
         return td
 
@@ -282,23 +256,17 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def df_fwd(self):
-        return self.fx_forward_curve.discount_curve.discount(self.expiry_ql)
+        return self.fx_forward_curve.discount(self.expiry_ql)
 
     @property
     def volatility_(self):
-        if self._volatility:
-            v = self._volatility
-        elif self.ctx_volatility:
-            v = self.ctx_volatility
-        elif self.volatility:
-            v = self.model._volatility
-        else:
-            v = self.volatility_surface.interp_vol(self.expiry_ql, self.strike)
+        v = self._volatility or self.ctx_volatility or \
+            self.volatility or self.volatility_surface.interp_vol(self.expiry_ql, self.strike)
         if np.all(v >= 0.0):
             v = np.maximum(v, 1e-10)
             return v
         else:
-            raise TuringError(error_str2)
+            raise TuringError("Volatility should not be negative.")
 
     @volatility_.setter
     def volatility_(self, value: float):
