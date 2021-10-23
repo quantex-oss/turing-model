@@ -59,15 +59,9 @@ class FXDigitalOption(FXOption):
     @property
     def option_type_(self) -> TuringOptionTypes:
         if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
-            if self.product_type == "Digital":
-                return TuringOptionTypes.DIGITAL_CALL
-            else:
-                raise TuringError('Please check the input of product_type')
+            return TuringOptionTypes.DIGITAL_CALL
         elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
-            if self.product_type == "Digital":
-                return TuringOptionTypes.DIGITAL_PUT
-            else:
-                raise TuringError('Please check the input of product_type')
+            return TuringOptionTypes.DIGITAL_PUT
         else:
             raise TuringError('Please check the input of option_type')
 
@@ -77,7 +71,7 @@ class FXDigitalOption(FXOption):
         Recall that Domestic = CCY2 and Foreign = CCY1 and FX rate is in
         price in domestic of one unit of foreign currency. """
 
-        S0 = self.exchange_rate
+        s0 = self.exchange_rate
         K = self.strike
         df_d = self.df_d
         df_f = self.df_f
@@ -90,13 +84,13 @@ class FXDigitalOption(FXOption):
         d2 = (np.log(atm / self.strike) - 0.5 * v ** 2 * texp) / (v * np.sqrt(texp))
         df = df_d 
         if premium_currency == self.foreign_name:
-            if option_type == TuringOptionTypes.EUROPEAN_CALL:
+            if option_type == TuringOptionTypes.DIGITAL_CALL:
                 
-                vdf = S0 * df_f * norm.cdf(d1) * self.coupon_rate * texp
+                vdf = s0 * df_f * norm.cdf(d1) * self.coupon_rate * texp
 
-            elif option_type == TuringOptionTypes.EUROPEAN_PUT:
+            elif option_type == TuringOptionTypes.DIGITAL_PUT:
 
-                vdf = S0 * df_f * norm.cdf(-d1) * self.coupon_rate * texp
+                vdf = s0 * df_f * norm.cdf(-d1) * self.coupon_rate * texp
             else:
                 raise TuringError("Unknown option type")
             
@@ -112,7 +106,7 @@ class FXDigitalOption(FXOption):
                 raise TuringError("Unknown option type")
 
         else:
-            raise TuringError("Unknown premium_currency")
+            raise TuringError("Unknown premium currency")
         
         return vdf * self.notional
 
@@ -422,18 +416,6 @@ class FXDigitalOption(FXOption):
 
     def resolve_param(self):
         self.check_underlier()
-        # if self.underlier:
-        #     if not self.exchange_rate:
-        #         ex_rate = FxApi.get_exchange_rate(gurl=None,
-        #                                           underlier=self.underlier)
-        #         if ex_rate:
-        #             setattr(self, "exchange_rate", ex_rate)
-        #     if not self.tenors:
-        #         FxOptionApi.get_iuir_curve(self)
-        #     if not self.volatility:
-        #         FxOptionApi.get_fx_volatility(self=self, gurl=None,
-        #                                       volatility_types=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"])
-
         if not self.product_type:
             setattr(self, 'product_type', 'Digital')
         self.__post_init__()

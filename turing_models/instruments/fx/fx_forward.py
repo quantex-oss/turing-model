@@ -11,8 +11,8 @@ from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import greek, FX, Currency, CurrencyPair, DiscountCurveType
 from turing_models.instruments.core import InstrumentBase
 from turing_models.market.curves.curve_generation import DomDiscountCurveGen, FXForwardCurveGen
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.error import TuringError
+from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.turing_date import TuringDate
 
 
@@ -28,14 +28,9 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
     expiry: TuringDate = None
     start_date: TuringDate = None
     d_ccy_discount: float = None
-    spot_days: int = 0
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))
-    _value_date = None
     _exchange_rate = None
-    _domestic_discount_curve = None
-
-    daycount = ql.Actual365Fixed()
 
     def __post_init__(self):
         super().__init__()
@@ -44,12 +39,9 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
         self.foreign_name = None
         self.notional_dom = None
         self.notional_for = None
+        self.daycount = ql.Actual365Fixed()
         if self.expiry:
             self.expiry_ql = ql.Date(self.expiry._d, self.expiry._m, self.expiry._y)
-            self.final_delivery = self.expiry.addWeekDays(self.spot_days)
-            if self.final_delivery < self.expiry:
-                raise TuringError(
-                    "Final delivery date must be on or after expiry.")
 
         if self.underlier_symbol:
             if isinstance(self.underlier_symbol, CurrencyPair):
@@ -106,32 +98,25 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
         return TuringDB.swap_curve(symbol=self.underlier_symbol, date=self.value_date_)[self.underlier_symbol]
 
     @cached_property
-    def gen_dom_discount(self):
+    def domestic_discount_curve(self):
         return DomDiscountCurveGen(value_date=self.value_date_,
                                    d_ccy_discount=self.d_ccy_discount,
                                    curve_type=DiscountCurveType.FlatForward).discount_curve
-
-    @property
-    def domestic_discount_curve(self):
-        if self._domestic_discount_curve:
-            return self._domestic_discount_curve
-        else:
-            return self.gen_dom_discount
-
-    @domestic_discount_curve.setter
-    def domestic_discount_curve(self, value: TuringDiscountCurve):
-        self._domestic_discount_curve = value
     
     @property
     def df_d(self):
         return self.domestic_discount_curve.discount(self.expiry_ql)
 
     @cached_property
-    def df_fwd(self):
+    def fx_forward_curve(self):
         return FXForwardCurveGen(value_date=self.value_date_,
                                  exchange_rate=self.exchange_rate,
                                  fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
-                                 fx_swap_quotes=self.get_fx_swap_data['swap_point']).discount_curve.discount(self.expiry_ql)
+                                 fx_swap_quotes=self.get_fx_swap_data['swap_point']).discount_curve
+
+    @property
+    def df_fwd(self):
+        return self.fx_forward_curve.discount(self.expiry_ql)
 
     def price(self):
         """ Calculate the value of an FX forward contract where the current
@@ -145,9 +130,11 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
         elif self.notional_currency == self.domestic_name:
             v = (atm - self.strike)
             v = v * self.notional_dom * self.df_d * atm
+        else:
+            raise TuringError("Unknown notional currency")
 
-        self._cash_dom = v * self.notional_dom / self.strike
-        self._cash_for = v * self.notional_for / self.exchange_rate
+        # self._cash_dom = v * self.notional_dom / self.strike
+        # self._cash_for = v * self.notional_for / self.exchange_rate
         
         return v
 
@@ -195,3 +182,18 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
             else:
                 self.underlier = Turing.get_fx_symbol_to_id(
                     _id=self.underlier_symbol).get('asset_id')
+
+    def __repr__(self):
+        s = to_string("Object Type", type(self).__name__)
+        s += to_string("Asset Id", self.asset_id)
+        s += to_string("Product Type", self.product_type)
+        s += to_string("Underlier", self.underlier)
+        s += to_string("Underlier Symbol", self.underlier_symbol)
+        s += to_string("Notional", self.notional)
+        s += to_string("Notional Currency", self.notional_currency)
+        s += to_string("Strike", self.strike)
+        s += to_string("Expiry", self.expiry)
+        s += to_string("Start Date", self.start_date)
+        s += to_string("Exchange Rate", self.exchange_rate)
+        s += to_string("Domestic Currency Discount", self.d_ccy_discount)
+        return s
