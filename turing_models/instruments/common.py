@@ -525,7 +525,7 @@ class CurrencyPair(Enum):
 
 class RMBIRCurveType(Enum):
     Shibor = 'Shibor'
-    Shibor3M = 'Shibor3M_tr'
+    Shibor3M = 'Shibor3M'
     FR007 = 'FR007'
 
     def __repr__(self):

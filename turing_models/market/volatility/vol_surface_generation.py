@@ -52,7 +52,7 @@ class FXOptionImpliedVolatilitySurface:
         self.volatility_function_type = volatility_function_type
 
         shibor_data = TuringDB.shibor_curve(date=value_date)
-        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M_tr', date=value_date)['Shibor3M_tr']
+        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
 
         fx_swap_data = TuringDB.swap_curve(symbol=fx_symbol, date=value_date)[fx_symbol]
         fx_implied_vol_data = TuringDB.fx_implied_volatility_curve(symbol=fx_symbol,
@@ -256,4 +256,3 @@ if __name__ == '__main__':
     # strike = 6.6
     # expiry = ql.Date(16, 10, 2021)
     # print(vol_sur.interp_vol(expiry, strike))
-

@@ -79,7 +79,7 @@ class FXIRCurve:
         exchange_rate = TuringDB.exchange_rate(symbol=fx_symbol, date=value_date)[fx_symbol]
 
         shibor_data = TuringDB.shibor_curve(date=value_date)
-        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M_tr', date=value_date)['Shibor3M_tr']
+        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
         fx_swap_data = TuringDB.swap_curve(symbol=fx_symbol, date=value_date)[fx_symbol]
 
         self.domestic_discount_curve = DomDiscountCurveGen(value_date=value_date,
@@ -118,7 +118,7 @@ class FXIRCurve:
             rates = []
             for expiry in nature_days:
                 expiry_ql = ql.Date(expiry._d, expiry._m, expiry._y)
-                rate = foreign_discount_curve.zeroRate(expiry_ql, ql.Actual365Fixed(), ql.Continuous).rate()
+                rate = foreign_discount_curve.zeroRate(expiry_ql, ql.Actual365Fixed(), ql.Annual).rate()
                 rates.append(rate)
         elif self.for_curve_type == DiscountCurveType.FX_Implied_tr:
             rates = foreign_discount_curve.zeroRate(nature_days).tolist()
@@ -137,7 +137,7 @@ class FXIRCurve:
             rates = []
             for expiry in nature_days:
                 expiry_ql = ql.Date(expiry._d, expiry._m, expiry._y)
-                rate = domestic_discount_curve.zeroRate(expiry_ql, ql.Actual365Fixed(), ql.Continuous).rate()
+                rate = domestic_discount_curve.zeroRate(expiry_ql, ql.Actual365Fixed(), ql.Annual).rate()
                 rates.append(rate)
         elif self.dom_curve_type == DiscountCurveType.Shibor3M_tr:
             rates = domestic_discount_curve.zeroRate(nature_days).tolist()
