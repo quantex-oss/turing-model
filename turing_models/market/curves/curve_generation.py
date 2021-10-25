@@ -45,7 +45,7 @@ class CurveGeneration:
 
     def _generate_nature_day_rate(self):
         """根据nature_days生成对应的即期收益率列表"""
-        self.nature_days_rate = self.curve.zeroRate(self.nature_days).tolist()
+        self.nature_days_rate = self.curve.zeroRate(self.nature_days, freqType=TuringFrequencyTypes.ANNUAL).tolist()
 
     def get_dates(self):
         return [day.datetime() for day in self.nature_days]
@@ -121,7 +121,7 @@ class FXIRCurve:
                 rate = foreign_discount_curve.zeroRate(expiry_ql, ql.Actual365Fixed(), ql.Annual).rate()
                 rates.append(rate)
         elif self.for_curve_type == DiscountCurveType.FX_Implied_tr:
-            rates = foreign_discount_curve.zeroRate(nature_days).tolist()
+            rates = foreign_discount_curve.zeroRate(nature_days, freqType=TuringFrequencyTypes.ANNUAL).tolist()
         else:
             raise TuringError('Unsupported foreign discount curve type')
 
@@ -140,7 +140,7 @@ class FXIRCurve:
                 rate = domestic_discount_curve.zeroRate(expiry_ql, ql.Actual365Fixed(), ql.Annual).rate()
                 rates.append(rate)
         elif self.dom_curve_type == DiscountCurveType.Shibor3M_tr:
-            rates = domestic_discount_curve.zeroRate(nature_days).tolist()
+            rates = domestic_discount_curve.zeroRate(nature_days, freqType=TuringFrequencyTypes.ANNUAL).tolist()
         else:
             raise TuringError('Unsupported domestic discount curve type')
 
