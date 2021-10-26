@@ -115,16 +115,20 @@ class FXIRCurve:
         foreign_discount_curve = self.foreign_discount_curve
         if self.for_curve_type == DiscountCurveType.FX_Implied:
             rates = []
+            dfs = []
             for expiry in nature_days:
                 expiry_ql = ql.Date(expiry._d, expiry._m, expiry._y)
                 rate = foreign_discount_curve.zeroRate(expiry_ql, ql.Actual365Fixed(), ql.Annual).rate()
+                df = foreign_discount_curve.discount(expiry_ql)
                 rates.append(rate)
+                dfs.append(df)
         elif self.for_curve_type == DiscountCurveType.FX_Implied_tr:
             rates = foreign_discount_curve.zeroRate(nature_days, freqType=TuringFrequencyTypes.ANNUAL).tolist()
+            dfs = foreign_discount_curve.df(nature_days).tolist()
         else:
             raise TuringError('Unsupported foreign discount curve type')
 
-        data_dict = {'date': days, 'rate': rates}
+        data_dict = {'date': days, 'rate': rates, 'df': dfs}
         return pd.DataFrame(data=data_dict)
 
     def get_ccy2_curve(self):
@@ -134,16 +138,20 @@ class FXIRCurve:
         domestic_discount_curve = self.domestic_discount_curve
         if self.dom_curve_type == DiscountCurveType.Shibor3M:
             rates = []
+            dfs = []
             for expiry in nature_days:
                 expiry_ql = ql.Date(expiry._d, expiry._m, expiry._y)
                 rate = domestic_discount_curve.zeroRate(expiry_ql, ql.Actual365Fixed(), ql.Annual).rate()
+                df = domestic_discount_curve.discount(expiry_ql)
                 rates.append(rate)
+                dfs.append(df)
         elif self.dom_curve_type == DiscountCurveType.Shibor3M_tr:
             rates = domestic_discount_curve.zeroRate(nature_days, freqType=TuringFrequencyTypes.ANNUAL).tolist()
+            dfs = domestic_discount_curve.df(nature_days).tolist()
         else:
             raise TuringError('Unsupported domestic discount curve type')
 
-        data_dict = {'date': days, 'rate': rates}
+        data_dict = {'date': days, 'rate': rates, 'df': dfs}
         return pd.DataFrame(data=data_dict)
 
 
