@@ -7,7 +7,6 @@ import datetime
 from abc import ABCMeta
 from dataclasses import dataclass
 from enum import Enum
-from functools import cached_property
 
 import numpy as np
 import QuantLib as ql
@@ -127,7 +126,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def value_date_(self, value: TuringDate):
         self._value_date = value
 
-    @cached_property
+    @property
     def get_exchange_rate(self):
         return TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_interface)[self.underlier_symbol]
 
@@ -139,25 +138,25 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def exchange_rate(self, value: float):
         self._exchange_rate = value
 
-    @cached_property
+    @property
     def get_shibor_data(self):
         return TuringDB.shibor_curve(date=self.value_date_interface)
 
-    @cached_property
+    @property
     def get_shibor_swap_data(self):
         return TuringDB.irs_curve(curve_type='Shibor3M', date=self.value_date_interface)['Shibor3M']
 
-    @cached_property
+    @property
     def get_fx_swap_data(self):
         return TuringDB.swap_curve(symbol=self.underlier_symbol, date=self.value_date_interface)[self.underlier_symbol]
 
-    @cached_property
+    @property
     def get_fx_implied_vol_data(self):
         return TuringDB.fx_implied_volatility_curve(symbol=self.underlier_symbol,
                                                     volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
                                                     date=self.value_date_interface)[self.underlier_symbol]
 
-    @cached_property
+    @property
     def gen_dom_discount(self):
         return DomDiscountCurveGen(value_date=self.value_date_,
                                    shibor_tenors=self.get_shibor_data['tenor'],
@@ -179,14 +178,14 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def domestic_discount_curve(self, value):
         self._domestic_discount_curve = value
 
-    @cached_property
+    @property
     def gen_for_discount_curve(self):
         return ForDiscountCurveGen(value_date=self.value_date_,
                                    domestic_discount_curve=self.domestic_discount_curve,
                                    fx_forward_curve=self.fx_forward_curve,
                                    curve_type=DiscountCurveType.FX_Implied).discount_curve
 
-    @cached_property
+    @property
     def fx_forward_curve(self):
         return FXForwardCurveGen(value_date=self.value_date_,
                                  exchange_rate=self.exchange_rate,
@@ -204,7 +203,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def foreign_discount_curve(self, value):
         self._foreign_discount_curve = value
 
-    @cached_property
+    @property
     def volatility_surface(self):
         if self.underlier_symbol:
             return FXVolSurfaceGen(value_date=self.value_date_,

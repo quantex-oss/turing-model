@@ -2,7 +2,6 @@ import datetime
 from abc import ABCMeta
 from dataclasses import dataclass
 from enum import Enum
-from functools import cached_property
 
 import numpy as np
 import QuantLib as ql
@@ -81,7 +80,7 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
         date = self.ctx_pricing_date or self.value_date
         return date if date >= self.start_date else self.start_date
 
-    @cached_property
+    @property
     def get_exchange_rate(self):
         return TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_)[self.underlier_symbol]
 
@@ -93,11 +92,11 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
     def exchange_rate(self, value: float):
         self._exchange_rate = value
 
-    @cached_property
+    @property
     def get_fx_swap_data(self):
         return TuringDB.swap_curve(symbol=self.underlier_symbol, date=self.value_date_)[self.underlier_symbol]
 
-    @cached_property
+    @property
     def domestic_discount_curve(self):
         return DomDiscountCurveGen(value_date=self.value_date_,
                                    dom_currency_discount=self.dom_currency_discount,
@@ -107,7 +106,7 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
     def df_d(self):
         return self.domestic_discount_curve.discount(self.expiry_ql)
 
-    @cached_property
+    @property
     def fx_forward_curve(self):
         return FXForwardCurveGen(value_date=self.value_date_,
                                  exchange_rate=self.exchange_rate,
