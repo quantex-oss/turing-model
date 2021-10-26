@@ -182,9 +182,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @cached_property
     def gen_for_discount_curve(self):
         return ForDiscountCurveGen(value_date=self.value_date_,
-                                   exchange_rate=self.exchange_rate,
-                                   fx_swap_tenors=self.get_fx_swap_data['tenor'],
-                                   fx_swap_quotes=self.get_fx_swap_data['swap_point'],
                                    domestic_discount_curve=self.domestic_discount_curve,
                                    fx_forward_curve=self.fx_forward_curve,
                                    curve_type=DiscountCurveType.FX_Implied).discount_curve

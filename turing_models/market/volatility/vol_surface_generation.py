@@ -23,14 +23,14 @@ class FXOptionImpliedVolatilitySurface:
     def __init__(self,
                  fx_symbol: (str, CurrencyPair),  # 货币对symbol，例如：'USD/CNY'
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3])),
-                 strikes: list = None,  # 行权价 如果不传，就用exchange_rate * np.linspace(0.5, 2, 16)
+                 strikes: List[float] = None,  # 行权价 如果不传，就用exchange_rate * np.linspace(0.8, 1.2, 16)
                  tenors: List[float] = None,  # 期限（年化） 如果不传，就用[1/12, 2/12, 0.25, 0.5, 1, 2]
                  volatility_function_type=TuringVolFunctionTypes.QL):
 
         if isinstance(fx_symbol, CurrencyPair):
             fx_symbol = fx_symbol.value
         elif isinstance(fx_symbol, str):
-            fx_symbol = fx_symbol
+            pass
         else:
             raise TuringError('fx_symbol: (str, CurrencyPair)')
 
@@ -63,9 +63,11 @@ class FXOptionImpliedVolatilitySurface:
         if volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
             dom_curve_type = DiscountCurveType.Shibor3M_tr
             for_curve_type = DiscountCurveType.FX_Implied_tr
+            fx_forward_curve_type = DiscountCurveType.FX_Forword_tr
         elif volatility_function_type == TuringVolFunctionTypes.QL:
             dom_curve_type = DiscountCurveType.Shibor3M
             for_curve_type = DiscountCurveType.FX_Implied
+            fx_forward_curve_type = DiscountCurveType.FX_Forword
         else:
             raise TuringError('Unsupported volatility function type')
 
@@ -81,20 +83,13 @@ class FXOptionImpliedVolatilitySurface:
         fx_forward_curve = FXForwardCurveGen(value_date=value_date,
                                              exchange_rate=exchange_rate,
                                              fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
-                                             fx_swap_quotes=fx_swap_data['swap_point']).discount_curve
+                                             fx_swap_quotes=fx_swap_data['swap_point'],
+                                             curve_type=fx_forward_curve_type).discount_curve
 
         foreign_discount_curve = ForDiscountCurveGen(value_date=value_date,
-                                                     exchange_rate=exchange_rate,
-                                                     fx_swap_tenors=fx_swap_data['tenor'],
-                                                     fx_swap_quotes=fx_swap_data['swap_point'],
                                                      domestic_discount_curve=domestic_discount_curve,
                                                      fx_forward_curve=fx_forward_curve,
                                                      curve_type=for_curve_type).discount_curve
-
-        fx_forward_curve = FXForwardCurveGen(value_date=value_date,
-                                             exchange_rate=exchange_rate,
-                                             fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
-                                             fx_swap_quotes=fx_swap_data['swap_point']).discount_curve
 
         self.volatility_surface = FXVolSurfaceGen(value_date=value_date,
                                                   currency_pair=fx_symbol,

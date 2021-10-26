@@ -540,6 +540,8 @@ class DiscountCurveType(Enum):
     FX_Implied_tr = 'FX_Implied_tr'
     USDLibor3M = 'USDLibor3M'
     CNYbbg536 = "CNYbbg536"
+    FX_Forword = 'FX_Forword'
+    FX_Forword_tr = 'FX_Forword_tr'
 
 
 class SpotExchangeRateType(Enum):

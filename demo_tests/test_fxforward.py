@@ -11,7 +11,7 @@ fxfwd = FXForward(start_date=TuringDate(2021, 5, 18),
                            value_date=value_date,
                            underlier_symbol=CurrencyPair.USDCNY,
                            strike=6.5417,
-                           d_ccy_discount=0.022,
+                           dom_currency_discount=0.022,
                            notional=1000000,
                            notional_currency=Currency.USD)
 

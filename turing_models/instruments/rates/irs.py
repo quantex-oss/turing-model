@@ -1,6 +1,6 @@
 import datetime
 from dataclasses import dataclass
-from typing import Union, List
+from typing import Union, List, Any
 
 import numpy as np
 
@@ -81,37 +81,38 @@ def modify_leg_type(leg_type):
 
 
 def create_ibor_single_curve(value_date: TuringDate,
-                             deposit_terms: (str, float, list),
-                             deposit_rates: (str, float, list),
+                             deposit_terms: (str, float, List[str], List[float]),
+                             deposit_rates: (float, List[float]),
                              deposit_day_count_type: TuringDayCountTypes,
                              swap_curve_dates: List,
-                             fixed_leg_type_curve: TuringSwapTypes,
+                             fixed_leg_type: TuringSwapTypes,
                              swap_curve_rates: List[float],
-                             fixed_freq_type_curve: TuringFrequencyTypes,
-                             fixed_day_count_type_curve: TuringDayCountTypes,
+                             fixed_freq_type: TuringFrequencyTypes,
+                             fixed_day_count_type: TuringDayCountTypes,
                              dx: Union[int, float]):
 
     depos = []
     fras = []
     swaps = []
     if isinstance(deposit_terms, str) or isinstance(deposit_terms, float):
-        temp1 = deposit_terms
-        temp2 = deposit_rates
-        deposit_terms = []
-        deposit_rates = []
-        deposit_terms.append(temp1)
-        deposit_rates.append(temp2)
-    if isinstance(deposit_terms[0], str):
-        due_dates = value_date.addTenor(deposit_terms)
-    elif isinstance(deposit_terms[0], float):
-        due_dates = value_date.addYears(deposit_terms)
-        
+        deposit_terms = [deposit_terms]
+        deposit_rates = [deposit_rates]
+    if isinstance(deposit_terms, list):
+        if isinstance(deposit_terms[0], str):
+            due_dates = value_date.addTenor(deposit_terms)
+        elif isinstance(deposit_terms[0], float):
+            due_dates = value_date.addYears(deposit_terms)
+        else:
+            raise TuringError('deposit_terms: (str, float, List[str], List[float])')
+    else:
+        raise TuringError('deposit_terms: (str, float, List[str], List[float])')
+
     for i in range(len(deposit_terms)):
         depo1 = TuringIborDeposit(value_date,
-                                due_dates[i],
-                                deposit_rates[i],
-                                deposit_day_count_type)
-    depos.append(depo1)
+                                  due_dates[i],
+                                  deposit_rates[i],
+                                  deposit_day_count_type)
+        depos.append(depo1)
 
     if isinstance(swap_curve_dates[0], str):
         swap_curve_dates = value_date.addTenor(swap_curve_dates)
@@ -121,12 +122,12 @@ def create_ibor_single_curve(value_date: TuringDate,
     for i in range(len(swap_curve_dates)):
         swap = IRS(effective_date=value_date,
                    termination_date=swap_curve_dates[i],
-                   fixed_leg_type=fixed_leg_type_curve,
+                   fixed_leg_type=fixed_leg_type,
                    fixed_coupon=swap_curve_rates[i] + dx,
-                   fixed_freq_type=fixed_freq_type_curve,
-                   fixed_day_count_type=fixed_day_count_type_curve,
+                   fixed_freq_type=fixed_freq_type,
+                   fixed_day_count_type=fixed_day_count_type,
                    value_date=value_date,
-                   reset_freq_type=fixed_freq_type_curve,
+                   reset_freq_type=fixed_freq_type,
                    date_gen_rule_type=TuringDateGenRuleTypes.FORWARD)
         swaps.append(swap)
 
@@ -161,9 +162,9 @@ class IRS(IR, InstrumentBase):
     deposit_term: Union[float, str, list] = None  # 单位：年
     deposit_rate: Union[float, list]  = None
     deposit_day_count_type: Union[str, TuringDayCountTypes] = None
-    fixed_freq_type_curve: Union[str, TuringFrequencyTypes] = None
-    fixed_day_count_type_curve: Union[str, TuringDayCountTypes] = None
-    fixed_leg_type_curve: Union[str, TuringSwapTypes] = None
+    fixed_freq_type_for_curve: Union[str, TuringFrequencyTypes] = None
+    fixed_day_count_type_for_curve: Union[str, TuringDayCountTypes] = None
+    fixed_leg_type_for_curve: Union[str, TuringSwapTypes] = None
     reset_freq_type: Union[str, TuringFrequencyTypes] = None
     _index_curve = None
     _libor_curve = None
@@ -218,11 +219,11 @@ class IRS(IR, InstrumentBase):
             self.deposit_day_count_type_ = modify_day_count_type(
                 self.deposit_day_count_type)
             self.fixed_freq_type_curve_ = modify_freq_type(
-                self.fixed_freq_type_curve)
+                self.fixed_freq_type_for_curve)
             self.fixed_day_count_type_curve_ = modify_day_count_type(
-                self.fixed_day_count_type_curve)
+                self.fixed_day_count_type_for_curve)
             self.fixed_leg_type_curve_ = modify_leg_type(
-                self.fixed_leg_type_curve)
+                self.fixed_leg_type_for_curve)
 
             self.fixed_leg = TuringFixedLeg(self.effective_date,
                                             self.termination_date,
@@ -296,10 +297,10 @@ class IRS(IR, InstrumentBase):
                                         self.deposit_rate,
                                         self.deposit_day_count_type_,
                                         self.swap_curve_dates_,
-                                        self.fixed_leg_type_curve,
+                                        self.fixed_leg_type_for_curve,
                                         self.swap_curve_rates,
-                                        self.fixed_freq_type_curve,
-                                        self.fixed_day_count_type_curve,
+                                        self.fixed_freq_type_for_curve,
+                                        self.fixed_day_count_type_for_curve,
                                         dx)
 
     def price(self):
@@ -400,8 +401,8 @@ class IRS(IR, InstrumentBase):
         s += to_string("Deposit Term", self.deposit_term)
         s += to_string("Deposit Rate", self.deposit_rate)
         s += to_string("Deposit Day Count Type", self.deposit_day_count_type)
-        s += to_string("Fixed Freq Type Curve", self.fixed_freq_type_curve)
+        s += to_string("Fixed Freq Type Curve", self.fixed_freq_type_for_curve)
         s += to_string("Fixed Day Count Type Curve",
-                       self.fixed_day_count_type_curve)
-        s += to_string("Fixed Leg Type Curve", self.fixed_leg_type_curve, "")
+                       self.fixed_day_count_type_for_curve)
+        s += to_string("Fixed Leg Type Curve", self.fixed_leg_type_for_curve, "")
         return s

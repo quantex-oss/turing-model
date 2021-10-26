@@ -27,7 +27,7 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
     strike: float = None
     expiry: TuringDate = None
     start_date: TuringDate = None
-    d_ccy_discount: float = None
+    dom_currency_discount: float = None
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))
     _exchange_rate = None
@@ -100,9 +100,9 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
     @cached_property
     def domestic_discount_curve(self):
         return DomDiscountCurveGen(value_date=self.value_date_,
-                                   d_ccy_discount=self.d_ccy_discount,
+                                   dom_currency_discount=self.dom_currency_discount,
                                    curve_type=DiscountCurveType.FlatForward).discount_curve
-    
+
     @property
     def df_d(self):
         return self.domestic_discount_curve.discount(self.expiry_ql)
@@ -135,7 +135,7 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
 
         # self._cash_dom = v * self.notional_dom / self.strike
         # self._cash_for = v * self.notional_for / self.exchange_rate
-        
+
         return v
 
         # return {"price": v,
@@ -145,7 +145,7 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
     def forward(self):
         """ Calculate the FX Forward rate that makes the value of the FX
         contract equal to zero. """
-        
+
         s0 = self.exchange_rate
         df_fwd = self.df_fwd
         fwd_fx_rate = s0 / df_fwd
@@ -195,5 +195,5 @@ class FXForward(FX, InstrumentBase, metaclass=ABCMeta):
         s += to_string("Expiry", self.expiry)
         s += to_string("Start Date", self.start_date)
         s += to_string("Exchange Rate", self.exchange_rate)
-        s += to_string("Domestic Currency Discount", self.d_ccy_discount)
+        s += to_string("Domestic Currency Discount", self.dom_currency_discount)
         return s
