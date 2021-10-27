@@ -221,57 +221,6 @@ class DomDiscountCurveGen:
             calendar = ql.China()
             daycount = ql.Actual365Fixed()
             self.dom_curve = ql.FlatForward(0, calendar, dom_currency_discount, daycount)
-        elif curve_type == DiscountCurveType.USDLibor3M:
-            ql.Settings.instance().evaluationDate = value_date_ql
-            data_dict = {'Tenor': libor_swap_origin_tenors, 'ZeroRate': libor_swap_rates}
-            libor_swap_mkt_data = pd.DataFrame(data=data_dict)
-            date1 = '2021-07-28'
-            date2 = '2021-07-29'
-            date3 = '2021-07-30'
-            date4 = '2021-08-02'
-            date5 = '2021-08-03'
-            date6 = '2021-08-04'
-            date7 = '2021-08-05'
-            date8 = '2021-08-06'
-            date9 = '2021-08-09'
-            date10 = '2021-08-10'
-            date11 = '2021-08-11'
-            date12 = '2021-08-12'
-            date13 = '2021-08-13'
-            date14 = '2021-08-16'
-            date15 = '2021-08-17'
-            date16 = '2021-08-18'
-            date17 = '2021-08-19'
-            date18 = '2021-08-20'
-            date_list = [date1, date2, date3, date4, date5,
-                         date6, date7, date8, date9, date10,
-                         date11, date12, date13, date14,
-                         date15, date16, date17, date18]
-            rate1 = 0.001285
-            rate2 = 0.0012575
-            rate3 = 0.0011775
-            rate4 = 0.0012375
-            rate5 = 0.0012138
-            rate6 = 0.0012175
-            rate7 = 0.0012538
-            rate8 = 0.0012838
-            rate9 = 0.0012725
-            rate10 = 0.0012275
-            rate11 = 0.0012125
-            rate12 = 0.0012475
-            rate13 = 0.0012425
-            rate14 = 0.001245
-            rate15 = 0.0012725
-            rate16 = 0.0013088
-            rate17 = 0.0013075
-            rate18 = 0.0012838
-            rate_list = [rate1, rate2, rate3, rate4, rate5,
-                         rate6, rate7, rate8, rate9, rate10,
-                         rate11, rate12, rate13, rate14,
-                         rate15, rate16, rate17, rate18]
-
-            fixing_data = pd.DataFrame(data={'Date': date_list, 'Fixing': rate_list})
-            self.dom_curve = USDLibor3M(libor_swap_mkt_data, fixing_data, value_date_ql)
 
     @property
     def discount_curve(self):

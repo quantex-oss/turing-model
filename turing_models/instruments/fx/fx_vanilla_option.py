@@ -76,10 +76,55 @@ class FXVanillaOption(FXOption):
         return self.option.Theta(*self.params())
 
     def fx_vanna(self):
-        return 0
+        return self.Vanna(*self.params())
 
     def fx_volga(self):
-        return 0
+        return self.Volga(*self.params())
+
+    def Vanna(self, today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention, tweak1=1e-4,
+              tweak2=0.01):
+
+        npv_upup = self.option.NPV(today, spot_f_d + tweak1, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount,
+                                   convention, tweak2)
+
+        npv_updown = self.option.NPV(today, spot_f_d + tweak1, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount,
+                                     convention, - tweak2)
+
+        vega_up = (npv_upup - npv_updown) / (2 * tweak2 * 100)
+
+        npv_downup = self.option.NPV(today, spot_f_d - tweak1, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount,
+                                     convention, tweak2)
+
+        npv_downdown = self.option.NPV(today, spot_f_d - tweak1, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount,
+                                       convention, - tweak2)
+
+        vega_down = (npv_downup - npv_downdown) / (2 * tweak2 * 100)
+
+        vanna = (vega_up - vega_down) / (2 * tweak1 * 10000)
+
+        return vanna
+
+    def Volga(self, today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention, vol_tweak=0.01):
+
+        npv_upup = self.option.NPV(today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention,
+                                   vol_tweak + vol_tweak)
+
+        npv_updown = self.option.NPV(today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention,
+                                     vol_tweak - vol_tweak)
+
+        vega_up = (npv_upup - npv_updown) / (2 * vol_tweak * 100)
+
+        npv_downup = self.option.NPV(today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention,
+                                     - vol_tweak + vol_tweak)
+
+        npv_downdown = self.option.NPV(today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention,
+                                       - vol_tweak - vol_tweak)
+
+        vega_down = (npv_downup - npv_downdown) / (2 * vol_tweak * 100)
+
+        volga = (vega_up - vega_down) / (2 * vol_tweak * 100)
+
+        return volga
 
     def set_property_list(self, curve, underlier, _property, key):
         _list = []
