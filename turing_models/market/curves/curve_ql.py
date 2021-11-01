@@ -103,7 +103,6 @@ class Shibor3M:
 
 
 # NDCNYDiscount
-
 class NDCNYDiscount:
 
     def __init__(self, zero_data, today):
@@ -123,9 +122,8 @@ class NDCNYDiscount:
         return ql.ZeroCurve(dates, zeros, daycount, calendar,
                             ql.Linear(), ql.Compounded, ql.Quarterly)
 
-    # USD Libor
 
-
+# USD Libor
 class USDLibor3M:
 
     def __init__(self, curve_data, fixing_data, today):
@@ -212,5 +210,3 @@ class FXImpliedAssetCurve:
         asset_crv.enableExtrapolation()
 
         return asset_crv
-
-

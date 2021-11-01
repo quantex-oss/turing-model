@@ -27,6 +27,8 @@ class TuringOptionTypes(Enum):
     SNOWBALL_PUT = 12
     KNOCKOUT_CALL = 13
     KNOCKOUT_PUT = 14
+    QUANTO_DIGITAL_CALL = 15
+    QUANTO_DIGITAL_PUT = 16
 
 
 class TuringOptionType(Enum):

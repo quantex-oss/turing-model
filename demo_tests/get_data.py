@@ -31,4 +31,3 @@ print(TuringDB.shibor_curve(date=value_date))
 date = TuringDB.swap_curve(asset_id=['FX00000001', 'FX00000002'], date=value_date)
 print(date['FX00000001'])
 print(TuringDB.exchange_rate(symbol='USD/CNY', date=value_date))
-

@@ -23,7 +23,7 @@ class TuringVolFunctionTypes(Enum):
     SVI = 6
     SSVI = 7
     VANNA_VOLGA = 8
-    CICC = 9
+    QL = 9
 
 
 ###############################################################################

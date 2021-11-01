@@ -533,11 +533,15 @@ class RMBIRCurveType(Enum):
 
 
 class DiscountCurveType(Enum):
-    Shibor3M_CICC = 'Shibor3M_CICC'
     Shibor3M = 'Shibor3M'
-    FlatForward_CICC = 'FlatForward_CICC'
-    FX_Implied_CICC = 'FX_Implied_CICC'
+    Shibor3M_tr = 'Shibor3M_tr'
+    FlatForward = 'FlatForward'
     FX_Implied = 'FX_Implied'
+    FX_Implied_tr = 'FX_Implied_tr'
+    USDLibor3M = 'USDLibor3M'
+    CNYbbg536 = "CNYbbg536"
+    FX_Forword = 'FX_Forword'
+    FX_Forword_tr = 'FX_Forword_tr'
 
 
 class SpotExchangeRateType(Enum):

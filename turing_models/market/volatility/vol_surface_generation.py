@@ -4,12 +4,12 @@ from typing import List, Union
 import numpy as np
 import pandas as pd
 import QuantLib as ql
-from loguru import logger
 
-from fundamental.turing_db.data import Turing, TuringDB
+from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.common import CurrencyPair, DiscountCurveType
 from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMethod
-from turing_models.market.curves.curve_generation import FXIRCurve, ForDiscountCurveGen, DomDiscountCurveGen
+from turing_models.market.curves.curve_generation import ForDiscountCurveGen, DomDiscountCurveGen, \
+     FXForwardCurveGen
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.volatility.fx_vol_surface_ql import FXVolSurface
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
@@ -23,14 +23,14 @@ class FXOptionImpliedVolatilitySurface:
     def __init__(self,
                  fx_symbol: (str, CurrencyPair),  # 货币对symbol，例如：'USD/CNY'
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3])),
-                 strikes: list = None,  # 行权价 如果不传，就用exchange_rate * np.linspace(0.5, 2, 16)
+                 strikes: List[float] = None,  # 行权价 如果不传，就用exchange_rate * np.linspace(0.8, 1.2, 16)
                  tenors: List[float] = None,  # 期限（年化） 如果不传，就用[1/12, 2/12, 0.25, 0.5, 1, 2]
-                 volatility_function_type=TuringVolFunctionTypes.CICC):
+                 volatility_function_type=TuringVolFunctionTypes.QL):
 
         if isinstance(fx_symbol, CurrencyPair):
             fx_symbol = fx_symbol.value
         elif isinstance(fx_symbol, str):
-            fx_symbol = fx_symbol
+            pass
         else:
             raise TuringError('fx_symbol: (str, CurrencyPair)')
 
@@ -56,15 +56,18 @@ class FXOptionImpliedVolatilitySurface:
 
         fx_swap_data = TuringDB.swap_curve(symbol=fx_symbol, date=value_date)[fx_symbol]
         fx_implied_vol_data = TuringDB.fx_implied_volatility_curve(symbol=fx_symbol,
-                                                                   volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
+                                                                   volatility_type=["ATM", "25D BF", "25D RR", "10D BF",
+                                                                                    "10D RR"],
                                                                    date=value_date)[fx_symbol]
 
         if volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
+            dom_curve_type = DiscountCurveType.Shibor3M_tr
+            for_curve_type = DiscountCurveType.FX_Implied_tr
+            fx_forward_curve_type = DiscountCurveType.FX_Forword_tr
+        elif volatility_function_type == TuringVolFunctionTypes.QL:
             dom_curve_type = DiscountCurveType.Shibor3M
             for_curve_type = DiscountCurveType.FX_Implied
-        elif volatility_function_type == TuringVolFunctionTypes.CICC:
-            dom_curve_type = DiscountCurveType.Shibor3M_CICC
-            for_curve_type = DiscountCurveType.FX_Implied_CICC
+            fx_forward_curve_type = DiscountCurveType.FX_Forword
         else:
             raise TuringError('Unsupported volatility function type')
 
@@ -77,17 +80,15 @@ class FXOptionImpliedVolatilitySurface:
                                                       shibor_swap_rates=shibor_swap_data['average'],
                                                       curve_type=dom_curve_type).discount_curve
 
+        fx_forward_curve = FXForwardCurveGen(value_date=value_date,
+                                             exchange_rate=exchange_rate,
+                                             fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
+                                             fx_swap_quotes=fx_swap_data['swap_point'],
+                                             curve_type=fx_forward_curve_type).discount_curve
+
         foreign_discount_curve = ForDiscountCurveGen(value_date=value_date,
-                                                     exchange_rate=exchange_rate,
-                                                     fx_swap_tenors=fx_swap_data['tenor'],
-                                                     fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
-                                                     fx_swap_quotes=fx_swap_data['swap_point'],
-                                                     shibor_tenors=shibor_data['tenor'],
-                                                     shibor_origin_tenors=shibor_data['origin_tenor'],
-                                                     shibor_rates=shibor_data['rate'],
-                                                     shibor_swap_tenors=shibor_swap_data['tenor'],
-                                                     shibor_swap_origin_tenors=shibor_swap_data['origin_tenor'],
-                                                     shibor_swap_rates=shibor_swap_data['average'],
+                                                     domestic_discount_curve=domestic_discount_curve,
+                                                     fx_forward_curve=fx_forward_curve,
                                                      curve_type=for_curve_type).discount_curve
 
         self.volatility_surface = FXVolSurfaceGen(value_date=value_date,
@@ -95,6 +96,7 @@ class FXOptionImpliedVolatilitySurface:
                                                   exchange_rate=exchange_rate,
                                                   domestic_discount_curve=domestic_discount_curve,
                                                   foreign_discount_curve=foreign_discount_curve,
+                                                  fx_forward_curve=fx_forward_curve,
                                                   tenors=fx_implied_vol_data["tenor"],
                                                   origin_tenors=fx_implied_vol_data["origin_tenor"],
                                                   atm_vols=fx_implied_vol_data["ATM"],
@@ -102,15 +104,6 @@ class FXOptionImpliedVolatilitySurface:
                                                   risk_reversal_25delta_vols=fx_implied_vol_data["25D RR"],
                                                   butterfly_10delta_vols=fx_implied_vol_data["10D BF"],
                                                   risk_reversal_10delta_vols=fx_implied_vol_data["10D RR"],
-                                                  fx_swap_tenors=fx_swap_data['tenor'],
-                                                  fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
-                                                  fx_swap_quotes=fx_swap_data['swap_point'],
-                                                  shibor_tenors=shibor_data['tenor'],
-                                                  shibor_origin_tenors=shibor_data['origin_tenor'],
-                                                  shibor_rates=shibor_data['rate'],
-                                                  shibor_swap_tenors=shibor_swap_data['tenor'],
-                                                  shibor_swap_origin_tenors=shibor_swap_data['origin_tenor'],
-                                                  shibor_swap_rates=shibor_swap_data['average'],
                                                   volatility_function_type=volatility_function_type).volatility_surface
 
     def get_vol_surface(self):
@@ -128,7 +121,7 @@ class FXOptionImpliedVolatilitySurface:
             for strike in strikes:
                 if volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
                     v = volatility_surface.volatilityFromStrikeDate(strike, ex)
-                elif volatility_function_type == TuringVolFunctionTypes.CICC:
+                elif volatility_function_type == TuringVolFunctionTypes.QL:
                     ex_ql = ql.Date(ex._d, ex._m, ex._y)
                     v = volatility_surface.interp_vol(ex_ql, strike)
                 else:
@@ -144,6 +137,7 @@ class FXVolSurfaceGen:
                  exchange_rate: float,
                  domestic_discount_curve: TuringDiscountCurve = None,
                  foreign_discount_curve: TuringDiscountCurve = None,
+                 fx_forward_curve=None,
                  tenors: List[float] = None,
                  origin_tenors: List[str] = None,
                  atm_vols: List[float] = None,
@@ -151,16 +145,7 @@ class FXVolSurfaceGen:
                  risk_reversal_25delta_vols: List[float] = None,
                  butterfly_10delta_vols: List[float] = None,
                  risk_reversal_10delta_vols: List[float] = None,
-                 fx_swap_tenors: List[float] = None,
-                 fx_swap_origin_tenors: List[str] = None,
-                 fx_swap_quotes: List[float] = None,
-                 shibor_tenors: List[float] = None,
-                 shibor_origin_tenors: List[str] = None,
-                 shibor_rates: List[float] = None,
-                 shibor_swap_tenors: List[float] = None,
-                 shibor_swap_origin_tenors: List[str] = None,
-                 shibor_swap_rates: [float] = None,
-                 volatility_function_type: TuringVolFunctionTypes = TuringVolFunctionTypes.CICC,
+                 volatility_function_type: TuringVolFunctionTypes = TuringVolFunctionTypes.QL,
                  alpha: float = 1,
                  atm_method: TuringFXATMMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL,
                  delta_method: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
@@ -189,6 +174,7 @@ class FXVolSurfaceGen:
 
         self.domestic_discount_curve = domestic_discount_curve
         self.foreign_discount_curve = foreign_discount_curve
+        self.fx_forward_curve = fx_forward_curve
 
         self.tenors = tenors
         self.origin_tenors = origin_tenors
@@ -197,16 +183,6 @@ class FXVolSurfaceGen:
         self.risk_reversal_25delta_vols = risk_reversal_25delta_vols
         self.butterfly_10delta_vols = butterfly_10delta_vols
         self.risk_reversal_10delta_vols = risk_reversal_10delta_vols
-
-        self.fx_swap_tenors = fx_swap_tenors
-        self.fx_swap_origin_tenors = fx_swap_origin_tenors
-        self.fx_swap_quotes = fx_swap_quotes
-        self.shibor_tenors = shibor_tenors
-        self.shibor_origin_tenors = shibor_origin_tenors
-        self.shibor_rates = shibor_rates
-        self.shibor_swap_tenors = shibor_swap_tenors
-        self.shibor_swap_origin_tenors = shibor_swap_origin_tenors
-        self.shibor_swap_rates = shibor_swap_rates
 
         self.alpha = alpha
         self.atm_method = atm_method
@@ -237,7 +213,7 @@ class FXVolSurfaceGen:
                                         self.solver_type,
                                         self.tol)
 
-        elif self.volatility_function_type == TuringVolFunctionTypes.CICC:
+        elif self.volatility_function_type == TuringVolFunctionTypes.QL:
             ql.Settings.instance().evaluationDate = self.value_date_ql
             foreign_name = self.currency_pair[0:3]
             domestic_name = self.currency_pair[4:7]
@@ -247,30 +223,9 @@ class FXVolSurfaceGen:
                          '25DBF': self.butterfly_25delta_vols,
                          '10DRR': self.risk_reversal_10delta_vols,
                          '10DBF': self.butterfly_10delta_vols}
+
             vol_data = pd.DataFrame(data_dict)
-            fore = ForDiscountCurveGen(value_date=self.value_date_ql,
-                                       exchange_rate=self.exchange_rate,
-                                       fx_swap_tenors=self.fx_swap_tenors,
-                                       fx_swap_origin_tenors=self.fx_swap_origin_tenors,
-                                       fx_swap_quotes=self.fx_swap_quotes,
-                                       shibor_tenors=self.shibor_tenors,
-                                       shibor_origin_tenors=self.shibor_origin_tenors,
-                                       shibor_rates=self.shibor_rates,
-                                       shibor_swap_tenors=self.shibor_swap_tenors,
-                                       shibor_swap_origin_tenors=self.shibor_swap_origin_tenors,
-                                       shibor_swap_rates=self.shibor_swap_rates,
-                                       curve_type=DiscountCurveType.FX_Implied_CICC)
-            fwd_crv = fore.fx_forward_curve
-            for_crv = fore.discount_curve
-            dom = DomDiscountCurveGen(value_date=self.value_date_ql,
-                                      shibor_tenors=self.shibor_tenors,
-                                      shibor_origin_tenors=self.shibor_origin_tenors,
-                                      shibor_rates=self.shibor_rates,
-                                      shibor_swap_tenors=self.shibor_swap_tenors,
-                                      shibor_swap_origin_tenors=self.shibor_swap_origin_tenors,
-                                      shibor_swap_rates=self.shibor_swap_rates,
-                                      curve_type=DiscountCurveType.Shibor3M_CICC)
-            disc_crv = dom.discount_curve
+
             calendar = ql.China(ql.China.IB)
             convention = ql.Following
             daycount = ql.Actual365Fixed()
@@ -278,9 +233,9 @@ class FXVolSurfaceGen:
                                 domestic_name,
                                 foreign_name,
                                 self.exchange_rate,
-                                fwd_crv,
-                                disc_crv,
-                                for_crv,
+                                self.fx_forward_curve,
+                                self.domestic_discount_curve,
+                                self.foreign_discount_curve,
                                 self.value_date_ql,
                                 calendar,
                                 convention,
@@ -296,4 +251,3 @@ if __name__ == '__main__':
     # strike = 6.6
     # expiry = ql.Date(16, 10, 2021)
     # print(vol_sur.interp_vol(expiry, strike))
-

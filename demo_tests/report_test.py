@@ -9,7 +9,7 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.common import RiskMeasure
 from turing_models.utilities.global_types import TuringOptionType
 
-portfolio = Portfolio(portfolio_name="CICC")
+portfolio = Portfolio(portfolio_name="QL")
 
 # What if we add a common KnockOutOption
 knockout_option = KnockOutOption(

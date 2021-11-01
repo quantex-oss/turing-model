@@ -377,10 +377,10 @@ print(irs.swap_rate())
 #                                  deposit_rate=0.02,
 #                                  deposit_day_count_type=TuringDayCountTypes.ACT_365L,
 #                                  swap_curve_dates=TuringDate(2021, 8, 17).addYears(dates),
-#                                  fixed_leg_type_curve=TuringSwapTypes.PAY,
+#                                  fixed_leg_type_for_curve=TuringSwapTypes.PAY,
 #                                  swap_curve_rates=rates,
-#                                  fixed_freq_type_curve=TuringFrequencyTypes.QUARTERLY,
-#                                  fixed_day_count_type_curve=TuringDayCountTypes.ACT_365L,
+#                                  fixed_freq_type_for_curve=TuringFrequencyTypes.QUARTERLY,
+#                                  fixed_day_count_type_for_curve=TuringDayCountTypes.ACT_365L,
 #                                  dx=0)
 # print(curve)
 
