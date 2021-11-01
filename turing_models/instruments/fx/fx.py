@@ -53,13 +53,13 @@ class ForeignExchange(FX, InstrumentBase):
                 self.asset_id = Turing.get_fx_symbol_to_id(_id=self.symbol).get('asset_id')
 
     def _resolve(self):
+        self.check_symbol()
         if self.asset_id:
             temp_dict = FxApi.fetch_fx_orm(self=self, gurl=None)
             for k, v in temp_dict.items():
                 if not getattr(self, k, None) and v:
                     setattr(self, k, v)
 
-        if self.asset_id:
             if not self.exchange_rate:
                 ex_rate = FxApi.get_exchange_rate(gurl=None,
                                                   underlier=self.asset_id)
