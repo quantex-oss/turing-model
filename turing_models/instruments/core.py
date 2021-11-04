@@ -75,18 +75,22 @@ class InstrumentBase:
         msg = ''
         response_data = []
         if riskMeasure:
-            for risk_fun in riskMeasure:
-                try:
-                    result = getattr(self, risk_fun)()
-                except Exception as e:
-                    traceback.print_exc()
-                    msg += f'{risk_fun} error: {str(e)};'
-                    result = ''
-                    msg += f'调用{risk_fun}出错;'
-                response = {}
-                response['riskMeasure'] = risk_fun
-                response['value'] = result
-                response_data.append(response)
+            if isinstance(riskMeasure, list):
+                for risk_fun in riskMeasure:
+                    try:
+                        result = getattr(self, risk_fun)()
+                    except Exception as e:
+                        traceback.print_exc()
+                        msg += f'{risk_fun} error: {str(e)};'
+                        result = ''
+                        msg += f'调用{risk_fun}出错;'
+                    response = {}
+                    response['riskMeasure'] = risk_fun
+                    response['value'] = result
+                    response_data.append(response)
+            elif isinstance(riskMeasure, str):
+                result = getattr(self, riskMeasure)()
+                return result
         return response_data
 
     def api_data(self, **kw):
