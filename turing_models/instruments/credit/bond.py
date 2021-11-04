@@ -36,20 +36,22 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     due_date: TuringDate = None  # 到期日
     bond_term_year: float = None
     bond_term_day: float = None
-    freq_type: Union[str, TuringFrequencyTypes] = None  # 付息评论
+    freq_type: Union[str, TuringFrequencyTypes] = None  # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None  # 计息类型
-    par: float = None  # 本金
+    par: float = None  # 面值
     clean_price: float = None  # 净价
     currency: str = None  # 币种
     name: str = None
-    settlement_date: TuringDate = TuringDate(
-        *(datetime.date.today().timetuple()[:3]))  # 结算日
+    value_date: TuringDate = TuringDate(
+        *(datetime.date.today().timetuple()[:3]))  # 估值日
+    settlement_terms: int = 0  # 结算天数，0即T+0结算
 
     def __post_init__(self):
         super().__init__()
         self.convention = TuringYTMCalcType.UK_DMO  # 惯例
         self.calendar_type = TuringCalendarTypes.WEEKEND  # 日历类型
-        self._redemption = 1.0  # This is amount paid at maturity 到期支付额
+        self._redemption = 1.0  # 到期支付额
+        self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
         self._flow_dates = []  # 现金流发生日
         self._flow_amounts = []  # 现金流发生额
         self._accrued_interest = None
@@ -101,8 +103,8 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     def _calculate_flow_dates(self):
         """ Determine the bond cashflow payment dates."""
 
-        calendar_type = TuringCalendarTypes.NONE
-        bus_day_rule_type = TuringBusDayAdjustTypes.NONE
+        calendar_type = TuringCalendarTypes.CHINA_IB
+        bus_day_rule_type = TuringBusDayAdjustTypes.FOLLOWING
         date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
         self._flow_dates = TuringSchedule(self.issue_date,
                                           self.due_date,
