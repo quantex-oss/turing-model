@@ -28,11 +28,11 @@ def _f(y, *args):
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
-    coupon: float = 0.0
-    curve_code: str = None
+    coupon: float = 0.0  # 票息
+    curve_code: str = None  # 曲线编码
     ytm: float = None
-    zero_dates: List[Any] = field(default_factory=list)
-    zero_rates: List[Any] = field(default_factory=list)
+    zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
+    zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
     _ytm: float = None
     _discount_curve = None
 
@@ -52,13 +52,14 @@ class BondFixedRate(Bond):
         self._ytm = value
 
     def curve_adjust(self):
-        ca = CurveAdjust(self.zero_dates,
+        """ 支持曲线旋转及平移 """
+        ca = CurveAdjust(self.zero_dates,  # 曲线信息
                          self.zero_rates,
-                         self.ctx_parallel_shift,
-                         self.ctx_curve_shift,
-                         self.ctx_pivot_point,
-                         self.ctx_tenor_start,
-                         self.ctx_tenor_end)
+                         self.ctx_parallel_shift,  # 平移量（bps)
+                         self.ctx_curve_shift,  # 旋转量（bps)
+                         self.ctx_pivot_point,  # 旋转点（年）
+                         self.ctx_tenor_start,  # 旋转起始（年）
+                         self.ctx_tenor_end)  # 旋转终点（年）
         return ca.get_dates_result(), ca.get_rates_result()
 
     @property
@@ -100,7 +101,7 @@ class BondFixedRate(Bond):
         return self.clean_price or self.clean_price_from_discount_curve()
 
     def _calculate_flow_amounts(self):
-        """ Determine the bond cashflow payment amounts without principal """
+        """ 保存票息现金流信息 """
 
         self._flow_amounts = [0.0]
 
@@ -109,6 +110,7 @@ class BondFixedRate(Bond):
             self._flow_amounts.append(cpn)
 
     def dv01(self):
+        """ 数值法计算dv01 """
         ytm = self.__ytm__
         self.__ytm__ = ytm - dy
         p0 = self.full_price_from_ytm()
@@ -119,8 +121,7 @@ class BondFixedRate(Bond):
         return dv
 
     def macauley_duration(self):
-        """ Calculate the Macauley duration of the bond on a settlement date
-        given its yield to maturity. """
+        """ 麦考利久期 """
 
         if self.settlement_date_ > self.due_date:
             raise TuringError("Bond settles after it matures.")
@@ -135,7 +136,7 @@ class BondFixedRate(Bond):
         for dt in self._flow_dates[1:]:
 
             dates = dc.yearFrac(self.settlement_date_, dt)[0]
-            # coupons paid on the settlement date are included
+            # 将结算日的票息加入计算
             if dt >= self.settlement_date_:
                 df = discount_curve_flat.df(dt)
                 flow = self.coupon / self.frequency
@@ -154,14 +155,14 @@ class BondFixedRate(Bond):
         return dmac
 
     def modified_duration(self):
-        """ Calculate the modified duration of the bond on a settlement date
-        given its yield to maturity. """
+        """ 修正久期 """
 
         dmac = self.macauley_duration()
         md = dmac / (1.0 + self.__ytm__ / self.frequency)
         return md
 
     def dollar_convexity(self):
+        """ 凸性 """
         ytm = self.__ytm__
         self.__ytm__ = ytm - dy
         p0 = self.full_price_from_ytm()
@@ -173,29 +174,18 @@ class BondFixedRate(Bond):
         dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
         return dollar_conv
 
-    def principal(self):
-        """ Calculate the principal value of the bond based on the face
-        amount from its discount margin and making assumptions about the
-        future Ibor rates. """
-
-        full_price = self.full_price_from_ytm()
-
-        principal = full_price
-        principal = principal - self._accrued_interest
-        return principal
-
     def full_price_from_ytm(self):
-
+        """ 通过YTM计算全价 """
         self.calc_accrued_interest()
 
-        ytm = np.array(self.__ytm__)  # VECTORIZED
-        ytm = ytm + 0.000000000012345  # SNEAKY LOW-COST TRICK TO AVOID y=0
+        ytm = np.array(self.__ytm__)  # 向量化
+        ytm = ytm + 0.000000000012345  # 防止ytm = 0
 
         f = self.frequency
         c = self.coupon
         v = 1.0 / (1.0 + ytm / f)
 
-        # n is the number of flows after the next coupon
+        # n是下一付息日后的现金流个数
         n = 0
         for dt in self._flow_dates:
             if dt > self.settlement_date_:
@@ -241,16 +231,14 @@ class BondFixedRate(Bond):
         return fp * self.par
 
     def clean_price_from_ytm(self):
+        """ 通过YTM计算净价 """
         full_price = self.full_price_from_ytm()
         accrued_amount = self._accrued_interest
         clean_Price = full_price - accrued_amount
         return clean_Price
 
     def full_price_from_discount_curve(self):
-        ''' Calculate the bond price using a provided discount curve to PV the
-        bond's cashflows to the settlement date. As such it is effectively a
-        forward bond price if the settlement date is after the valuation date.
-        '''
+        ''' 通过利率曲线计算全价 '''
 
         if self.settlement_date_ < self.discount_curve._valuationDate:
             raise TuringError("Bond settles before Discount curve date")
@@ -264,7 +252,7 @@ class BondFixedRate(Bond):
 
         for dt in self._flow_dates[1:]:
 
-            # coupons paid on the settlement date are included
+            # 将结算日的票息加入计算
             if dt >= self.settlement_date_:
                 df = self.discount_curve.df(dt)
                 flow = self.coupon / self.frequency
@@ -277,9 +265,7 @@ class BondFixedRate(Bond):
         return px * self.par
 
     def clean_price_from_discount_curve(self):
-        ''' Calculate the clean bond value using some discount curve to
-        present-value the bond's cashflows back to the curve anchor date and
-        not to the settlement date. '''
+        ''' 通过利率曲线计算净价 '''
 
         self.calc_accrued_interest()
         full_price = self.full_price_from_discount_curve()
@@ -289,15 +275,13 @@ class BondFixedRate(Bond):
         return clean_price
 
     def current_yield(self):
-        """ Calculate the current yield of the bond which is the
-        coupon divided by the clean price (not the full price)"""
+        """ 当前收益 = 票息/净价 """
 
         y = self.coupon * self.par / self.clean_price_
         return y
 
     def yield_to_maturity(self):
-        """ Calculate the bond's yield to maturity by solving the price
-        yield relationship using a one-dimensional root solver. """
+        """ 通过一维求根器计算YTM """
 
         clean_price = self.clean_price_
         if type(clean_price) is float \
@@ -336,6 +320,7 @@ class BondFixedRate(Bond):
             return np.array(ytms)
 
     def calc_accrued_interest(self):
+        """ 应计利息 """
 
         num_flows = len(self._flow_dates)
 
@@ -343,26 +328,25 @@ class BondFixedRate(Bond):
             raise TuringError("Accrued interest - not enough flow dates.")
 
         for i_flow in range(1, num_flows):
-            # coupons paid on a settlement date are paid
             if self._flow_dates[i_flow] >= self.settlement_date_:
-                self._pcd = self._flow_dates[i_flow - 1]
-                self._ncd = self._flow_dates[i_flow]
+                self._pcd = self._flow_dates[i_flow - 1]  # 结算日前一个现金流
+                self._ncd = self._flow_dates[i_flow]  # 结算日后一个现金流
                 break
 
         dc = TuringDayCount(self.accrual_type_)
         cal = TuringCalendar(self.calendar_type)
         ex_dividend_date = cal.addBusinessDays(
-            self._ncd, -self.num_ex_dividend_days)
+            self._ncd, -self.num_ex_dividend_days)  # 除息日
 
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
                                            self.settlement_date_,
                                            self._ncd,
-                                           self.freq_type_)
+                                           self.freq_type_)  # 计算应计日期，返回应计因数、应计天数、基数
 
-        if self.settlement_date_ > ex_dividend_date:
+        if self.settlement_date_ > ex_dividend_date:  # 如果结算日大于除息日，减去一期
             acc_factor = acc_factor - 1.0 / self.frequency
 
-        self._alpha = 1.0 - acc_factor * self.frequency
+        self._alpha = 1.0 - acc_factor * self.frequency  # 计算alpha值供全价计算公式使用
         self._accrued_interest = acc_factor * self.par * self.coupon
         self._accrued_days = num
 

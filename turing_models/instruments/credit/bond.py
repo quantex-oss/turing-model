@@ -30,29 +30,29 @@ class Bond(CD, InstrumentBase):
     bond_symbol: str = None
     exchange_code: str = None
     bond_type: str = None
-    interest_accrued: float = None
-    issue_date: TuringDate = None
-    due_date: TuringDate = None
+    interest_accrued: float = None  # 应计利息
+    issue_date: TuringDate = None  # 发行日
+    due_date: TuringDate = None  # 到期日
     bond_term_year: float = None
     bond_term_day: float = None
-    freq_type: Union[str, TuringFrequencyTypes] = None
-    accrual_type: Union[str, TuringDayCountTypes] = None
-    par: float = None
-    clean_price: float = None
-    currency: str = None
+    freq_type: Union[str, TuringFrequencyTypes] = None  # 付息评论
+    accrual_type: Union[str, TuringDayCountTypes] = None  # 计息类型
+    par: float = None  # 本金
+    clean_price: float = None  # 净价
+    currency: str = None  # 币种
     name: str = None
     settlement_date: TuringDate = TuringDate(
-        *(datetime.date.today().timetuple()[:3]))
+        *(datetime.date.today().timetuple()[:3]))  # 结算日
 
     def __post_init__(self):
         super().__init__()
-        self.convention = TuringYTMCalcType.UK_DMO
-        self.calendar_type = TuringCalendarTypes.WEEKEND
-        self._redemption = 1.0  # This is amount paid at maturity
-        self._flow_dates = []
-        self._flow_amounts = []
+        self.convention = TuringYTMCalcType.UK_DMO  # 惯例
+        self.calendar_type = TuringCalendarTypes.WEEKEND  # 日历类型
+        self._redemption = 1.0  # This is amount paid at maturity 到期支付额
+        self._flow_dates = []  # 现金流发生日
+        self._flow_amounts = []  # 现金流发生额
         self._accrued_interest = None
-        self._accrued_days = 0.0
+        self._accrued_days = 0.0  # 应计利息天数
         if self.freq_type:
             self._calculate_flow_dates()
             self.frequency = TuringFrequency(self.freq_type_)

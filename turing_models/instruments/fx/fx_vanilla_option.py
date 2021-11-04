@@ -76,12 +76,12 @@ class FXVanillaOption(FXOption):
         return self.option.Theta(*self.params())
 
     def fx_vanna(self):
-        return self.Vanna(*self.params())
+        return self.vanna(*self.params())
 
     def fx_volga(self):
-        return self.Volga(*self.params())
+        return self.volga(*self.params())
 
-    def Vanna(self, today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention, tweak1=1e-4,
+    def vanna(self, today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention, tweak1=1e-4,
               tweak2=0.01):
 
         npv_upup = self.option.NPV(today, spot_f_d + tweak1, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount,
@@ -104,7 +104,7 @@ class FXVanillaOption(FXOption):
 
         return vanna
 
-    def Volga(self, today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention, vol_tweak=0.01):
+    def volga(self, today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention, vol_tweak=0.01):
 
         npv_upup = self.option.NPV(today, spot_f_d, fwd_crv_fd, disc_crv, sigma_f_d, calendar, daycount, convention,
                                    vol_tweak + vol_tweak)

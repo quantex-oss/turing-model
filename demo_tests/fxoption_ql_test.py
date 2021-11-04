@@ -19,11 +19,12 @@ fxoption = FXVanillaOption(start_date=TuringDate(2021, 5, 18),
                            premium_currency=Currency.CNY)
 
 scenario_extreme = PricingContext(
+    pricing_date=value_date,
     spot=[
         {"symbol": "USD/CNY", "value": 6.5}
         ]
 )
-
+print(fxoption)
 if __name__ == '__main__':
     with scenario_extreme:
         atm = fxoption.atm()
@@ -32,8 +33,8 @@ if __name__ == '__main__':
         gamma = fxoption.fx_gamma()
         vega = fxoption.fx_vega()
         theta = fxoption.fx_theta()
-        rd = fxoption.rd
-        rf = fxoption.rf
+        rd = fxoption.rate_domestic()
+        rf = fxoption.rate_foreign()
         vanna = fxoption.fx_vanna()
         volga = fxoption.fx_volga()
 
