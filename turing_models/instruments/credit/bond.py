@@ -1,5 +1,6 @@
 import datetime
 import traceback
+from abc import ABCMeta
 from dataclasses import dataclass
 from typing import Union
 
@@ -25,7 +26,7 @@ dy = 0.0001
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class Bond(CD, InstrumentBase):
+class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     asset_id: str = None
     bond_symbol: str = None
     exchange_code: str = None
@@ -110,16 +111,8 @@ class Bond(CD, InstrumentBase):
                                           bus_day_rule_type,
                                           date_gen_rule_type)._generate()
 
-    def dv01(self):
-        print("You should not be here!")
-        return 0.0
-
     def dollar_duration(self):
         return self.dv01() / dy
-
-    def dollar_convexity(self):
-        print("You should not be here!")
-        return 0.0
 
     def fetch_yield_curve(self, curve_code_list):
         """根据asset_ids的集合为参数,取行情"""

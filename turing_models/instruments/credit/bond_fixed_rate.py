@@ -5,6 +5,7 @@ import numpy as np
 from scipy import optimize
 
 from fundamental.turing_db.bond_data import BondApi
+from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.credit.bond import Bond, dy
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
@@ -20,7 +21,7 @@ def _f(y, *args):
     """ Function used to do root search in price to yield calculation. """
     bond = args[0]
     price = args[1]
-    bond.__ytm__ = y
+    bond.ytm = y
     px = bond.full_price_from_ytm()
     obj_fn = px - price
     return obj_fn
@@ -30,7 +31,6 @@ def _f(y, *args):
 class BondFixedRate(Bond):
     coupon: float = 0.0  # 票息
     curve_code: str = None  # 曲线编码
-    ytm: float = None
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
     _ytm: float = None
@@ -44,17 +44,29 @@ class BondFixedRate(Bond):
             self._calculate_flow_amounts()
 
     @property
-    def __ytm__(self):
-        return self._ytm or self.ctx_ytm or self.ytm or self.yield_to_maturity()
+    def get_yield_curve(self):
+        return TuringDB.yield_curve(curve_code=self.curve_code, date=self.settlement_date_)[self.curve_code]
 
-    @__ytm__.setter
-    def __ytm__(self, value: float):
+    @property
+    def zero_dates_(self):
+        return self.zero_dates or self.get_yield_curve['tenor']
+
+    @property
+    def zero_rates_(self):
+        return self.zero_rates or self.get_yield_curve['spot_rate']
+
+    @property
+    def ytm(self):
+        return self._ytm or self.ctx_ytm or self.yield_to_maturity()
+
+    @ytm.setter
+    def ytm(self, value: float):
         self._ytm = value
 
     def curve_adjust(self):
         """ 支持曲线旋转及平移 """
-        ca = CurveAdjust(self.zero_dates,  # 曲线信息
-                         self.zero_rates,
+        ca = CurveAdjust(self.zero_dates_,  # 曲线信息
+                         self.zero_rates_,
                          self.ctx_parallel_shift,  # 平移量（bps)
                          self.ctx_curve_shift,  # 旋转量（bps)
                          self.ctx_pivot_point,  # 旋转点（年）
@@ -63,29 +75,29 @@ class BondFixedRate(Bond):
         return ca.get_dates_result(), ca.get_rates_result()
 
     @property
-    def _zero_dates(self):
+    def zero_dates_adjusted(self):
         if self.ctx_parallel_shift:
             return self.curve_adjust()[0]
         else:
             return self.zero_dates
 
     @property
-    def _zero_rates(self):
+    def zero_rates_adjusted(self):
         if self.ctx_parallel_shift:
             return self.curve_adjust()[1]
         else:
             return self.zero_rates
 
     @property
-    def zero_dates_(self):
-        return self.settlement_date_.addYears(self._zero_dates)
+    def dates(self):
+        return self.settlement_date_.addYears(self.zero_dates_adjusted)
 
     @property
     def discount_curve(self):
         if self._discount_curve:
             return self._discount_curve
         return TuringDiscountCurveZeros(
-            self.settlement_date_, self.zero_dates_, self._zero_rates)
+            self.settlement_date_, self.dates, self.zero_rates_adjusted)
 
     @discount_curve.setter
     def discount_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
@@ -94,7 +106,7 @@ class BondFixedRate(Bond):
     @property
     def discount_curve_flat(self):
         return TuringDiscountCurveFlat(self.settlement_date_,
-                                       self.__ytm__)
+                                       self.ytm)
 
     @property
     def clean_price_(self):
@@ -111,12 +123,12 @@ class BondFixedRate(Bond):
 
     def dv01(self):
         """ 数值法计算dv01 """
-        ytm = self.__ytm__
-        self.__ytm__ = ytm - dy
+        ytm = self.ytm
+        self.ytm = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.__ytm__ = ytm + dy
+        self.ytm = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.__ytm__ = None
+        self.ytm = None
         dv = -(p2 - p0) / 2.0
         return dv
 
@@ -158,19 +170,19 @@ class BondFixedRate(Bond):
         """ 修正久期 """
 
         dmac = self.macauley_duration()
-        md = dmac / (1.0 + self.__ytm__ / self.frequency)
+        md = dmac / (1.0 + self.ytm / self.frequency)
         return md
 
     def dollar_convexity(self):
         """ 凸性 """
-        ytm = self.__ytm__
-        self.__ytm__ = ytm - dy
+        ytm = self.ytm
+        self.ytm = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.__ytm__ = ytm
+        self.ytm = ytm
         p1 = self.full_price_from_ytm()
-        self.__ytm__ = ytm + dy
+        self.ytm = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.__ytm__ = None
+        self.ytm = None
         dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
         return dollar_conv
 
@@ -178,7 +190,7 @@ class BondFixedRate(Bond):
         """ 通过YTM计算全价 """
         self.calc_accrued_interest()
 
-        ytm = np.array(self.__ytm__)  # 向量化
+        ytm = np.array(self.ytm)  # 向量化
         ytm = ytm + 0.000000000012345  # 防止ytm = 0
 
         f = self.frequency
@@ -238,7 +250,7 @@ class BondFixedRate(Bond):
         return clean_Price
 
     def full_price_from_discount_curve(self):
-        ''' 通过利率曲线计算全价 '''
+        """ 通过利率曲线计算全价 """
 
         if self.settlement_date_ < self.discount_curve._valuationDate:
             raise TuringError("Bond settles before Discount curve date")
@@ -265,7 +277,7 @@ class BondFixedRate(Bond):
         return px * self.par
 
     def clean_price_from_discount_curve(self):
-        ''' 通过利率曲线计算净价 '''
+        """ 通过利率曲线计算净价 """
 
         self.calc_accrued_interest()
         full_price = self.full_price_from_discount_curve()
@@ -312,7 +324,7 @@ class BondFixedRate(Bond):
                                   fprime2=None)
 
             ytms.append(ytm)
-            self.__ytm__ = None
+            self.ytm = None
 
         if len(ytms) == 1:
             return ytms[0]
