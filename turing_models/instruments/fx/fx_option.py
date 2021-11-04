@@ -136,7 +136,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_fx_swap_data(self):
         """获取外汇掉期曲线"""
-        return TuringDB.swap_curve(symbol=self.underlier_symbol, date=self.value_date_, df=False)[self.underlier_symbol]
+        return TuringDB.fx_swap_curve(symbol=self.underlier_symbol, date=self.value_date_, df=False)[self.underlier_symbol]
 
     @property
     def get_fx_implied_vol_data(self):

@@ -81,7 +81,7 @@ class FXIRCurve:
 
         shibor_data = TuringDB.shibor_curve(date=value_date, df=False)
         shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date, df=False)['Shibor3M']
-        fx_swap_data = TuringDB.swap_curve(symbol=fx_symbol, date=value_date, df=False)[fx_symbol]
+        fx_swap_data = TuringDB.fx_swap_curve(symbol=fx_symbol, date=value_date, df=False)[fx_symbol]
 
         self.domestic_discount_curve = DomDiscountCurveGen(value_date=value_date,
                                                            shibor_tenors=shibor_data['tenor'],

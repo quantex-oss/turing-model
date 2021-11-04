@@ -169,7 +169,7 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
             gurl=gurl, bond_curve_code=getattr(self, 'curve_code'))
         if not curve:
             raise FastError(code=10020,
-                            msg="参数不全, yield_curve api return null",
+                            msg="参数不全, bond_yield_curve api return null",
                             data=None)
         for code in to_snake(curve):
             if code.get("curve_code") == getattr(self, 'curve_code'):
