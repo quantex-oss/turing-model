@@ -79,9 +79,9 @@ class FXIRCurve:
 
         exchange_rate = TuringDB.exchange_rate(symbol=fx_symbol, date=value_date)[fx_symbol]
 
-        shibor_data = TuringDB.shibor_curve(date=value_date)
-        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date)['Shibor3M']
-        fx_swap_data = TuringDB.swap_curve(symbol=fx_symbol, date=value_date)[fx_symbol]
+        shibor_data = TuringDB.shibor_curve(date=value_date, df=False)
+        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date, df=False)['Shibor3M']
+        fx_swap_data = TuringDB.swap_curve(symbol=fx_symbol, date=value_date, df=False)[fx_symbol]
 
         self.domestic_discount_curve = DomDiscountCurveGen(value_date=value_date,
                                                            shibor_tenors=shibor_data['tenor'],
@@ -210,9 +210,9 @@ class DomDiscountCurveGen:
             date1 = '2019-07-05'
             date2 = '2019-07-08'
             date3 = '2019-07-09'
-            rate1 = TuringDB.shibor_curve(date=TuringDate.fromString(date1, '%Y-%m-%d'))['rate'][4]
-            rate2 = TuringDB.shibor_curve(date=TuringDate.fromString(date2, '%Y-%m-%d'))['rate'][4]
-            rate3 = TuringDB.shibor_curve(date=TuringDate.fromString(date3, '%Y-%m-%d'))['rate'][4]
+            rate1 = TuringDB.shibor_curve(date=TuringDate.fromString(date1, '%Y-%m-%d'), df=False)['rate'][4]
+            rate2 = TuringDB.shibor_curve(date=TuringDate.fromString(date2, '%Y-%m-%d'), df=False)['rate'][4]
+            rate3 = TuringDB.shibor_curve(date=TuringDate.fromString(date3, '%Y-%m-%d'), df=False)['rate'][4]
             fixing_data = pd.DataFrame(data={'日期': [date1, date2, date3], 'Fixing': [rate1, rate2, rate3]})
 
             self.dom_curve = Shibor3M(shibor_deposit_mkt_data, shibor_swap_mkt_data, fixing_data, value_date_ql).curve

@@ -45,7 +45,7 @@ class BondFixedRate(Bond):
 
     @property
     def get_yield_curve(self):
-        return TuringDB.yield_curve(curve_code=self.curve_code, date=self.settlement_date_)[self.curve_code]
+        return TuringDB.yield_curve(curve_code=self.curve_code, date=self.settlement_date_, df=False)[self.curve_code]
 
     @property
     def zero_dates_(self):
@@ -79,14 +79,14 @@ class BondFixedRate(Bond):
         if self.ctx_parallel_shift:
             return self.curve_adjust()[0]
         else:
-            return self.zero_dates
+            return self.zero_dates_
 
     @property
     def zero_rates_adjusted(self):
         if self.ctx_parallel_shift:
             return self.curve_adjust()[1]
         else:
-            return self.zero_rates
+            return self.zero_rates_
 
     @property
     def dates(self):
