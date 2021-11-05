@@ -362,9 +362,9 @@ irs = IRS(effective_date=TuringDate(2021, 7, 22),
           deposit_rate=0.0222,
           first_fixing_rate=0.02,
           deposit_day_count_type=TuringDayCountTypes.ACT_365L,
-          fixed_freq_type_curve=TuringFrequencyTypes.QUARTERLY,
-          fixed_day_count_type_curve=TuringDayCountTypes.ACT_365L,
-          fixed_leg_type_curve=TuringSwapTypes.PAY,
+          fixed_freq_type_for_curve=TuringFrequencyTypes.QUARTERLY,
+          fixed_day_count_type_for_curve=TuringDayCountTypes.ACT_365L,
+          fixed_leg_type_for_curve=TuringSwapTypes.PAY,
           reset_freq_type=TuringFrequencyTypes.WEEKLY)
 
 print(irs.price())

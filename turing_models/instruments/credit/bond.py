@@ -1,5 +1,6 @@
 import datetime
 import traceback
+from abc import ABCMeta
 from dataclasses import dataclass
 from typing import Union
 
@@ -25,7 +26,7 @@ dy = 0.0001
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class Bond(CD, InstrumentBase):
+class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     asset_id: str = None
     bond_symbol: str = None
     exchange_code: str = None
@@ -35,20 +36,22 @@ class Bond(CD, InstrumentBase):
     due_date: TuringDate = None  # 到期日
     bond_term_year: float = None
     bond_term_day: float = None
-    freq_type: Union[str, TuringFrequencyTypes] = None  # 付息评论
+    freq_type: Union[str, TuringFrequencyTypes] = None  # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None  # 计息类型
-    par: float = None  # 本金
+    par: float = None  # 面值
     clean_price: float = None  # 净价
     currency: str = None  # 币种
     name: str = None
-    settlement_date: TuringDate = TuringDate(
-        *(datetime.date.today().timetuple()[:3]))  # 结算日
+    value_date: TuringDate = TuringDate(
+        *(datetime.date.today().timetuple()[:3]))  # 估值日
+    settlement_terms: int = 0  # 结算天数，0即T+0结算
 
     def __post_init__(self):
         super().__init__()
         self.convention = TuringYTMCalcType.UK_DMO  # 惯例
         self.calendar_type = TuringCalendarTypes.WEEKEND  # 日历类型
-        self._redemption = 1.0  # This is amount paid at maturity 到期支付额
+        self._redemption = 1.0  # 到期支付额
+        self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
         self._flow_dates = []  # 现金流发生日
         self._flow_amounts = []  # 现金流发生额
         self._accrued_interest = None
@@ -100,8 +103,8 @@ class Bond(CD, InstrumentBase):
     def _calculate_flow_dates(self):
         """ Determine the bond cashflow payment dates."""
 
-        calendar_type = TuringCalendarTypes.NONE
-        bus_day_rule_type = TuringBusDayAdjustTypes.NONE
+        calendar_type = TuringCalendarTypes.CHINA_IB
+        bus_day_rule_type = TuringBusDayAdjustTypes.FOLLOWING
         date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
         self._flow_dates = TuringSchedule(self.issue_date,
                                           self.due_date,
@@ -110,16 +113,8 @@ class Bond(CD, InstrumentBase):
                                           bus_day_rule_type,
                                           date_gen_rule_type)._generate()
 
-    def dv01(self):
-        print("You should not be here!")
-        return 0.0
-
     def dollar_duration(self):
         return self.dv01() / dy
-
-    def dollar_convexity(self):
-        print("You should not be here!")
-        return 0.0
 
     def fetch_yield_curve(self, curve_code_list):
         """根据asset_ids的集合为参数,取行情"""
@@ -174,7 +169,7 @@ class Bond(CD, InstrumentBase):
             gurl=gurl, bond_curve_code=getattr(self, 'curve_code'))
         if not curve:
             raise FastError(code=10020,
-                            msg="参数不全, yield_curve api return null",
+                            msg="参数不全, bond_yield_curve api return null",
                             data=None)
         for code in to_snake(curve):
             if code.get("curve_code") == getattr(self, 'curve_code'):
