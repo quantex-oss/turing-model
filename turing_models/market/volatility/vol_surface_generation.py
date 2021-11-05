@@ -128,7 +128,10 @@ class FXOptionImpliedVolatilitySurface:
                 else:
                     raise TuringError('Unsupported volatility function type')
                 data[tenor].append(v)
-        return pd.DataFrame(data, index=strikes)
+        data_df = pd.DataFrame(data, index=strikes)
+        data_df.index.name = 'strike'
+        data_df.columns.name = 'tenor'
+        return data_df
 
 
 class FXVolSurfaceGen:
