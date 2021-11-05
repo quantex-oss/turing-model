@@ -66,7 +66,6 @@ class InstrumentBase:
         pass
 
     def resolve(self, expand_dict=None):
-        print("expand_dict:", expand_dict)
         if not expand_dict:
             getattr(self, '_resolve')()
         else:
