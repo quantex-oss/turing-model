@@ -57,12 +57,16 @@ class InstrumentBase:
     def _set_by_dict(self, tmp_dict):
         for k, v in tmp_dict.items():
             if v:
-                setattr(self, k, v)
+                try:
+                    setattr(self, k, v)
+                except:
+                    pass
 
     def type(self):
         pass
 
     def resolve(self, expand_dict=None):
+        print("expand_dict:", expand_dict)
         if not expand_dict:
             getattr(self, '_resolve')()
         else:

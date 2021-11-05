@@ -109,8 +109,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         """优先考虑通过what-if传出的估值日期"""
         date = self.ctx_pricing_date or self.value_date
         # 判断期权是否过期
-        if date > self.expiry:
-            raise TuringError('Option expired.')
+        # if date > self.expiry:
+        #     raise TuringError('Option expired.')
         return date if date >= self.start_date else self.start_date
 
     @property
