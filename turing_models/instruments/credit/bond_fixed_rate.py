@@ -76,14 +76,18 @@ class BondFixedRate(Bond):
 
     @property
     def zero_dates_adjusted(self):
-        if self.ctx_parallel_shift:
+        if self.ctx_parallel_shift or self.ctx_curve_shift or \
+           self.ctx_pivot_point or self.ctx_tenor_start or \
+           self.ctx_tenor_end:
             return self.curve_adjust()[0]
         else:
             return self.zero_dates_
 
     @property
     def zero_rates_adjusted(self):
-        if self.ctx_parallel_shift:
+        if self.ctx_parallel_shift or self.ctx_curve_shift or \
+           self.ctx_pivot_point or self.ctx_tenor_start or \
+           self.ctx_tenor_end:
             return self.curve_adjust()[1]
         else:
             return self.zero_rates_
