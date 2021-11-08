@@ -112,7 +112,7 @@ class Bond_Adv_Rdp(Bond):
             return self.zero_rates_
 
     @property
-    def zero_dates_(self):
+    def dates(self):
         return self.settlement_date_.addYears(self.zero_dates_adjusted)
 
     @property
@@ -120,7 +120,7 @@ class Bond_Adv_Rdp(Bond):
         if self._discount_curve:
             return self._discount_curve
         return TuringDiscountCurveZeros(
-            self.settlement_date_, self.zero_dates_, self.zero_rates_adjusted)
+            self.settlement_date_, self.dates, self.zero_rates_adjusted)
 
     @discount_curve.setter
     def discount_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):

@@ -9,18 +9,18 @@ from turing_models.instruments.common import RiskMeasure
 
 
 bond_fr = Bond_Adv_Rdp(asset_id="BONDCN00000007",
-                        coupon=0.04,
+                        coupon=0.0675,
                         curve_code="CBD100003",
-                        issue_date=TuringDate(2015, 11, 16),
-                        value_date=TuringDate(2021, 11, 4),
-                        due_date=TuringDate(2025, 11, 14),
+                        issue_date=TuringDate(2014, 1, 24),
+                        value_date=TuringDate(2021, 9, 30),
+                        due_date=TuringDate(2024, 1, 24),
                         freq_type=TuringFrequencyTypes.ANNUAL,
                         accrual_type=TuringDayCountTypes.ACT_365L,
                         par=100,
                         zero_dates=dates,
                         zero_rates=rates,
-                        rdp_terms=[2,4,6,8,10],
-                        rdp_pct=[0.2,0.2,0.2,0.2,0.2])
+                        rdp_terms=[3,4,5,6,7,8,9,10],
+                        rdp_pct=[0.1,0.1,0.1,0.1,0.15,0.15,0.15,0.15])
 
 price1 = bond_fr.full_price_from_discount_curve()
 price2 = bond_fr.full_price_from_ytm()
