@@ -230,6 +230,10 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def spot(self):
         return self.exchange_rate
 
+    @property
+    def orm(self):
+        return "fundamental.turing_db.orm.option.FxOptionOrm"
+    
     def check_underlier(self):
         if self.underlier_symbol and not self.underlier:
             if isinstance(self.underlier_symbol, Enum):

@@ -45,6 +45,10 @@ class ForeignExchange(FX, InstrumentBase):
     def fx_volga(self):
         return 0
 
+    @property
+    def orm(self):
+        return "fundamental.turing_db.orm.fx.FxOrm"
+
     def check_symbol(self):
         if self.symbol and not self.asset_id:
             if isinstance(self.symbol, Enum):
