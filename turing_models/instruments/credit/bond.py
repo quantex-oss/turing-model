@@ -51,7 +51,8 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
         self.convention = TuringYTMCalcType.UK_DMO  # 惯例
         self.calendar_type = TuringCalendarTypes.WEEKEND  # 日历类型
         self._redemption = 1.0  # 到期支付额
-        self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
+        if self.issue_date:
+            self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
         self._flow_dates = []  # 现金流发生日
         self._flow_amounts = []  # 现金流发生额
         self._accrued_interest = None
