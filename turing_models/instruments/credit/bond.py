@@ -30,18 +30,12 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     asset_id: str = None
     bond_symbol: str = None
     exchange_code: str = None
-    bond_type: str = None
-    interest_accrued: float = None  # 应计利息
     issue_date: TuringDate = None  # 发行日
     due_date: TuringDate = None  # 到期日
-    bond_term_year: float = None
-    bond_term_day: float = None
     freq_type: Union[str, TuringFrequencyTypes] = None  # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None  # 计息类型
     par: float = None  # 面值
     clean_price: float = None  # 净价
-    currency: str = None  # 币种
-    name: str = None
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))  # 估值日
     settlement_terms: int = 0  # 结算天数，0即T+0结算
@@ -51,7 +45,8 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
         self.convention = TuringYTMCalcType.UK_DMO  # 惯例
         self.calendar_type = TuringCalendarTypes.WEEKEND  # 日历类型
         self._redemption = 1.0  # 到期支付额
-        self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
+        if self.issue_date:
+            self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
         self._flow_dates = []  # 现金流发生日
         self._flow_amounts = []  # 现金流发生额
         self._accrued_interest = None
@@ -189,7 +184,6 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)
         s += to_string("Asset Id", self.asset_id)
-        s += to_string("Interest Accrued", self.interest_accrued)
         s += to_string("Issue Date", self.issue_date)
         s += to_string("Due Date", self.due_date)
         s += to_string("Freq Type", self.freq_type)

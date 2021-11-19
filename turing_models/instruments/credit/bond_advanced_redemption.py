@@ -29,6 +29,7 @@ def _f(y, *args):
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class Bond_Adv_Rdp(Bond):
+    bond_type: str = None
     coupon: float = 0.0  # 票息
     curve_code: str = None  # 曲线编码
     ytm: float = None

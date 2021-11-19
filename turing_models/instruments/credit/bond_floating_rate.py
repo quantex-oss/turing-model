@@ -21,6 +21,7 @@ def _f(dm, *args):
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFloatingRate(Bond):
+    bond_type: str = None
     quoted_margin: float = None
     next_coupon: float = None
     current_ibor: float = None

@@ -29,6 +29,7 @@ def _f(y, *args):
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
+    bond_type: str = None
     coupon: float = 0.0  # 票息
     curve_code: str = None  # 曲线编码
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）

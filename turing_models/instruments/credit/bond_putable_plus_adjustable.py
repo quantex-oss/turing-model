@@ -65,8 +65,8 @@ def _f(c, *args):
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondPutableAdjustable(Bond):
-    ''' Class for fixed coupon bonds with embedded put optionality and rights to adjust coupon on exercise date. '''
-
+    """ Class for fixed coupon bonds with embedded put optionality and rights to adjust coupon on exercise date. """
+    bond_type: str = None
     coupon: float = 0.0  # 票息
     curve_code: str = None  # 曲线编码
     ytm: float = None
