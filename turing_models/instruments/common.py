@@ -4,6 +4,7 @@ from enum import Enum
 import numpy as np
 from numba import njit
 
+from fundamental import ctx
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
@@ -804,6 +805,8 @@ class TuringFXDeltaMethod(Enum):
 
 
 class Ctx:
+    def __init__(self):
+        self.ctx = ctx
     @property
     def ctx_spot(self):
         asset_id = getattr(self, 'underlier', None) or getattr(
