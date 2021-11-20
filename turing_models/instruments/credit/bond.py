@@ -197,5 +197,5 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
         s += to_string("Accrual Type", self.accrual_type)
         s += to_string("Par", self.par)
         s += to_string("Clean Price", self.clean_price)
-        s += to_string("Settlement Date", self.settlement_date_)
+        # s += to_string("Settlement Date", self.settlement_date_)
         return s
