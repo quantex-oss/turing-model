@@ -1,3 +1,4 @@
+import functools
 import inspect
 import traceback
 from typing import Union, List, Iterable
@@ -103,7 +104,8 @@ class InstrumentBase:
                     setattr(self, k, v)
                 else:
                     setattr(self.ctx, k, v)
-
+    
+    @functools.lru_cache(100)
     def main(self, *args, **kw):
         context = kw.pop('context', '')
         if context:
