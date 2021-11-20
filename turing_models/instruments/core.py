@@ -105,7 +105,6 @@ class InstrumentBase:
                 else:
                     setattr(self.ctx, k, v)
     
-    @functools.lru_cache(100)
     def main(self, *args, **kw):
         context = kw.pop('context', '')
         if context:
