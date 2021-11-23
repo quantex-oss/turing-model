@@ -31,7 +31,9 @@ class BondFloatingRate(Bond):
     def __post_init__(self):
         super().__post_init__()
 
-        if self.dm > 10.0:
+        if not self.dm and self.quoted_margin:
+            self.dm = self.quoted_margin
+        if self.dm and self.dm > 10.0:
             raise TuringError("Discount margin exceeds 100000bp")
 
     def dv01(self):
