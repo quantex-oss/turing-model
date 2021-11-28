@@ -1,6 +1,7 @@
 from fundamental.pricing_context import CurveScenario
+from turing_models.instruments.credit.bond_advanced_redemption import BondAdvancedRedemption
+from turing_models.instruments.credit.bond_floating_rate import BondFloatingRate
 
-from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
@@ -15,18 +16,21 @@ bond_fr = BondFixedRate(asset_id="BONDCN00000007",
                         due_date=TuringDate(2025, 11, 14),
                         freq_type=TuringFrequencyTypes.SEMI_ANNUAL,
                         accrual_type=TuringDayCountTypes.ACT_365L,
-                        par=100,
-                        zero_dates=dates,
-                        zero_rates=rates)
+                        par=100)
 
+price_1 = bond_fr.calc(RiskMeasure.Price)
+clean_price_1 = bond_fr.calc(RiskMeasure.CleanPrice)
+ytm_1 = bond_fr.calc(RiskMeasure.YTM)
 dv01_1 = bond_fr.calc(RiskMeasure.Dv01)
 dollar_duration_1 = bond_fr.calc(RiskMeasure.DollarDuration)
 dollar_convexity_1 = bond_fr.calc(RiskMeasure.DollarConvexity)
 
+print('price', price_1)
+print('clean_price', clean_price_1)
+print('ytm', ytm_1)
 print('dv01:', dv01_1)
 print('dollar_duration:', dollar_duration_1)
 print('dollar_convexity:', dollar_convexity_1)
-
 print("---------------------------------------------")
 
 # CurveScenario参数含义：
@@ -43,10 +47,62 @@ scenario = CurveScenario(parallel_shift=[{"curve_code": "CBD100003", "value": 10
                          tenor_end=[{"curve_code": "CBD100003", "value": 40}, {"curve_code": "CBD100003", "value": 30}])
 
 with scenario:
+    price_2 = bond_fr.calc(RiskMeasure.Price)
+    clean_price_2 = bond_fr.calc(RiskMeasure.CleanPrice)
+    ytm_2 = bond_fr.calc(RiskMeasure.YTM)
     dv01_2 = bond_fr.calc(RiskMeasure.Dv01)
     dollar_duration_2 = bond_fr.calc(RiskMeasure.DollarDuration)
     dollar_convexity_2 = bond_fr.calc(RiskMeasure.DollarConvexity)
 
+    print('price', price_2)
+    print('clean_price', clean_price_2)
+    print('ytm', ytm_2)
     print('dv01:', dv01_2)
     print('dollar_duration:', dollar_duration_2)
     print('dollar_convexity:', dollar_convexity_2)
+    print("---------------------------------------------")
+
+bond_frn = BondFloatingRate(quoted_margin=0.01,
+                            issue_date=TuringDate(2015, 11, 13),
+                            due_date=TuringDate(2025, 11, 14),
+                            freq_type='半年付息',
+                            accrual_type='ACT/ACT',
+                            par=100,
+                            next_coupon=0.035,
+                            current_ibor=0.037,
+                            future_ibor=0.038,
+                            dm=0.01)
+
+print('price', bond_frn.calc(RiskMeasure.Price))
+print('clean_price', bond_frn.calc(RiskMeasure.CleanPrice))
+print('dv01:', bond_frn.calc(RiskMeasure.Dv01))
+print('dollar_duration:', bond_frn.calc(RiskMeasure.DollarDuration))
+print('dollar_convexity:', bond_frn.calc(RiskMeasure.DollarConvexity))
+print("---------------------------------------------")
+
+bond_ar = BondAdvancedRedemption(asset_id="BONDCN00000007",
+                                 coupon=0.0675,
+                                 curve_code="CBD100003",
+                                 issue_date=TuringDate(2014, 1, 24),
+                                 due_date=TuringDate(2024, 1, 24),
+                                 freq_type=TuringFrequencyTypes.ANNUAL,
+                                 accrual_type=TuringDayCountTypes.ACT_365L,
+                                 par=100,
+                                 rdp_terms=[3, 4, 5, 6, 7, 8, 9, 10],
+                                 rdp_pct=[0.1, 0.1, 0.1, 0.1, 0.15, 0.15, 0.15, 0.15])
+
+price = bond_ar.calc(RiskMeasure.Price)
+clean_price = bond_ar.calc(RiskMeasure.CleanPrice)
+ytm = bond_ar.calc(RiskMeasure.YTM)
+dv01 = bond_ar.calc(RiskMeasure.Dv01)
+dollar_duration = bond_ar.calc(RiskMeasure.DollarDuration)
+dollar_convexity = bond_ar.calc(RiskMeasure.DollarConvexity)
+
+print('price', price)
+print('clean_price', clean_price)
+print('ytm', ytm)
+print('dv01:', dv01)
+print('dollar_duration:', dollar_duration)
+print('dollar_convexity:', dollar_convexity)
+print("---------------------------------------------")
+

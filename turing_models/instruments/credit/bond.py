@@ -4,8 +4,6 @@ from abc import ABCMeta
 from dataclasses import dataclass
 from typing import Union
 
-from loguru import logger
-
 from fundamental.turing_db.bond_data import BondApi
 from fundamental.turing_db.data import Turing
 from fundamental.turing_db.err import FastError
@@ -13,7 +11,7 @@ from fundamental.turing_db.utils import to_snake
 from turing_models.instruments.common import CD
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
-    TuringDateGenRuleTypes
+     TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
@@ -35,7 +33,7 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     freq_type: Union[str, TuringFrequencyTypes] = None  # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None  # 计息类型
     par: float = None  # 面值
-    clean_price: float = None  # 净价
+    bond_clean_price: float = None  # 净价
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))  # 估值日
     settlement_terms: int = 0  # 结算天数，0即T+0结算
@@ -114,7 +112,7 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     def fetch_yield_curve(self, curve_code_list):
         """根据asset_ids的集合为参数,取行情"""
         try:
-            return Turing.get_yieldcurve(_ids=curve_code_list)
+            return Turing.get_yieldcurve(_ids=tuple(curve_code_list))
         except Exception:
             traceback.print_exc()
             return None
@@ -150,15 +148,6 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
         self.zero_rates = zero_rates
         return zero_rates
 
-    def put_ytm(self, quotes_dict, asset_id):
-        if quotes_dict:
-            for quote in quotes_dict:
-                if quote.get("asset_id") == asset_id:
-                    ytm_ = quote.get("ytm", None)
-                    if ytm_:
-                        return ytm_
-        return None
-
     def set_curve(self, gurl=None):
         curve = BondApi.fetch_yield_curve(
             gurl=gurl, bond_curve_code=getattr(self, 'curve_code'))
@@ -172,14 +161,17 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
                     self.zero_dates.append(cu.get('term'))
                     self.zero_rates.append(cu.get('spot_rate'))
 
-    def set_ytm(self, gurl=None):
-        market_bond = BondApi.fetch_quotes(gurl=gurl, asset_id=self.asset_id)
-        if market_bond:
-            logger.debug(f"market_bond:{market_bond}")
-            for quote in market_bond:
-                if quote.get("asset_id") == self.asset_id:
-                    if quote.get("ytm", None):
-                        setattr(self, 'ytm', quote.get("ytm"))
+    def _resolve(self):
+        # Bond_ 为自定义时自动生成
+        if self.asset_id and not self.asset_id.startswith("Bond_"):
+            bond = BondApi.fetch_one_bond_orm(asset_id=self.asset_id)
+            for k, v in bond.items():
+                try:
+                    if not getattr(self, k, None) and v:
+                        setattr(self, k, v)
+                except Exception:
+                    pass
+        self.__post_init__()
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)
@@ -189,6 +181,5 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
         s += to_string("Freq Type", self.freq_type)
         s += to_string("Accrual Type", self.accrual_type)
         s += to_string("Par", self.par)
-        s += to_string("Clean Price", self.clean_price)
         s += to_string("Settlement Date", self.settlement_date_)
         return s

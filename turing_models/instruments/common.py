@@ -110,6 +110,8 @@ class RiskMeasure(Enum):
     FxTheta = "fx_theta"
     FxVanna = "fx_vanna"
     FxVolga = "fx_volga"
+    CleanPrice = "clean_price"
+    YTM = 'ytm'
 
     def __repr__(self):
         return self.value

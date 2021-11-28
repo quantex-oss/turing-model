@@ -4,7 +4,6 @@ from typing import Union, List, Any
 import numpy as np
 from scipy import optimize
 
-from fundamental.turing_db.bond_data import BondApi
 from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.credit.bond import Bond, dy
 from turing_models.utilities.calendar import TuringCalendar
@@ -21,7 +20,7 @@ def _f(y, *args):
     """ Function used to do root search in price to yield calculation. """
     bond = args[0]
     price = args[1]
-    bond.ytm = y
+    bond.ytm_ = y
     px = bond.full_price_from_ytm()
     obj_fn = px - price
     return obj_fn
@@ -29,7 +28,6 @@ def _f(y, *args):
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
-    bond_type: str = None
     coupon: float = 0.0  # 票息
     curve_code: str = None  # 曲线编码
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
@@ -56,12 +54,15 @@ class BondFixedRate(Bond):
     def zero_rates_(self):
         return self.zero_rates or self.get_yield_curve['spot_rate']
 
-    @property
     def ytm(self):
+        return self.ytm_
+
+    @property
+    def ytm_(self):
         return self._ytm or self.ctx_ytm or self.yield_to_maturity()
 
-    @ytm.setter
-    def ytm(self, value: float):
+    @ytm_.setter
+    def ytm_(self, value: float):
         self._ytm = value
 
     def curve_adjust(self):
@@ -111,11 +112,19 @@ class BondFixedRate(Bond):
     @property
     def discount_curve_flat(self):
         return TuringDiscountCurveFlat(self.settlement_date_,
-                                       self.ytm)
+                                       self.ytm_)
 
     @property
     def clean_price_(self):
-        return self.clean_price or self.clean_price_from_discount_curve()
+        return self.bond_clean_price or self.clean_price_from_discount_curve()
+
+    def clean_price(self):
+        # 定价接口调用
+        return self.clean_price_
+
+    def price(self):
+        # 定价接口调用
+        return self.full_price_from_discount_curve()
 
     def _calculate_flow_amounts(self):
         """ 保存票息现金流信息 """
@@ -128,12 +137,12 @@ class BondFixedRate(Bond):
 
     def dv01(self):
         """ 数值法计算dv01 """
-        ytm = self.ytm
-        self.ytm = ytm - dy
+        ytm = self.ytm_
+        self.ytm_ = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.ytm = ytm + dy
+        self.ytm_ = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.ytm = None
+        self.ytm_ = None
         dv = -(p2 - p0) / 2.0
         return dv
 
@@ -173,21 +182,20 @@ class BondFixedRate(Bond):
 
     def modified_duration(self):
         """ 修正久期 """
-
         dmac = self.macauley_duration()
-        md = dmac / (1.0 + self.ytm / self.frequency)
+        md = dmac / (1.0 + self.ytm_ / self.frequency)
         return md
 
     def dollar_convexity(self):
         """ 凸性 """
-        ytm = self.ytm
-        self.ytm = ytm - dy
+        ytm = self.ytm_
+        self.ytm_ = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.ytm = ytm
+        self.ytm_ = ytm
         p1 = self.full_price_from_ytm()
-        self.ytm = ytm + dy
+        self.ytm_ = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.ytm = None
+        self.ytm_ = None
         dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
         return dollar_conv
 
@@ -195,7 +203,7 @@ class BondFixedRate(Bond):
         """ 通过YTM计算全价 """
         self.calc_accrued_interest()
 
-        ytm = np.array(self.ytm)  # 向量化
+        ytm = np.array(self.ytm_)  # 向量化
         ytm = ytm + 0.000000000012345  # 防止ytm = 0
 
         f = self.frequency
@@ -306,7 +314,7 @@ class BondFixedRate(Bond):
                 or type(clean_price) is np.ndarray:
             clean_prices = np.array(clean_price)
         else:
-            raise TuringError("Unknown type for clean_price "
+            raise TuringError("Unknown type for bond_clean_price "
                               + str(type(clean_price)))
 
         self.calc_accrued_interest()
@@ -326,7 +334,7 @@ class BondFixedRate(Bond):
                                   fprime2=None)
 
             ytms.append(ytm)
-            self.ytm = None
+            self.ytm_ = None
 
         if len(ytms) == 1:
             return ytms[0]
@@ -366,21 +374,8 @@ class BondFixedRate(Bond):
 
         return self._accrued_interest
 
-    def _resolve(self):
-        # Bond_ 为自定义时自动生成
-        if self.asset_id and not self.asset_id.startswith("Bond_"):
-            bond = BondApi.fetch_one_bond_orm(asset_id=self.asset_id)
-            for k, v in bond.items():
-                if not getattr(self, k, None) and v:
-                    setattr(self, k, v)
-        self.set_ytm()
-        self.set_curve()
-        self.__post_init__()
-
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Coupon", self.coupon)
         s += to_string("Curve Code", self.curve_code)
-        if self.ytm:
-            s += to_string("YTM", self.ytm)
         return s

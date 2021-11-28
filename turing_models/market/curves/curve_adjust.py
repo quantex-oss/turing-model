@@ -95,9 +95,12 @@ class CurveAdjust:
             dates_copy = self.dates.copy()
             for i in range(len(dates_copy)):
                 if dates_copy[i] > self.tenor_end:
-                    break
-            self.dates.insert(i, self.tenor_end)
-            self.rates.insert(i, self.end_rate)
+                    self.dates.insert(i, self.tenor_end)
+                    self.rates.insert(i, self.end_rate)
+                    return
+            self.dates.append(self.tenor_end)
+            self.rates.append(self.end_rate)
+
 
     def get_data_index(self):
         self.pivot_index = self.dates.index(self.pivot_point)

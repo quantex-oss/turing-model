@@ -42,7 +42,7 @@ def _g(y, *args):
     """ Function used to do root search in price to yield calculation. """
     bond = args[0]
     price = args[1]
-    bond.__ytm__ = y
+    bond.ytm_ = y
     px = bond.full_price_from_ytm()
     obj_fn = px - price
     return obj_fn
@@ -105,12 +105,24 @@ class BondPutableAdjustable(Bond):
         return self.zero_rates or self.get_yield_curve['spot_rate']
           
     @property
-    def __ytm__(self):
+    def ytm_(self):
         return self._ytm or self.ctx_ytm or self.ytm or self.yield_to_maturity()
 
-    @__ytm__.setter
-    def __ytm__(self, value: float):
+    @ytm_.setter
+    def ytm_(self, value: float):
         self._ytm = value
+
+    def ytm(self):
+        # 定价接口调用
+        return self.ytm_
+
+    def price(self):
+        # 定价接口调用
+        return self.full_price_from_discount_curve()
+
+    def clean_price(self):
+        # 定价接口调用
+        return self.clean_price_
 
     def curve_adjust(self):
         """ 支持曲线旋转及平移 """
@@ -186,7 +198,7 @@ class BondPutableAdjustable(Bond):
     @property
     def discount_curve_flat(self):
         return TuringDiscountCurveFlat(self.settlement_date_,
-                                       self.__ytm__)
+                                       self.ytm_)
     
     @property
     def forward_curve(self):
@@ -203,11 +215,11 @@ class BondPutableAdjustable(Bond):
     @property
     def forward_curve_flat(self):
         return TuringDiscountCurveFlat(self.put_date,
-                                       self.__ytm__)
+                                       self.ytm_)
 
     @property
     def clean_price_(self):
-        return self.clean_price or self.clean_price_from_discount_curve()
+        return self.bond_clean_price or self.clean_price_from_discount_curve()
     
     @property
     def equ_c(self):
@@ -226,18 +238,15 @@ class BondPutableAdjustable(Bond):
     @property
     def _pure_bond(self):
         pure_bond = BondFixedRate(value_date = self.value_date,
-                                        issue_date = self.issue_date,
-                                        due_date = self.put_date,
-                                        coupon = self.coupon,
-                                        zero_dates = self.zero_dates_adjusted,
-                                        zero_rates = self.zero_rates_adjusted,
-                                        freq_type = self.freq_type_,
-                                        accrual_type = self.accrual_type_,
-                                        par= self.par
-                                        )
+                                  issue_date = self.issue_date,
+                                  due_date = self.put_date,
+                                  coupon = self.coupon,
+                                  zero_dates = self.zero_dates_adjusted,
+                                  zero_rates = self.zero_rates_adjusted,
+                                  freq_type = self.freq_type_,
+                                  accrual_type = self.accrual_type_,
+                                  par= self.par)
         return pure_bond
-   
-###############################################################################
 
     def _equilibrium_rate(self):
         ''' Calculate the equilibrium_rate by solving the price
@@ -247,20 +256,19 @@ class BondPutableAdjustable(Bond):
         forward_dates = []
         for i in range(len(self.forward_dates_)):
                 forward_dates.append(dc.yearFrac(self.put_date, self.forward_dates_[i])[0])
-        self._exercised_bond = BondFixedRate(value_date = self.put_date,
-                                             issue_date = self.put_date,
-                                             clean_price=self.put_price,
-                                             due_date = self.due_date,
-                                             zero_dates = forward_dates,
-                                             zero_rates = self.forward_rates_,
-                                             freq_type = self.freq_type_,
-                                             accrual_type = self.accrual_type_,
-                                             par= self.par
-                                             )
+        self._exercised_bond = BondFixedRate(value_date=self.put_date,
+                                             issue_date=self.put_date,
+                                             bond_clean_price=self.put_price,
+                                             due_date=self.due_date,
+                                             zero_dates=forward_dates,
+                                             zero_rates=self.forward_rates_,
+                                             freq_type=self.freq_type_,
+                                             accrual_type=self.accrual_type_,
+                                             par=self.par)
     
         accruedAmount = 0
         
-        full_price = (self._exercised_bond.clean_price + accruedAmount)
+        full_price = (self._exercised_bond.clean_price_ + accruedAmount)
     
         argtuple = (self._exercised_bond, full_price)
 
@@ -383,7 +391,7 @@ class BondPutableAdjustable(Bond):
                 raise TuringError("Check bound inputs!")
             
             return recommend_dir, adjust_fix
-###############################################################################       
+
     def full_price_from_ytm(self):
         ''' Value the bond that settles on the specified date, which have
         both an put option and an option to adjust the coupon rates embedded. 
@@ -545,7 +553,7 @@ class BondPutableAdjustable(Bond):
                     or type(clean_price) is np.ndarray:
                 clean_prices = np.array(clean_price)
             else:
-                raise TuringError("Unknown type for clean_price "
+                raise TuringError("Unknown type for bond_clean_price "
                                 + str(type(clean_price)))
 
             self.calc_accrued_interest()
@@ -565,7 +573,7 @@ class BondPutableAdjustable(Bond):
                                     fprime2=None)
 
                 ytms.append(ytm)
-                self.__ytm__ = None
+                self.ytm_ = None
 
             if len(ytms) == 1:
                 return ytms[0]
@@ -577,12 +585,12 @@ class BondPutableAdjustable(Bond):
     
     def dv01(self):
         """ 数值法计算dv01 """
-        ytm = self.__ytm__
-        self.__ytm__ = ytm - dy
+        ytm = self.ytm_
+        self.ytm_ = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.__ytm__ = ytm + dy
+        self.ytm_ = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.__ytm__ = None
+        self.ytm_ = None
         dv = -(p2 - p0) / 2.0
         return dv
 
@@ -654,14 +662,14 @@ class BondPutableAdjustable(Bond):
 
     def dollar_convexity(self):
         """ 凸性 """
-        ytm = self.__ytm__
-        self.__ytm__ = ytm - dy
+        ytm = self.ytm_
+        self.ytm_ = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.__ytm__ = ytm
+        self.ytm_ = ytm
         p1 = self.full_price_from_ytm()
-        self.__ytm__ = ytm + dy
+        self.ytm_ = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.__ytm__ = None
+        self.ytm_ = None
         dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
         return dollar_conv
 
@@ -676,19 +684,4 @@ class BondPutableAdjustable(Bond):
         s += to_string("ACCRUAL TYPE", self.accrual_type_)
         s += to_string("FACE AMOUNT", self.par)
 
-        # s += to_string("NUM CALL DATES", len(self._callDates))
-        # for i in range(0, len(self._callDates)):
-        #     s += "%12s %12.6f\n" % (self._callDates[i], self._callPrices[i])
-
-        # s += to_string("NUM PUT DATES", len(self._putDate))
-        # for i in range(0, len(self._putDate)):
-        #     s += "%12s %12.6f\n" % (self._putDate[i], self._putPrice[i])
-
         return s
-
-###############################################################################
-
-    def _print(self):
-        print(self)
-
-###############################################################################
