@@ -105,6 +105,7 @@ class RiskMeasure(Enum):
     Dv01 = "dv01"
     DollarDuration = "dollar_duration"
     DollarConvexity = "dollar_convexity"
+    ModifiedDuration = "modified_duration"
     FxDelta = "fx_delta"
     FxGamma = "fx_gamma"
     FxVega = "fx_vega"
