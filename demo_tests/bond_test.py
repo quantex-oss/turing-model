@@ -18,7 +18,7 @@ bond_fr = BondFixedRate(asset_id="BONDCN00000007",
                         accrual_type=TuringDayCountTypes.ACT_365L,
                         par=100)
 
-price_1 = bond_fr.calc(RiskMeasure.Price)
+price_1 = bond_fr.calc(RiskMeasure.FullPrice)
 clean_price_1 = bond_fr.calc(RiskMeasure.CleanPrice)
 ytm_1 = bond_fr.calc(RiskMeasure.YTM)
 dv01_1 = bond_fr.calc(RiskMeasure.Dv01)
@@ -47,7 +47,7 @@ scenario = CurveScenario(parallel_shift=[{"curve_code": "CBD100003", "value": 10
                          tenor_end=[{"curve_code": "CBD100003", "value": 40}, {"curve_code": "CBD100003", "value": 30}])
 
 with scenario:
-    price_2 = bond_fr.calc(RiskMeasure.Price)
+    price_2 = bond_fr.calc(RiskMeasure.FullPrice)
     clean_price_2 = bond_fr.calc(RiskMeasure.CleanPrice)
     ytm_2 = bond_fr.calc(RiskMeasure.YTM)
     dv01_2 = bond_fr.calc(RiskMeasure.Dv01)
@@ -73,7 +73,7 @@ bond_frn = BondFloatingRate(quoted_margin=0.01,
                             future_ibor=0.038,
                             dm=0.01)
 
-print('price', bond_frn.calc(RiskMeasure.Price))
+print('price', bond_frn.calc(RiskMeasure.FullPrice))
 print('clean_price', bond_frn.calc(RiskMeasure.CleanPrice))
 print('dv01:', bond_frn.calc(RiskMeasure.Dv01))
 print('dollar_duration:', bond_frn.calc(RiskMeasure.DollarDuration))
@@ -91,7 +91,7 @@ bond_ar = BondAdvancedRedemption(asset_id="BONDCN00000007",
                                  rdp_terms=[3, 4, 5, 6, 7, 8, 9, 10],
                                  rdp_pct=[0.1, 0.1, 0.1, 0.1, 0.15, 0.15, 0.15, 0.15])
 
-price = bond_ar.calc(RiskMeasure.Price)
+price = bond_ar.calc(RiskMeasure.FullPrice)
 clean_price = bond_ar.calc(RiskMeasure.CleanPrice)
 ytm = bond_ar.calc(RiskMeasure.YTM)
 dv01 = bond_ar.calc(RiskMeasure.Dv01)
