@@ -201,6 +201,8 @@ class BondFixedRate(Bond):
 
     def full_price_from_ytm(self):
         """ 通过YTM计算全价 """
+        # https://www.dmo.gov.uk/media/15004/convention_changes.pdf
+        
         self.calc_accrued_interest()
 
         ytm = np.array(self.ytm_)  # 向量化

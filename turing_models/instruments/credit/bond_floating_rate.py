@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Union, List, Any
 
 from scipy import optimize
 
@@ -6,6 +7,8 @@ from turing_models.instruments.credit.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import to_string
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
 
 def _f(dm, *args):
@@ -24,8 +27,11 @@ class BondFloatingRate(Bond):
     quoted_margin: float = None
     next_coupon: float = None
     current_ibor: float = None
-    future_ibor: float = None
+    ibor_dates: List[Any] = field(default_factory=list)
+    ibor_rates: List[Any] = field(default_factory=list)
+    ibor_tenor: float = None
     dm: float = None
+    _discount_curve = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -34,7 +40,29 @@ class BondFloatingRate(Bond):
             self.dm = self.quoted_margin
         if self.dm and self.dm > 10.0:
             raise TuringError("Discount margin exceeds 100000bp")
+        
+    @property
+    def ibor_dates_(self):
+        return self.ibor_dates 
 
+    @property
+    def ibor_rates_(self):
+        return self.ibor_rates
+    @property
+    def dates(self):
+        return self.settlement_date_.addYears(self.ibor_dates_)
+
+    @property
+    def discount_curve(self):
+        if self._discount_curve:
+            return self._discount_curve
+        return TuringDiscountCurveZeros(
+            self.settlement_date_, self.dates, self.ibor_rates_)
+
+    @discount_curve.setter
+    def discount_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
+        self._discount_curve = value
+    
     @property
     def clean_price_(self):
         return self.bond_clean_price or self.clean_price_from_dm()
@@ -115,13 +143,9 @@ class BondFloatingRate(Bond):
         md = dd * (1.0 + (self.next_coupon + self.dm) / self.frequency) / fp
         return md
 
-    def modified_rate_duration(self):
+    def modified_duration(self):
         ''' Calculate the modified duration of the bond on a settlement date
-        using standard model based on assumptions about future Ibor rates. The
-        next Ibor payment which has reset is entered, so to is the current
-        Ibor rate from settlement to the next coupon date (NCD). Finally there
-        is the level of subsequent future Ibor payments and the discount
-        margin. '''
+        using standard model based on assumptions about future Ibor rates. '''
 
         dd = self.dollar_duration()
 
@@ -170,9 +194,9 @@ class BondFloatingRate(Bond):
                 pcd = self._flow_dates[i_flow - 1]
                 ncd = self._flow_dates[i_flow]
                 (alpha, _, _) = dc.yearFrac(pcd, ncd)
-
-                df = df / (1.0 + alpha * (self.future_ibor + self.dm))
-                c = self.future_ibor + q
+                future_ibor = self.discount_curve.fwdRate(self._flow_dates[i_flow], self.ibor_tenor)
+                df = df / (1.0 + alpha * (future_ibor + self.dm))
+                c = future_ibor + q
                 pv = pv + c * alpha * df
 
         pv += df
@@ -253,6 +277,5 @@ class BondFloatingRate(Bond):
         s += to_string("Quoted Margin", self.quoted_margin)
         s += to_string("Next Coupon", self.next_coupon)
         s += to_string("Current Ibor", self.current_ibor)
-        s += to_string("Future Ibor", self.future_ibor)
         s += to_string("Discount Margin", self.dm, "")
         return s
