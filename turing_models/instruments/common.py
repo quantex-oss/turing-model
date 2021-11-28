@@ -112,6 +112,7 @@ class RiskMeasure(Enum):
     FxTheta = "fx_theta"
     FxVanna = "fx_vanna"
     FxVolga = "fx_volga"
+    FullPrice = "full_price"
     CleanPrice = "clean_price"
     YTM = 'ytm'
 
