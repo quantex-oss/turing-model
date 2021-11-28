@@ -39,7 +39,7 @@ class BondFloatingRate(Bond):
     def clean_price_(self):
         return self.bond_clean_price or self.clean_price_from_dm()
 
-    def price(self):
+    def full_price(self):
         return self.full_price_from_dm()
 
     def clean_price(self):
