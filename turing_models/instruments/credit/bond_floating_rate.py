@@ -29,7 +29,7 @@ class BondFloatingRate(Bond):
     current_ibor: float = None
     ibor_dates: List[Any] = field(default_factory=list)
     ibor_rates: List[Any] = field(default_factory=list)
-    ibor_tenor: float = None
+    ibor_tenor: str = None
     dm: float = None
     _discount_curve = None
 
@@ -48,6 +48,7 @@ class BondFloatingRate(Bond):
     @property
     def ibor_rates_(self):
         return self.ibor_rates
+
     @property
     def dates(self):
         return self.settlement_date_.addYears(self.ibor_dates_)
