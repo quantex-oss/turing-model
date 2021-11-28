@@ -64,7 +64,7 @@ class BondPutableAdjustable(Bond):
     put_price: float = 100.0
     adjust_bound_up: float = None
     adjust_bound_down: float = None
-    value_sys: str = "中证"
+    value_sys: str = "中债"
     _ytm: float = None
     _discount_curve = None
     _forward_curve = None
@@ -578,16 +578,17 @@ class BondPutableAdjustable(Bond):
     
     def dv01(self):
         """ 数值法计算dv01 """
-        # ytm = self.__ytm__
-        # self.__ytm__ = ytm - dy
-        # p0 = self.full_price_from_ytm()
-        # self.__ytm__ = ytm + dy
-        # p2 = self.full_price_from_ytm()
-        # self.__ytm__ = None
-        # dv = -(p2 - p0) / 2.0
-        # return dv
-        return greek(self, self.full_price_from_discount_curve, "discount_curve",
-                     cus_inc=(self.discount_curve.bump, bump))
+        if self.recommend_dir == "long":
+            ytm = self.__ytm__
+            self.__ytm__ = ytm - dy
+            p0 = self.full_price_from_ytm()
+            self.__ytm__ = ytm + dy
+            p2 = self.full_price_from_ytm()
+            self.__ytm__ = None
+            dv = -(p2 - p0) / 2.0
+            return dv       
+        elif self.recommend_dir == "short":
+            return self._pure_bond.dv01()
         
 
     def macauley_duration(self):
@@ -658,18 +659,20 @@ class BondPutableAdjustable(Bond):
 
     def dollar_convexity(self):
         """ 凸性 """
-        # ytm = self.__ytm__
-        # self.__ytm__ = ytm - dy
-        # p0 = self.full_price_from_ytm()
-        # self.__ytm__ = ytm
-        # p1 = self.full_price_from_ytm()
-        # self.__ytm__ = ytm + dy
-        # p2 = self.full_price_from_ytm()
-        # self.__ytm__ = None
-        # dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
-        # return dollar_conv
-        return greek(self, self.full_price_from_discount_curve, "discount_curve",
-                     cus_inc=(self.discount_curve.bump, bump), order=2)
+        if self.recommend_dir == 'long':
+            ytm = self.__ytm__
+            self.__ytm__ = ytm - dy
+            p0 = self.full_price_from_ytm()
+            self.__ytm__ = ytm
+            p1 = self.full_price_from_ytm()
+            self.__ytm__ = ytm + dy
+            p2 = self.full_price_from_ytm()
+            self.__ytm__ = None
+            dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
+            return dollar_conv
+        elif self.recommend_dir == "short":
+            return self._pure_bond.dollar_convexity()
+        
 
 ###############################################################################
 
