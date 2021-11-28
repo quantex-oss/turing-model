@@ -55,7 +55,7 @@ class BondPutableAdjustable(Bond):
     bond_type: str = None
     coupon: float = 0.0  # 票息
     curve_code: str = None  # 曲线编码
-    ytm: float = None
+    # ytm: float = None
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
     forward_dates: List[Any] = field(default_factory=list)  # 支持手动传入远期曲线（日期）
@@ -107,7 +107,7 @@ class BondPutableAdjustable(Bond):
           
     @property
     def __ytm__(self):
-        return self._ytm or self.ctx_ytm or self.ytm or self.yield_to_maturity()
+        return self._ytm or self.ctx_ytm or self.yield_to_maturity()
 
     @__ytm__.setter
     def __ytm__(self, value: float):
@@ -237,6 +237,19 @@ class BondPutableAdjustable(Bond):
                                     par= self.par
                                     )
         return pure_bond
+    
+    def clean_price(self):
+        # 定价接口调用
+        return self.clean_price_
+
+    def full_price(self):
+        # 定价接口调用
+        return self.full_price_from_discount_curve()
+    
+    def ytm(self):
+        # 定价接口调用
+        return self.__ytm__
+
    
 ###############################################################################
 

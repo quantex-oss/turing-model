@@ -73,9 +73,7 @@ bond_frn = BondFloatingRate(quoted_margin=0.01,
                             par=100,
                             next_coupon=0.035,
                             current_ibor=0.037,
-                            ibor_dates=dates,
-                            ibor_rates=rates,
-                            ibor_tenor="1Y",
+                            future_ibor= 0.038,
                             dm=0.01)
 
 print("Floating Rate Bond:")
@@ -115,7 +113,6 @@ print("---------------------------------------------")
 
 bond_pa = BondPutableAdjustable(asset_id="BONDCN00000007",
                         coupon=0.0316,
-                        # curve_code="CBD100003",
                         issue_date=TuringDate(2021, 8, 5),
                         value_date=TuringDate(2021, 11, 26),
                         due_date=TuringDate(2025, 8, 5),
@@ -128,19 +125,13 @@ bond_pa = BondPutableAdjustable(asset_id="BONDCN00000007",
                         # adjust_bound_down= 0,
                         put_date=TuringDate(2023, 8, 5))
 
-price = bond_pa.full_price_from_discount_curve()
-clean_price = bond_pa.clean_price_from_discount_curve()
-ytm = bond_pa.yield_to_maturity()
-dv01 = bond_pa.dv01()
-modified_duration = bond_pa.modified_duration()
-dollar_convexity = bond_pa.dollar_convexity()
 
-# price = bond_pa.calc(RiskMeasure.FullPrice)
-# clean_price = bond_pa.calc(RiskMeasure.CleanPrice)
-# ytm = bond_pa.calc(RiskMeasure.YTM)
-# dv01 = bond_pa.calc(RiskMeasure.Dv01)
-# modified_duration = bond_pa.calc(RiskMeasure.DollarDuration)
-# dollar_convexity = bond_pa.calc(RiskMeasure.DollarConvexity)
+price = bond_pa.calc(RiskMeasure.FullPrice)
+clean_price = bond_pa.calc(RiskMeasure.CleanPrice)
+ytm = bond_pa.calc(RiskMeasure.YTM)
+dv01 = bond_pa.calc(RiskMeasure.Dv01)
+modified_duration = bond_pa.calc(RiskMeasure.ModifiedDuration)
+dollar_convexity = bond_pa.calc(RiskMeasure.DollarConvexity)
 
 print("Bond with putable and rates-adjustable terms:")
 print('price', price)
