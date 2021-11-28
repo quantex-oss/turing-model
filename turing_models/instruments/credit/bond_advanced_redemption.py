@@ -4,12 +4,11 @@ from typing import Union, List, Any
 import numpy as np
 from scipy import optimize
 
-from fundamental.turing_db.bond_data import BondApi
+from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.credit.bond import Bond, dy
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.helper_functions import to_string
 from turing_models.market.curves.curve_adjust import CurveAdjust
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
@@ -20,17 +19,16 @@ def _f(y, *args):
     """ Function used to do root search in price to yield calculation. """
     bond = args[0]
     price = args[1]
-    bond.__ytm__ = y
+    bond.ytm_ = y
     px = bond.full_price_from_ytm()
     obj_fn = px - price
     return obj_fn
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class Bond_Adv_Rdp(Bond):
+class BondAdvancedRedemption(Bond):
     coupon: float = 0.0  # 票息
     curve_code: str = None  # 曲线编码
-    ytm: float = None
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
     rdp_terms: List[Any] = field(default_factory=list)  # 提前偿还各期期数
@@ -48,29 +46,53 @@ class Bond_Adv_Rdp(Bond):
             raise TuringError("total redemption doesn't equal to 1.")
         self._calculate_adv_rdp_dates()
         if self.coupon:
-            self._calculate_flow_amounts()  
+            self._calculate_flow_amounts()
         if self.rdp_terms[-1] != len(self._flow_amounts) - 1:
             raise TuringError("last redemption should be at maturity date.")
 
     @property
-    def __ytm__(self):
-        return self._ytm or self.ctx_ytm or self.ytm or self.yield_to_maturity()
+    def ytm_(self):
+        return self._ytm or self.ctx_ytm or self.yield_to_maturity()
 
-    @__ytm__.setter
-    def __ytm__(self, value: float):
+    @ytm_.setter
+    def ytm_(self, value: float):
         self._ytm = value
+
+    def ytm(self):
+        # 定价接口调用
+        return self.ytm_
+
+    def price(self):
+        # 定价接口调用
+        return self.full_price_from_discount_curve()
+
+    def clean_price(self):
+        # 定价接口调用
+        return self.clean_price_
+
+    @property
+    def get_yield_curve(self):
+        return TuringDB.bond_yield_curve(curve_code=self.curve_code, date=self.settlement_date_, df=False)[self.curve_code]
+
+    @property
+    def zero_dates_(self):
+        return self.zero_dates or self.get_yield_curve['tenor']
+
+    @property
+    def zero_rates_(self):
+        return self.zero_rates or self.get_yield_curve['spot_rate']
 
     def curve_adjust(self):
         """ 支持曲线旋转及平移 """
-        ca = CurveAdjust(self.zero_dates,  # 曲线信息
-                         self.zero_rates,
+        ca = CurveAdjust(self.zero_dates_,  # 曲线信息
+                         self.zero_rates_,
                          self.ctx_parallel_shift,  # 平移量（bps)
                          self.ctx_curve_shift,  # 旋转量（bps)
                          self.ctx_pivot_point,  # 旋转点（年）
                          self.ctx_tenor_start,  # 旋转起始（年）
                          self.ctx_tenor_end)  # 旋转终点（年）
         return ca.get_dates_result(), ca.get_rates_result()
-    
+
     def _calculate_adv_rdp_dates(self):
         """ Determine the bond cashflow payment dates."""
 
@@ -79,31 +101,35 @@ class Bond_Adv_Rdp(Bond):
         for i in range(len(self.rdp_terms)):
             self.rdp_dates.append(self._flow_dates[self.rdp_terms[i]])
             self.remaining_principal.append(self.remaining_principal[i] - self.rdp_pct[i])
-            
+
     @property
-    def _zero_dates(self):
-        if self.ctx_parallel_shift:
+    def zero_dates_adjusted(self):
+        if self.ctx_parallel_shift or self.ctx_curve_shift or \
+           self.ctx_pivot_point or self.ctx_tenor_start or \
+           self.ctx_tenor_end:
             return self.curve_adjust()[0]
         else:
-            return self.zero_dates
+            return self.zero_dates_
 
     @property
-    def _zero_rates(self):
-        if self.ctx_parallel_shift:
+    def zero_rates_adjusted(self):
+        if self.ctx_parallel_shift or self.ctx_curve_shift or \
+           self.ctx_pivot_point or self.ctx_tenor_start or \
+           self.ctx_tenor_end:
             return self.curve_adjust()[1]
         else:
-            return self.zero_rates
+            return self.zero_rates_
 
     @property
-    def zero_dates_(self):
-        return self.settlement_date_.addYears(self._zero_dates)
+    def dates(self):
+        return self.settlement_date_.addYears(self.zero_dates_adjusted)
 
     @property
     def discount_curve(self):
         if self._discount_curve:
             return self._discount_curve
         return TuringDiscountCurveZeros(
-            self.settlement_date_, self.zero_dates_, self._zero_rates)
+            self.settlement_date_, self.dates, self.zero_rates_adjusted)
 
     @discount_curve.setter
     def discount_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
@@ -112,11 +138,11 @@ class Bond_Adv_Rdp(Bond):
     @property
     def discount_curve_flat(self):
         return TuringDiscountCurveFlat(self.settlement_date_,
-                                       self.__ytm__)
+                                       self.ytm_)
 
     @property
     def clean_price_(self):
-        return self.clean_price or self.clean_price_from_discount_curve()
+        return self.bond_clean_price or self.clean_price_from_discount_curve()
 
     def _calculate_flow_amounts(self):
         """ 保存票息现金流信息 """
@@ -129,12 +155,12 @@ class Bond_Adv_Rdp(Bond):
 
     def dv01(self):
         """ 数值法计算dv01 """
-        ytm = self.__ytm__
-        self.__ytm__ = ytm - dy
+        ytm = self.ytm_
+        self.ytm_ = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.__ytm__ = ytm + dy
+        self.ytm_ = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.__ytm__ = None
+        self.ytm_ = None
         dv = -(p2 - p0) / 2.0
         return dv
 
@@ -156,23 +182,23 @@ class Bond_Adv_Rdp(Bond):
         last_pcp = self.remaining_principal[rdp - 1]  # 剩余本金
         count = 0
         dc = TuringDayCount(TuringDayCountTypes.ACT_ACT_ISDA)
-        
+
         for dt in self._flow_dates[1:]:
             dates = dc.yearFrac(self.settlement_date_, dt)[0]
             if dt >= self.settlement_date_:  # 将结算日的票息加入计算
-                    df = self.discount_curve_flat.df(dt)
-            if dt < next_rdp:
-                flow = self.coupon / self.frequency * last_pcp
-                pv = flow * df * self.par * dates
-                px += pv
-            if dt == next_rdp:  # 当提前偿还发生时的现金流
-                flow = self.coupon / self.frequency * last_pcp + self.rdp_pct[rdp]
-                count += 1
-                pv = flow * df * dates * self.par 
-                px += pv
-                next_rdp = self.rdp_dates[rdp + count] if ((rdp + count) < len(self.rdp_dates)) else 0
-                last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.rdp_dates)) else 0   
-                
+                df = self.discount_curve_flat.df(dt)
+                if dt < next_rdp:
+                    flow = self.coupon / self.frequency * last_pcp
+                    pv = flow * df * self.par * dates
+                    px += pv
+                if dt == next_rdp:  # 当提前偿还发生时的现金流
+                    flow = self.coupon / self.frequency * last_pcp + self.rdp_pct[rdp]
+                    count += 1
+                    pv = flow * df * dates * self.par
+                    px += pv
+                    next_rdp = self.rdp_dates[rdp + count] if ((rdp + count) < len(self.rdp_dates)) else 0
+                    last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.rdp_dates)) else 0
+
         px += df * last_pcp * self.par * dates
         px = px / df_settle
 
@@ -188,19 +214,19 @@ class Bond_Adv_Rdp(Bond):
         """ 修正久期 """
 
         dmac = self.macauley_duration()
-        md = dmac / (1.0 + self.__ytm__ / self.frequency)
+        md = dmac / (1.0 + self.ytm_ / self.frequency)
         return md
 
     def dollar_convexity(self):
         """ 凸性 """
-        ytm = self.__ytm__
-        self.__ytm__ = ytm - dy
+        ytm = self.ytm_
+        self.ytm_ = ytm - dy
         p0 = self.full_price_from_ytm()
-        self.__ytm__ = ytm
+        self.ytm_ = ytm
         p1 = self.full_price_from_ytm()
-        self.__ytm__ = ytm + dy
+        self.ytm_ = ytm + dy
         p2 = self.full_price_from_ytm()
-        self.__ytm__ = None
+        self.ytm_ = None
         dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
         return dollar_conv
 
@@ -208,7 +234,7 @@ class Bond_Adv_Rdp(Bond):
         """ 通过YTM计算全价 """
         self.calc_accrued_interest()
 
-        ytm = np.array(self.__ytm__)  # 向量化
+        ytm = np.array(self.ytm_)  # 向量化
         ytm = ytm + 0.000000000012345  # 防止ytm = 0
 
         if self.settlement_date_ > self.due_date:
@@ -223,23 +249,23 @@ class Bond_Adv_Rdp(Bond):
         next_rdp = self.rdp_dates[rdp]  # 下个提前偿还日
         last_pcp = self.remaining_principal[rdp - 1]  # 剩余本金
         count = 0
-        
+
         for dt in self._flow_dates[1:]:
-            
+
             if dt >= self.settlement_date_:  # 将结算日的票息加入计算
-                    df = self.discount_curve_flat.df(dt)
-            if dt < next_rdp:
-                flow = self.coupon / self.frequency * last_pcp
-                pv = flow * df
-                px += pv
-            if dt == next_rdp:  # 当提前偿还发生时的现金流
-                flow = self.coupon / self.frequency * last_pcp + self.rdp_pct[rdp]
-                count += 1
-                pv = flow * df
-                px += pv
-                next_rdp = self.rdp_dates[rdp + count] if ((rdp + count) < len(self.rdp_dates)) else 0
-                last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.rdp_dates)) else 0   
-                
+                df = self.discount_curve_flat.df(dt)
+                if dt < next_rdp:
+                    flow = self.coupon / self.frequency * last_pcp
+                    pv = flow * df
+                    px += pv
+                if dt == next_rdp:  # 当提前偿还发生时的现金流
+                    flow = self.coupon / self.frequency * last_pcp + self.rdp_pct[rdp]
+                    count += 1
+                    pv = flow * df
+                    px += pv
+                    next_rdp = self.rdp_dates[rdp + count] if ((rdp + count) < len(self.rdp_dates)) else 0
+                    last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.rdp_dates)) else 0
+
         px += df * last_pcp
         px = px / df_settle
 
@@ -253,7 +279,7 @@ class Bond_Adv_Rdp(Bond):
         return clean_Price
 
     def full_price_from_discount_curve(self):
-        ''' 通过利率曲线计算全价 '''
+        """ 通过利率曲线计算全价 """
 
         if self.settlement_date_ > self.due_date:
             raise TuringError("Bond settles after it matures.")
@@ -267,30 +293,30 @@ class Bond_Adv_Rdp(Bond):
         next_rdp = self.rdp_dates[rdp]  # 下个提前偿还日
         last_pcp = self.remaining_principal[rdp - 1]  # 剩余本金
         count = 0
-         
+
         for dt in self._flow_dates[1:]:
-            
+
             if dt >= self.settlement_date_:  # 将结算日的票息加入计算
-                    df = self.discount_curve.df(dt)
-            if dt < next_rdp:
-                flow = self.coupon / self.frequency * last_pcp
-                pv = flow * df
-                px += pv
-            if dt == next_rdp:  # 当提前偿还发生时的现金流
-                flow = self.coupon / self.frequency * last_pcp + self.rdp_pct[rdp]
-                count += 1
-                pv = flow * df
-                px += pv
-                next_rdp = self.rdp_dates[rdp + count] if ((rdp + count) < len(self.rdp_dates)) else 0
-                last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.rdp_dates)) else 0   
-                
+                df = self.discount_curve.df(dt)
+                if dt < next_rdp:
+                    flow = self.coupon / self.frequency * last_pcp
+                    pv = flow * df
+                    px += pv
+                if dt == next_rdp:  # 当提前偿还发生时的现金流
+                    flow = self.coupon / self.frequency * last_pcp + self.rdp_pct[rdp]
+                    count += 1
+                    pv = flow * df
+                    px += pv
+                    next_rdp = self.rdp_dates[rdp + count] if ((rdp + count) < len(self.rdp_dates)) else 0
+                    last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.rdp_dates)) else 0
+
         px += df * last_pcp
         px = px / df_settle
 
         return px * self.par
 
     def clean_price_from_discount_curve(self):
-        ''' 通过利率曲线计算净价 '''
+        """ 通过利率曲线计算净价 """
 
         self.calc_accrued_interest()
         full_price = self.full_price_from_discount_curve()
@@ -317,7 +343,7 @@ class Bond_Adv_Rdp(Bond):
                 or type(clean_price) is np.ndarray:
             clean_prices = np.array(clean_price)
         else:
-            raise TuringError("Unknown type for clean_price "
+            raise TuringError("Unknown type for bond_clean_price "
                               + str(type(clean_price)))
 
         self.calc_accrued_interest()
@@ -337,7 +363,7 @@ class Bond_Adv_Rdp(Bond):
                                   fprime2=None)
 
             ytms.append(ytm)
-            self.__ytm__ = None
+            self.ytm_ = None
 
         if len(ytms) == 1:
             return ytms[0]
@@ -367,7 +393,7 @@ class Bond_Adv_Rdp(Bond):
                                            self.settlement_date_,
                                            self._ncd,
                                            self.freq_type_)  # 计算应计日期，返回应计因数、应计天数、基数
-        
+
         for rdp in range(len(self.rdp_dates)):
             if self.settlement_date_ < self.rdp_dates[rdp]:
                 break
@@ -382,21 +408,8 @@ class Bond_Adv_Rdp(Bond):
 
         return self._accrued_interest
 
-    def _resolve(self):
-        # Bond_ 为自定义时自动生成
-        if self.asset_id and not self.asset_id.startswith("Bond_"):
-            bond = BondApi.fetch_one_bond_orm(asset_id=self.asset_id)
-            for k, v in bond.items():
-                if not getattr(self, k, None) and v:
-                    setattr(self, k, v)
-        self.set_ytm()
-        self.set_curve()
-        self.__post_init__()
-
     def __repr__(self):
         s = super().__repr__()
         s += to_string("Coupon", self.coupon)
         s += to_string("Curve Code", self.curve_code)
-        if self.ytm:
-            s += to_string("YTM", self.ytm)
         return s

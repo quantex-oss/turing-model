@@ -4,34 +4,36 @@ from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.instruments.credit.bond_advanced_redemption import BondAdvancedRedemption
+from turing_models.instruments.credit.bond_putable_adjustable import BondPutableAdjustable
 from turing_models.instruments.common import RiskMeasure
 
 
-bond_fr = BondAdvancedRedemption(asset_id="BONDCN00000007",
-                                 coupon=0.0675,
-                                 curve_code="CBD100003",
-                                 issue_date=TuringDate(2014, 1, 24),
-                                 value_date=TuringDate(2021, 9, 30),
-                                 due_date=TuringDate(2024, 1, 24),
-                                 freq_type=TuringFrequencyTypes.ANNUAL,
-                                 accrual_type=TuringDayCountTypes.ACT_365L,
-                                 par=100,
-                                 zero_dates=dates,
-                                 zero_rates=rates,
-                                 rdp_terms=[3,4,5,6,7,8,9,10],
-                                 rdp_pct=[0.1,0.1,0.1,0.1,0.15,0.15,0.15,0.15])
+bond_fr = BondPutableAdjustable(asset_id="BONDCN00000007",
+                        coupon=0.0675,
+                        curve_code="CBD100003",
+                        issue_date=TuringDate(2014, 1, 24),
+                        value_date=TuringDate(2021, 9, 30),
+                        due_date=TuringDate(2024, 1, 24),
+                        freq_type=TuringFrequencyTypes.ANNUAL,
+                        accrual_type=TuringDayCountTypes.ACT_365L,
+                        par=100,
+                        zero_dates=dates,
+                        zero_rates=rates,
+                        # forward_dates=dates,
+                        # forward_rates=rates,
+                        put_date=TuringDate(2022, 1, 24))
 
 price1 = bond_fr.full_price_from_discount_curve()
-price2 = bond_fr.full_price_from_ytm()
-dv01_1 = bond_fr.calc(RiskMeasure.Dv01)
-dollar_duration_1 = bond_fr.calc(RiskMeasure.DollarDuration)
-dollar_convexity_1 = bond_fr.calc(RiskMeasure.DollarConvexity)
+ytm = bond_fr.yield_to_maturity()
+# price2 = bond_fr.full_price_from_ytm()
+# dv01_1 = bond_fr.calc(RiskMeasure.Dv01)
+# dollar_duration_1 = bond_fr.calc(RiskMeasure.DollarDuration)
+# dollar_convexity_1 = bond_fr.calc(RiskMeasure.DollarConvexity)
 
 print('price:', price1)
-print('price:', price2)
-print('dollar_duration:', dollar_duration_1)
-print('dollar_convexity:', dollar_convexity_1)
+# print('price:', price2)
+# print('dollar_duration:', dollar_duration_1)
+# print('dollar_convexity:', dollar_convexity_1)
 
 print("---------------------------------------------")
 

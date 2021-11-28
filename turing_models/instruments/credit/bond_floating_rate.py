@@ -4,8 +4,8 @@ from scipy import optimize
 
 from turing_models.instruments.credit.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
-from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
+from turing_models.utilities.helper_functions import to_string
 
 
 def _f(dm, *args):
@@ -30,8 +30,20 @@ class BondFloatingRate(Bond):
     def __post_init__(self):
         super().__post_init__()
 
-        if self.dm > 10.0:
+        if not self.dm and self.quoted_margin:
+            self.dm = self.quoted_margin
+        if self.dm and self.dm > 10.0:
             raise TuringError("Discount margin exceeds 100000bp")
+
+    @property
+    def clean_price_(self):
+        return self.bond_clean_price or self.clean_price_from_dm()
+
+    def price(self):
+        return self.full_price_from_dm()
+
+    def clean_price(self):
+        return self.clean_price_
 
     def dv01(self):
         current_ibor = self.current_ibor
@@ -125,7 +137,7 @@ class BondFloatingRate(Bond):
         full_price = self.full_price_from_dm()
 
         accrued = self._accrued_interest
-        principal = full_price * self.face_amount / self.par - accrued
+        principal = full_price - accrued
         return principal
 
     def full_price_from_dm(self):
@@ -178,7 +190,6 @@ class BondFloatingRate(Bond):
         full_price = self.full_price_from_dm()
 
         accrued = self.calc_accrued_interest()
-        accrued = accrued * self.par / self.face_amount
 
         clean_price = full_price - accrued
         return clean_price
@@ -190,9 +201,9 @@ class BondFloatingRate(Bond):
         self.calc_accrued_interest()
 
         # Needs to be adjusted to par notional
-        accrued = self._accrued_interest * self.par / self.face_amount
+        accrued = self._accrued_interest
 
-        full_price = self.clean_price + accrued
+        full_price = self.clean_price_ + accrued
         dm_ori = self.dm
 
         argtuple = (self, full_price)
@@ -233,7 +244,7 @@ class BondFloatingRate(Bond):
 
         self._alpha = 1.0 - acc_factor * self.frequency
 
-        self._accrued_interest = acc_factor * self.face_amount * self.next_coupon
+        self._accrued_interest = acc_factor * self.par * self.next_coupon
         self._accrued_days = num
         return self._accrued_interest
 
