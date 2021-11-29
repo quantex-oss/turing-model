@@ -43,7 +43,7 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     def __post_init__(self):
         super().__init__()
         self.convention = TuringYTMCalcType.UK_DMO  # 惯例
-        self.calendar_type = TuringCalendarTypes.WEEKEND  # 日历类型
+        self.calendar_type = TuringCalendarTypes.CHINA_IB  # 日历类型
         self._redemption = 1.0  # 到期支付额
         if not self.due_date and self.issue_date and self.bond_term_year:
             self.due_date = self.issue_date.addYears(self.bond_term_year)
