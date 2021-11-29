@@ -107,14 +107,17 @@ class InstrumentBase:
     
     def main(self, *args, **kw):
         context = kw.pop('context', '')
-        if context:
-            try:
+        try:
+            if context:
                 self.ctx.context = context
-            except Exception:
-                ...
+        except Exception:
+            pass
         """api默认入口"""
         scenario = PricingContext()
         asset_id = kw.pop('assetId', '')
+        request_id = kw.pop('request_id', '')
+        if request_id:
+            logger.bind(request_id=request_id)
         if asset_id:
             setattr(self, 'asset_id', asset_id)
             getattr(self, '_resolve')()

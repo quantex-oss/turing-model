@@ -124,7 +124,7 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     def fetch_quotes(self, gurl=None, _ids=None):
         """根据asset_ids的集合为参数,取行情"""
         try:
-            res = Turing.get_bond_markets(gurl=gurl, _ids=_ids)
+            res = Turing.get_bond_markets(gurl=gurl, _ids=tuple(_ids))
             return res
         except Exception as e:
             traceback.print_exc()
