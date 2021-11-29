@@ -62,7 +62,7 @@ class BondAdvancedRedemption(Bond):
         # 定价接口调用
         return self.ytm_
 
-    def price(self):
+    def full_price(self):
         # 定价接口调用
         return self.full_price_from_discount_curve()
 

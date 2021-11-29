@@ -30,6 +30,8 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     exchange_code: str = None
     issue_date: TuringDate = None  # 发行日
     due_date: TuringDate = None  # 到期日
+    bond_term_year: float = None
+    bond_term_day: float = None
     freq_type: Union[str, TuringFrequencyTypes] = None  # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None  # 计息类型
     par: float = None  # 面值
@@ -41,8 +43,10 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     def __post_init__(self):
         super().__init__()
         self.convention = TuringYTMCalcType.UK_DMO  # 惯例
-        self.calendar_type = TuringCalendarTypes.WEEKEND  # 日历类型
+        self.calendar_type = TuringCalendarTypes.CHINA_IB  # 日历类型
         self._redemption = 1.0  # 到期支付额
+        if not self.due_date and self.issue_date and self.bond_term_year:
+            self.due_date = self.issue_date.addYears(self.bond_term_year)
         if self.issue_date:
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
         self._flow_dates = []  # 现金流发生日

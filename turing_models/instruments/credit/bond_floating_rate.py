@@ -39,7 +39,7 @@ class BondFloatingRate(Bond):
     def clean_price_(self):
         return self.bond_clean_price or self.clean_price_from_dm()
 
-    def price(self):
+    def full_price(self):
         return self.full_price_from_dm()
 
     def clean_price(self):
@@ -115,7 +115,7 @@ class BondFloatingRate(Bond):
         md = dd * (1.0 + (self.next_coupon + self.dm) / self.frequency) / fp
         return md
 
-    def modified_rate_duration(self):
+    def modified_duration(self):
         ''' Calculate the modified duration of the bond on a settlement date
         using standard model based on assumptions about future Ibor rates. The
         next Ibor payment which has reset is entered, so to is the current

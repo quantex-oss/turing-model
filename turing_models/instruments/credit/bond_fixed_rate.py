@@ -122,7 +122,7 @@ class BondFixedRate(Bond):
         # 定价接口调用
         return self.clean_price_
 
-    def price(self):
+    def full_price(self):
         # 定价接口调用
         return self.full_price_from_discount_curve()
 
@@ -201,6 +201,8 @@ class BondFixedRate(Bond):
 
     def full_price_from_ytm(self):
         """ 通过YTM计算全价 """
+        # https://www.dmo.gov.uk/media/15004/convention_changes.pdf
+        
         self.calc_accrued_interest()
 
         ytm = np.array(self.ytm_)  # 向量化

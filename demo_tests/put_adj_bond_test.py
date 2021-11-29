@@ -5,32 +5,45 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.instruments.credit.bond_putable_adjustable import BondPutableAdjustable
+# from turing_models.instruments.credit.bond_putable_plus_adjustable import BondPutableAdjustable as BondPutableAdjustable2
 from turing_models.instruments.common import RiskMeasure
 
 
 bond_fr = BondPutableAdjustable(asset_id="BONDCN00000007",
-                        coupon=0.0675,
+                        coupon=0.0316,
                         curve_code="CBD100003",
-                        issue_date=TuringDate(2014, 1, 24),
-                        value_date=TuringDate(2021, 9, 30),
-                        due_date=TuringDate(2024, 1, 24),
+                        issue_date=TuringDate(2021, 8, 5),
+                        value_date=TuringDate(2021, 11, 26),
+                        due_date=TuringDate(2025, 8, 5),
                         freq_type=TuringFrequencyTypes.ANNUAL,
-                        accrual_type=TuringDayCountTypes.ACT_365L,
+                        accrual_type=TuringDayCountTypes.ACT_365F,
                         par=100,
                         zero_dates=dates,
                         zero_rates=rates,
+                        # adjust_bound_up= -1,
+                        # adjust_bound_down= 0,
                         # forward_dates=dates,
                         # forward_rates=rates,
-                        put_date=TuringDate(2022, 1, 24))
+                        put_date=TuringDate(2023, 8, 5))
 
-price1 = bond_fr.full_price_from_discount_curve()
-ytm = bond_fr.yield_to_maturity()
+print(bond_fr._pure_bond.clean_price_)
+price1 = bond_fr.clean_price_
+# price2 = bond_fr2.full_price_from_discount_curve()
+# ytm = bond_fr.yield_to_maturity()
+# md = bond_fr.macauley_duration()
+dv01 = bond_fr.dv01()
+mod = bond_fr.modified_duration()
 # price2 = bond_fr.full_price_from_ytm()
 # dv01_1 = bond_fr.calc(RiskMeasure.Dv01)
 # dollar_duration_1 = bond_fr.calc(RiskMeasure.DollarDuration)
 # dollar_convexity_1 = bond_fr.calc(RiskMeasure.DollarConvexity)
 
 print('price:', price1)
+# print(ytm)
+# print(md)
+print(dv01)
+print(mod)
+# print('price2:', price2)
 # print('price:', price2)
 # print('dollar_duration:', dollar_duration_1)
 # print('dollar_convexity:', dollar_convexity_1)
