@@ -1,0 +1,19 @@
+stages:
+ - deploy
+
+Sync_To_Common:
+  stage: deploy
+  image: hub.iquantex.com/base/toolbox:latest
+  before_script:
+    - cat "${KUBE_PASS_CONFIG}" > kubeconfig
+    - cat "${SYNC_JOB}" > sync.yaml
+  script:
+    - export KUBECONFIG=kubeconfig
+    - kubectl create -f sync.yaml
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "turing" && $CI_COMMIT_BRANCH == "develop" && $KUBE_PASS_CONFIG'
+      when: always
+    - when: never
+  tags:
+    - dev
+
