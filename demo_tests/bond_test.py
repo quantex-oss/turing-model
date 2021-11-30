@@ -1,5 +1,5 @@
 from fundamental.pricing_context import CurveScenario
-from turing_models.instruments.credit.bond_advanced_redemption import BondAdvancedRedemption
+from turing_models.instruments.credit.bond_adv_redemption import BondAdvRedemption
 from turing_models.instruments.credit.bond_floating_rate import BondFloatingRate
 from turing_models.instruments.credit.bond_putable_adjustable import BondPutableAdjustable
 
@@ -86,16 +86,16 @@ print('modified_duration:', bond_frn.calc(RiskMeasure.ModifiedDuration))
 print('dollar_convexity:', bond_frn.calc(RiskMeasure.DollarConvexity))
 print("---------------------------------------------")
 
-bond_ar = BondAdvancedRedemption(asset_id="BONDCN00000007",
-                                 coupon=0.0675,
-                                 curve_code=curve_chinabond,
-                                 issue_date=TuringDate(2014, 1, 24),
-                                 due_date=TuringDate(2024, 1, 24),
-                                 freq_type=TuringFrequencyTypes.ANNUAL,
-                                 accrual_type=TuringDayCountTypes.ACT_365L,
-                                 par=100,
-                                 rdp_terms=[3, 4, 5, 6, 7, 8, 9, 10],
-                                 rdp_pct=[0.1, 0.1, 0.1, 0.1, 0.15, 0.15, 0.15, 0.15])
+bond_ar = BondAdvRedemption(asset_id="BONDCN00000007",
+                            coupon=0.0675,
+                            curve_code=curve_chinabond,
+                            issue_date=TuringDate(2014, 1, 24),
+                            due_date=TuringDate(2024, 1, 24),
+                            freq_type=TuringFrequencyTypes.ANNUAL,
+                            accrual_type=TuringDayCountTypes.ACT_365L,
+                            par=100,
+                            rdp_terms=[3, 4, 5, 6, 7, 8, 9, 10],
+                            rdp_pct=[0.1, 0.1, 0.1, 0.1, 0.15, 0.15, 0.15, 0.15])
 
 price = bond_ar.calc(RiskMeasure.FullPrice)
 clean_price = bond_ar.calc(RiskMeasure.CleanPrice)
