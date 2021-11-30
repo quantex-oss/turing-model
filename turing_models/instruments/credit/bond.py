@@ -8,7 +8,7 @@ from fundamental.turing_db.bond_data import BondApi
 from fundamental.turing_db.data import Turing
 from fundamental.turing_db.err import FastError
 from fundamental.turing_db.utils import to_snake
-from turing_models.instruments.common import CD
+from turing_models.instruments.common import CD, YieldCurveCode
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
      TuringDateGenRuleTypes
@@ -35,7 +35,8 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     freq_type: Union[str, TuringFrequencyTypes] = None  # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None  # 计息类型
     par: float = None  # 面值
-    bond_clean_price: float = None  # 净价
+    curve_code: Union[str, YieldCurveCode] = None  # 曲线编码
+    market_clean_price: float = None  # 净价
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))  # 估值日
     settlement_terms: int = 0  # 结算天数，0即T+0结算
@@ -56,6 +57,8 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
         if self.freq_type:
             self._calculate_flow_dates()
             self.frequency = TuringFrequency(self.freq_type_)
+        if self.curve_code and isinstance(self.curve_code, YieldCurveCode):
+            self.curve_code = self.curve_code.name
 
     @property
     def freq_type_(self):

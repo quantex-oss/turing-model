@@ -8,12 +8,13 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.instruments.credit.bond_fixed_rate import BondFixedRate
-from turing_models.instruments.common import RiskMeasure
+from turing_models.instruments.common import RiskMeasure, YieldCurveCode
 
 
+curve_chinabond = YieldCurveCode.CBD100222
 bond_fr = BondFixedRate(asset_id="BONDCN00000007",
                         coupon=0.04,
-                        curve_code="CBD100003",
+                        curve_code=curve_chinabond,
                         issue_date=TuringDate(2015, 11, 13),
                         # due_date=TuringDate(2025, 11, 14),
                         bond_term_year=10,
@@ -44,11 +45,11 @@ print("---------------------------------------------")
 # tenor_start：旋转起始点，单位是年，若不传该参数，表示从曲线的第一个时间点开始旋转
 # tenor_end：旋转结束点，单位是年，若不传该参数，表示从曲线的最后一个时间点结束旋转
 # pivot_point、tenor_start和tenor_end的范围为[原曲线的第一个时间点，原曲线的最后一个时间点]
-scenario = CurveScenario(parallel_shift=[{"curve_code": "CBD100003", "value": 1000}, {"curve_code": "CBD100003", "value": 12}],
-                         curve_shift=[{"curve_code": "CBD100003", "value": 1000}, {"curve_code": "CBD100003", "value": 12}],
-                         pivot_point=[{"curve_code": "CBD100003", "value": 2}, {"curve_code": "CBD100003", "value": 3}],
-                         tenor_start=[{"curve_code": "CBD100003", "value": 1.5}, {"curve_code": "CBD100003", "value": 1}],
-                         tenor_end=[{"curve_code": "CBD100003", "value": 40}, {"curve_code": "CBD100003", "value": 30}])
+scenario = CurveScenario(parallel_shift=[{"curve_code": curve_chinabond, "value": 1000}],
+                         curve_shift=[{"curve_code": curve_chinabond, "value": 1000}],
+                         pivot_point=[{"curve_code": curve_chinabond, "value": 2}],
+                         tenor_start=[{"curve_code": curve_chinabond, "value": 1.655}],
+                         tenor_end=[{"curve_code": curve_chinabond, "value": 40}])
 
 with scenario:
     price_2 = bond_fr.calc(RiskMeasure.FullPrice)
@@ -74,7 +75,7 @@ bond_frn = BondFloatingRate(quoted_margin=0.01,
                             par=100,
                             next_coupon=0.035,
                             current_ibor=0.037,
-                            future_ibor= 0.038,
+                            future_ibor=0.038,
                             dm=0.01)
 
 print("Floating Rate Bond:")
@@ -87,7 +88,7 @@ print("---------------------------------------------")
 
 bond_ar = BondAdvancedRedemption(asset_id="BONDCN00000007",
                                  coupon=0.0675,
-                                 curve_code="CBD100003",
+                                 curve_code=curve_chinabond,
                                  issue_date=TuringDate(2014, 1, 24),
                                  due_date=TuringDate(2024, 1, 24),
                                  freq_type=TuringFrequencyTypes.ANNUAL,
@@ -113,18 +114,19 @@ print('dollar_convexity:', dollar_convexity)
 print("---------------------------------------------")
 
 bond_pa = BondPutableAdjustable(asset_id="BONDCN00000007",
-                        coupon=0.0316,
-                        issue_date=TuringDate(2021, 8, 5),
-                        value_date=TuringDate(2021, 11, 26),
-                        due_date=TuringDate(2025, 8, 5),
-                        freq_type=TuringFrequencyTypes.ANNUAL,
-                        accrual_type=TuringDayCountTypes.ACT_365F,
-                        par=100,
-                        zero_dates=dates,
-                        zero_rates=rates,
-                        # adjust_bound_up= -1,
-                        # adjust_bound_down= 0,
-                        put_date=TuringDate(2023, 8, 5))
+                                coupon=0.0316,
+                                issue_date=TuringDate(2021, 8, 5),
+                                value_date=TuringDate(2021, 11, 26),
+                                due_date=TuringDate(2025, 8, 5),
+                                freq_type=TuringFrequencyTypes.ANNUAL,
+                                accrual_type=TuringDayCountTypes.ACT_365F,
+                                par=100,
+                                curve_code=curve_chinabond,
+                                # zero_dates=dates,
+                                # zero_rates=rates,
+                                # adjust_bound_up= -1,
+                                # adjust_bound_down= 0,
+                                put_date=TuringDate(2023, 8, 5))
 
 
 price = bond_pa.calc(RiskMeasure.FullPrice)

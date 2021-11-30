@@ -51,10 +51,9 @@ def _g(y, *args):
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondPutableAdjustable(Bond):
-    ''' Class for fixed coupon bonds with embedded put optionality and rights to adjust coupon on exercise date. '''
+    """ Class for fixed coupon bonds with embedded put optionality and rights to adjust coupon on exercise date. """
     bond_type: str = None
     coupon: float = 0.0  # 票息
-    curve_code: str = None  # 曲线编码
     # ytm: float = None
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
@@ -208,7 +207,7 @@ class BondPutableAdjustable(Bond):
 
     @property
     def clean_price_(self):
-        return self.bond_clean_price or self.clean_price_from_discount_curve()
+        return self.market_clean_price or self.clean_price_from_discount_curve()
     
     @property
     def equ_c(self):
@@ -263,28 +262,27 @@ class BondPutableAdjustable(Bond):
                 forward_dates.append(dc.yearFrac(self.put_date, self.forward_dates_[i])[0])
         self._exercised_bond = BondFixedRate(value_date = self.put_date,
                                              issue_date = self.put_date,
-                                             bond_clean_price=self.put_price,
+                                             market_clean_price=self.put_price,
                                              due_date = self.due_date,
                                              zero_dates = forward_dates,
                                              zero_rates = self.forward_rates_,
                                              freq_type = self.freq_type_,
                                              accrual_type = self.accrual_type_,
-                                             par= self.par
-                                             )
+                                             par= self.par)
     
         accruedAmount = 0
         
-        full_price = (self._exercised_bond.bond_clean_price + accruedAmount)
+        full_price = (self._exercised_bond.market_clean_price + accruedAmount)
     
         argtuple = (self._exercised_bond, full_price)
 
         c = optimize.newton(_f,
-                                x0=0.05,  # guess initial value of 5%
-                                fprime=None,
-                                args=argtuple,
-                                tol=1e-8,
-                                maxiter=50,
-                                fprime2=None)
+                            x0=0.05,  # guess initial value of 5%
+                            fprime=None,
+                            args=argtuple,
+                            tol=1e-8,
+                            maxiter=50,
+                            fprime2=None)
 
         return c
         
@@ -559,7 +557,7 @@ class BondPutableAdjustable(Bond):
                     or type(clean_price) is np.ndarray:
                 clean_prices = np.array(clean_price)
             else:
-                raise TuringError("Unknown type for bond_clean_price "
+                raise TuringError("Unknown type for market_clean_price "
                                 + str(type(clean_price)))
 
             self.calc_accrued_interest()
