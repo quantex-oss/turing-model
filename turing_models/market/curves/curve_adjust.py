@@ -128,3 +128,7 @@ class CurveAdjust:
 
     def get_data_dict(self):
         return dict(zip(self.dates, self.rates))
+
+    def get_curve_result(self):
+        dates = self.today.addYears(self.dates)
+        return TuringDiscountCurveZeros(self.today, dates, self.rates)
