@@ -29,7 +29,6 @@ def _f(y, *args):
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
     coupon: float = 0.0  # 票息
-    curve_code: str = None  # 曲线编码
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
     _ytm: float = None
@@ -116,7 +115,7 @@ class BondFixedRate(Bond):
 
     @property
     def clean_price_(self):
-        return self.bond_clean_price or self.clean_price_from_discount_curve()
+        return self.market_clean_price or self.clean_price_from_discount_curve()
 
     def clean_price(self):
         # 定价接口调用
@@ -316,7 +315,7 @@ class BondFixedRate(Bond):
                 or type(clean_price) is np.ndarray:
             clean_prices = np.array(clean_price)
         else:
-            raise TuringError("Unknown type for bond_clean_price "
+            raise TuringError("Unknown type for clean_price "
                               + str(type(clean_price)))
 
         self.calc_accrued_interest()
