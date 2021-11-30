@@ -1,5 +1,5 @@
 from fundamental.pricing_context import CurveScenario
-from turing_models.instruments.credit.bond_advanced_redemption import BondAdvancedRedemption
+from turing_models.instruments.credit.bond_adv_redemption import BondAdvRedemption
 from turing_models.instruments.credit.bond_floating_rate import BondFloatingRate
 from turing_models.instruments.credit.bond_putable_adjustable import BondPutableAdjustable
 

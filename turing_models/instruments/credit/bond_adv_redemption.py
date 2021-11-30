@@ -26,7 +26,7 @@ def _f(y, *args):
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class BondAdvancedRedemption(Bond):
+class BondAdvRedemption(Bond):
     coupon: float = 0.0  # 票息
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
