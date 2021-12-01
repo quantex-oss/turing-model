@@ -2,6 +2,8 @@ from fundamental.pricing_context import CurveScenario
 from turing_models.instruments.credit.bond_adv_redemption import BondAdvRedemption
 from turing_models.instruments.credit.bond_floating_rate import BondFloatingRate
 from turing_models.instruments.credit.bond_putable_adjustable import BondPutableAdjustable
+from fundamental.portfolio.portfolio import Portfolio
+from fundamental.portfolio.position import Position
 
 from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
@@ -9,7 +11,6 @@ from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.instruments.credit.bond_fixed_rate import BondFixedRate
 from turing_models.instruments.common import RiskMeasure, YieldCurveCode
-
 
 curve_chinabond = YieldCurveCode.CBD100222
 bond_fr = BondFixedRate(asset_id="BONDCN00000007",
@@ -38,6 +39,11 @@ print('modified_duration:', modified_duration_1)
 print('dollar_convexity:', dollar_convexity_1)
 print("---------------------------------------------")
 
+pricing_date = TuringDate(2021, 11, 24)
+portfolio = Portfolio(portfolio_name="Credit", pricing_date=pricing_date)
+posiiton = Position(tradable=bond_fr, quantity=100000.0)
+portfolio.add(posiiton)
+
 # CurveScenario参数含义：
 # parallel_shift：曲线整体平移，单位bp，正值表示向上平移，负值相反
 # curve_shift：曲线旋转，单位bp，表示曲线左端和右端分别绕pivot_point旋转的绝对值之和，正值表示右侧向上旋转，负值相反
@@ -45,27 +51,28 @@ print("---------------------------------------------")
 # tenor_start：旋转起始点，单位是年，若不传该参数，表示从曲线的第一个时间点开始旋转
 # tenor_end：旋转结束点，单位是年，若不传该参数，表示从曲线的最后一个时间点结束旋转
 # pivot_point、tenor_start和tenor_end的范围为[原曲线的第一个时间点，原曲线的最后一个时间点]
-scenario = CurveScenario(parallel_shift=[{"curve_code": curve_chinabond, "value": 1000}],
-                         curve_shift=[{"curve_code": curve_chinabond, "value": 1000}],
-                         pivot_point=[{"curve_code": curve_chinabond, "value": 2}],
-                         tenor_start=[{"curve_code": curve_chinabond, "value": 1.655}],
-                         tenor_end=[{"curve_code": curve_chinabond, "value": 40}])
 
-with scenario:
-    price_2 = bond_fr.calc(RiskMeasure.FullPrice)
-    clean_price_2 = bond_fr.calc(RiskMeasure.CleanPrice)
-    ytm_2 = bond_fr.calc(RiskMeasure.YTM)
-    dv01_2 = bond_fr.calc(RiskMeasure.Dv01)
-    modified_duration_2 = bond_fr.calc(RiskMeasure.ModifiedDuration)
-    dollar_convexity_2 = bond_fr.calc(RiskMeasure.DollarConvexity)
+curve_aaabond = YieldCurveCode.CBD100252
+curve_scenario = CurveScenario(
+    parallel_shift=[{"curve_code": curve_chinabond, "value": 1000}, {"curve_code": curve_aaabond, "value": 1000}],
+    curve_shift=[{"curve_code": curve_chinabond, "value": 1000}, {"curve_code": curve_aaabond, "value": 1000}],
+    pivot_point=[{"curve_code": curve_chinabond, "value": 2}, {"curve_code": curve_aaabond, "value": 2}],
+    tenor_start=[{"curve_code": curve_chinabond, "value": 1.655}, {"curve_code": curve_aaabond, "value": 1.655}],
+    tenor_end=[{"curve_code": curve_chinabond, "value": 40}, {"curve_code": curve_aaabond, "value": 40}])
 
-    print('price', price_2)
-    print('clean_price', clean_price_2)
-    print('ytm', ytm_2)
-    print('dv01:', dv01_2)
-    print('modified_duration:', modified_duration_2)
-    print('dollar_convexity:', dollar_convexity_2)
-    print("---------------------------------------------")
+with curve_scenario:
+    portfolio.calc(
+        [
+            RiskMeasure.FullPrice,
+            RiskMeasure.CleanPrice,
+            RiskMeasure.YTM,
+            RiskMeasure.Dv01,
+            RiskMeasure.DollarDuration,
+            RiskMeasure.DollarConvexity
+
+        ])
+
+    portfolio.show_table()
 
 bond_frn = BondFloatingRate(quoted_margin=0.01,
                             issue_date=TuringDate(2015, 11, 13),
@@ -128,7 +135,6 @@ bond_pa = BondPutableAdjustable(asset_id="BONDCN00000007",
                                 # adjust_bound_down= 0,
                                 put_date=TuringDate(2023, 8, 5))
 
-
 price = bond_pa.calc(RiskMeasure.FullPrice)
 clean_price = bond_pa.calc(RiskMeasure.CleanPrice)
 ytm = bond_pa.calc(RiskMeasure.YTM)
@@ -143,4 +149,3 @@ print('ytm', ytm)
 print('dv01:', dv01)
 print('modified_duration:', modified_duration)
 print('dollar_convexity:', dollar_convexity)
-print("---------------------------------------------")
