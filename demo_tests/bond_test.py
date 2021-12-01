@@ -2,6 +2,8 @@ from fundamental.pricing_context import CurveScenario
 from turing_models.instruments.credit.bond_adv_redemption import BondAdvRedemption
 from turing_models.instruments.credit.bond_floating_rate import BondFloatingRate
 from turing_models.instruments.credit.bond_putable_adjustable import BondPutableAdjustable
+from fundamental.portfolio.portfolio import Portfolio
+from fundamental.portfolio.position import Position
 
 from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
@@ -144,3 +146,25 @@ print('dv01:', dv01)
 print('modified_duration:', modified_duration)
 print('dollar_convexity:', dollar_convexity)
 print("---------------------------------------------")
+
+pricing_date = TuringDate(2021, 11, 24)
+portfolio = Portfolio(portfolio_name="Credit", pricing_date=pricing_date)
+posiiton = Position(tradable=bond_fr, quantity=1.0)
+portfolio.add(posiiton)
+curve_scenario = CurveScenario(parallel_shift=[{"curve_code": curve_chinabond, "value": 1000}],
+                         curve_shift=[{"curve_code": curve_chinabond, "value": 1000}],
+                         pivot_point=[{"curve_code": curve_chinabond, "value": 2}],
+                         tenor_start=[{"curve_code": curve_chinabond, "value": 1.655}],
+                         tenor_end=[{"curve_code": curve_chinabond, "value": 40}])
+
+with curve_scenario:
+    portfolio.calc(
+            [
+                RiskMeasure.Price,
+                RiskMeasure.Dv01,
+                RiskMeasure.DollarDuration,
+                RiskMeasure.DollarConvexity
+               
+            ])
+
+    portfolio.show_table()
