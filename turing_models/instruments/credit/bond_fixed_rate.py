@@ -25,12 +25,22 @@ def _f(y, *args):
     obj_fn = px - price
     return obj_fn
 
+def _g(s, *args):
+    """ Function used to do root search in price to implied spread calculation. """
+    bond = args[0]
+    price = args[1]
+    bond.spread_adjustment = s
+    px = bond.full_price_from_discount_curve()
+    obj_fn = px - price
+    return obj_fn
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
     coupon: float = 0.0  # 票息
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
+    use_mkt_price: bool = False
+    spread_adjustment: float = 0.0
     _ytm: float = None
     _discount_curve = None
 
@@ -40,6 +50,9 @@ class BondFixedRate(Bond):
         self._alpha = 0.0
         if self.coupon:
             self._calculate_flow_amounts()
+        if self.use_mkt_price == True:
+            self.market_clean_price =  110  # 接口获取行情
+            self.spread_adjustment = self.implied_spread()
 
     @property
     def get_yield_curve(self):
@@ -123,7 +136,7 @@ class BondFixedRate(Bond):
 
     def full_price(self):
         # 定价接口调用
-        return self.full_price_from_discount_curve()
+        return self.clean_price_ + self.calc_accrued_interest()
 
     def _calculate_flow_amounts(self):
         """ 保存票息现金流信息 """
@@ -144,6 +157,29 @@ class BondFixedRate(Bond):
         self.ytm_ = None
         dv = -(p2 - p0) / 2.0
         return dv
+    
+    def implied_spread(self):
+        """ 通过行情价格和隐含利率曲线推算债券的隐含基差"""
+             
+        clean_price = self.clean_price_
+        self.calc_accrued_interest()
+        accrued_amount = self._accrued_interest
+        full_price = (clean_price + accrued_amount)
+    
+        argtuple = (self, full_price)
+
+        implied_spread = optimize.newton(_g,
+                                x0=0.05,  # guess initial value of 5%
+                                fprime=None,
+                                args=argtuple,
+                                tol=1e-8,
+                                maxiter=50,
+                                fprime2=None)
+        
+        return implied_spread
+
+        
+        
 
     def macauley_duration(self):
         """ 麦考利久期 """
@@ -268,16 +304,19 @@ class BondFixedRate(Bond):
 
         if self.settlement_date_ > self.due_date:
             raise TuringError("Bond settles after it matures.")
+        
+        self.curve_fitted = CurveAdjust(self.zero_dates_adjusted, self.zero_rates_adjusted,
+                         self.spread_adjustment).get_curve_result()
 
         px = 0.0
         df = 1.0
-        df_settle = self.discount_curve.df(self.settlement_date_)
+        df_settle = self.curve_fitted.df(self.settlement_date_)
 
         for dt in self._flow_dates[1:]:
 
             # 将结算日的票息加入计算
             if dt >= self.settlement_date_:
-                df = self.discount_curve.df(dt)
+                df = self.curve_fitted.df(dt)
                 flow = self.coupon / self.frequency
                 pv = flow * df
                 px += pv
