@@ -1,4 +1,5 @@
 import datetime
+import enum
 import traceback
 from abc import ABCMeta
 from dataclasses import dataclass
@@ -11,7 +12,7 @@ from fundamental.turing_db.utils import to_snake
 from turing_models.instruments.common import CD, YieldCurveCode
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
-     TuringDateGenRuleTypes
+    TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
@@ -27,6 +28,8 @@ dy = 0.0001
 class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     asset_id: str = None
     bond_symbol: str = None
+    csname: str = None
+    curr_code:(str,enum) = None
     exchange_code: str = None
     issue_date: TuringDate = None  # 发行日
     due_date: TuringDate = None  # 到期日
@@ -99,6 +102,11 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     @property
     def settlement_date_(self):
         return self.ctx_pricing_date or self.settlement_date
+
+    def isvalib(self):
+        if self.settlement_date_ > self.due_date:
+            return False
+        return True
 
     def _calculate_flow_dates(self):
         """ Determine the bond cashflow payment dates."""
