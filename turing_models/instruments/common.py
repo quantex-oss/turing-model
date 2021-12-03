@@ -1117,6 +1117,18 @@ class Ctx:
         self.ctx = ctx
 
     @property
+    def ctx_ytm(self):
+        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"ytm_{asset_id}")
+
+    @property
+    def ctx_clean_price(self):
+        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"clean_price_{asset_id}")
+
+    @property
     def ctx_spot(self):
         asset_id = getattr(self, 'underlier', None) or getattr(
             self, 'asset_id', None)
