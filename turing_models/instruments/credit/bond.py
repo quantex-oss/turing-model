@@ -125,6 +125,8 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
                                           date_gen_rule_type)._generate()
 
     def dollar_duration(self):
+        if not self.isvalib():
+            raise TuringError("Bond settles after it matures.")
         return self.dv01() / dy
 
     def fetch_yield_curve(self, curve_code_list):

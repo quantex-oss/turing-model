@@ -54,6 +54,8 @@ class BondFixedRate(Bond):
         return self.zero_rates or self.get_yield_curve['spot_rate']
 
     def ytm(self):
+        if not self.isvalib():
+            raise TuringError("Bond settles after it matures.")
         return self.ytm_
 
     @property
@@ -119,10 +121,14 @@ class BondFixedRate(Bond):
 
     def clean_price(self):
         # 定价接口调用
+        if not self.isvalib():
+            raise TuringError("Bond settles after it matures.")
         return self.clean_price_
 
     def full_price(self):
         # 定价接口调用
+        if not self.isvalib():
+            raise TuringError("Bond settles after it matures.")
         return self.full_price_from_discount_curve()
 
     def _calculate_flow_amounts(self):
@@ -136,6 +142,8 @@ class BondFixedRate(Bond):
 
     def dv01(self):
         """ 数值法计算dv01 """
+        if not self.isvalib():
+            raise TuringError("Bond settles after it matures.")
         ytm = self.ytm_
         self.ytm_ = ytm - dy
         p0 = self.full_price_from_ytm()
@@ -187,6 +195,8 @@ class BondFixedRate(Bond):
 
     def dollar_convexity(self):
         """ 凸性 """
+        if not self.isvalib():
+            raise TuringError("Bond settles after it matures.")
         ytm = self.ytm_
         self.ytm_ = ytm - dy
         p0 = self.full_price_from_ytm()
