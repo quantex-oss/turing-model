@@ -314,18 +314,21 @@ class BondFixedRate(Bond):
     def full_price_from_discount_curve(self):
         """ 通过利率曲线计算全价 """
 
-        if self.settlement_date_ > self.due_date:
+        if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
+
+        self.curve_fitted = CurveAdjust(self.zero_dates_adjusted, self.zero_rates_adjusted,
+                                        self.spread_adjustment).get_curve_result()
 
         px = 0.0
         df = 1.0
-        df_settle = self.discount_curve.df(self.settlement_date_)
+        df_settle = self.curve_fitted.df(self.settlement_date_)
 
         for dt in self._flow_dates[1:]:
 
             # 将结算日的票息加入计算
             if dt >= self.settlement_date_:
-                df = self.discount_curve.df(dt)
+                df = self.curve_fitted.df(dt)
                 flow = self.coupon / self.frequency
                 pv = flow * df
                 px += pv
