@@ -29,7 +29,7 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     asset_id: str = None
     bond_symbol: str = None
     csname: str = None
-    curr_code: (str, enum) = None
+    curr_code: (str, enum) = 'CNY'
     exchange_code: str = None
     issue_date: TuringDate = None  # 发行日
     due_date: TuringDate = None  # 到期日
@@ -40,7 +40,6 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     par: float = None  # 面值
     curve_name: Union[str, CurveCode] = None
     curve_code: Union[str, YieldCurveCode] = None  # 曲线编码
-    market_clean_price: float = None  # 净价
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))  # 估值日
     settlement_terms: int = 0  # 结算天数，0即T+0结算
@@ -104,7 +103,7 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     def settlement_date_(self):
         return self.ctx_pricing_date or self.settlement_date
 
-    def isvalib(self):
+    def isvalid(self):
         if self.settlement_date_ > self.due_date:
             return False
         return True
@@ -126,7 +125,7 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
                                           date_gen_rule_type)._generate()
 
     def dollar_duration(self):
-        if not self.isvalib():
+        if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
         return self.dv01() / dy
 

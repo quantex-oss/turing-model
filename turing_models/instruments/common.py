@@ -1177,10 +1177,6 @@ class Ctx:
         return self.ctx.pricing_date
 
     @property
-    def ctx_ytm(self):
-        return self.ctx.ytm
-
-    @property
     def ctx_parallel_shift(self):
         return getattr(self.ctx, f"parallel_shift_{self.curve_code}")
 

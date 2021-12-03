@@ -207,7 +207,7 @@ class BondPutableAdjustable(Bond):
 
     @property
     def clean_price_(self):
-        return self.market_clean_price or self.clean_price_from_discount_curve()
+        return self.ctx_clean_price or self.clean_price_from_discount_curve()
     
     @property
     def equ_c(self):
@@ -272,7 +272,7 @@ class BondPutableAdjustable(Bond):
     
         accruedAmount = 0
         
-        full_price = (self._exercised_bond.market_clean_price + accruedAmount)
+        full_price = (self._exercised_bond.clean_price_ + accruedAmount)
     
         argtuple = (self._exercised_bond, full_price)
 

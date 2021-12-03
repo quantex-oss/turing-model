@@ -141,7 +141,7 @@ class BondAdvRedemption(Bond):
 
     @property
     def clean_price_(self):
-        return self.market_clean_price or self.clean_price_from_discount_curve()
+        return self.ctx_clean_price or self.clean_price_from_discount_curve()
 
     def _calculate_flow_amounts(self):
         """ 保存票息现金流信息 """

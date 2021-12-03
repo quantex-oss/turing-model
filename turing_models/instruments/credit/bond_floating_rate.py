@@ -37,7 +37,7 @@ class BondFloatingRate(Bond):
 
     @property
     def clean_price_(self):
-        return self.market_clean_price or self.clean_price_from_dm()
+        return self.ctx_clean_price or self.clean_price_from_dm()
 
     def full_price(self):
         return self.full_price_from_dm()

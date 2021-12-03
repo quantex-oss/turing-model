@@ -26,11 +26,23 @@ def _f(y, *args):
     return obj_fn
 
 
+def _g(s, *args):
+    """ Function used to do root search in price to implied spread calculation. """
+    bond = args[0]
+    price = args[1]
+    bond.spread_adjustment = s
+    px = bond.full_price_from_discount_curve()
+    obj_fn = px - price
+    return obj_fn
+
+
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
     coupon: float = 0.0  # 票息
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
+    use_mkt_price: bool = False
+    spread_adjustment: float = 0.0
     _ytm: float = None
     _discount_curve = None
 
@@ -39,7 +51,10 @@ class BondFixedRate(Bond):
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
         if self.coupon:
-            self._calculate_flow_amounts()
+            self._calculate_cash_flow_amounts()
+        if self.use_mkt_price == True:
+            self.market_clean_price = 110  # 接口获取行情
+            self.spread_adjustment = self.implied_spread()
 
     @property
     def get_yield_curve(self):
@@ -54,7 +69,7 @@ class BondFixedRate(Bond):
         return self.zero_rates or self.get_yield_curve['spot_rate']
 
     def ytm(self):
-        if not self.isvalib():
+        if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
         return self.ytm_
 
@@ -117,21 +132,21 @@ class BondFixedRate(Bond):
 
     @property
     def clean_price_(self):
-        return self.market_clean_price or self.clean_price_from_discount_curve()
+        return self.ctx_clean_price or self.clean_price_from_discount_curve()
 
     def clean_price(self):
         # 定价接口调用
-        if not self.isvalib():
+        if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
         return self.clean_price_
 
     def full_price(self):
         # 定价接口调用
-        if not self.isvalib():
+        if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
-        return self.full_price_from_discount_curve()
+        return self.clean_price_ + self.calc_accrued_interest()
 
-    def _calculate_flow_amounts(self):
+    def _calculate_cash_flow_amounts(self):
         """ 保存票息现金流信息 """
 
         self._flow_amounts = [0.0]
@@ -140,9 +155,29 @@ class BondFixedRate(Bond):
             cpn = self.coupon / self.frequency
             self._flow_amounts.append(cpn)
 
+    def implied_spread(self):
+        """ 通过行情价格和隐含利率曲线推算债券的隐含基差"""
+
+        clean_price = self.clean_price_
+        self.calc_accrued_interest()
+        accrued_amount = self._accrued_interest
+        full_price = (clean_price + accrued_amount)
+
+        argtuple = (self, full_price)
+
+        implied_spread = optimize.newton(_g,
+                                         x0=0.05,  # guess initial value of 5%
+                                         fprime=None,
+                                         args=argtuple,
+                                         tol=1e-8,
+                                         maxiter=50,
+                                         fprime2=None)
+
+        return implied_spread
+
     def dv01(self):
         """ 数值法计算dv01 """
-        if not self.isvalib():
+        if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
         ytm = self.ytm_
         self.ytm_ = ytm - dy
@@ -156,14 +191,17 @@ class BondFixedRate(Bond):
     def macauley_duration(self):
         """ 麦考利久期 """
 
-        if self.settlement_date_ > self.due_date:
+        if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
+
+        self.curve_fitted = CurveAdjust(self.zero_dates_adjusted, self.zero_rates_adjusted,
+                                        self.spread_adjustment).get_curve_result()
 
         discount_curve_flat = self.discount_curve_flat
 
         px = 0.0
         df = 1.0
-        df_settle = discount_curve_flat.df(self.settlement_date_)
+        df_settle = self.curve_fitted.df(self.settlement_date_)
         dc = TuringDayCount(TuringDayCountTypes.ACT_ACT_ISDA)
 
         for dt in self._flow_dates[1:]:
@@ -171,7 +209,7 @@ class BondFixedRate(Bond):
             dates = dc.yearFrac(self.settlement_date_, dt)[0]
             # 将结算日的票息加入计算
             if dt >= self.settlement_date_:
-                df = discount_curve_flat.df(dt)
+                df = self.curve_fitted.df(dt)
                 flow = self.coupon / self.frequency
                 pv = flow * df * dates * self.par
                 px += pv
@@ -195,7 +233,7 @@ class BondFixedRate(Bond):
 
     def dollar_convexity(self):
         """ 凸性 """
-        if not self.isvalib():
+        if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
         ytm = self.ytm_
         self.ytm_ = ytm - dy
