@@ -15,7 +15,8 @@ class CurveAdjust:
                  curve_shift=None,
                  pivot_point=None,
                  tenor_start=None,
-                 tenor_end=None):
+                 tenor_end=None,
+                 value_date=TuringDate(*(datetime.date.today().timetuple()[:3]))):
         self.dates = dates
         self.rates = rates
         if parallel_shift:
@@ -26,7 +27,7 @@ class CurveAdjust:
         self.tenor_start = tenor_start  # 单位：年
         self.tenor_end = tenor_end  # 单位：年
 
-        self.today = TuringDate(*(datetime.date.today().timetuple()[:3]))
+        self.today = value_date
         self.pivot_rate = None
         self.start_rate = None
         self.end_rate = None

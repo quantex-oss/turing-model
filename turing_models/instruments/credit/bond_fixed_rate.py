@@ -89,7 +89,8 @@ class BondFixedRate(Bond):
                          self.ctx_curve_shift,  # 旋转量（bps)
                          self.ctx_pivot_point,  # 旋转点（年）
                          self.ctx_tenor_start,  # 旋转起始（年）
-                         self.ctx_tenor_end)  # 旋转终点（年）
+                         self.ctx_tenor_end,  # 旋转终点（年）
+                         self.settlement_date_)
         return ca.get_dates_result(), ca.get_rates_result()
 
     @property
@@ -195,7 +196,7 @@ class BondFixedRate(Bond):
             raise TuringError("Bond settles after it matures.")
 
         self.curve_fitted = CurveAdjust(self.zero_dates_adjusted, self.zero_rates_adjusted,
-                                        self.spread_adjustment).get_curve_result()
+                                        self.spread_adjustment, value_date=self.settlement_date_).get_curve_result()
 
         discount_curve_flat = self.discount_curve_flat
 
@@ -318,7 +319,7 @@ class BondFixedRate(Bond):
             raise TuringError("Bond settles after it matures.")
 
         self.curve_fitted = CurveAdjust(self.zero_dates_adjusted, self.zero_rates_adjusted,
-                                        self.spread_adjustment).get_curve_result()
+                                        self.spread_adjustment, value_date=self.settlement_date_).get_curve_result()
 
         px = 0.0
         df = 1.0
