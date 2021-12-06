@@ -42,9 +42,10 @@ class BondFixedRate(Bond):
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
     use_mkt_price: bool = False
-    spread_adjustment: float = 0.0
+    # spread_adjustment: float = 0.0
     _ytm: float = None
     _discount_curve = None
+    _spread_adjustment = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -52,9 +53,8 @@ class BondFixedRate(Bond):
         self._alpha = 0.0
         if self.coupon:
             self._calculate_cash_flow_amounts()
-        if self.use_mkt_price == True:
-            self.market_clean_price = 110  # 接口获取行情
-            self.spread_adjustment = self.implied_spread()
+        # if self.use_mkt_price == True:
+        #     self.spread_adjustment = self.implied_spread()
 
     @property
     def get_yield_curve(self):
@@ -68,6 +68,14 @@ class BondFixedRate(Bond):
     def zero_rates_(self):
         return self.zero_rates or self.get_yield_curve['spot_rate']
 
+    @property
+    def spread_adjustment(self):
+        return self._spread_adjustment or self.ctx_spread_adjustment or self.implied_spread()
+
+    @spread_adjustment.setter
+    def spread_adjustment(self, value: float):
+        self._spread_adjustment = value
+
     def ytm(self):
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
@@ -80,6 +88,10 @@ class BondFixedRate(Bond):
     @ytm_.setter
     def ytm_(self, value: float):
         self._ytm = value
+
+    @property
+    def market_clean_price(self):
+        return 110
 
     def curve_adjust(self):
         """ 支持曲线旋转及平移 """

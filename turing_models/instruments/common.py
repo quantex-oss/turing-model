@@ -1129,6 +1129,12 @@ class Ctx:
         return getattr(self.ctx, f"clean_price_{asset_id}")
 
     @property
+    def ctx_spread_adjustment(self):
+        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"spread_adjustment_{asset_id}")
+
+    @property
     def ctx_spot(self):
         asset_id = getattr(self, 'underlier', None) or getattr(
             self, 'asset_id', None)
