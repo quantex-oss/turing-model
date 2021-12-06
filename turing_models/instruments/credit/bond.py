@@ -184,6 +184,10 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
 
     def _resolve(self):
         # Bond_ 为自定义时自动生成
+        if not self.asset_id:
+            asset_id = BondApi.fetch_comb_symbol_to_asset_id(self.bond_symbol)
+            if asset_id:
+                setattr(self, 'asset_id', asset_id)
         if self.asset_id and not self.asset_id.startswith("Bond_"):
             bond = BondApi.fetch_one_bond_orm(asset_id=self.asset_id)
             for k, v in bond.items():
@@ -192,7 +196,7 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
                         setattr(self, k, v)
                 except Exception:
                     pass
-        if not self.curve_name:
+        if not self.csname:
             csname = BondApi.fetch_comb_symbol_to_csname(self.bond_symbol)
             if csname:
                 setattr(self, 'csname', csname)
