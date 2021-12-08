@@ -66,7 +66,11 @@ class BondFixedRate(Bond):
 
     @property
     def spread_adjustment(self):
-        return self.ctx_spread_adjustment
+        return self._spread_adjustment or self.ctx_spread_adjustment
+
+    @spread_adjustment.setter
+    def spread_adjustment(self, value: float):
+        self._spread_adjustment = value
 
     def ytm(self):
         if not self.isvalid():

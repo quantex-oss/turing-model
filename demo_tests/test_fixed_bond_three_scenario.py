@@ -16,6 +16,7 @@ bond_fr1 = BondFixedRate(#asset_id="BONDCN00000007",
                         # freq_type=TuringFrequencyTypes.SEMI_ANNUAL,
                         # accrual_type=TuringDayCountTypes.ACT_365L,
                         # par=100)
+bond_fr1.resolve()
 scenario_extreme = PricingContext(clean_price=[{"bond_symbol": "143756.SH", "value": 80}])
 # curves = TuringDB.bond_yield_curve(curve_code=curve_lists, date=date)
 with scenario_extreme:
@@ -67,6 +68,7 @@ bond_fr3 = BondFixedRate(bond_symbol = "143756.SH",
                         curve_code=curve_chinabond)
 
 print("Fixed Rate Bond:")
+bond_fr3.resolve()
 price_3 = bond_fr3.calc(RiskMeasure.FullPrice)
 clean_price_3 = bond_fr3.calc(RiskMeasure.CleanPrice)
 ytm_3 = bond_fr3.calc(RiskMeasure.YTM)
