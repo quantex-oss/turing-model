@@ -25,7 +25,7 @@ class FXOptionImpliedVolatilitySurface:
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3])),
                  strikes: List[float] = None,  # 行权价 如果不传，就用exchange_rate * np.linspace(0.8, 1.2, 16)
                  tenors: List[float] = None,  # 期限（年化） 如果不传，就用[1/12, 2/12, 0.25, 0.5, 1, 2]
-                 volatility_function_type=TuringVolFunctionTypes.QL):
+                 volatility_function_type=TuringVolFunctionTypes.QL, notional_currency=None):
 
         if isinstance(fx_symbol, CurrencyPair):
             fx_symbol = fx_symbol.value
@@ -52,7 +52,7 @@ class FXOptionImpliedVolatilitySurface:
         self.volatility_function_type = volatility_function_type
 
         shibor_data = TuringDB.shibor_curve(date=value_date, df=False)
-        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date, df=False)['Shibor3M']
+        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date, currency=notional_currency,df=False)['Shibor3M']
 
         fx_swap_data = TuringDB.fx_swap_curve(symbol=fx_symbol, date=value_date, df=False)[fx_symbol]
         fx_implied_vol_data = TuringDB.fx_implied_volatility_curve(symbol=fx_symbol,
@@ -249,7 +249,8 @@ class FXVolSurfaceGen:
 
 if __name__ == '__main__':
     fx_vol_surface = FXOptionImpliedVolatilitySurface(
-        fx_symbol=CurrencyPair.USDCNY)
+        fx_symbol=CurrencyPair.USDCNY,
+                                notional_currency='cny')
     print('Volatility Surface\n', fx_vol_surface.get_vol_surface())
     # vol_sur = FXVolSurfaceGen(currency_pair=CurrencyPair.USDCNY).volatility_surface
     # strike = 6.6

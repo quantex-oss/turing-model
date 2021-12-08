@@ -16,7 +16,7 @@ from turing_models.market.volatility.vol_surface_generation import FXOptionImpli
 import plotly.graph_objs as go
 
 fx_name = CurrencyPair.USDCNY
-fx_vol_surface = FXOptionImpliedVolatilitySurface(fx_symbol=fx_name)
+fx_vol_surface = FXOptionImpliedVolatilitySurface(fx_symbol=fx_name,notional_currency='CNY')
 vol_surface_data = fx_vol_surface.get_vol_surface()
 data = vol_surface_data
 print(data)

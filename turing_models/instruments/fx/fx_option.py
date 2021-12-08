@@ -131,7 +131,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_shibor_swap_data(self):
         """从接口获取利率互换曲线"""
-        return TuringDB.irs_curve(curve_type='Shibor3M', date=self.value_date_, df=False)['Shibor3M']
+        return TuringDB.irs_curve(curve_type='Shibor3M', date=self.value_date_, currency=self.notional_currency, df=False)['Shibor3M']
 
     @property
     def get_fx_swap_data(self):
