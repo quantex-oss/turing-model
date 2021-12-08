@@ -41,8 +41,6 @@ class BondFixedRate(Bond):
     coupon: float = 0.0  # 票息
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
     zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
-    use_mkt_price: bool = False
-    # spread_adjustment: float = 0.0
     _ytm: float = None
     _discount_curve = None
     _spread_adjustment = None
@@ -53,8 +51,6 @@ class BondFixedRate(Bond):
         self._alpha = 0.0
         if self.coupon:
             self._calculate_cash_flow_amounts()
-        # if self.use_mkt_price == True:
-        #     self.spread_adjustment = self.implied_spread()
 
     @property
     def get_yield_curve(self):
@@ -70,11 +66,7 @@ class BondFixedRate(Bond):
 
     @property
     def spread_adjustment(self):
-        return self._spread_adjustment or self.ctx_spread_adjustment or self.implied_spread()
-
-    @spread_adjustment.setter
-    def spread_adjustment(self, value: float):
-        self._spread_adjustment = value
+        return self.ctx_spread_adjustment
 
     def ytm(self):
         if not self.isvalid():
@@ -171,7 +163,7 @@ class BondFixedRate(Bond):
     def implied_spread(self):
         """ 通过行情价格和隐含利率曲线推算债券的隐含基差"""
 
-        clean_price = self.clean_price_
+        clean_price = self.market_clean_price
         self.calc_accrued_interest()
         accrued_amount = self._accrued_interest
         full_price = (clean_price + accrued_amount)
