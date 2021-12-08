@@ -1,4 +1,5 @@
 import datetime
+import enum
 import traceback
 from abc import ABCMeta
 from dataclasses import dataclass
@@ -8,10 +9,10 @@ from fundamental.turing_db.bond_data import BondApi
 from fundamental.turing_db.data import Turing
 from fundamental.turing_db.err import FastError
 from fundamental.turing_db.utils import to_snake
-from turing_models.instruments.common import CD, YieldCurveCode
+from turing_models.instruments.common import CD, YieldCurveCode, CurveCode
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
-     TuringDateGenRuleTypes
+    TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
@@ -27,6 +28,8 @@ dy = 0.0001
 class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     asset_id: str = None
     bond_symbol: str = None
+    csname: str = None
+    curr_code: (str, enum) = 'CNY'
     exchange_code: str = None
     issue_date: TuringDate = None  # 发行日
     due_date: TuringDate = None  # 到期日
@@ -35,8 +38,8 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     freq_type: Union[str, TuringFrequencyTypes] = None  # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None  # 计息类型
     par: float = None  # 面值
+    curve_name: Union[str, CurveCode] = None
     curve_code: Union[str, YieldCurveCode] = None  # 曲线编码
-    market_clean_price: float = None  # 净价
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))  # 估值日
     settlement_terms: int = 0  # 结算天数，0即T+0结算
@@ -100,6 +103,14 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
     def settlement_date_(self):
         return self.ctx_pricing_date or self.settlement_date
 
+    def isvalid(self):
+        if self.settlement_date_ > self.due_date:
+            return False
+        return True
+
+    def get_curve_name(self):
+        return getattr(CurveCode, self.curve_code, '')
+
     def _calculate_flow_dates(self):
         """ Determine the bond cashflow payment dates."""
 
@@ -114,6 +125,8 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
                                           date_gen_rule_type)._generate()
 
     def dollar_duration(self):
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
         return self.dv01() / dy
 
     def fetch_yield_curve(self, curve_code_list):
@@ -170,6 +183,10 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
 
     def _resolve(self):
         # Bond_ 为自定义时自动生成
+        if not self.asset_id:
+            asset_id = BondApi.fetch_comb_symbol_to_asset_id(self.bond_symbol)
+            if asset_id:
+                setattr(self, 'asset_id', asset_id)
         if self.asset_id and not self.asset_id.startswith("Bond_"):
             bond = BondApi.fetch_one_bond_orm(asset_id=self.asset_id)
             for k, v in bond.items():
@@ -178,6 +195,10 @@ class Bond(CD, InstrumentBase, metaclass=ABCMeta):
                         setattr(self, k, v)
                 except Exception:
                     pass
+        if not self.csname:
+            csname = BondApi.fetch_comb_symbol_to_csname(self.bond_symbol)
+            if csname:
+                setattr(self, 'csname', csname)
         self.__post_init__()
 
     def __repr__(self):
