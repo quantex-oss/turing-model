@@ -65,6 +65,7 @@ class FXIRCurve:
                  dom_curve_type=DiscountCurveType.Shibor3M,
                  for_curve_type=DiscountCurveType.FX_Implied,
                  fx_forward_curve_type=DiscountCurveType.FX_Forword,
+                 notional_currency=None,
                  number_of_days: int = 730):
 
         if isinstance(fx_symbol, CurrencyPair):
@@ -73,14 +74,14 @@ class FXIRCurve:
             pass
         else:
             raise TuringError('fx_symbol: (str, CurrencyPair)')
-
+        self.notional_currency=notional_currency
         self.dom_curve_type = dom_curve_type
         self.for_curve_type = for_curve_type
 
         exchange_rate = TuringDB.exchange_rate(symbol=fx_symbol, date=value_date)[fx_symbol]
 
         shibor_data = TuringDB.shibor_curve(date=value_date, df=False)
-        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date, df=False)['Shibor3M']
+        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date, currency=self.notional_currency,df=False)['Shibor3M']
         fx_swap_data = TuringDB.fx_swap_curve(symbol=fx_symbol, date=value_date, df=False)[fx_symbol]
 
         self.domestic_discount_curve = DomDiscountCurveGen(value_date=value_date,
