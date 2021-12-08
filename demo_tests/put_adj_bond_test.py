@@ -1,12 +1,9 @@
-from fundamental.pricing_context import CurveScenario
-
 from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.instruments.credit.bond_putable_adjustable import BondPutableAdjustable
+from turing_models.instruments.rates.bond_putable_adjustable import BondPutableAdjustable
 # from turing_models.instruments.credit.bond_putable_plus_adjustable import BondPutableAdjustable as BondPutableAdjustable2
-from turing_models.instruments.common import RiskMeasure
 
 
 bond_fr = BondPutableAdjustable(asset_id="BONDCN00000007",

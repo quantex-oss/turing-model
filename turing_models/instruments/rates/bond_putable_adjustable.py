@@ -2,16 +2,13 @@ from dataclasses import dataclass, field
 import math
 from typing import Union, List, Any
 
-from turing_models.instruments.common import greek, bump
 from turing_models.utilities.global_variables import gDaysInYear
 from fundamental.turing_db.data import TuringDB
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
+from turing_models.utilities.frequency import TuringFrequencyTypes
 from turing_models.utilities.calendar import TuringCalendar
-from turing_models.instruments.credit.bond import Bond
-from turing_models.instruments.credit.bond_fixed_rate import BondFixedRate
-
-from turing_models.utilities.mathematics import testMonotonicity
+from turing_models.instruments.rates.bond import Bond
+from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import to_string
@@ -20,7 +17,6 @@ from turing_models.market.curves.curve_adjust import CurveAdjust
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
-from enum import Enum
 import numpy as np
 from scipy import optimize
 

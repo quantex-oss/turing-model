@@ -1,23 +1,10 @@
-import sys
 from dataclasses import dataclass
 import numpy as np
 
-from fundamental.pricing_context import CurveScenario
 from fundamental.pricing_context import PricingContext
-from fundamental.turing_db.data import TuringDB
 from fundamental.portfolio.portfolio import Portfolio
-from loguru import logger
 
-from turing_models.instruments.common import (CurrencyPair, RiskMeasure,
-                                              YieldCurveCode)
-from turing_models.instruments.credit.bond_fixed_rate import BondFixedRate
-from turing_models.market.curves.curve_generation import FXIRCurve
-from turing_models.market.data.china_money_yield_curve import dates, rates
-from turing_models.market.volatility.vol_surface_generation import \
-    FXOptionImpliedVolatilitySurface
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.turing_date import TuringDate
+from turing_models.instruments.common import (RiskMeasure)
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.frequency import TuringFrequencyTypes

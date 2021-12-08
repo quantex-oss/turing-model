@@ -1,15 +1,11 @@
 from fundamental.pricing_context import CurveScenario
-from turing_models.instruments.credit.bond_adv_redemption import BondAdvRedemption
-from turing_models.instruments.credit.bond_floating_rate import BondFloatingRate
-from turing_models.instruments.credit.bond_putable_adjustable import BondPutableAdjustable
 from fundamental.portfolio.portfolio import Portfolio
 from fundamental.portfolio.position import Position
 
-from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.instruments.credit.bond_fixed_rate import BondFixedRate
+from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.instruments.common import RiskMeasure, YieldCurveCode
 
 from loguru import logger
