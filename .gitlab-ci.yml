@@ -1,5 +1,5 @@
 stages:
- - deploy
+  - deploy
 
 Sync_To_Common:
   stage: deploy
@@ -10,10 +10,18 @@ Sync_To_Common:
   script:
     - export KUBECONFIG=kubeconfig
     - kubectl create -f sync.yaml
+  after_script:
+    - kubectl delete -f sync.yaml
   rules:
-    - if: '$CI_PROJECT_NAMESPACE == "turing" && $CI_COMMIT_BRANCH == "develop" && $KUBE_PASS_CONFIG'
-      when: always
-    - when: never
+    - if: '$CI_COMMIT_BRANCH == "develop" && $KUBE_PASS_CONFIG'
   tags:
     - dev
 
+# 增加流水线工作流判断
+workflow:
+  rules:
+    # 匹配项目groups为turing才创建流水线
+    - if: '$CI_PROJECT_NAMESPACE == "turing"'
+    # 如果URL包含cicc则不创建流水线动作
+    - if: '$CI_PROJECT_URL =~ /cicc/'
+      when: never
