@@ -181,6 +181,7 @@ class BondFixedRate(Bond):
                                          tol=1e-8,
                                          maxiter=50,
                                          fprime2=None)
+        self._spread_adjustment = None
 
         return implied_spread
 
