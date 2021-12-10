@@ -23,29 +23,28 @@
 # plt.show()
 import pandas as pd
 
-from turing_models.market.data import china_money_yield_curve as curve_data
+from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.market.curves.curve_generation import CurveGeneration
-from turing_models.market.curves.curve_adjust import CurveAdjust
+from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 import pandas as pd
 
-curve_origin = curve_data.china_money_spot_curve()
-# dates：年化的期限列表
-# rates：和期限对应的利率列表
+
+# curve_data：曲线数据
 # parallel_shift：曲线整体平移，单位bp，正值表示向上平移，负值相反
 # curve_shift：曲线旋转，单位bp，表示曲线左端和右端分别绕pivot_point旋转的绝对值之和，正值表示右侧向上旋转，负值相反
 # pivot_point：旋转中心，单位是年，若不传该参数，表示旋转中心是曲线的第一个时间点
 # tenor_start：旋转起始点，单位是年，若不传该参数，表示从曲线的第一个时间点开始旋转
 # tenor_end：旋转结束点，单位是年，若不传该参数，表示从曲线的最后一个时间点结束旋转
 # pivot_point、tenor_start和tenor_end的范围为[原曲线的第一个时间点，原曲线的最后一个时间点]
-ca = CurveAdjust(dates=curve_origin.index.tolist(),
-                 rates=curve_origin.tolist(),
-                 parallel_shift=1000,
-                 curve_shift=1000,
-                 pivot_point=1,
-                 tenor_start=0.5,
-                 tenor_end=1.5)
-curve_data_adjusted = ca.get_data_dict()
-terms_adjusted, rates_adjusted = list(curve_data_adjusted.keys()), list(curve_data_adjusted.values())
+curve_data = pd.DataFrame(data={'tenor': dates, 'rate': rates})
+ca = CurveAdjustmentImpl(curve_data=curve_data,
+                         parallel_shift=1000,
+                         curve_shift=1000,
+                         pivot_point=1,
+                         tenor_start=0.5,
+                         tenor_end=1.5)
+curve_data_adjusted = ca.get_curve_data()
+terms_adjusted, rates_adjusted = list(curve_data_adjusted['tenor']), list(curve_data_adjusted['rate'])
 curve_gen = CurveGeneration(terms_adjusted, rates_adjusted)
 curve_data = curve_gen.get_data_dict()
 terms, spot_rates = list(curve_data.keys()), list(curve_data.values())

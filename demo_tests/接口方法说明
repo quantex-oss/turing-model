@@ -34,3 +34,15 @@ https://yapi.iquantex.com/project/569/interface/api/35225
 示例：同上 时间相关的改成datetime.datetime格式
 
 
+4、查询全球同业拆放利率曲线
+https://yapi.iquantex.com/project/569/interface/api/36338
+参数：ibor_type: str, currency:str, start: TuringDate, end: TuringDate
+
+                                                 tenor  origin_tenor   rate     change
+date(datetime.datetime格式)    serial_number
+2021-07-29 00:00:00+08:00        0               0.003     ON          0.01876  -0.00302
+                                 1               0.021     1W          0.02071  -0.00213
+                                 2               0.042     2W          0.02072  -0.00267
+2021-07-30 00:00:00+08:00        0               0.003     ON          0.01876  -0.00302
+                                 1               0.021     1W          0.02071  -0.00213
+                                 2               0.042     2W          0.02072  -0.00267                                 3

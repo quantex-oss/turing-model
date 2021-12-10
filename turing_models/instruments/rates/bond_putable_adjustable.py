@@ -13,7 +13,7 @@ from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
-from turing_models.market.curves.curve_adjust import CurveAdjust
+from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
@@ -110,13 +110,13 @@ class BondPutableAdjustable(Bond):
 
     def curve_adjust(self):
         """ 支持曲线旋转及平移 """
-        ca = CurveAdjust(self.zero_dates,  # 曲线信息
-                         self.zero_rates,
-                         self.ctx_parallel_shift,  # 平移量（bps)
-                         self.ctx_curve_shift,  # 旋转量（bps)
-                         self.ctx_pivot_point,  # 旋转点（年）
-                         self.ctx_tenor_start,  # 旋转起始（年）
-                         self.ctx_tenor_end)  # 旋转终点（年）
+        ca = CurveAdjustmentImpl(self.zero_dates,  # 曲线信息
+                                 self.zero_rates,
+                                 self.ctx_parallel_shift,  # 平移量（bps)
+                                 self.ctx_curve_shift,  # 旋转量（bps)
+                                 self.ctx_pivot_point,  # 旋转点（年）
+                                 self.ctx_tenor_start,  # 旋转起始（年）
+                                 self.ctx_tenor_end)  # 旋转终点（年）
         return ca.get_dates_result(), ca.get_rates_result()
              
     @property
@@ -222,15 +222,14 @@ class BondPutableAdjustable(Bond):
     @property
     def _pure_bond(self):
         pure_bond = BondFixedRate(value_date = self.value_date,
-                                    issue_date = self.issue_date,
-                                    due_date = self.put_date,
-                                    coupon = self.coupon,
-                                    zero_dates = self.zero_dates_adjusted,
-                                    zero_rates = self.zero_rates_adjusted,
-                                    freq_type = self.freq_type_,
-                                    accrual_type = self.accrual_type_,
-                                    par= self.par
-                                    )
+                                  issue_date = self.issue_date,
+                                  due_date = self.put_date,
+                                  coupon = self.coupon,
+                                  zero_dates = self.zero_dates_adjusted,
+                                  zero_rates = self.zero_rates_adjusted,
+                                  freq_type = self.freq_type,
+                                  accrual_type = self.accrual_type,
+                                  par= self.par)
         return pure_bond
     
     def clean_price(self):

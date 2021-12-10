@@ -10,7 +10,7 @@ from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import to_string
-from turing_models.market.curves.curve_adjust import CurveAdjust
+from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
@@ -83,13 +83,13 @@ class BondAdvRedemption(Bond):
 
     def curve_adjust(self):
         """ 支持曲线旋转及平移 """
-        ca = CurveAdjust(self.zero_dates_,  # 曲线信息
-                         self.zero_rates_,
-                         self.ctx_parallel_shift,  # 平移量（bps)
-                         self.ctx_curve_shift,  # 旋转量（bps)
-                         self.ctx_pivot_point,  # 旋转点（年）
-                         self.ctx_tenor_start,  # 旋转起始（年）
-                         self.ctx_tenor_end)  # 旋转终点（年）
+        ca = CurveAdjustmentImpl(self.zero_dates_,  # 曲线信息
+                                 self.zero_rates_,
+                                 self.ctx_parallel_shift,  # 平移量（bps)
+                                 self.ctx_curve_shift,  # 旋转量（bps)
+                                 self.ctx_pivot_point,  # 旋转点（年）
+                                 self.ctx_tenor_start,  # 旋转起始（年）
+                                 self.ctx_tenor_end)  # 旋转终点（年）
         return ca.get_dates_result(), ca.get_rates_result()
 
     def _calculate_adv_rdp_dates(self):
@@ -383,7 +383,7 @@ class BondAdvRedemption(Bond):
                 self._ncd = self._flow_dates[i_flow]  # 结算日后一个现金流
                 break
 
-        dc = TuringDayCount(self.accrual_type_)
+        dc = TuringDayCount(self.accrual_type)
         cal = TuringCalendar(self.calendar_type)
         ex_dividend_date = cal.addBusinessDays(
             self._ncd, -self.num_ex_dividend_days)  # 除息日
@@ -391,7 +391,7 @@ class BondAdvRedemption(Bond):
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
                                            self.settlement_date_,
                                            self._ncd,
-                                           self.freq_type_)  # 计算应计日期，返回应计因数、应计天数、基数
+                                           self.freq_type)  # 计算应计日期，返回应计因数、应计天数、基数
 
         for rdp in range(len(self.rdp_dates)):
             if self.settlement_date_ < self.rdp_dates[rdp]:
