@@ -68,6 +68,18 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         return (p_up - 2.0 * p0 + p_down) / bump / bump
 
 
+def newton_fun(y, *args):
+    """ Function is used by scipy.optimize.newton """
+    self = args[0]             # 实例对象
+    price = args[1]            # 对照的标准
+    attr = args[2]             # 需要调整的参数
+    fun = args[3]              # 调整参数后需重新计算的方法
+    setattr(self, attr, y)     # 调整参数
+    px = getattr(self, fun)()  # 重新计算方法的返回值
+    obj_fn = px - price        # 计算误差
+    return obj_fn
+
+
 @njit(fastmath=True, cache=True)
 def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
     ''' Calculation of the FX Option delta. Used in the determination of

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 
-from turing_models.instruments.common import greek
+from turing_models.instruments.common import greek, newton_fun
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.calendar import TuringCalendar
@@ -13,26 +13,6 @@ from turing_models.utilities.global_types import TuringYTMCalcType
 from turing_models.utilities.helper_functions import to_string
 from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-
-
-def _f(y, *args):
-    """ Function used to do root search in price to yield calculation. """
-    bond = args[0]
-    price = args[1]
-    bond.ytm_ = y
-    px = bond.full_price_from_ytm()
-    obj_fn = px - price
-    return obj_fn
-
-
-def _g(s, *args):
-    """ Function used to do root search in price to implied spread calculation. """
-    bond = args[0]
-    price = args[1]
-    bond.spread_adjustment = s
-    px = bond.full_price_from_discount_curve()
-    obj_fn = px - price
-    return obj_fn
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -116,9 +96,9 @@ class BondFixedRate(Bond):
         self.calc_accrued_interest()
         full_price = self.market_clean_price + self._accrued_interest
 
-        argtuple = (self, full_price)
+        argtuple = (self, full_price, 'spread_adjustment', 'full_price_from_discount_curve')
 
-        implied_spread = optimize.newton(_g,
+        implied_spread = optimize.newton(newton_fun,
                                          x0=0.05,  # guess initial value of 5%
                                          fprime=None,
                                          args=argtuple,
@@ -311,9 +291,9 @@ class BondFixedRate(Bond):
         ytms = []
 
         for full_price in full_prices:
-            argtuple = (self, full_price)
+            argtuple = (self, full_price, 'ytm_', 'full_price_from_ytm')
 
-            ytm = optimize.newton(_f,
+            ytm = optimize.newton(newton_fun,
                                   x0=0.05,  # guess initial value of 5%
                                   fprime=None,
                                   args=argtuple,
