@@ -34,6 +34,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     freq_type: Union[str, TuringFrequencyTypes] = None     # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None   # 计息类型
     par: float = None                                      # 面值
+    cpn_type: str = None                                   # 付息方式
     # curve_name: Union[str, CurveCode] = None
     curve_code: Union[str, YieldCurveCode] = None          # 曲线编码
     value_date: TuringDate = TuringDate(
