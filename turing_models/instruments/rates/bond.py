@@ -34,7 +34,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     freq_type: Union[str, TuringFrequencyTypes] = None     # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None   # 计息类型
     par: float = None                                      # 面值
-    curve_name: Union[str, CurveCode] = None
+    # curve_name: Union[str, CurveCode] = None
     curve_code: Union[str, YieldCurveCode] = None          # 曲线编码
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))          # 估值日
@@ -55,6 +55,9 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             self.due_date = self.issue_date.addYears(self.bond_term_year)
         if self.issue_date:
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
+            if self.curve_code:
+                self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
+                self.cv.resolve()
         if self.freq_type:
             if self.freq_type == '每年付息':
                 self.freq_type = TuringFrequencyTypes.ANNUAL
@@ -87,9 +90,6 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 pass
             else:
                 raise TuringError('Please check the input of accrual_type')
-        if self.curve_code:
-            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code, curve_name=self.curve_name)
-            self.cv.resolve()
         self.ca = CurveAdjustment()
 
     @property
