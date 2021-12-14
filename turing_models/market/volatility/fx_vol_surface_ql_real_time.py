@@ -16,12 +16,13 @@ from datetime import datetime
 from scipy.interpolate import CubicSpline
 from scipy.stats import norm
 from matplotlib import cm
+import datetime as dt
+
 
 
 class FXVolSurface:
 
-    def __init__(self, vol_data, d_ccy, f_ccy, spot, fwd_crv, d_crv, f_crv, today, calendar, convention, daycount,
-                 excludePremium):
+    def __init__(self, vol_data, d_ccy, f_ccy, spot, fwd_crv, d_crv, f_crv, today, calendar, convention, daycount, excludePremium):
 
         self.vol_data = vol_data
         self.d_ccy = d_ccy
@@ -53,7 +54,10 @@ class FXVolSurface:
 
         for ix, row in self.vol_data.iterrows():
             tenor = row['Tenor']
-            expiry = self.calendar.advance(self.today, ql.Period(tenor))
+            dates = dt.datetime.strptime(row["Date"],"%Y/%m/%d")
+            dates = ql.Date(dates.day,dates.month, dates.year)
+            expiry = dates
+            #expiry = self.calendar.advance(self.today, ql.Period(tenor))
             expiry_list.append(expiry)
             T = self.daycount.yearFraction(self.today, expiry)
             F = self.spot / self.fwd_crv.discount(T)
@@ -65,14 +69,10 @@ class FXVolSurface:
             sigma_10DP = row['10DP']
 
             if self.excludePremium:
-                strike_25DC = F / math.exp(
-                    norm.ppf(0.25 / df_f) * sigma_25DC * math.sqrt(T) - 0.5 * sigma_25DC ** 2 * T)
-                strike_25DP = F / math.exp(
-                    - norm.ppf(0.25 / df_f) * sigma_25DP * math.sqrt(T) - 0.5 * sigma_25DP ** 2 * T)
-                strike_10DC = F / math.exp(
-                    norm.ppf(0.10 / df_f) * sigma_10DC * math.sqrt(T) - 0.5 * sigma_10DC ** 2 * T)
-                strike_10DP = F / math.exp(
-                    - norm.ppf(0.10 / df_f) * sigma_10DP * math.sqrt(T) - 0.5 * sigma_10DP ** 2 * T)
+                strike_25DC = F / math.exp(norm.ppf(0.25 / df_f) * sigma_25DC * math.sqrt(T) - 0.5 * sigma_25DC ** 2 * T)
+                strike_25DP = F / math.exp( - norm.ppf(0.25 / df_f) * sigma_25DP * math.sqrt(T) - 0.5 * sigma_25DP ** 2 * T)
+                strike_10DC = F / math.exp(norm.ppf(0.10 / df_f) * sigma_10DC * math.sqrt(T) - 0.5 * sigma_10DC ** 2 * T)
+                strike_10DP = F / math.exp( - norm.ppf(0.10 / df_f) * sigma_10DP * math.sqrt(T) - 0.5 * sigma_10DP ** 2 * T)
 
                 strike_25DC_list.append(strike_25DC)
                 strike_25DP_list.append(strike_25DP)
@@ -81,9 +81,9 @@ class FXVolSurface:
 
             else:
                 strike_25DC = F / math.exp(norm.ppf(0.25) * sigma_25DC * math.sqrt(T) - 0.5 * sigma_25DC ** 2 * T)
-                strike_25DP = F / math.exp(- norm.ppf(0.25) * sigma_25DP * math.sqrt(T) - 0.5 * sigma_25DP ** 2 * T)
+                strike_25DP = F / math.exp( - norm.ppf(0.25) * sigma_25DP * math.sqrt(T) - 0.5 * sigma_25DP ** 2 * T)
                 strike_10DC = F / math.exp(norm.ppf(0.10) * sigma_10DC * math.sqrt(T) - 0.5 * sigma_10DC ** 2 * T)
-                strike_10DP = F / math.exp(- norm.ppf(0.10) * sigma_10DP * math.sqrt(T) - 0.5 * sigma_10DP ** 2 * T)
+                strike_10DP = F / math.exp( - norm.ppf(0.10) * sigma_10DP * math.sqrt(T) - 0.5 * sigma_10DP ** 2 * T)
 
                 strike_25DC_list.append(strike_25DC)
                 strike_25DP_list.append(strike_25DP)
@@ -96,6 +96,8 @@ class FXVolSurface:
         self.vol_data['Strike_ATM'] = strike_ATM_list
         self.vol_data['Strike_25DC'] = strike_25DC_list
         self.vol_data['Strike_10DC'] = strike_10DC_list
+
+
 
     def interp_vol(self, expiry, strike):
 
@@ -112,10 +114,9 @@ class FXVolSurface:
             else:
                 interp_vol = interp(strike)
 
-        elif expiry >= self.vol_data.loc[len(self.vol_data) - 1, 'expiry']:
-            smile = self.vol_data.loc[len(self.vol_data) - 1, ['10DP', '25DP', 'ATM', '25DC', '10DC']]
-            strikes = self.vol_data.loc[
-                len(self.vol_data) - 1, ['Strike_10DP', 'Strike_25DP', 'Strike_ATM', 'Strike_25DC', 'Strike_10DC']]
+        elif expiry >= self.vol_data.loc[len(self.vol_data)-1, 'expiry']:
+            smile = self.vol_data.loc[len(self.vol_data)-1, ['10DP', '25DP', 'ATM', '25DC', '10DC']]
+            strikes = self.vol_data.loc[len(self.vol_data)-1, ['Strike_10DP', 'Strike_25DP', 'Strike_ATM', 'Strike_25DC', 'Strike_10DC']]
             interp = CubicSpline(strikes, smile, True)
             if strike <= strikes[0]:
                 interp_vol = smile[0]
@@ -128,9 +129,9 @@ class FXVolSurface:
             pos_right = np.argmax(self.vol_data['expiry'] > expiry)
             pos_left = pos_right - 1
 
+
             smile_left = self.vol_data.loc[pos_left, ['10DP', '25DP', 'ATM', '25DC', '10DC']]
-            strikes_left = self.vol_data.loc[
-                pos_left, ['Strike_10DP', 'Strike_25DP', 'Strike_ATM', 'Strike_25DC', 'Strike_10DC']]
+            strikes_left = self.vol_data.loc[pos_left, ['Strike_10DP', 'Strike_25DP', 'Strike_ATM', 'Strike_25DC', 'Strike_10DC']]
             interp_left = CubicSpline(strikes_left, smile_left, True)
             if strike <= strikes_left[0]:
                 interp_vol_left = smile_left[0]
@@ -142,9 +143,9 @@ class FXVolSurface:
             dcf_left = self.daycount.yearFraction(self.today, self.vol_data.loc[pos_left, 'expiry'])
             var_left = interp_vol_left ** 2 * dcf_left
 
+
             smile_right = self.vol_data.loc[pos_right, ['10DP', '25DP', 'ATM', '25DC', '10DC']]
-            strikes_right = self.vol_data.loc[
-                pos_right, ['Strike_10DP', 'Strike_25DP', 'Strike_ATM', 'Strike_25DC', 'Strike_10DC']]
+            strikes_right = self.vol_data.loc[pos_right, ['Strike_10DP', 'Strike_25DP', 'Strike_ATM', 'Strike_25DC', 'Strike_10DC']]
             interp_right = CubicSpline(strikes_right, smile_right, True)
 
             if strike <= strikes_right[0]:
@@ -159,8 +160,6 @@ class FXVolSurface:
 
             dcf = self.daycount.yearFraction(self.today, expiry)
 
-            interp_vol = math.sqrt(
-                (var_left * (dcf_right - dcf) + var_right * (dcf - dcf_left)) / (dcf_right - dcf_left) / dcf)
+            interp_vol = math.sqrt((var_left * (dcf_right - dcf) + var_right * (dcf - dcf_left)) / (dcf_right - dcf_left) / dcf)
 
         return interp_vol
-

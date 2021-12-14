@@ -959,12 +959,12 @@ class RMBIRCurveType(Enum):
 class DiscountCurveType(Enum):
     Shibor3M = 'Shibor3M'
     Shibor3M_tr = 'Shibor3M_tr'
-    FlatForward = 'FlatForward'
+    CNYShibor3M = 'CNYShibor3M'
     FX_Implied = 'FX_Implied'
     FX_Implied_tr = 'FX_Implied_tr'
     USDLibor3M = 'USDLibor3M'
-    CNYbbg536 = "CNYbbg536"
     FX_Forword = 'FX_Forword'
+    FX_Forword_fq = 'FX_Forword_fq'
     FX_Forword_tr = 'FX_Forword_tr'
 
 
@@ -1114,6 +1114,15 @@ class AssetType(Enum):
 
     def __repr__(self):
         return self.value
+
+
+class DayCountType(Enum):
+    Actual360 = 'ACT/360'
+    Actual364 = 'ACT/364'
+    Actual365Fixed = 'ACT/365F'
+    Thirty360 = '30/360'
+    Thirty365 = '30/365'
+    ActualActual = 'ACT/ACT'
 
 
 class TuringFXATMMethod(Enum):
@@ -1343,11 +1352,12 @@ class Curve:
     curve_code: Union[str, YieldCurveCode] = None    # 曲线编码
     curve_name: str = None                           # 曲线名称
     curve_data: pd.DataFrame = None                  # 曲线数据，列索引为'tenor'和'rate'
+    curve_type: str = None
 
     def __post_init__(self):
         """估值日期和曲线编码不能为空"""
         assert self.value_date, "value_date can't be None"
-        assert self.curve_code, "curve_code can't be None"
+        # assert self.curve_code, "curve_code can't be None"
 
     def set_value_date(self, value):
         """设置估值日期"""

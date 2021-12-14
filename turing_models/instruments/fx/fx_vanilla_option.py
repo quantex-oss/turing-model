@@ -18,13 +18,23 @@ class FXVanillaOption(FXOption):
 
     def __post_init__(self):
         super().__post_init__()
+        if self.notional_currency and self.domestic_name and self.foreign_name and self.notional and self.strike:
+            if self.notional_currency == self.domestic_name:
+                self.notional_dom = self.notional
+                self.notional_for = self.notional / self.strike
+            elif self.notional_currency == self.foreign_name:
+                self.notional_for = self.notional
+                self.notional_dom = self.notional * self.strike
+            else:
+                raise TuringError("Invalid notional currency.")
+
         if self.domestic_name and self.foreign_name \
-           and self.strike and self.start_date and self.expiry_ql \
+           and self.strike and self.start_date_ql and self.expiry_ql \
            and self.option_type and self.notional:
             self.option = FXVanilla(d_ccy=self.domestic_name,
                                     f_ccy=self.foreign_name,
                                     strike=self.strike,
-                                    start=self.start_date,
+                                    start=self.start_date_ql,
                                     expiry=self.expiry_ql,
                                     flavor=self.option_type_,
                                     notional=self.notional)
@@ -37,10 +47,6 @@ class FXVanillaOption(FXOption):
             return "put"
         else:
             raise TuringError('Please check the input of option_type')
-
-    @property
-    def value_date_ql(self):
-        return ql.Date(self.value_date_._d, self.value_date_._m, self.value_date_._y)
 
     def params(self) -> list:
         return [

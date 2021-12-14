@@ -53,8 +53,8 @@ class Shibor3M:
                              float_daycount, curve_ts)
 
         for i in fixing_data.index[: -1]:
-            day1 = ql.DateParser.parseFormatted(fixing_data['日期'][i], '%Y-%m-%d')
-            day2 = ql.DateParser.parseFormatted(fixing_data['日期'][i + 1], '%Y-%m-%d')
+            day1 = ql.DateParser.parseFormatted(fixing_data['Date'][i], '%Y-%m-%d')
+            day2 = ql.DateParser.parseFormatted(fixing_data['Date'][i + 1], '%Y-%m-%d')
             f = fixing_data['Fixing'][i]
             temp_day = day1
 
@@ -62,7 +62,7 @@ class Shibor3M:
                 index.addFixing(temp_day, f, True)
                 temp_day = calendar.advance(temp_day, 1, ql.Days)
 
-        temp_day = ql.DateParser.parseFormatted(fixing_data['日期'][fixing_data.index[-1]], '%Y-%m-%d')
+        temp_day = ql.DateParser.parseFormatted(fixing_data['Date'][fixing_data.index[-1]], '%Y-%m-%d')
         f = fixing_data['Fixing'][fixing_data.index[-1]]
 
         while temp_day <= today:
@@ -102,6 +102,64 @@ class Shibor3M:
         return curve, index
 
 
+# CNY Shibor
+class CNYShibor3M:
+
+    def __init__(self, curve_data, fixing_data, today):
+
+        self.name = 'CNYShibor3M'
+        self.curve_data = curve_data.copy()
+        self.fixing_data = fixing_data.copy()
+        self.today = today
+
+        self.curve, self.index = self._build(self.curve_data, self.fixing_data, self.today)
+
+    def _build(self, curve_data, fixing_data, today):
+        calendar = ql.China(ql.China.IB)
+        convention = ql.ModifiedFollowing
+        daycount = ql.Actual360()
+        swap_delay = 1
+        eom = True
+        curve_tenors = curve_data['Tenor']
+        dates = [today] + [calendar.advance(today, ql.Period(tenor)) for tenor in curve_tenors]
+        # dates = [today] + [ql.Date(d.day, d.month, d.year) for d in curve_data.Date]
+        zeros = [0] + [zero / 100 for zero in curve_data['Rate']]
+
+        curve = ql.ZeroCurve(dates, zeros, daycount, calendar)
+        curve_ts = ql.YieldTermStructureHandle(curve)
+
+        index = ql.IborIndex(self.name, ql.Period('3M'), swap_delay, ql.CNYCurrency(), calendar, convention, eom,
+                             daycount, curve_ts)
+
+        for i in fixing_data.index[: -1]:
+            day1 = ql.DateParser.parseFormatted(str(fixing_data['Date'][i]), '%Y-%m-%d')
+            day2 = ql.DateParser.parseFormatted(str(fixing_data['Date'][i + 1]), '%Y-%m-%d')
+            f = fixing_data['Fixing'][i]
+            temp_day = day1
+
+            while temp_day < day2:
+                index.addFixing(temp_day, f, True)
+                temp_day = calendar.advance(temp_day, 1, ql.Days)
+
+        temp_day = ql.DateParser.parseFormatted(str(fixing_data['Date'][fixing_data.index[-1]]), '%Y-%m-%d')
+        f = fixing_data['Fixing'][fixing_data.index[-1]]
+
+        while temp_day <= today:
+            index.addFixing(temp_day, f, True)
+            temp_day = calendar.advance(temp_day, 1, ql.Days)
+
+        return curve, index
+
+    def tweak_parallel(self, tweak):
+        curve_data_tweaked = self.curve_data.copy()
+
+        curve_data_tweaked['ZeroRate'] += tweak
+
+        curve, index = self._build(curve_data_tweaked, self.fixing_data, self.today)
+
+        return curve, index
+
+
 # NDCNYDiscount
 class NDCNYDiscount:
 
@@ -122,6 +180,8 @@ class NDCNYDiscount:
         return ql.ZeroCurve(dates, zeros, daycount, calendar,
                             ql.Linear(), ql.Compounded, ql.Quarterly)
 
+    # USD Libor
+
 
 # USD Libor
 class USDLibor3M:
@@ -138,9 +198,11 @@ class USDLibor3M:
         calendar = ql.UnitedStates()
         convention = ql.ModifiedFollowing
         daycount = ql.Thirty360()
-
-        dates = [today] + [calendar.advance(today, ql.Period(tenor)) for tenor in curve_data['Tenor']]
-        zeros = [0] + [zero for zero in curve_data['Rate']]
+        # dates = [dt.datetime.strptime(x,"%Y/%m/%d") for x in curve_data.Date]
+        # dates = [today] + [ql.Date(d.day, d.month, d.year) for d in curve_data.Date]
+        curve_tenors = curve_data['Tenor']
+        dates = [today] + [calendar.advance(today, ql.Period(tenor)) for tenor in curve_tenors]
+        zeros = [0] + [zero / 100 for zero in curve_data['Rate']]
 
         curve = ql.ZeroCurve(dates, zeros, daycount, calendar)
         curve_ts = ql.YieldTermStructureHandle(curve)
@@ -210,3 +272,33 @@ class FXImpliedAssetCurve:
         asset_crv.enableExtrapolation()
 
         return asset_crv
+
+
+# FX fwd curve
+class FXForwardCurveFQ:
+
+    def __init__(self, spot, fwd_data, today, calendar, daycount):
+        self.spot = spot
+        self.fwd_data = fwd_data.copy()
+        self.today = today
+        self.calendar = calendar
+        self.daycount = daycount
+        self.curve = self._build(self.spot, self.fwd_data, self.today,
+                                 self.calendar, self.daycount)
+
+    def _build(self, spot, fwd_data, today, calendar, daycount):
+        curve_tenors = fwd_data['Tenor']
+        fwd_dates = [today] + [calendar.advance(today, ql.Period(tenor)) for tenor in curve_tenors]
+        # fwd_dates = [today] + [calendar.advance(today, ql.Period(fwd_data.loc[ix, ['Tenor']][0])) for
+        #                        ix in fwd_data.index]
+        # fwd_dates = fwd_data.Date
+        # fwd_dates = [dt.datetime.strptime(x, "%Y/%m/%d") for x in fwd_dates]
+        # fwd_dates = [today] + [ql.Date(d.day, d.month, d.year) for d in fwd_dates]
+        fwd_points = [fwd_data.loc[ix, ['Spread']][0] for ix in fwd_data.index]
+        fwd_points[0] = -fwd_points[0]
+        fwd_points[1] = -fwd_points[1]
+        fwd_dfs = [1] + [spot / (spot + s) for s in fwd_points]
+        fwd_crv = ql.DiscountCurve(fwd_dates, fwd_dfs, daycount, calendar)
+        fwd_crv.enableExtrapolation()
+
+        return fwd_crv
