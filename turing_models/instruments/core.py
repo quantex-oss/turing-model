@@ -1,12 +1,10 @@
-import functools
 import inspect
 import traceback
 from typing import Union, List, Iterable
 
-from loguru import logger
-
 from fundamental import PricingContext
 from fundamental.base import ctx, Context
+from fundamental.units.request_id_log import logger
 from turing_models.instruments.common import RiskMeasure
 
 
@@ -104,7 +102,7 @@ class InstrumentBase:
                     setattr(self, k, v)
                 else:
                     setattr(self.ctx, k, v)
-    
+
     def main(self, *args, **kw):
         context = kw.pop('context', '')
         try:
@@ -117,7 +115,7 @@ class InstrumentBase:
         asset_id = kw.pop('assetId', '')
         request_id = kw.pop('request_id', '')
         if request_id:
-            logger.bind(request_id=request_id)
+            self.ctx.request_id = request_id
         if asset_id:
             setattr(self, 'asset_id', asset_id)
             getattr(self, '_resolve')()
