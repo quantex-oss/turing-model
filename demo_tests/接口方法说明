@@ -11,7 +11,7 @@ symbol        time(datetime.datetime格式)   price  price_change  change_percen
 
 2、查询历史债券行情
 https://yapi.iquantex.com/project/700/interface/api/36850
-参数：symbol: (str, list), start: TuringDate, end: TuringDate
+参数：symbol: (str, list), start: datetime.datetime, end: datetime.datetime
 返回值格式：dataframe
 示例：
                       date(datetime.datetime格式)   close  high   low  open  volume  clean_price  dirty_price  ytm  modified_duration
@@ -32,7 +32,7 @@ symbol    serial_number
 
 3、查询中债登债券估值
 https://yapi.iquantex.com/project/700/interface/api/36874
-参数：symbol: (str, list), start: TuringDate, end: TuringDate
+参数：symbol: (str, list), start: datetime.datetime, end: datetime.datetime, data_source: str
 返回值格式：dataframe
 示例：类似2
 备注：时间相关的改成datetime.datetime格式
@@ -40,8 +40,10 @@ https://yapi.iquantex.com/project/700/interface/api/36874
 
 4、查询全球同业拆放利率曲线
 https://yapi.iquantex.com/project/700/interface/api/36966
-参数：ibor_type: str, currency: str, start: TuringDate, end: TuringDate
+参数：ibor_type: (str, IBORType), currency: (str, Currency), start: datetime.datetime, end: datetime.datetime
 备注：ibor_type对应接口的irType
+返回值格式：dataframe
+示例：
                                                  tenor  origin_tenor   rate     change
 date(datetime.datetime格式)    serial_number
 2021-07-29 00:00:00+08:00        0               0.003     ON          0.01876  -0.00302
@@ -56,8 +58,9 @@ date(datetime.datetime格式)    serial_number
 
 5、利率——查询利率互换曲线
 https://yapi.iquantex.com/project/700/interface/api/36942
-参数：ir_type: str, currency: str, start: TuringDate, end: TuringDate
-
+参数：ir_type: (str, list, IRType, List[IRType]), currency: (str, Currency), start: datetime.datetime, end: datetime.datetime
+返回值格式：dataframe
+示例：
                                                                  tenor  origin_tenor    ask      average      bid
 ir_type         date(datetime.datetime格式)    serial_number
 Shibor3M        2021-07-29 00:00:00+08:00        0               0.5       6M          0.02485  0.024825    0.0248
@@ -80,3 +83,84 @@ LPR1Y           2021-07-29 00:00:00+08:00        0               0.5       6M   
 
 6、外汇——查询外汇掉期曲线
 https://yapi.iquantex.com/project/700/interface/api/36918
+参数：currency_pair: (str, CurrencyPair, List[str], List[CurrencyPair]), start: datetime.datetime, end: datetime.datetime, data_source: str
+备注：currency_pair对应接口的assetIdList
+返回值格式：dataframe
+示例：
+                                                                    tenor  origin_tenor    swap_point      exchange_rate      value_date(datetime.datetime格式)
+currency_pair         date(datetime.datetime格式)    serial_number
+USD/CNY             2021-07-29 00:00:00+08:00        0               0.5       6M          ...              ...                 ...
+                                                     1               0.75      9M
+                                                     2               1         1Y
+                                                     ...
+                    2021-07-30 00:00:00+08:00        0               0.5       6M
+                                                     1               0.75      9M
+                                                     2               1         1Y
+                                                     ...
+JPY/CNY             2021-07-29 00:00:00+08:00        0               0.5       6M
+                                                     1               0.75      9M
+                                                     2               1         1Y
+                                                     ...
+                    2021-07-30 00:00:00+08:00        0               0.5       6M
+                                                     1               0.75      9M
+                                                     2               1         1Y
+                                                     ...
+
+
+7、外汇——查询外汇期权隐含波动率曲线
+https://yapi.iquantex.com/project/700/interface/api/36902
+参数：currency_pair: (str, CurrencyPair, List[str], List[CurrencyPair]), start: datetime.datetime, end: datetime.datetime, volatility_type: str
+备注：currency_pair对应接口的assetIdList
+返回值格式：dataframe
+示例：
+                                                                                  tenor  origin_tenor  volatility      bid_volatility      ask_volatility
+currency_pair  volatility_type   date(datetime.datetime格式)    serial_number
+USD/CNY            ATM            2021-07-29 00:00:00+08:00        0               0.5       6M          ...              ...                 ...
+                                                                   1               0.75      9M
+                                                                   2               1         1Y
+                                                                   ...
+                                  2021-07-30 00:00:00+08:00        0               0.5       6M
+                                                                   1               0.75      9M
+                                                                   2               1         1Y
+                                                                   ...
+                  25D CALL        2021-07-29 00:00:00+08:00        0               0.5       6M          ...              ...                 ...
+                                                                   1               0.75      9M
+                                                                   2               1         1Y
+                                                                   ...
+                                  2021-07-30 00:00:00+08:00        0               0.5       6M
+                                                                   1               0.75      9M
+                                                                   2               1         1Y
+                                                                   ...
+JPY/CNY            ATM            2021-07-29 00:00:00+08:00        0               0.5       6M
+                                                                   1               0.75      9M
+                                                                   2               1         1Y
+                                                                   ...
+                                  2021-07-30 00:00:00+08:00        0               0.5       6M
+                                                                   1               0.75      9M
+                                                                   2               1         1Y
+                                                                   ...
+                   ...
+8、利率——查询外币隐含利率曲线
+https://yapi.iquantex.com/project/700/interface/api/36910
+参数：currency_pair: (str, CurrencyPair, List[str], List[CurrencyPair]), curve_type: str, start: datetime.datetime, end: datetime.datetime
+备注：currency_pair对应接口的assetIdList
+返回值格式：dataframe
+示例：
+                                                                    tenor  origin_tenor    implied_interest_rate      cny_implied_interest_rate      spot_exchange_rate   swap_point
+currency_pair       date(datetime.datetime格式)    serial_number
+USD/CNY             2021-07-29 00:00:00+08:00        0               0.5       6M          ...              ...                 ...
+                                                     1               0.75      9M
+                                                     2               1         1Y
+                                                     ...
+                    2021-07-30 00:00:00+08:00        0               0.5       6M
+                                                     1               0.75      9M
+                                                     2               1         1Y
+                                                     ...
+JPY/CNY             2021-07-29 00:00:00+08:00        0               0.5       6M
+                                                     1               0.75      9M
+                                                     2               1         1Y
+                                                     ...
+                    2021-07-30 00:00:00+08:00        0               0.5       6M
+                                                     1               0.75      9M
+                                                     2               1         1Y
+                                                     ...

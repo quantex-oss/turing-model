@@ -56,8 +56,8 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             self.due_date = self.issue_date.addYears(self.bond_term_year)
         if self.issue_date:
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
+            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
             if self.curve_code:
-                self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
                 self.cv.resolve()
         if self.freq_type:
             if self.freq_type == '每年付息':
@@ -103,6 +103,9 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     def curve_resolve(self):
         if self.ctx_pricing_date:
             self.cv.set_value_date(self.settlement_date_)
+            self.cv.resolve()
+        if self.ctx_bond_yield_curve is not None:
+            self.cv.set_curve_data(self.ctx_bond_yield_curve)
             self.cv.resolve()
         self.curve_adjust()
 
