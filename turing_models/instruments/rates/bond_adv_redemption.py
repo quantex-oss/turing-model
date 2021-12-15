@@ -69,12 +69,11 @@ class BondAdvRedemption(Bond):
     def _calculate_rdp_pcp(self):
         """ Determine the bond remaining principal."""
 
-        # self.rdp_dates = [self.issue_date]
+        self.rdp_dates.insert(0, self.issue_date)
         self.remaining_principal = [1]
-        for i in range(len(self.rdp_dates)):
-            # self.rdp_dates.append(self._flow_dates[self.rdp_terms[i]])
+        for i in range(len(self.rdp_dates)-1):
             self.remaining_principal.append(self.remaining_principal[i] - self.rdp_pct[i])
-
+        
     @property
     def discount_curve(self):
         if self._discount_curve:
