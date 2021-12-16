@@ -12,7 +12,7 @@ from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAd
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
-from turing_models.utilities.global_types import TuringYTMCalcType
+from turing_models.utilities.global_types import TuringYTMCalcType, TuringCouponType
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.turing_date import TuringDate
@@ -56,9 +56,20 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             self.due_date = self.issue_date.addYears(self.bond_term_year)
         if self.issue_date:
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
+            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
             if self.curve_code:
-                self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
                 self.cv.resolve()
+        if self.cpn_type:
+            if self.cpn_type == 'zero coupon':
+                self.cpn_type = TuringCouponType.ZERO_COUPON
+            elif self.cpn_type == 'discount':
+                self.cpn_type = TuringCouponType.DISCOUNT
+            elif self.cpn_type == 'coupon-carrying':
+                self.cpn_type = TuringCouponType.COUPON_CARRYING
+            elif isinstance(self.cpn_type, TuringCouponType):
+                pass
+            else:
+                raise TuringError('Please check the input of cpn_type')
         if self.freq_type:
             if self.freq_type == '每年付息':
                 self.freq_type = TuringFrequencyTypes.ANNUAL
@@ -76,6 +87,8 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 raise TuringError('Please check the input of freq_type')
             self._calculate_cash_flow_dates()
             self.frequency = TuringFrequency(self.freq_type)
+        else:
+            self._flow_dates = [self.issue_date, self.due_date]    
         if self.accrual_type:
             if self.accrual_type == 'ACT/365':
                 self.accrual_type = TuringDayCountTypes.ACT_365L
@@ -103,6 +116,9 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     def curve_resolve(self):
         if self.ctx_pricing_date:
             self.cv.set_value_date(self.settlement_date_)
+            self.cv.resolve()
+        if self.ctx_bond_yield_curve is not None:
+            self.cv.set_curve_data(self.ctx_bond_yield_curve)
             self.cv.resolve()
         self.curve_adjust()
 

@@ -1125,6 +1125,24 @@ class DayCountType(Enum):
     ActualActual = 'ACT/ACT'
 
 
+class IBORType(Enum):
+    Shibor = 'Shibor'
+    Libor = 'Libor'
+    Tibor = 'Tibor'
+    Hibor = 'Hibor'
+    Euribor = 'Euribor'
+
+
+class IRType(Enum):
+    FR007 = 'FR007'
+    FDR001 = 'FDR001'
+    FDR007 = 'FDR007'
+    LPR1Y = 'LPR1Y'
+    Shibor3M = 'Shibor3M'
+    ShiborON = 'ShiborON'
+    LPR5Y = 'LPR5Y'
+
+
 class TuringFXATMMethod(Enum):
     SPOT = 1  # Spot FX Rate
     FWD = 2  # At the money forward
@@ -1154,6 +1172,12 @@ class Ctx:
         asset_id = getattr(self, 'bond_symbol', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"clean_price_{asset_id}")
+
+    @property
+    def ctx_bond_yield_curve(self):
+        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"bond_yield_curve_{asset_id}")
 
     @property
     def ctx_spread_adjustment(self):
@@ -1352,7 +1376,7 @@ class Curve:
     curve_code: Union[str, YieldCurveCode] = None    # 曲线编码
     curve_name: str = None                           # 曲线名称
     curve_data: pd.DataFrame = None                  # 曲线数据，列索引为'tenor'和'rate'
-    curve_type: str = None
+    curve_type: str = None                           # TODO: 兼容债券收益率之外的曲线类型
 
     def __post_init__(self):
         """估值日期和曲线编码不能为空"""
@@ -1363,21 +1387,25 @@ class Curve:
         """设置估值日期"""
         self.value_date = value
 
-    def set_curve_code(self, value):
-        """设置曲线编码"""
-        self.curve_code = value
+    def set_curve_data(self, value: pd.DataFrame):
+        """设置曲线数据"""
+        self.curve_data = value
 
     def resolve(self):
         """补全/更新数据"""
-        if isinstance(self.curve_code, YieldCurveCode):
-            curve_code = self.curve_code.name
+        if self.curve_code is not None:
+            if isinstance(self.curve_code, YieldCurveCode):
+                curve_code = self.curve_code.name
+            else:
+                curve_code = self.curve_code
+            if self.curve_data is None:
+                self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date).\
+                                  loc[curve_code][['tenor', 'spot_rate']].rename(columns={'spot_rate': 'rate'})
+            if self.curve_name is None:
+                self.curve_name = getattr(YieldCurveCode, curve_code, '')
         else:
-            curve_code = self.curve_code
-        if not self.curve_data:
-            self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date).\
-                              loc[curve_code][['tenor', 'spot_rate']].rename(columns={'spot_rate': 'rate'})
-        if not self.curve_name:
-            self.curve_name = getattr(YieldCurveCode, curve_code, '')
+            if self.curve_data is None:
+                raise TuringError("curve_code and curve_data can't be empty at the same time")
 
     def adjust(self, ca: CurveAdjustment):
         """曲线旋转平移"""

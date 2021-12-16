@@ -105,3 +105,9 @@ class TuringYTMCalcType(Enum):
     UK_DMO = 1,
     US_STREET = 2,
     US_TREASURY = 3
+
+
+class TuringCouponType(Enum):
+    ZERO_COUPON = 1
+    DISCOUNT = 2
+    COUPON_CARRYING = 3
