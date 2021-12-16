@@ -14,9 +14,15 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
+from turing_models.instruments.common import YieldCurveCode, RiskMeasure
+
+from fundamental.pricing_context import PricingContext
+
+import pandas as pd
 import numpy as np
 from scipy import optimize
 
@@ -51,8 +57,6 @@ class BondPutableAdjustable(Bond):
     bond_type: str = None
     coupon: float = 0.0  # 票息
     # ytm: float = None
-    zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）
-    zero_rates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（利率）
     forward_dates: List[Any] = field(default_factory=list)  # 支持手动传入远期曲线（日期）
     forward_rates: List[Any] = field(default_factory=list)  # 支持手动传入远期曲线（利率）
     put_date: TuringDate = None
@@ -89,67 +93,22 @@ class BondPutableAdjustable(Bond):
     
     
     @property
-    def get_yield_curve(self):
-        return TuringDB.bond_yield_curve(curve_code=self.curve_code, date=self.settlement_date_, df=False)[self.curve_code]
-    
-    @property
-    def zero_dates_(self):
-        return self.zero_dates or self.get_yield_curve['tenor']
-
-    @property
-    def zero_rates_(self):
-        return self.zero_rates or self.get_yield_curve['spot_rate']
-          
-    @property
     def __ytm__(self):
         return self._ytm or self.ctx_ytm or self.yield_to_maturity()
 
     @__ytm__.setter
     def __ytm__(self, value: float):
         self._ytm = value
-
-    def curve_adjust(self):
-        """ 支持曲线旋转及平移 """
-        ca = CurveAdjustmentImpl(self.zero_dates,  # 曲线信息
-                                 self.zero_rates,
-                                 self.ctx_parallel_shift,  # 平移量（bps)
-                                 self.ctx_curve_shift,  # 旋转量（bps)
-                                 self.ctx_pivot_point,  # 旋转点（年）
-                                 self.ctx_tenor_start,  # 旋转起始（年）
-                                 self.ctx_tenor_end)  # 旋转终点（年）
-        return ca.get_dates_result(), ca.get_rates_result()
-             
-    @property
-    def zero_dates_adjusted(self):
-        if self.ctx_parallel_shift or self.ctx_curve_shift or \
-           self.ctx_pivot_point or self.ctx_tenor_start or \
-           self.ctx_tenor_end:
-            return self.curve_adjust()[0]
-        else:
-            return self.zero_dates_
-
-    @property
-    def zero_rates_adjusted(self):
-        if self.ctx_parallel_shift or self.ctx_curve_shift or \
-           self.ctx_pivot_point or self.ctx_tenor_start or \
-           self.ctx_tenor_end:
-            return self.curve_adjust()[1]
-        else:
-            return self.zero_rates_
-        
-    @property
-    def dates(self):
-        return self.settlement_date_.addYears(self.zero_dates_adjusted)
     
     @property
     def discount_curve(self):
         if self._discount_curve:
             return self._discount_curve
-        return TuringDiscountCurveZeros(
-            self.settlement_date_, self.dates, self.zero_rates_adjusted)
+        self.curve_resolve()
+        return self.cv.discount_curve()
 
     @discount_curve.setter
-    def discount_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
+    def discount_curve(self, value: TuringDiscountCurve):
         self._discount_curve = value
         
     @property
@@ -157,7 +116,7 @@ class BondPutableAdjustable(Bond):
         if self.forward_dates:
             return self.settlement_date_.addYears(self.forward_dates)
         else:
-            forward_dates = self.dates.copy()
+            forward_dates = self.discount_curve._zeroDates.copy()
             forward_dates = list(filter(lambda x: x >= self.put_date, forward_dates))
             return forward_dates
 
@@ -167,6 +126,7 @@ class BondPutableAdjustable(Bond):
             return self.forward_rates
         else:
             curve_spot = self.discount_curve
+            dfIndex1 = curve_spot.df(self.put_date)
             dc = TuringDayCount(TuringDayCountTypes.ACT_365F)
             forward_rates = []
             for i in range(len(self.forward_dates_)):
@@ -174,7 +134,6 @@ class BondPutableAdjustable(Bond):
                 if acc_factor == 0:
                     forward_rates.append(0)
                 else:
-                    dfIndex1 = curve_spot.df(self.put_date)
                     dfIndex2 = curve_spot.df(self.forward_dates_[i])
                     forward_rates.append(math.pow(dfIndex1 / dfIndex2, 1/acc_factor) - 1)
             return forward_rates
@@ -221,12 +180,11 @@ class BondPutableAdjustable(Bond):
     
     @property
     def _pure_bond(self):
-        pure_bond = BondFixedRate(value_date = self.value_date,
+        pure_bond = BondFixedRate(bond_symbol = "purebond",
+                                  value_date = self.value_date,
                                   issue_date = self.issue_date,
                                   due_date = self.put_date,
                                   coupon = self.coupon,
-                                  zero_dates = self.zero_dates_adjusted,
-                                  zero_rates = self.zero_rates_adjusted,
                                   freq_type = self.freq_type,
                                   accrual_type = self.accrual_type,
                                   par= self.par)
@@ -255,32 +213,31 @@ class BondPutableAdjustable(Bond):
         forward_dates = []
         for i in range(len(self.forward_dates_)):
                 forward_dates.append(dc.yearFrac(self.put_date, self.forward_dates_[i])[0])
-        self._exercised_bond = BondFixedRate(value_date = self.put_date,
+        self._exercised_bond = BondFixedRate(bond_symbol = "exercisedbond",
+                                             value_date = self.put_date,
                                              issue_date = self.put_date,
-                                             market_clean_price=self.put_price,
                                              due_date = self.due_date,
-                                             zero_dates = forward_dates,
-                                             zero_rates = self.forward_rates_,
-                                             freq_type = self.freq_type_,
-                                             accrual_type = self.accrual_type_,
+                                             freq_type = self.freq_type,
+                                             accrual_type = self.accrual_type,
                                              par= self.par)
-    
+        forward_curve = pd.DataFrame(data={'tenor': forward_dates, 'rate': self.forward_rates_})
+        scenario_extreme = PricingContext(bond_yield_curve=[{"bond_symbol": "exercisedbond", "value": forward_curve}],
+                                                            clean_price=[{"bond_symbol": "exercisedbond", "value": self.put_price}])
         accruedAmount = 0
-        
-        full_price = (self._exercised_bond.clean_price_ + accruedAmount)
-    
-        argtuple = (self._exercised_bond, full_price)
+        with scenario_extreme:
+            full_price = (self._exercised_bond.calc(RiskMeasure.CleanPrice) + accruedAmount)
+            argtuple = (self._exercised_bond, full_price)
 
-        c = optimize.newton(_f,
-                            x0=0.05,  # guess initial value of 5%
-                            fprime=None,
-                            args=argtuple,
-                            tol=1e-8,
-                            maxiter=50,
-                            fprime2=None)
+            c = optimize.newton(_f,
+                                x0=0.05,  # guess initial value of 5%
+                                fprime=None,
+                                args=argtuple,
+                                tol=1e-8,
+                                maxiter=50,
+                                fprime2=None)
 
-        return c
-        
+            return c
+            
         
     def _recommend_dir(self):
         if self.value_sys == "中债":
