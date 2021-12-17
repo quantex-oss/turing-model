@@ -8,6 +8,7 @@ from fundamental.portfolio.position import Position
 
 from fundamental.pricing_context import PricingContext
 from turing_models.market.data.china_money_yield_curve import dates, rates
+from turing_models.utilities.global_types import TuringCouponType
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.day_count import TuringDayCountTypes
 from turing_models.utilities.frequency import TuringFrequencyTypes
@@ -24,6 +25,7 @@ bond_pa = BondPutableAdjustable(bond_symbol= "188560.SH",
                                 issue_date=TuringDate(2021, 8, 5),
                                 value_date=TuringDate(2021, 12, 16),
                                 due_date=TuringDate(2025, 8, 5),
+                                cpn_type=TuringCouponType.COUPON_CARRYING,
                                 freq_type=TuringFrequencyTypes.ANNUAL,
                                 accrual_type=TuringDayCountTypes.ACT_365F,
                                 par=100,
@@ -38,18 +40,18 @@ bond_yield_curve=[
 ]
 )
 with scenario_extreme:
-
     price = bond_pa.calc(RiskMeasure.FullPrice)
-# clean_price = bond_pa.calc(RiskMeasure.CleanPrice)
-# ytm = bond_pa.calc(RiskMeasure.YTM)
-# dv01 = bond_pa.calc(RiskMeasure.Dv01)
-# modified_duration = bond_pa.calc(RiskMeasure.ModifiedDuration)
-# dollar_convexity = bond_pa.calc(RiskMeasure.DollarConvexity)
+    clean_price = bond_pa.calc(RiskMeasure.CleanPrice)
+    ytm = bond_pa.calc(RiskMeasure.YTM)
+    dv01 = bond_pa.calc(RiskMeasure.Dv01)
+    modified_duration = bond_pa.calc(RiskMeasure.ModifiedDuration)
+    dollar_convexity = bond_pa.calc(RiskMeasure.DollarConvexity)
 
 print("Bond with putable and rates-adjustable terms:")
-print('price', price)
-# print('clean_price', clean_price)
-# print('ytm', ytm)
-# print('dv01:', dv01)
-# print('modified_duration:', modified_duration)
-# print('dollar_convexity:', dollar_convexity)
+print("recommond direction:",bond_pa.recommend_dir)
+print('full_price', price)
+print('clean_price', clean_price)
+print('ytm', ytm)
+print('dv01:', dv01)
+print('modified_duration:', modified_duration)
+print('dollar_convexity:', dollar_convexity)
