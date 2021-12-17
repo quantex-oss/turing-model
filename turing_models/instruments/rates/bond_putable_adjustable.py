@@ -48,7 +48,6 @@ def _g(y, *args):
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondPutableAdjustable(Bond):
     """ Class for fixed coupon bonds with embedded put optionality and rights to adjust coupon on exercise date. """
-    bond_type: str = None
     coupon: float = 0.0  # 票息
     # ytm: float = None
     zero_dates: List[Any] = field(default_factory=list)  # 支持手动传入曲线（日期）

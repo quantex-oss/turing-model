@@ -242,6 +242,12 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def spot(self):
         return self.exchange_rate
 
+    @staticmethod
+    def trdate_to_qldate(date: TuringDate):
+        """ Convert TuringDate to ql.Date """
+        if date and isinstance(date, TuringDate):
+            return ql.Date(date._d, date._m, date._y)
+
     def check_underlier(self):
         if self.underlier_symbol and not self.underlier:
             if isinstance(self.underlier_symbol, Enum):

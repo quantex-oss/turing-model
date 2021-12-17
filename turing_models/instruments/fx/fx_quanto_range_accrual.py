@@ -20,12 +20,6 @@ from turing_models.utilities.turing_date import TuringDate
 current_path = os.path.dirname(__file__)
 
 
-def trdate_to_qldate(date: TuringDate):
-    """ Convert TuringDate to ql.Date """
-    if date and isinstance(date, TuringDate):
-        return ql.Date(date._d, date._m, date._y)
-
-
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class FXQuantoRangeAccrual(FXOption):
 
@@ -46,10 +40,10 @@ class FXQuantoRangeAccrual(FXOption):
     def __post_init__(self):
         super().__post_init__()
         self.trade_direction = 'long'  # 模型默认为买方角度
-        self.accrual_start_ql = trdate_to_qldate(self.accrual_start)
-        self.accrual_end_ql = trdate_to_qldate(self.accrual_end)
-        self.observe_start_date_ql = trdate_to_qldate(self.observe_start_date)
-        self.observe_end_date_ql = trdate_to_qldate(self.observe_end_date)
+        self.accrual_start_ql = self.trdate_to_qldate(self.accrual_start)
+        self.accrual_end_ql = self.trdate_to_qldate(self.accrual_end)
+        self.observe_start_date_ql = self.trdate_to_qldate(self.observe_start_date)
+        self.observe_end_date_ql = self.trdate_to_qldate(self.observe_end_date)
 
         if self.accrual_start and not self.start_date:
             self.start_date = self.accrual_start

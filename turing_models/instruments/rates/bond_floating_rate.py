@@ -150,7 +150,7 @@ class BondFloatingRate(Bond):
 
         self.calc_accrued_interest()
 
-        dc = TuringDayCount(self.accrual_type_)
+        dc = TuringDayCount(self.accrual_type)
 
         q = self.quoted_margin
         num_flows = len(self._flow_dates)
@@ -229,7 +229,7 @@ class BondFloatingRate(Bond):
         if num_flows == 0:
             raise TuringError("Accrued interest - not enough flow dates.")
 
-        dc = TuringDayCount(self.accrual_type_)
+        dc = TuringDayCount(self.accrual_type)
 
         for i in range(1, num_flows):
             if self._flow_dates[i] > self.settlement_date_:
@@ -240,7 +240,7 @@ class BondFloatingRate(Bond):
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
                                            self.settlement_date_,
                                            self._ncd,
-                                           self.freq_type_)
+                                           self.freq_type)
 
         self._alpha = 1.0 - acc_factor * self.frequency
 
