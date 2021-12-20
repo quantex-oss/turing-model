@@ -4,7 +4,7 @@ from typing import Union, List, Iterable
 
 from fundamental import PricingContext
 from fundamental.base import ctx, Context
-from utils.log.request_id_log import logger
+from utility.log.request_id_log import logger
 from turing_models.instruments.common import RiskMeasure
 
 
