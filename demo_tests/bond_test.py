@@ -40,7 +40,7 @@ bond_fr = BondFixedRate(bond_symbol="210001",
                         curve_code=curve_chinabond,
                         issue_date=TuringDate(2015, 11, 13),
                         # due_date=TuringDate(2025, 11, 14),
-                        bond_term_year=10,
+                        # bond_term_year=10,
                         freq_type=TuringFrequencyTypes.SEMI_ANNUAL,
                         accrual_type=TuringDayCountTypes.ACT_365L,
                         par=100)

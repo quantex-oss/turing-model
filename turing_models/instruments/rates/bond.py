@@ -64,7 +64,6 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self.bond_term_year = acc_factor1
         (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
         self.time_to_maturity_in_year = acc_factor2
-        self.time_to_maturity = self.due_date - self.settlement_date
         if self.cpn_type:
             if self.cpn_type == 'zero coupon':
                 self.cpn_type = TuringCouponType.ZERO_COUPON
@@ -167,6 +166,10 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
         return self.dv01() / dy
+
+    def time_to_maturity(self):
+        """剩余期限"""
+        return self.due_date - self.settlement_date_
 
     def _resolve(self):
         # Bond_ 为自定义时自动生成
