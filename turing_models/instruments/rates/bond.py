@@ -60,9 +60,9 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             if self.curve_code:
                 self.cv.resolve()
         dc = TuringDayCount(TuringDayCountTypes.ACT_365F)
-        (acc_factor1, _ , _) = dc.yearFrac(self.issue_date, self.due_date)
+        (acc_factor1, _, _) = dc.yearFrac(self.issue_date, self.due_date)
         self.bond_term_year = acc_factor1
-        (acc_factor2, _ , _) = dc.yearFrac(self.settlement_date, self.due_date)
+        (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
         self.time_to_maturity_in_year = acc_factor2
         self.time_to_maturity = self.due_date - self.settlement_date
         if self.cpn_type:

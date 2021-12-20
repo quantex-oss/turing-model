@@ -2,21 +2,11 @@ from dataclasses import dataclass
 
 from scipy import optimize
 
+from turing_models.instruments.common import newton_fun
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import to_string
-
-
-def _f(dm, *args):
-    """ Function used to do solve root search in DM calculation """
-
-    self = args[0]
-    full_price = args[1]
-    self.dm = dm
-    px = self.full_price_from_dm()
-    obj_fn = px - full_price
-    return obj_fn
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -57,12 +47,12 @@ class BondFloatingRate(Bond):
         return dv
 
     def dollar_convexity(self):
-        ''' Calculate the bond convexity from the discount margin (DM) using a
+        """ Calculate the bond convexity from the discount margin (DM) using a
         standard model based on assumptions about future Ibor rates. The
         next Ibor payment which has reset is entered, so to is the current
         Ibor rate from settlement to the next coupon date (NCD). Finally there
         is the level of subsequent future Ibor payments and the discount
-        margin. '''
+        margin. """
 
         current_ibor = self.current_ibor
         self.current_ibor = current_ibor - dy
@@ -77,7 +67,7 @@ class BondFloatingRate(Bond):
         return conv
 
     def dollar_credit_duration(self):
-        ''' Calculate the risk or dP/dy of the bond by bumping. '''
+        """ Calculate the risk or dP/dy of the bond by bumping. """
 
         self.calc_accrued_interest()
 
@@ -91,12 +81,12 @@ class BondFloatingRate(Bond):
         return durn
 
     def modified_credit_duration(self):
-        ''' Calculate the modified duration of the bond on a settlement date
+        """ Calculate the modified duration of the bond on a settlement date
         using standard model based on assumptions about future Ibor rates. The
         next Ibor payment which has reset is entered, so to is the current
         Ibor rate from settlement to the next coupon date (NCD). Finally there
         is the level of subsequent future Ibor payments and the discount
-        margin. '''
+        margin. """
 
         dd = self.dollar_credit_duration()
 
@@ -105,8 +95,8 @@ class BondFloatingRate(Bond):
         return md
 
     def macauley_rate_duration(self):
-        ''' Calculate the Macauley duration of the FRN on a settlement date
-        given its yield to maturity. '''
+        """ Calculate the Macauley duration of the FRN on a settlement date
+        given its yield to maturity. """
 
         dd = self.dollar_duration()
 
@@ -116,12 +106,12 @@ class BondFloatingRate(Bond):
         return md
 
     def modified_duration(self):
-        ''' Calculate the modified duration of the bond on a settlement date
+        """ Calculate the modified duration of the bond on a settlement date
         using standard model based on assumptions about future Ibor rates. The
         next Ibor payment which has reset is entered, so to is the current
         Ibor rate from settlement to the next coupon date (NCD). Finally there
         is the level of subsequent future Ibor payments and the discount
-        margin. '''
+        margin. """
 
         dd = self.dollar_duration()
 
@@ -130,9 +120,9 @@ class BondFloatingRate(Bond):
         return md
 
     def principal(self):
-        ''' Calculate the clean trade price of the bond based on the face
+        """ Calculate the clean trade price of the bond based on the face
         amount from its discount margin and making assumptions about the
-        future Ibor rates. '''
+        future Ibor rates. """
 
         full_price = self.full_price_from_dm()
 
@@ -141,12 +131,12 @@ class BondFloatingRate(Bond):
         return principal
 
     def full_price_from_dm(self):
-        ''' Calculate the full price of the bond from its discount margin (DM)
+        """ Calculate the full price of the bond from its discount margin (DM)
         using standard model based on assumptions about future Ibor rates. The
         next Ibor payment which has reset is entered, so to is the current
         Ibor rate from settlement to the next coupon date (NCD). Finally there
         is the level of subsequent future Ibor payments and the discount
-        margin. '''
+        margin. """
 
         self.calc_accrued_interest()
 
@@ -180,12 +170,12 @@ class BondFloatingRate(Bond):
         return pv
 
     def clean_price_from_dm(self):
-        ''' Calculate the bond clean price from the discount margin
+        """ Calculate the bond clean price from the discount margin
         using standard model based on assumptions about future Ibor rates. The
         next Ibor payment which has reset is entered, so to is the current
         Ibor rate from settlement to the next coupon date (NCD). Finally there
         is the level of subsequent future Ibor payments and the discount
-        margin. '''
+        margin. """
 
         full_price = self.full_price_from_dm()
 
@@ -195,8 +185,8 @@ class BondFloatingRate(Bond):
         return clean_price
 
     def discount_margin(self):
-        ''' Calculate the bond's yield to maturity by solving the price
-        yield relationship using a one-dimensional root solver. '''
+        """ Calculate the bond's yield to maturity by solving the price
+        yield relationship using a one-dimensional root solver. """
 
         self.calc_accrued_interest()
 
@@ -206,9 +196,9 @@ class BondFloatingRate(Bond):
         full_price = self.clean_price_ + accrued
         dm_ori = self.dm
 
-        argtuple = (self, full_price)
+        argtuple = (self, full_price, "dm", "full_price_from_dm")
 
-        dm = optimize.newton(_f,
+        dm = optimize.newton(newton_fun,
                              x0=0.01,  # initial value of 1%
                              fprime=None,
                              args=argtuple,
@@ -220,9 +210,9 @@ class BondFloatingRate(Bond):
         return dm
 
     def calc_accrued_interest(self):
-        ''' Calculate the amount of coupon that has accrued between the
+        """ Calculate the amount of coupon that has accrued between the
         previous coupon date and the settlement date. Ex-dividend dates are
-        not handled. Contact me if you need this functionality. '''
+        not handled. Contact me if you need this functionality. """
 
         num_flows = len(self._flow_dates)
 
