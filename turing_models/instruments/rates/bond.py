@@ -9,7 +9,7 @@ from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, Curv
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes
-from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.day_count import TuringDayCountTypes, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
 from turing_models.utilities.global_types import TuringYTMCalcType, TuringCouponType
@@ -29,12 +29,12 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     exchange_code: str = None
     issue_date: TuringDate = None                          # 发行日
     due_date: TuringDate = None                            # 到期日
-    bond_term_year: float = None
-    bond_term_day: float = None
+    # bond_term_year: float = None
+    # bond_term_day: float = None
     freq_type: Union[str, TuringFrequencyTypes] = None     # 付息频率
     accrual_type: Union[str, TuringDayCountTypes] = None   # 计息类型
     par: float = None                                      # 面值
-    cpn_type: str = None                                   # 付息方式
+    cpn_type: Union[str, TuringCouponType] = None                                   # 付息方式
     # curve_name: Union[str, CurveCode] = None
     curve_code: Union[str, YieldCurveCode] = None          # 曲线编码
     value_date: TuringDate = TuringDate(
@@ -52,13 +52,19 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self._accrued_days = 0.0                           # 应计利息天数
         if self.curr_code and isinstance(self.curr_code, Currency):
             self.curr_code = self.curr_code.value          # 转换成字符串，便于rich表格显示
-        if not self.due_date and self.issue_date and self.bond_term_year:
-            self.due_date = self.issue_date.addYears(self.bond_term_year)
+        # if not self.due_date and self.issue_date and self.bond_term_year:
+            # self.due_date = self.issue_date.addYears(self.bond_term_year)
         if self.issue_date:
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
             self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
             if self.curve_code:
                 self.cv.resolve()
+        dc = TuringDayCount(TuringDayCountTypes.ACT_365F)
+        (acc_factor1, _ , _) = dc.yearFrac(self.issue_date, self.due_date)
+        self.bond_term_year = acc_factor1
+        (acc_factor2, _ , _) = dc.yearFrac(self.settlement_date, self.due_date)
+        self.time_to_maturity_in_year = acc_factor2
+        self.time_to_maturity = self.due_date - self.settlement_date
         if self.cpn_type:
             if self.cpn_type == 'zero coupon':
                 self.cpn_type = TuringCouponType.ZERO_COUPON

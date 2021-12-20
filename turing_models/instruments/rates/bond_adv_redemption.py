@@ -185,7 +185,7 @@ class BondAdvRedemption(Bond):
         if self.settlement_date_ > self.due_date:
             raise TuringError("Bond settles after it matures.")
         
-        discount_curve_flat = TuringDiscountCurveFlat(self.settlement_date_, self.ytm_)
+        discount_curve_flat = TuringDiscountCurveFlat(self.settlement_date_, self.ytm_, self.freq_type, self.accrual_type)
 
         px = 0.0
         df = 1.0
