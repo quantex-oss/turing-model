@@ -1,3 +1,4 @@
+import re
 import sys
 from typing import Union
 
@@ -509,3 +510,9 @@ def convert_argument_type(self, func, values):
                 elif '-' in str(value):
                     __value = TuringDate.fromString(value, '%Y-%m-%d')
                 setattr(self, value_name, __value)
+
+
+def pascal_to_snake(camel_case: str):
+    """驼峰转下划线"""
+    snake_case = re.sub(r"(?P<key>[A-Z])", r"_\g<key>", camel_case)
+    return snake_case.lower().strip('_')

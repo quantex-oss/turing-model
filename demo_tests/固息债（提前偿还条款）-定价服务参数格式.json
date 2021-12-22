@@ -1,83 +1,115 @@
 {
-  "data": [
-    {
-      "modulePath": "turing_models.instruments.rates.bond_adv_redemption",
-      "classMeta": {
-        "name": "BondAdvRedemption",
-        "param": {
-          "assetId": "SEC022533308",
-          "bondSymbol": "127157.SH",  // 需要包含交易所后缀的symbol
-          "csname": "PR石城投",
-          "currCode": "CNY",
-          "issueDate": "2015-04-27T00:00:00.000+0800",  // 对应issStartDate
-          "dueDate": "2022-05-04T00:00:00.000+0800",  // 对应xpcDueDate
-          "bondTermYear": 7.0,
-          "bondTermDay": 2557.0,
-          "freqType": "ANNUAL",
-          "accrualType": "ACT/365",
-          "par": 100.0,
-          "cpnType": "COUPON_CARRYING",
-          "curveCode": "CBD100252",
-          "coupon": 0.061,
-          "rdpDates": ["2015-04-27T00:00:00.000+0800", "2016-04-27T00:00:00.000+0800"],  // 对应债券提前偿还本金的ADV_PAY_DATE
-          "rdpPct": [0.1, 0.1]  // 对应债券提前偿还本金的ADV_PAY_RAT
-        }
-      },
-      "function": {
-        "name": "main",
-        "param": {
-          "assetId": "SEC023728407",
-          "pricingContext": {
-            "pricingDate": "latest",
-            "bondYieldCurve": [
-                               {"bond_symbol": "127157.SH", "type": "spot_rate", "value": {"tenor": [0.0000,
-                                                                                                     0.0800,
-                                                                                                     0.1000,
-                                                                                                     0.1700,
-                                                                                                     0.2000,
-                                                                                                     0.2500,
-                                                                                                     0.3000,
-                                                                                                     0.4000,
-                                                                                                     0.5000,
-                                                                                                     0.6000,
-                                                                                                     0.7000,
-                                                                                                     0.7500,
-                                                                                                     0.8000,
-                                                                                                     0.9000,
-                                                                                                     1.0000],
-                                                                                           "rate": [0.013841,
-                                                                                                    0.014126,
-                                                                                                    0.014204,
-                                                                                                    0.015139,
-                                                                                                    0.016354,
-                                                                                                    0.018328,
-                                                                                                    0.019018,
-                                                                                                    0.019564,
-                                                                                                    0.019588,
-                                                                                                    0.019438,
-                                                                                                    0.01931,
-                                                                                                    0.019372,
-                                                                                                    0.01965,
-                                                                                                    0.02054,
-                                                                                                    0.021332]}}
-                              ],
-            "clean_price": [
-              {
-                "bond_symbol": "127157.SH",
-                "value": 99.5
-              }
-            ]
-          },
-          "riskMeasure": [
-            "full_price",
-            "clean_price",
-            "dv01",
-            "dollar_duration",
-            "dollar_convexity",
-            "time_to_maturity"
-          ]
-          }
-        }
-    }
-  ]
+	"module_path": "turing_models.instruments.rates.bond_adv_redemption",
+	"class_meta": {
+		"name": "BondAdvRedemption",
+		"param": {
+			"asset_id": "SEC022533308",  // 可以只传asset_id、wind_id、bbg_id、comb_symbol中的一个，然后通过resolve补全其他数据
+			"wind_id": "",
+			"bbg_id": "",
+			"cusip": "",
+			"sedol": "",
+			"ric": "",
+			"isin": "",
+			"ext_asset_id": "",
+			"asset_name": "",
+			"asset_type": "",
+			"trd_curr_code": "CNY",
+			"symbol": "127157",
+			"comb_symbol": "127157.SH",
+			"exchange": "SH",
+			"issuer": "",
+			"issue_date": "2015-04-27T00:00:00.000+0800",
+			"due_date": "2022-05-04T00:00:00.000+0800",
+			"par": 100.0,
+			"coupon_rate": 0.061,
+			"interest_rate_type": "FIXED_RATE",
+			"pay_interest_cycle": "ANNUAL",
+			"interest_rules": "ACT/365",
+			"pay_interest_mode": "ZERO_COUPON",
+			"curve_code": "CBD100252",
+			"ecnomic_terms": {
+				"prepayment_terms": [{
+						"pay_date": "2015-04-27T00:00:00.000+0800",
+						"pay_rate": 0.4
+					},
+					{
+						"pay_date": "2016-04-27T00:00:00.000+0800",
+						"pay_rate": 0.6
+					}
+				]
+			}
+		}
+	},
+	"function": {
+		"name": "evaluation",
+		"param": {
+			"pricing_context": {
+				"pricing_date": "latest",
+				"yield_curve": [{
+					"curve_code": "CBD100252",
+					"type": "spot_rate",
+					"value": [{
+							"tenor": 0.25,
+							"origin_tenor": "3M",
+							"rate": 0.02489
+						},
+						{
+							"tenor": 0.5,
+							"origin_tenor": "6M",
+							"rate": 0.02522
+						},
+						{
+							"tenor": 0.75,
+							"origin_tenor": "9M",
+							"rate": 0.02558
+						},
+						{
+							"tenor": 1.0,
+							"origin_tenor": "12M",
+							"rate": 0.02592
+						},
+						{
+							"tenor": 2.0,
+							"origin_tenor": "2Y",
+							"rate": 0.02748
+						},
+						{
+							"tenor": 3.0,
+							"origin_tenor": "3Y",
+							"rate": 0.02907
+						},
+						{
+							"tenor": 4.0,
+							"origin_tenor": "4Y",
+							"rate": 0.03070
+						},
+						{
+							"tenor": 5.0,
+							"origin_tenor": "5Y",
+							"rate": 0.03154
+						},
+						{
+							"tenor": 7.0,
+							"origin_tenor": "7Y",
+							"rate": 0.03326
+						},
+						{
+							"tenor": 10.0,
+							"origin_tenor": "10Y",
+							"rate": 0.03537
+						}
+					]
+				}]
+			},
+			"risk_measure": [
+				"full_price",
+				"clean_price",
+				"ytm",
+				"dv01",
+				"dollar_duration",
+				"dollar_convexity",
+				"time_to_maturity" // 剩余期限
+			]
+		}
+	}
 }

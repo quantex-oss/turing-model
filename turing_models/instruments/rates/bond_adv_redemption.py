@@ -1,27 +1,26 @@
-from dataclasses import dataclass, field
-from typing import Union, List, Any
+from dataclasses import dataclass
 
 import numpy as np
 from scipy import optimize
 
-from fundamental.turing_db.data import TuringDB
+# from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.common import newton_fun
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.utilities.bond_terms import EcnomicTerms
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import to_string
-from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
+# from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondAdvRedemption(Bond):
-    coupon: float = 0.0  # 票息
-    rdp_dates: List[Any] = field(default_factory=list)  # 提前偿还各期日期
-    rdp_pct: List[Any] = field(default_factory=list)  # 提前偿还各期百分比
+    # rdp_dates: List[Any] = field(default_factory=list)  # 提前偿还各期日期
+    # rdp_pct: List[Any] = field(default_factory=list)  # 提前偿还各期百分比
+    ecnomic_terms: EcnomicTerms = None
     _ytm: float = None
     _discount_curve = None
 
@@ -29,12 +28,18 @@ class BondAdvRedemption(Bond):
         super().__post_init__()
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
-        if len(self.rdp_dates) != len(self.rdp_pct):
+        if self.ecnomic_terms is not None:
+            prepayment_terms = self.ecnomic_terms.data.get('prepayment_terms')
+            if prepayment_terms is not None:
+                prepayment_terms_data = prepayment_terms.data
+                self.pay_dates = prepayment_terms_data['pay_date'].tolist()  # TODO: 目前是datetime.datetime格式
+                self.pay_rates = prepayment_terms_data['pay_rate'].tolist()
+        if len(self.pay_dates) != len(self.pay_rates):
             raise TuringError("redemption terms should match redemption percents.")
-        if sum(self.rdp_pct) != 1:
+        if sum(self.pay_rates) != 1:
             raise TuringError("total redemption doesn't equal to 1.")
         self._calculate_rdp_pcp()
-        if self.coupon:
+        if self.coupon_rate:
             self._calculate_flow_amounts()
             
     @property
@@ -60,10 +65,10 @@ class BondAdvRedemption(Bond):
     def _calculate_rdp_pcp(self):
         """ Determine the bond remaining principal."""
 
-        self.rdp_dates.insert(0, self.issue_date)
+        self.pay_dates.insert(0, self.issue_date)
         self.remaining_principal = [1]
-        for i in range(len(self.rdp_dates)-1):
-            self.remaining_principal.append(self.remaining_principal[i] - self.rdp_pct[i])
+        for i in range(len(self.pay_dates) - 1):
+            self.remaining_principal.append(self.remaining_principal[i] - self.pay_rates[i])
         
     @property
     def discount_curve(self):
@@ -86,7 +91,7 @@ class BondAdvRedemption(Bond):
         self._flow_amounts = [0.0]
 
         for _ in self._flow_dates[1:]:
-            cpn = self.coupon / self.frequency
+            cpn = self.coupon_rate / self.frequency
             self._flow_amounts.append(cpn)
 
     def dv01(self):
@@ -110,11 +115,11 @@ class BondAdvRedemption(Bond):
 
         px = 0.0
         df = 1.0
-        df_settle = self.discount_curve_flat.df(self.settlement_date_)
-        for rdp in range(len(self.rdp_dates)):
-            if self.settlement_date_ < self.rdp_dates[rdp]:
+        df_settle = discount_curve_flat.df(self.settlement_date_)
+        for rdp in range(len(self.pay_dates)):
+            if self.settlement_date_ < self.pay_dates[rdp]:
                 break
-        next_rdp = self.rdp_dates[rdp]  # 下个提前偿还日
+        next_rdp = self.pay_dates[rdp]  # 下个提前偿还日
         last_pcp = self.remaining_principal[rdp - 1]  # 剩余本金
         count = 0
         dc = TuringDayCount(TuringDayCountTypes.ACT_ACT_ISDA)
@@ -124,16 +129,16 @@ class BondAdvRedemption(Bond):
             if dt >= self.settlement_date_:  # 将结算日的票息加入计算
                 df = discount_curve_flat.df(dt)
                 if dt < next_rdp:
-                    flow = self.coupon / self.frequency * last_pcp
+                    flow = self.coupon_rate / self.frequency * last_pcp
                     pv = flow * df * self.par * dates
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon / self.frequency * last_pcp + self.rdp_pct[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
                     count += 1
                     pv = flow * df * dates * self.par
                     px += pv
-                    next_rdp = self.rdp_dates[rdp + count] if ((rdp + count) < len(self.rdp_dates)) else 0
-                    last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.rdp_dates)) else 0
+                    next_rdp = self.pay_dates[rdp + count] if ((rdp + count) < len(self.pay_dates)) else 0
+                    last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.pay_dates)) else 0
 
         px += df * last_pcp * self.par * dates
         px = px / df_settle
@@ -176,15 +181,15 @@ class BondAdvRedemption(Bond):
         if self.settlement_date_ > self.due_date:
             raise TuringError("Bond settles after it matures.")
         
-        discount_curve_flat = TuringDiscountCurveFlat(self.settlement_date_, self.ytm_, self.freq_type, self.accrual_type)
+        discount_curve_flat = TuringDiscountCurveFlat(self.settlement_date_, self.ytm_, self.pay_interest_cycle, self.interest_rules)
 
         px = 0.0
         df = 1.0
         df_settle = discount_curve_flat.df(self.settlement_date_)
-        for rdp in range(len(self.rdp_dates)):
-            if self.settlement_date_ < self.rdp_dates[rdp]:
+        for rdp in range(len(self.pay_dates)):
+            if self.settlement_date_ < self.pay_dates[rdp]:
                 break
-        next_rdp = self.rdp_dates[rdp]  # 下个提前偿还日
+        next_rdp = self.pay_dates[rdp]  # 下个提前偿还日
         last_pcp = self.remaining_principal[rdp - 1]  # 剩余本金
         count = 0
 
@@ -193,16 +198,16 @@ class BondAdvRedemption(Bond):
             if dt >= self.settlement_date_:  # 将结算日的票息加入计算
                 df = discount_curve_flat.df(dt)
                 if dt < next_rdp:
-                    flow = self.coupon / self.frequency * last_pcp
+                    flow = self.coupon_rate / self.frequency * last_pcp
                     pv = flow * df
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon / self.frequency * last_pcp + self.rdp_pct[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
                     count += 1
                     pv = flow * df
                     px += pv
-                    next_rdp = self.rdp_dates[rdp + count] if ((rdp + count) < len(self.rdp_dates)) else 0
-                    last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.rdp_dates)) else 0
+                    next_rdp = self.pay_dates[rdp + count] if ((rdp + count) < len(self.pay_dates)) else 0
+                    last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.pay_dates)) else 0
 
         px += df * last_pcp
         px = px / df_settle
@@ -225,10 +230,10 @@ class BondAdvRedemption(Bond):
         px = 0.0
         df = 1.0
         df_settle = self.discount_curve.df(self.settlement_date_)
-        for rdp in range(len(self.rdp_dates)):
-            if self.settlement_date_ < self.rdp_dates[rdp]:
+        for rdp in range(len(self.pay_dates)):
+            if self.settlement_date_ < self.pay_dates[rdp]:
                 break
-        next_rdp = self.rdp_dates[rdp]  # 下个提前偿还日
+        next_rdp = self.pay_dates[rdp]  # 下个提前偿还日
         last_pcp = self.remaining_principal[rdp - 1]  # 剩余本金
         count = 0
 
@@ -237,16 +242,16 @@ class BondAdvRedemption(Bond):
             if dt >= self.settlement_date_:  # 将结算日的票息加入计算
                 df = self.discount_curve.df(dt)
                 if dt < next_rdp:
-                    flow = self.coupon / self.frequency * last_pcp
+                    flow = self.coupon_rate / self.frequency * last_pcp
                     pv = flow * df
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon / self.frequency * last_pcp + self.rdp_pct[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
                     count += 1
                     pv = flow * df
                     px += pv
-                    next_rdp = self.rdp_dates[rdp + count] if ((rdp + count) < len(self.rdp_dates)) else 0
-                    last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.rdp_dates)) else 0
+                    next_rdp = self.pay_dates[rdp + count] if ((rdp + count) < len(self.pay_dates)) else 0
+                    last_pcp = self.remaining_principal[rdp - 1 + count] if ((rdp + count) < len(self.pay_dates)) else 0
 
         px += df * last_pcp
         px = px / df_settle
@@ -266,7 +271,7 @@ class BondAdvRedemption(Bond):
     def current_yield(self):
         """ 当前收益 = 票息/净价 """
 
-        y = self.coupon * self.par / self.clean_price_
+        y = self.coupon_rate * self.par / self.clean_price_
         return y
 
     def yield_to_maturity(self):
@@ -322,7 +327,7 @@ class BondAdvRedemption(Bond):
                 self._ncd = self._flow_dates[i_flow]  # 结算日后一个现金流
                 break
 
-        dc = TuringDayCount(self.accrual_type)
+        dc = TuringDayCount(self.interest_rules)
         cal = TuringCalendar(self.calendar_type)
         ex_dividend_date = cal.addBusinessDays(
             self._ncd, -self.num_ex_dividend_days)  # 除息日
@@ -330,10 +335,10 @@ class BondAdvRedemption(Bond):
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
                                            self.settlement_date_,
                                            self._ncd,
-                                           self.freq_type)  # 计算应计日期，返回应计因数、应计天数、基数
+                                           self.pay_interest_cycle)  # 计算应计日期，返回应计因数、应计天数、基数
 
-        for rdp in range(len(self.rdp_dates)):
-            if self.settlement_date_ < self.rdp_dates[rdp]:
+        for rdp in range(len(self.pay_dates)):
+            if self.settlement_date_ < self.pay_dates[rdp]:
                 break
         accr_base = self.remaining_principal[rdp - 1]
 
@@ -341,13 +346,11 @@ class BondAdvRedemption(Bond):
             acc_factor = acc_factor - 1.0 / self.frequency
 
         self._alpha = 1.0 - acc_factor * self.frequency  # 计算alpha值供全价计算公式使用
-        self._accrued_interest = acc_factor * self.par * accr_base * self.coupon
+        self._accrued_interest = acc_factor * self.par * accr_base * self.coupon_rate
         self._accrued_days = num
 
         return self._accrued_interest
 
     def __repr__(self):
         s = super().__repr__()
-        s += to_string("Coupon", self.coupon)
-        s += to_string("Curve Code", self.curve_code)
         return s

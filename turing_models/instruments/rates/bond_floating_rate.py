@@ -7,23 +7,32 @@ from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.bond_terms import EcnomicTerms
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFloatingRate(Bond):
-    quoted_margin: float = None
-    next_coupon: float = None
-    current_ibor: float = None
-    future_ibor: float = None
+    # _next_base_interest_rate: float = None
+    ecnomic_terms: EcnomicTerms = None
     dm: float = None
 
     def __post_init__(self):
         super().__post_init__()
-
-        if not self.dm and self.quoted_margin:
-            self.dm = self.quoted_margin
+        if self.ecnomic_terms is not None:
+            floating_rate_terms = self.ecnomic_terms.data.get('floating_rate_terms')
+            if floating_rate_terms is not None:
+                self.floating_rate_benchmark = floating_rate_terms.floating_rate_benchmark
+                self.floating_spread = floating_rate_terms.floating_spread
+                self.floating_adjust_mode = floating_rate_terms.floating_adjust_mode
+                self.base_interest_rate = floating_rate_terms.base_interest_rate
+        if not self.dm and self.floating_spread:
+            self.dm = self.floating_spread
         if self.dm and self.dm > 10.0:
             raise TuringError("Discount margin exceeds 100000bp")
+
+    @property
+    def _next_base_interest_rate(self):
+        return self.ctx_next_base_interest_rate
 
     @property
     def clean_price_(self):
@@ -36,12 +45,12 @@ class BondFloatingRate(Bond):
         return self.clean_price_
 
     def dv01(self):
-        current_ibor = self.current_ibor
-        self.current_ibor = current_ibor + dy
+        current_ibor = self.base_interest_rate
+        self.base_interest_rate = current_ibor + dy
         p0 = self.full_price_from_dm()
-        self.current_ibor = current_ibor - dy
+        self.base_interest_rate = current_ibor - dy
         p2 = self.full_price_from_dm()
-        self.current_ibor = current_ibor
+        self.base_interest_rate = current_ibor
 
         dv = (p2 - p0) / 2.0
         return dv
@@ -54,14 +63,14 @@ class BondFloatingRate(Bond):
         is the level of subsequent future Ibor payments and the discount
         margin. """
 
-        current_ibor = self.current_ibor
-        self.current_ibor = current_ibor - dy
+        current_ibor = self.base_interest_rate
+        self.base_interest_rate = current_ibor - dy
         p0 = self.full_price_from_dm()
-        self.current_ibor = current_ibor
+        self.base_interest_rate = current_ibor
         p1 = self.full_price_from_dm()
-        self.current_ibor = current_ibor + dy
+        self.base_interest_rate = current_ibor + dy
         p2 = self.full_price_from_dm()
-        self.current_ibor = current_ibor
+        self.base_interest_rate = current_ibor
 
         conv = ((p2 + p0) - 2.0 * p1) / dy / dy
         return conv
@@ -102,7 +111,7 @@ class BondFloatingRate(Bond):
 
         fp = self.full_price_from_dm()
 
-        md = dd * (1.0 + (self.next_coupon + self.dm) / self.frequency) / fp
+        md = dd * (1.0 + (self.coupon_rate + self.dm) / self.frequency) / fp
         return md
 
     def modified_duration(self):
@@ -140,18 +149,18 @@ class BondFloatingRate(Bond):
 
         self.calc_accrued_interest()
 
-        dc = TuringDayCount(self.accrual_type)
+        dc = TuringDayCount(self.interest_rules)
 
-        q = self.quoted_margin
+        q = self.floating_spread
         num_flows = len(self._flow_dates)
 
         # We discount using Libor over the period from settlement to the ncd
         (alpha, _, _) = dc.yearFrac(self.settlement_date_, self._ncd)
-        df = 1.0 / (1.0 + alpha * (self.current_ibor + self.dm))
+        df = 1.0 / (1.0 + alpha * (self.base_interest_rate + self.dm))
 
         # A full coupon is paid
         (alpha, _, _) = dc.yearFrac(self._pcd, self._ncd)
-        pv = self.next_coupon * alpha * df
+        pv = self.coupon_rate * alpha * df
 
         # Now do all subsequent coupons that fall after the ncd
         for i_flow in range(1, num_flows):
@@ -161,8 +170,8 @@ class BondFloatingRate(Bond):
                 ncd = self._flow_dates[i_flow]
                 (alpha, _, _) = dc.yearFrac(pcd, ncd)
 
-                df = df / (1.0 + alpha * (self.future_ibor + self.dm))
-                c = self.future_ibor + q
+                df = df / (1.0 + alpha * (self._next_base_interest_rate + self.dm))
+                c = self._next_base_interest_rate + q
                 pv = pv + c * alpha * df
 
         pv += df
@@ -219,7 +228,7 @@ class BondFloatingRate(Bond):
         if num_flows == 0:
             raise TuringError("Accrued interest - not enough flow dates.")
 
-        dc = TuringDayCount(self.accrual_type)
+        dc = TuringDayCount(self.interest_rules)
 
         for i in range(1, num_flows):
             if self._flow_dates[i] > self.settlement_date_:
@@ -230,19 +239,19 @@ class BondFloatingRate(Bond):
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
                                            self.settlement_date_,
                                            self._ncd,
-                                           self.freq_type)
+                                           self.pay_interest_cycle)
 
         self._alpha = 1.0 - acc_factor * self.frequency
 
-        self._accrued_interest = acc_factor * self.par * self.next_coupon
+        self._accrued_interest = acc_factor * self.par * self.coupon_rate
         self._accrued_days = num
         return self._accrued_interest
 
     def __repr__(self):
         s = super().__repr__()
-        s += to_string("Quoted Margin", self.quoted_margin)
-        s += to_string("Next Coupon", self.next_coupon)
-        s += to_string("Current Ibor", self.current_ibor)
-        s += to_string("Future Ibor", self.future_ibor)
+        # s += to_string("Quoted Margin", self.floating_spread)
+        # s += to_string("Next Coupon", self.coupon_rate)
+        # s += to_string("Current Ibor", self.base_interest_rate)
+        # s += to_string("Future Ibor", self._next_base_interest_rate)
         s += to_string("Discount Margin", self.dm, "")
         return s

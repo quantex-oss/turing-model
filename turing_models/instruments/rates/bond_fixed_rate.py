@@ -18,7 +18,6 @@ from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveF
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
-    coupon: float = 0.0  # 票息
     _ytm: float = None
     _discount_curve = None
     _spread_adjustment = None
@@ -27,7 +26,7 @@ class BondFixedRate(Bond):
         super().__post_init__()
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
-        if self.coupon:
+        if self.coupon_rate:
             self._calculate_cash_flow_amounts()
 
     @property
@@ -88,12 +87,12 @@ class BondFixedRate(Bond):
         self._flow_amounts = [0.0]
 
         for _ in self._flow_dates[1:]:
-            if self.cpn_type == TuringCouponType.DISCOUNT:
+            if self.pay_interest_mode == TuringCouponType.DISCOUNT:
                 cpn = 0
-            elif self.cpn_type == TuringCouponType.ZERO_COUPON:
-                cpn = self.coupon * self.bond_term_year
-            elif self.cpn_type == TuringCouponType.COUPON_CARRYING:
-                cpn = self.coupon / self.frequency
+            elif self.pay_interest_mode == TuringCouponType.ZERO_COUPON:
+                cpn = self.coupon_rate * self.bond_term_year
+            elif self.pay_interest_mode == TuringCouponType.COUPON_CARRYING:
+                cpn = self.coupon_rate / self.frequency
             self._flow_amounts.append(cpn)
 
     def implied_spread(self):
@@ -142,7 +141,7 @@ class BondFixedRate(Bond):
             # 将结算日的票息加入计算
             if dt >= self.settlement_date_:
                 df = self.curve_fitted.df(dt)
-                flow = self.coupon / self.frequency
+                flow = self.coupon_rate / self.frequency
                 pv = flow * df * dates * self.par
                 px += pv
 
@@ -174,9 +173,9 @@ class BondFixedRate(Bond):
 
         ytm = np.array(self.ytm_)  # 向量化
         ytm = ytm + 0.000000000012345  # 防止ytm = 0
-        if self.cpn_type == TuringCouponType.COUPON_CARRYING:
+        if self.pay_interest_mode == TuringCouponType.COUPON_CARRYING:
             f = self.frequency
-            c = self.coupon
+            c = self.coupon_rate
             v = 1.0 / (1.0 + ytm / f)
 
             # n是下一付息日后的现金流个数
@@ -257,8 +256,8 @@ class BondFixedRate(Bond):
             # 将结算日的票息加入计算
             if dt >= self.settlement_date_:
                 df = self.curve_fitted.df(dt)
-                if self.cpn_type == TuringCouponType.COUPON_CARRYING:
-                    flow = self.coupon / self.frequency
+                if self.pay_interest_mode == TuringCouponType.COUPON_CARRYING:
+                    flow = self.coupon_rate / self.frequency
                     pv = flow * df
                     px += pv
                 else:
@@ -282,7 +281,7 @@ class BondFixedRate(Bond):
     def current_yield(self):
         """ 当前收益 = 票息/净价 """
 
-        y = self.coupon * self.par / self.clean_price_
+        y = self.coupon_rate * self.par / self.clean_price_
         return y
 
     def yield_to_maturity(self):
@@ -337,16 +336,16 @@ class BondFixedRate(Bond):
                 self._ncd = self._flow_dates[i_flow]  # 结算日后一个现金流
                 break
 
-        dc = TuringDayCount(self.accrual_type)
+        dc = TuringDayCount(self.interest_rules)
         cal = TuringCalendar(self.calendar_type)
         ex_dividend_date = cal.addBusinessDays(
             self._ncd, -self.num_ex_dividend_days)  # 除息日
         
-        if self.cpn_type == TuringCouponType.COUPON_CARRYING:
+        if self.pay_interest_mode == TuringCouponType.COUPON_CARRYING:
             (acc_factor, num, _) = dc.yearFrac(self._pcd,
-                                            self.settlement_date_,
-                                            self._ncd,
-                                            self.freq_type)  # 计算应计日期，返回应计因数、应计天数、基数
+                                               self.settlement_date_,
+                                               self._ncd,
+                                               self.pay_interest_cycle)  # 计算应计日期，返回应计因数、应计天数、基数
             
             if self.settlement_date_ > ex_dividend_date:  # 如果结算日大于除息日，减去一期
                 acc_factor = acc_factor - 1.0 / self.frequency
@@ -359,13 +358,11 @@ class BondFixedRate(Bond):
                                            self.settlement_date_)
 
         
-        self._accrued_interest = acc_factor * self.par * self.coupon
+        self._accrued_interest = acc_factor * self.par * self.coupon_rate
         self._accrued_days = num
 
         return self._accrued_interest
 
     def __repr__(self):
         s = super().__repr__()
-        s += to_string("Coupon", self.coupon)
-        s += to_string("Curve Code", self.curve_code)
         return s

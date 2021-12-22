@@ -22,24 +22,36 @@ dy = 0.0001
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class Bond(IR, InstrumentBase, metaclass=ABCMeta):
+    # bond_symbol: str = None
+    # csname: str = None
+    # curve_name: Union[str, CurveCode] = None
     asset_id: str = None
-    bond_symbol: str = None
-    csname: str = None
-    curr_code: (str, enum) = 'CNY'
-    exchange_code: str = None
+    wind_id: str = None
+    bbg_id: str = None
+    cusip: str = None
+    sedol: str = None
+    ric: str = None
+    isin: str = None
+    ext_asset_id: str = None
+    asset_name: str = None
+    asset_type: str = None
+    trd_curr_code: Union[str, Currency] = None
+    symbol: str = None
+    comb_symbol: str = None
+    exchange: str = None
+    issuer: str = None
     issue_date: TuringDate = None                          # 发行日
     due_date: TuringDate = None                            # 到期日
-    # bond_term_year: float = None
-    # bond_term_day: float = None
-    freq_type: Union[str, TuringFrequencyTypes] = None     # 付息频率
-    accrual_type: Union[str, TuringDayCountTypes] = None   # 计息类型
     par: float = None                                      # 面值
-    cpn_type: Union[str, TuringCouponType] = None                                   # 付息方式
-    # curve_name: Union[str, CurveCode] = None
+    coupon_rate: float = None
+    interest_rate_type: str = None
+    pay_interest_cycle: (str, TuringFrequencyTypes) = None                         # 付息频率
+    interest_rules: (str, TuringDayCountTypes) = None                             # 计息类型
+    pay_interest_mode: (str, TuringCouponType) = None      # 付息方式
     curve_code: Union[str, YieldCurveCode] = None          # 曲线编码
     value_date: TuringDate = TuringDate(
-        *(datetime.date.today().timetuple()[:3]))          # 估值日
-    settlement_terms: int = 0                              # 结算天数，0即T+0结算
+        *(datetime.date.today().timetuple()[:3]))  # 估值日
+    settlement_terms: int = 0  # 结算天数，0即T+0结算
 
     def __post_init__(self):
         super().__init__()
@@ -50,10 +62,8 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self._flow_amounts = []                            # 现金流发生额
         self._accrued_interest = None
         self._accrued_days = 0.0                           # 应计利息天数
-        if self.curr_code and isinstance(self.curr_code, Currency):
-            self.curr_code = self.curr_code.value          # 转换成字符串，便于rich表格显示
-        # if not self.due_date and self.issue_date and self.bond_term_year:
-            # self.due_date = self.issue_date.addYears(self.bond_term_year)
+        if self.trd_curr_code and isinstance(self.trd_curr_code, Currency):
+            self.trd_curr_code = self.trd_curr_code.value          # 转换成字符串，便于rich表格显示
         if self.issue_date:
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
             self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
@@ -64,48 +74,48 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self.bond_term_year = acc_factor1
         (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
         self.time_to_maturity_in_year = acc_factor2
-        if self.cpn_type:
-            if self.cpn_type == 'zero coupon':
-                self.cpn_type = TuringCouponType.ZERO_COUPON
-            elif self.cpn_type == 'discount':
-                self.cpn_type = TuringCouponType.DISCOUNT
-            elif self.cpn_type == 'coupon-carrying':
-                self.cpn_type = TuringCouponType.COUPON_CARRYING
-            elif isinstance(self.cpn_type, TuringCouponType):
+        if self.pay_interest_mode:
+            if self.pay_interest_mode == 'zero coupon':
+                self.pay_interest_mode = TuringCouponType.ZERO_COUPON
+            elif self.pay_interest_mode == 'discount':
+                self.pay_interest_mode = TuringCouponType.DISCOUNT
+            elif self.pay_interest_mode == 'coupon-carrying':
+                self.pay_interest_mode = TuringCouponType.COUPON_CARRYING
+            elif isinstance(self.pay_interest_mode, TuringCouponType):
                 pass
             else:
                 raise TuringError('Please check the input of cpn_type')
-        if self.freq_type:
-            if self.freq_type == '每年付息':
-                self.freq_type = TuringFrequencyTypes.ANNUAL
-            elif self.freq_type == '半年付息':
-                self.freq_type = TuringFrequencyTypes.SEMI_ANNUAL
-            elif self.freq_type == '4个月一次':
-                self.freq_type = TuringFrequencyTypes.TRI_ANNUAL
-            elif self.freq_type == '按季付息':
-                self.freq_type = TuringFrequencyTypes.QUARTERLY
-            elif self.freq_type == '按月付息':
-                self.freq_type = TuringFrequencyTypes.MONTHLY
-            elif isinstance(self.freq_type, TuringFrequencyTypes):
+        if self.pay_interest_cycle:
+            if self.pay_interest_cycle == '每年付息':
+                self.pay_interest_cycle = TuringFrequencyTypes.ANNUAL
+            elif self.pay_interest_cycle == '半年付息':
+                self.pay_interest_cycle = TuringFrequencyTypes.SEMI_ANNUAL
+            elif self.pay_interest_cycle == '4个月一次':
+                self.pay_interest_cycle = TuringFrequencyTypes.TRI_ANNUAL
+            elif self.pay_interest_cycle == '按季付息':
+                self.pay_interest_cycle = TuringFrequencyTypes.QUARTERLY
+            elif self.pay_interest_cycle == '按月付息':
+                self.pay_interest_cycle = TuringFrequencyTypes.MONTHLY
+            elif isinstance(self.pay_interest_cycle, TuringFrequencyTypes):
                 pass
             else:
                 raise TuringError('Please check the input of freq_type')
             self._calculate_cash_flow_dates()
-            self.frequency = TuringFrequency(self.freq_type)
+            self.frequency = TuringFrequency(self.pay_interest_cycle)
         else:
             self._flow_dates = [self.issue_date, self.due_date]    
-        if self.accrual_type:
-            if self.accrual_type == 'ACT/365':
-                self.accrual_type = TuringDayCountTypes.ACT_365L
-            elif self.accrual_type == 'ACT/ACT':
-                self.accrual_type = TuringDayCountTypes.ACT_ACT_ISDA
-            elif self.accrual_type == 'ACT/360':
-                self.accrual_type = TuringDayCountTypes.ACT_360
-            elif self.accrual_type == '30/360':
-                self.accrual_type = TuringDayCountTypes.THIRTY_E_360
-            elif self.accrual_type == 'ACT/365F':
-                self.accrual_type = TuringDayCountTypes.ACT_365F
-            elif isinstance(self.accrual_type, TuringDayCountTypes):
+        if self.interest_rules:
+            if self.interest_rules == 'ACT/365':
+                self.interest_rules = TuringDayCountTypes.ACT_365L
+            elif self.interest_rules == 'ACT/ACT':
+                self.interest_rules = TuringDayCountTypes.ACT_ACT_ISDA
+            elif self.interest_rules == 'ACT/360':
+                self.interest_rules = TuringDayCountTypes.ACT_360
+            elif self.interest_rules == '30/360':
+                self.interest_rules = TuringDayCountTypes.THIRTY_E_360
+            elif self.interest_rules == 'ACT/365F':
+                self.interest_rules = TuringDayCountTypes.ACT_365F
+            elif isinstance(self.interest_rules, TuringDayCountTypes):
                 pass
             else:
                 raise TuringError('Please check the input of accrual_type')
@@ -157,7 +167,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
         self._flow_dates = TuringSchedule(self.issue_date,
                                           self.due_date,
-                                          self.freq_type,
+                                          self.pay_interest_cycle,
                                           calendar_type,
                                           bus_day_rule_type,
                                           date_gen_rule_type)._generate()
@@ -192,11 +202,28 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self.__post_init__()
 
     def __repr__(self):
-        s = to_string("Object Type", type(self).__name__)
-        s += to_string("Asset Id", self.asset_id)
-        s += to_string("Issue Date", self.issue_date)
-        s += to_string("Due Date", self.due_date)
-        s += to_string("Freq Type", self.freq_type)
-        s += to_string("Accrual Type", self.accrual_type)
-        s += to_string("Par", self.par)
+        s = to_string("class_name", type(self).__name__)
+        s += to_string("wind_id", self.wind_id)
+        s += to_string("bbg_id", self.bbg_id)
+        s += to_string("cusip", self.cusip)
+        s += to_string("sedol", self.sedol)
+        s += to_string("ric", self.ric)
+        s += to_string("isin", self.isin)
+        s += to_string("ext_asset_id", self.ext_asset_id)
+        s += to_string("asset_name", self.asset_name)
+        s += to_string("asset_type", self.asset_type)
+        s += to_string("trd_curr_code", self.trd_curr_code)
+        s += to_string("symbol", self.symbol)
+        s += to_string("comb_symbol", self.comb_symbol)
+        s += to_string("exchange", self.exchange)
+        s += to_string("issuer", self.issuer)
+        s += to_string("issue_date", self.issue_date)
+        s += to_string("due_date", self.due_date)
+        s += to_string("par", self.par)
+        s += to_string("coupon_rate", self.coupon_rate)
+        s += to_string("interest_rate_type", self.interest_rate_type)
+        s += to_string("pay_interest_cycle", self.pay_interest_cycle)
+        s += to_string("interest_rules", self.interest_rules)
+        s += to_string("pay_interest_mode", self.pay_interest_mode)
+        s += to_string("curve_code", self.curve_code)
         return s

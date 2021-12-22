@@ -1198,6 +1198,10 @@ class Ctx:
         return getattr(self.ctx, f"volatility_{asset_id}")
 
     @property
+    def ctx_next_base_interest_rate(self):
+        return getattr(self.ctx, "next_base_interest_rate")
+
+    @property
     def ctx_fx_implied_volatility_curve(self):
         asset_id = getattr(self, 'underlier', None) or getattr(
             self, 'asset_id', None)

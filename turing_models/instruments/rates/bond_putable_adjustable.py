@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 import math
 from typing import Union, List, Any
-from fundamental.turing_db.data import TuringDB
+# from fundamental.turing_db.data import TuringDB
+from turing_models.utilities.bond_terms import EcnomicTerms
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.instruments.common import newton_fun
 from turing_models.utilities.error import TuringError
@@ -37,69 +38,78 @@ dy = 0.0001
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondPutableAdjustable(Bond):
     """ Class for fixed coupon bonds with embedded put optionality and rights to adjust coupon on exercise date. """
-    coupon: float = 0.0  # 票息
+    coupon_rate: float = 0.0  # 当期票息
+    ecnomic_terms: EcnomicTerms = None
     # ytm: float = None
     forward_dates: List[Any] = field(default_factory=list)  # 支持手动传入远期曲线（日期）
     forward_rates: List[Any] = field(default_factory=list)  # 支持手动传入远期曲线（利率）
-    put_date: List[Any] = field(default_factory=list)
-    put_price: List[Any] = field(default_factory=list)
-    adjust_bound_up: List[Any] = field(default_factory=list)
-    adjust_bound_down: List[Any] = field(default_factory=list)
     value_sys: str = "中债"
     _ytm: float = None
     _discount_curve = None
     _forward_curve = None
 
+    def __new__(cls, *args, **kwargs):
+        if kwargs.get("put_date")[-1] > kwargs["value_date"]:
+            return super().__new__(cls, *args, **kwargs)
+        else:
+            fixed_rete_bond = BondFixedRate(issue_date=kwargs['issue_date'],
+                                            value_date=kwargs['value_date'],
+                                            due_date=kwargs['due_date'],
+                                            pay_interest_mode=kwargs['pay_interest_mode'],
+                                            pay_interest_cycle=kwargs['pay_interest_cycle'],
+                                            interest_rules=kwargs['interest_rules'],
+                                            par=kwargs['par'],
+                                            coupon_rate=kwargs['coupon_rate'])
+            return fixed_rete_bond
+
     def __post_init__(self):
         super().__post_init__()
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
+        if self.ecnomic_terms is not None:
+            embedded_putable_options = self.ecnomic_terms.data.get('embedded_putable_options')
+            embedded_rate_adjustment_options = self.ecnomic_terms.data.get('embedded_rate_adjustment_options')
+            if embedded_putable_options is not None:
+                embedded_putable_options_data = embedded_putable_options.data
+                self.exercise_dates = embedded_putable_options_data['exercise_date'].tolist()  # TODO: 目前是datetime.datetime格式
+                self.exercise_prices = embedded_putable_options_data['exercise_price'].tolist()
+            if embedded_rate_adjustment_options is not None:
+                embedded_rate_adjustment_options_data = embedded_rate_adjustment_options.data
+                self.exercise_dates = embedded_rate_adjustment_options_data['exercise_date'].tolist()  # TODO: 目前是datetime.datetime格式
+                self.high_rate_adjust = embedded_rate_adjustment_options_data['high_rate_adjust'].tolist()
+                self.low_rate_adjust = embedded_rate_adjustment_options_data['low_rate_adjust'].tolist()
 
-        if self.put_date[-1] < self.value_date:
-
-            self = BondFixedRate(bond_symbol=self.bond_symbol,
-                                 issue_date=self.issue_date,
-                                 value_date=self.value_date,
-                                 due_date=self.due_date,
-                                 cpn_type=self.cpn_type,
-                                 freq_type=self.freq_type,
-                                 accrual_type=self.accrual_type,
-                                 par=self.par,
-                                 coupon=self.coupon)
-            return
-
-        else:
-            for i in range(len(self.put_date)):
-                if self.put_date[i] > self.value_date:
-                    self.put_date = self.put_date[i]
-                    self.put_price = self.put_price[i]
-                    if len(self.adjust_bound_up) > 0:
-                        self.adjust_bound_up = self.adjust_bound_up[i]
-                    else:
-                        self.adjust_bound_up = None
-                    if len(self.adjust_bound_down) > 0:
-                        self.adjust_bound_down = self.adjust_bound_down[i]
-                    else:
-                        self.adjust_bound_down = None
-                    break
+        for i in range(len(self.exercise_dates)):
+            if self.exercise_dates[i] > self.value_date:
+                self.exercise_dates = self.exercise_dates[i]
+                self.exercise_prices = self.exercise_prices[i]
+                if len(self.high_rate_adjust) > 0:
+                    self.high_rate_adjust = self.high_rate_adjust[i]
+                else:
+                    self.high_rate_adjust = None
+                if len(self.low_rate_adjust) > 0:
+                    self.low_rate_adjust = self.low_rate_adjust[i]
+                else:
+                    self.low_rate_adjust = None
+                break
 
         if self.value_sys == "中债":
-            if self.adjust_bound_up is not None:
-                self._bound_up = self.coupon + self.adjust_bound_up
+            if self.high_rate_adjust is not None:
+                self._bound_up = self.coupon_rate + self.high_rate_adjust
             else:
                 self._bound_up = None
-            if self.adjust_bound_down is not None:
-                self._bound_down = self.coupon + self.adjust_bound_down
+            if self.low_rate_adjust is not None:
+                self._bound_down = self.coupon_rate + self.low_rate_adjust
             else:
                 self._bound_down = None
 
         elif self.value_sys == "中证":
-            if self.adjust_bound_up is None:
-                self.adjust_bound_up = float("inf")
-            self._bound_up = self.coupon + self.adjust_bound_up
-            if self.adjust_bound_down is None:
-                self.adjust_bound_down = float("-inf")
-            self._bound_down = self.coupon + self.adjust_bound_down
+            if self.high_rate_adjust is None:
+                self.high_rate_adjust = float("inf")
+            self._bound_up = self.coupon_rate + self.high_rate_adjust
+            if self.low_rate_adjust is None:
+                self.low_rate_adjust = float("-inf")
+            self._bound_down = self.coupon_rate + self.low_rate_adjust
 
     @property
     def ytm_(self):
@@ -123,10 +133,10 @@ class BondPutableAdjustable(Bond):
     @property
     def forward_dates_(self):
         if self.forward_dates:
-            return self.put_date.addYears(self.forward_dates)
+            return self.exercise_dates.addYears(self.forward_dates)
         else:
             forward_dates = self.discount_curve._zeroDates.copy()
-            forward_dates = list(filter(lambda x: x >= self.put_date, forward_dates))
+            forward_dates = list(filter(lambda x: x >= self.exercise_dates, forward_dates))
             return forward_dates
 
     @property
@@ -135,11 +145,11 @@ class BondPutableAdjustable(Bond):
             return self.forward_rates
         else:
             curve_spot = self.discount_curve
-            dfIndex1 = curve_spot.df(self.put_date)
+            dfIndex1 = curve_spot.df(self.exercise_dates)
             dc = TuringDayCount(TuringDayCountTypes.ACT_365F)
             forward_rates = []
             for i in range(len(self.forward_dates_)):
-                acc_factor = dc.yearFrac(self.put_date, self.forward_dates_[i])[0]
+                acc_factor = dc.yearFrac(self.exercise_dates, self.forward_dates_[i])[0]
                 if acc_factor == 0:
                     forward_rates.append(0)
                 else:
@@ -150,7 +160,7 @@ class BondPutableAdjustable(Bond):
     @property
     def discount_curve_flat(self):
         return TuringDiscountCurveFlat(self.settlement_date_,
-                                       self.ytm_, self.freq_type, self.accrual_type)
+                                       self.ytm_, self.pay_interest_cycle, self.interest_rules)
 
     @property
     def forward_curve(self):
@@ -158,7 +168,7 @@ class BondPutableAdjustable(Bond):
             return self._forward_curve
         else:
             return TuringDiscountCurveZeros(
-                self.put_date, self.forward_dates_, self.forward_rates_, TuringFrequencyTypes.ANNUAL)
+                self.exercise_dates, self.forward_dates_, self.forward_rates_, TuringFrequencyTypes.ANNUAL)
 
     @forward_curve.setter
     def forward_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
@@ -166,7 +176,7 @@ class BondPutableAdjustable(Bond):
 
     @property
     def forward_curve_flat(self):
-        return TuringDiscountCurveFlat(self.put_date,
+        return TuringDiscountCurveFlat(self.exercise_dates,
                                        self.ytm_)
 
     @property
@@ -192,11 +202,11 @@ class BondPutableAdjustable(Bond):
         pure_bond = BondFixedRate(bond_symbol="purebond",
                                   value_date=self.value_date,
                                   issue_date=self.issue_date,
-                                  due_date=self.put_date,
-                                  coupon=self.coupon,
-                                  cpn_type=self.cpn_type,
-                                  freq_type=self.freq_type,
-                                  accrual_type=self.accrual_type,
+                                  due_date=self.exercise_dates,
+                                  coupon=self.coupon_rate,
+                                  cpn_type=self.pay_interest_mode,
+                                  freq_type=self.pay_interest_cycle,
+                                  accrual_type=self.interest_rules,
                                   par=self.par)
         curve_dates = []
         dc = TuringDayCount(TuringDayCountTypes.ACT_365F)
@@ -224,18 +234,18 @@ class BondPutableAdjustable(Bond):
         dc = TuringDayCount(TuringDayCountTypes.ACT_365F)
         forward_dates = []
         for i in range(len(self.forward_dates_)):
-            forward_dates.append(dc.yearFrac(self.put_date, self.forward_dates_[i])[0])
-        self._exercised_bond = BondFixedRate(bond_symbol="exercisedbond",
-                                             value_date=self.put_date,
-                                             issue_date=self.put_date,
+            forward_dates.append(dc.yearFrac(self.exercise_dates, self.forward_dates_[i])[0])
+        self._exercised_bond = BondFixedRate(# bond_symbol="exercisedbond",
+                                             value_date=self.exercise_dates,
+                                             issue_date=self.exercise_dates,
                                              due_date=self.due_date,
-                                             freq_type=self.freq_type,
-                                             cpn_type=self.cpn_type,
-                                             accrual_type=self.accrual_type,
+                                             pay_interest_cycle=self.pay_interest_cycle,
+                                             pay_interest_mode=self.pay_interest_mode,
+                                             interest_rules=self.interest_rules,
                                              par=self.par)
         forward_curve = pd.DataFrame(data={'tenor': forward_dates, 'rate': self.forward_rates_})
         scenario_extreme = PricingContext(bond_yield_curve=[{"bond_symbol": "exercisedbond", "value": forward_curve}],
-                                          clean_price=[{"bond_symbol": "exercisedbond", "value": self.put_price}])
+                                          clean_price=[{"bond_symbol": "exercisedbond", "value": self.exercise_prices}])
         accruedAmount = 0
         with scenario_extreme:
             full_price = (self._exercised_bond.calc(RiskMeasure.CleanPrice) + accruedAmount)
@@ -255,37 +265,37 @@ class BondPutableAdjustable(Bond):
         if self.value_sys == "中债":
             # direction and adjusted rate caluation:
             if self._bound_up is not None and self._bound_down is not None:
-                if 0 < self.adjust_bound_down < self.adjust_bound_up:
+                if 0 < self.low_rate_adjust < self.high_rate_adjust:
                     if self.equ_c > self._bound_up:
                         adjust_fix = self._bound_up
                         recommend_dir = "short"
                     elif self._bound_down <= self.equ_c <= self._bound_up:
                         adjust_fix = self.equ_c
                         recommend_dir = "long"
-                    elif self.coupon < self.equ_c < self._bound_down:
-                        adjust_fix = self.coupon
+                    elif self.coupon_rate < self.equ_c < self._bound_down:
+                        adjust_fix = self.coupon_rate
                         recommend_dir = "short"
-                    elif self.equ_c <= self.coupon:
-                        adjust_fix = self.coupon
+                    elif self.equ_c <= self.coupon_rate:
+                        adjust_fix = self.coupon_rate
                         recommend_dir = "long"
                     else:
                         raise TuringError("Check bound inputs1!")
-                elif self.adjust_bound_down < self.adjust_bound_up <= 0:
-                    if self.equ_c > self.coupon:
-                        adjust_fix = self.coupon
+                elif self.low_rate_adjust < self.high_rate_adjust <= 0:
+                    if self.equ_c > self.coupon_rate:
+                        adjust_fix = self.coupon_rate
                         recommend_dir = "short"
-                    elif self._bound_up < self.equ_c <= self.coupon:
+                    elif self._bound_up < self.equ_c <= self.coupon_rate:
                         adjust_fix = self._bound_up
                         recommend_dir = "short"
                     elif self._bound_down <= self.equ_c <= self._bound_up:
-                        adjust_fix = self.coupon
+                        adjust_fix = self.coupon_rate
                         recommend_dir = "long"
                     elif self.equ_c < self._bound_down:
                         adjust_fix = self._bound_down
                         recommend_dir = "long"
                     else:
                         raise TuringError("Check bound inputs2!")
-                elif self.adjust_bound_down < 0 < self.adjust_bound_up:
+                elif self.low_rate_adjust < 0 < self.high_rate_adjust:
                     if self.equ_c >= self._bound_up:
                         adjust_fix = self._bound_up
                         recommend_dir = "short"
@@ -297,18 +307,18 @@ class BondPutableAdjustable(Bond):
                         recommend_dir = "long"
                     else:
                         raise TuringError("Check bound inputs3!")
-                elif (self.adjust_bound_down == self.adjust_bound_up) and (self.adjust_bound_up != 0):
-                    if self.equ_c > max(self.coupon, self._bound_up):
-                        adjust_fix = max(self.coupon, self._bound_up)
+                elif (self.low_rate_adjust == self.high_rate_adjust) and (self.high_rate_adjust != 0):
+                    if self.equ_c > max(self.coupon_rate, self._bound_up):
+                        adjust_fix = max(self.coupon_rate, self._bound_up)
                         recommend_dir = "short"
-                    elif self.coupon < self.equ_c <= self._bound_down:
-                        adjust_fix = self.coupon
+                    elif self.coupon_rate < self.equ_c <= self._bound_down:
+                        adjust_fix = self.coupon_rate
                         recommend_dir = "short"
-                    elif self._bound_up < self.equ_c <= self.coupon:
+                    elif self._bound_up < self.equ_c <= self.coupon_rate:
                         adjust_fix = self._bound_up
                         recommend_dir = "short"
-                    elif self.equ_c <= min(self._bound_down, self.coupon):
-                        adjust_fix = min(self._bound_down, self.coupon)
+                    elif self.equ_c <= min(self._bound_down, self.coupon_rate):
+                        adjust_fix = min(self._bound_down, self.coupon_rate)
                         recommend_dir = "long"
                     else:
                         raise TuringError("Check bound input4!")
@@ -317,20 +327,20 @@ class BondPutableAdjustable(Bond):
                 if self.equ_c >= self._bound_down:
                     adjust_fix = self.equ_c
                     recommend_dir = "long"
-                elif self.coupon < self.equ_c <= self._bound_down:
-                    adjust_fix = self.coupon
+                elif self.coupon_rate < self.equ_c <= self._bound_down:
+                    adjust_fix = self.coupon_rate
                     recommend_dir = "short"
-                elif self.equ_c <= min(self.coupon, self._bound_down):
-                    adjust_fix = min(self.coupon, self._bound_down)
+                elif self.equ_c <= min(self.coupon_rate, self._bound_down):
+                    adjust_fix = min(self.coupon_rate, self._bound_down)
                     recommend_dir = "long"
                 else:
                     raise TuringError("Check bound inputs5!")
 
             elif self._bound_up is not None and (self._bound_down is None):
-                if self.equ_c >= max(self.coupon, self._bound_up):
-                    adjust_fix = max(self.coupon, self._bound_up)
+                if self.equ_c >= max(self.coupon_rate, self._bound_up):
+                    adjust_fix = max(self.coupon_rate, self._bound_up)
                     recommend_dir = "short"
-                elif self._bound_up < self.equ_c <= self.coupon:
+                elif self._bound_up < self.equ_c <= self.coupon_rate:
                     adjust_fix = self._bound_up
                     recommend_dir = "short"
                 elif self.equ_c < self._bound_up:
@@ -361,27 +371,27 @@ class BondPutableAdjustable(Bond):
             return recommend_dir, adjust_fix
 
     def full_price_from_ytm(self):
-        ''' Value the bond that settles on the specified date, which have
+        """ Value the bond that settles on the specified date, which have
         both an put option and an option to adjust the coupon rates embedded.
-        The valuation is made according to the ZhongZheng recommendation. '''
+        The valuation is made according to the ZhongZheng recommendation. """
 
         # Valuation:
         if self.recommend_dir == "long":
             # Generate bond coupon flow schedule
-            cpn1 = self.coupon / self.frequency
+            cpn1 = self.coupon_rate / self.frequency
             cpn2 = self.adjust_fix / self.frequency
             cpnTimes = []
             cpn_dates = []
             cpnAmounts = []
 
             for flow_date in self._flow_dates[1:]:
-                if self.settlement_date_ < flow_date < self.put_date:
+                if self.settlement_date_ < flow_date < self.exercise_dates:
                     cpnTime = (flow_date - self.settlement_date_) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
                     cpnAmounts.append(cpn1)
-                if flow_date >= self.put_date:
+                if flow_date >= self.exercise_dates:
                     cpnTime = (flow_date - self.settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
@@ -417,20 +427,20 @@ class BondPutableAdjustable(Bond):
         # Valuation:
         if self.recommend_dir == "long":
             # Generate bond coupon flow schedule
-            cpn1 = self.coupon / self.frequency
+            cpn1 = self.coupon_rate / self.frequency
             cpn2 = self.adjust_fix / self.frequency
             cpnTimes = []
             cpn_dates = []
             cpnAmounts = []
 
             for flow_date in self._flow_dates[1:]:
-                if self.settlement_date_ < flow_date < self.put_date:
+                if self.settlement_date_ < flow_date < self.exercise_dates:
                     cpnTime = (flow_date - self.settlement_date_) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
                     cpnAmounts.append(cpn1)
-                if flow_date >= self.put_date:
+                if flow_date >= self.exercise_dates:
                     cpnTime = (flow_date - self.settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
@@ -472,7 +482,7 @@ class BondPutableAdjustable(Bond):
                 self._ncd = self._flow_dates[i_flow]  # 结算日后一个现金流
                 break
 
-        dc = TuringDayCount(self.accrual_type)
+        dc = TuringDayCount(self.interest_rules)
         cal = TuringCalendar(self.calendar_type)
         ex_dividend_date = cal.addBusinessDays(
             self._ncd, -self.num_ex_dividend_days)  # 除息日
@@ -480,13 +490,13 @@ class BondPutableAdjustable(Bond):
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
                                            self.settlement_date_,
                                            self._ncd,
-                                           self.freq_type)  # 计算应计日期，返回应计因数、应计天数、基数
+                                           self.pay_interest_cycle)  # 计算应计日期，返回应计因数、应计天数、基数
 
         if self.settlement_date_ > ex_dividend_date:  # 如果结算日大于除息日，减去一期
             acc_factor = acc_factor - 1.0 / self.frequency
 
         self._alpha = 1.0 - acc_factor * self.frequency  # 计算alpha值供全价计算公式使用
-        self._accrued_interest = acc_factor * self.par * self.coupon
+        self._accrued_interest = acc_factor * self.par * self.coupon_rate
         self._accrued_days = num
 
         return self._accrued_interest
@@ -568,7 +578,7 @@ class BondPutableAdjustable(Bond):
         """ 麦考利久期 """
 
         if self.recommend_dir == "long":
-            cpn1 = self.coupon / self.frequency
+            cpn1 = self.coupon_rate / self.frequency
             cpn2 = self.adjust_fix / self.frequency
             cpnTimes = []
             cpn_dates = []
@@ -580,13 +590,13 @@ class BondPutableAdjustable(Bond):
 
             for flow_date in self._flow_dates[1:]:
                 dates = dc.yearFrac(self.settlement_date_, flow_date)[0]
-                if self.settlement_date_ < flow_date < self.put_date:
+                if self.settlement_date_ < flow_date < self.exercise_dates:
                     cpnTime = (flow_date - self.settlement_date_) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
                     cpnAmounts.append(cpn1)
-                if flow_date >= self.put_date:
+                if flow_date >= self.exercise_dates:
                     cpnTime = (flow_date - self.settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
@@ -642,12 +652,5 @@ class BondPutableAdjustable(Bond):
             return self._pure_bond.dollar_convexity()
 
     def __repr__(self):
-        s = to_string("OBJECT TYPE", type(self).__name__)
-        s += to_string("ISSUE DATE", self.issue_date)
-        s += to_string("MATURITY DATE", self.due_date)
-        s += to_string("COUPON", self.coupon)
-        s += to_string("FREQUENCY", self.frequency)
-        s += to_string("ACCRUAL TYPE", self.accrual_type_)
-        s += to_string("FACE AMOUNT", self.par)
-
+        s = super().__repr__()
         return s
