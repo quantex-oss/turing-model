@@ -49,18 +49,23 @@ class BondPutableAdjustable(Bond):
     _forward_curve = None
 
     def __new__(cls, *args, **kwargs):
-        if kwargs.get("put_date")[-1] > kwargs["value_date"]:
-            return super().__new__(cls, *args, **kwargs)
-        else:
-            fixed_rete_bond = BondFixedRate(issue_date=kwargs['issue_date'],
-                                            value_date=kwargs['value_date'],
-                                            due_date=kwargs['due_date'],
-                                            pay_interest_mode=kwargs['pay_interest_mode'],
-                                            pay_interest_cycle=kwargs['pay_interest_cycle'],
-                                            interest_rules=kwargs['interest_rules'],
-                                            par=kwargs['par'],
-                                            coupon_rate=kwargs['coupon_rate'])
-            return fixed_rete_bond
+        ecnomic_terms = kwargs.get("ecnomic_terms")
+        if ecnomic_terms is not None:
+            embedded_putable_options = ecnomic_terms.data.get('embedded_putable_options')
+            if embedded_putable_options is not None:
+                exercise_dates = embedded_putable_options.data['exercise_date'].tolist()  # TODO: 目前是datetime.datetime格式
+                if exercise_dates[-1] > kwargs["value_date"]:
+                    return super().__new__(cls, *args, **kwargs)
+                else:
+                    fixed_rete_bond = BondFixedRate(issue_date=kwargs['issue_date'],
+                                                    value_date=kwargs['value_date'],
+                                                    due_date=kwargs['due_date'],
+                                                    pay_interest_mode=kwargs['pay_interest_mode'],
+                                                    pay_interest_cycle=kwargs['pay_interest_cycle'],
+                                                    interest_rules=kwargs['interest_rules'],
+                                                    par=kwargs['par'],
+                                                    coupon_rate=kwargs['coupon_rate'])
+                    return fixed_rete_bond
 
     def __post_init__(self):
         super().__post_init__()
