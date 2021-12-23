@@ -3,8 +3,8 @@ import numpy as np
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
-from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
-from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
+from turing_models.utilities.frequency import TuringFrequency, FrequencyType
+from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.utilities.mathematics import testMonotonicity
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.helper_functions import checkArgumentTypes, timesFromDates, to_string
@@ -67,7 +67,7 @@ class TuringDiscountCurve():
         self._valuationDate = valuationDate
         self._dfs = np.array(self._dfs)
         self._interpType = interpType
-        self._freqType = TuringFrequencyTypes.CONTINUOUS
+        self._freqType = FrequencyType.CONTINUOUS
         self._dayCountType = None  # Not needed for this curve
         self._interpolator = TuringInterpolator(self._interpType)
         self._interpolator.fit(self._times, self._dfs)
@@ -78,8 +78,8 @@ class TuringDiscountCurve():
                   valuationDate: TuringDate,
                   rates: (float, np.ndarray),
                   times: (float, np.ndarray),
-                  freqType: TuringFrequencyTypes,
-                  dayCountType: TuringDayCountTypes):
+                  freqType: FrequencyType,
+                  dayCountType: DayCountType):
         ''' Convert a zero with a specified compounding frequency and day count
         convention to a discount factor for a single maturity date or a list of
         dates. The day count is used to calculate the elapsed year fraction.'''
@@ -91,14 +91,14 @@ class TuringDiscountCurve():
 
         f = TuringFrequency(freqType)
 
-        if freqType == TuringFrequencyTypes.CONTINUOUS:
+        if freqType == FrequencyType.CONTINUOUS:
             df = np.exp(-rates*t)
-        elif freqType == TuringFrequencyTypes.SIMPLE:
+        elif freqType == FrequencyType.SIMPLE:
             df = 1.0 / (1.0 + rates * t)
-        elif freqType == TuringFrequencyTypes.ANNUAL or \
-            freqType == TuringFrequencyTypes.SEMI_ANNUAL or \
-                freqType == TuringFrequencyTypes.QUARTERLY or \
-                freqType == TuringFrequencyTypes.MONTHLY:
+        elif freqType == FrequencyType.ANNUAL or \
+            freqType == FrequencyType.SEMI_ANNUAL or \
+                freqType == FrequencyType.QUARTERLY or \
+                freqType == FrequencyType.MONTHLY:
             df = 1.0 / np.power(1.0 + rates/f, f * t)
         else:
             raise TuringError("Unknown Frequency type")
@@ -110,8 +110,8 @@ class TuringDiscountCurve():
     def _dfToZero(self,
                   dfs: (float, np.ndarray),
                   maturityDts: (TuringDate, list),
-                  freqType: TuringFrequencyTypes,
-                  dayCountType: TuringDayCountTypes):
+                  freqType: FrequencyType,
+                  dayCountType: DayCountType):
         ''' Given a dates this first generates the discount factors. It then
         converts the discount factors to a zero rate with a chosen compounding
         frequency which may be continuous, simple, or compounded at a specific
@@ -144,9 +144,9 @@ class TuringDiscountCurve():
 
             t = max(times[i], gSmall)
 
-            if freqType == TuringFrequencyTypes.CONTINUOUS:
+            if freqType == FrequencyType.CONTINUOUS:
                 r = -np.log(df)/t
-            elif freqType == TuringFrequencyTypes.SIMPLE:
+            elif freqType == FrequencyType.SIMPLE:
                 r = (1.0/df - 1.0)/t
             else:
                 r = (np.power(df, -1.0/(t * f))-1.0) * f
@@ -159,17 +159,17 @@ class TuringDiscountCurve():
 
     def zeroRate(self,
                  dts: (list, TuringDate),
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
-                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA):
+                 freqType: FrequencyType = FrequencyType.CONTINUOUS,
+                 dayCountType: DayCountType = DayCountType.ACT_ACT_ISDA):
         ''' Calculation of zero rates with specified frequency. This
         function can return a vector of zero rates given a vector of
         dates so must use Numpy functions. Default frequency is a
         continuously compounded rate. '''
 
-        if isinstance(freqType, TuringFrequencyTypes) is False:
+        if isinstance(freqType, FrequencyType) is False:
             raise TuringError("Invalid Frequency type.")
 
-        if isinstance(dayCountType, TuringDayCountTypes) is False:
+        if isinstance(dayCountType, DayCountType) is False:
             raise TuringError("Invalid Day Count type.")
 
         dfs = self.df(dts)
@@ -186,13 +186,13 @@ class TuringDiscountCurve():
 
     def ccRate(self,
                dts: (list, TuringDate),
-               dayCountType: TuringDayCountTypes = TuringDayCountTypes.SIMPLE):
+               dayCountType: DayCountType = DayCountType.SIMPLE):
         ''' Calculation of zero rates with continuous compounding. This
         function can return a vector of cc rates given a vector of
         dates so must use Numpy functions. '''
 
         ccRates = self.zeroRate(
-            dts, TuringFrequencyTypes.CONTINUOUS, dayCountType)
+            dts, FrequencyType.CONTINUOUS, dayCountType)
         return ccRates
 
 ###############################################################################
@@ -200,8 +200,8 @@ class TuringDiscountCurve():
     def swapRate(self,
                  effectiveDate: TuringDate,
                  maturityDate: (list, TuringDate),
-                 freqType=TuringFrequencyTypes.ANNUAL,
-                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.THIRTY_E_360):
+                 freqType=FrequencyType.ANNUAL,
+                 dayCountType: DayCountType = DayCountType.THIRTY_E_360):
         ''' Calculate the swap rate to maturity date. This is the rate paid by
         a swap that has a price of par today. This is the same as a Libor swap
         rate except that we do not do any business day adjustments. '''
@@ -213,16 +213,16 @@ class TuringDiscountCurve():
         if effectiveDate < self._valuationDate:
             raise TuringError("Swap starts before the curve valuation date.")
 
-        if isinstance(freqType, TuringFrequencyTypes) is False:
+        if isinstance(freqType, FrequencyType) is False:
             raise TuringError("Invalid Frequency type.")
 
-        if isinstance(freqType, TuringFrequencyTypes) is False:
+        if isinstance(freqType, FrequencyType) is False:
             raise TuringError("Invalid Frequency type.")
 
-        if freqType == TuringFrequencyTypes.SIMPLE:
+        if freqType == FrequencyType.SIMPLE:
             raise TuringError(
                 "Cannot calculate par rate with simple yield freq.")
-        elif freqType == TuringFrequencyTypes.CONTINUOUS:
+        elif freqType == FrequencyType.CONTINUOUS:
             raise TuringError(
                 "Cannot calculate par rate with continuous freq.")
 
@@ -396,7 +396,7 @@ class TuringDiscountCurve():
     def fwdRate(self,
                 startDate: (list, TuringDate),
                 dateOrTenor: (TuringDate, str),
-                dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360):
+                dayCountType: DayCountType = DayCountType.ACT_360):
         ''' Calculate the forward rate between two forward dates according to
         the specified day count convention. This defaults to Actual 360. The
         first date is specified and the second is given as a date or as a tenor

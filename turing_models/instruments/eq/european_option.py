@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.global_variables import gNumObsInYear
@@ -32,7 +32,7 @@ class EuropeanOption(EqOption):
         if self.expiry >= self.value_date_:
             schedule_daily = TuringSchedule(self.value_date_,
                                             self.expiry,
-                                            freqType=TuringFrequencyTypes.DAILY,
+                                            freqType=FrequencyType.DAILY,
                                             calendarType=TuringCalendarTypes.CHINA_SSE)
             # 考虑一开一闭区间
             num_days = len(schedule_daily._adjustedDates) - 1

@@ -15,9 +15,9 @@ from turing_models.market.curves.curve_ql_real_time import FXForwardCurve as FXF
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.utilities.turing_date import TuringDate
 
@@ -28,7 +28,7 @@ class CurveGeneration:
                  spot_rate: list,
                  base_date: TuringDate = TuringDate(
                      *(datetime.date.today().timetuple()[:3])),
-                 frequency_type: TuringFrequencyTypes = TuringFrequencyTypes.ANNUAL,
+                 frequency_type: FrequencyType = FrequencyType.ANNUAL,
                  number_of_days: int = 730):
         self.term = base_date.addYears(annualized_term)
         self.spot_rate = spot_rate
@@ -49,7 +49,7 @@ class CurveGeneration:
 
     def _generate_nature_day_rate(self):
         """根据nature_days生成对应的即期收益率列表"""
-        self.nature_days_rate = self.curve.zeroRate(self.nature_days, freqType=TuringFrequencyTypes.ANNUAL).tolist()
+        self.nature_days_rate = self.curve.zeroRate(self.nature_days, freqType=FrequencyType.ANNUAL).tolist()
 
     def get_dates(self):
         return [day.datetime() for day in self.nature_days]
@@ -127,7 +127,7 @@ class FXIRCurve:
                 rates.append(rate)
                 dfs.append(df)
         elif self.for_curve_type == DiscountCurveType.FX_Implied_tr:
-            rates = foreign_discount_curve.zeroRate(nature_days, freqType=TuringFrequencyTypes.ANNUAL).tolist()
+            rates = foreign_discount_curve.zeroRate(nature_days, freqType=FrequencyType.ANNUAL).tolist()
             dfs = foreign_discount_curve.df(nature_days).tolist()
         else:
             raise TuringError('Unsupported foreign discount curve type')
@@ -150,7 +150,7 @@ class FXIRCurve:
                 rates.append(rate)
                 dfs.append(df)
         elif self.dom_curve_type == DiscountCurveType.Shibor3M_tr:
-            rates = domestic_discount_curve.zeroRate(nature_days, freqType=TuringFrequencyTypes.ANNUAL).tolist()
+            rates = domestic_discount_curve.zeroRate(nature_days, freqType=FrequencyType.ANNUAL).tolist()
             dfs = domestic_discount_curve.df(nature_days).tolist()
         else:
             raise TuringError('Unsupported domestic discount curve type')
@@ -200,12 +200,12 @@ class DomDiscountCurveGen:
             self.dom_curve = create_ibor_single_curve(value_date_turing,
                                                       shibor_deposit_tenors,
                                                       shibor_deposit_rates,
-                                                      TuringDayCountTypes.ACT_365F,
+                                                      DayCountType.ACT_365F,
                                                       shibor_swap_tenors,
                                                       TuringSwapTypes.PAY,
                                                       shibor_swap_rates,
-                                                      TuringFrequencyTypes.QUARTERLY,
-                                                      TuringDayCountTypes.ACT_365F, 0)
+                                                      FrequencyType.QUARTERLY,
+                                                      DayCountType.ACT_365F, 0)
         elif curve_type == DiscountCurveType.Shibor3M:
             ql.Settings.instance().evaluationDate = value_date_ql
             if len(shibor_origin_tenors) >= 5:

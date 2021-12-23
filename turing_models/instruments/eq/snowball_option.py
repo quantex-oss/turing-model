@@ -4,7 +4,7 @@ from typing import List, Union
 import numpy as np
 
 from turing_models.utilities.schedule import TuringSchedule
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes
 from turing_models.utilities.global_variables import gNumObsInYear, gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
@@ -86,7 +86,7 @@ class SnowballOption(EqOption):
         """生成从估值日到到期日的交易日时间表（包含首尾日）"""
         schedule_daily = TuringSchedule(self.value_date_,
                                         self.expiry,
-                                        freqType=TuringFrequencyTypes.DAILY,
+                                        freqType=FrequencyType.DAILY,
                                         calendarType=TuringCalendarTypes.CHINA_SSE,
                                         busDayAdjustType=self.business_day_adjust_type_)
         return schedule_daily._adjustedDates
@@ -100,7 +100,7 @@ class SnowballOption(EqOption):
         else:
             schedule_monthly = TuringSchedule(self.start_date,
                                               self.expiry,
-                                              freqType=TuringFrequencyTypes.MONTHLY,
+                                              freqType=FrequencyType.MONTHLY,
                                               calendarType=TuringCalendarTypes.CHINA_SSE,
                                               busDayAdjustType=self.business_day_adjust_type_)
             return schedule_monthly._adjustedDates

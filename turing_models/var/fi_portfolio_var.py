@@ -7,7 +7,7 @@ from fundamental.portfolio.portfolio import Portfolio
 from turing_models.instruments.common import (RiskMeasure)
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendarTypes
 
 
@@ -19,7 +19,7 @@ class FIPortfolioVaR():
     formula: str = 'Historical Simulation'
     target_portfolio : str = None
     confidence_interval: float = 0.95
-    freq_type: TuringFrequencyTypes = TuringFrequencyTypes.DAILY
+    freq_type: FrequencyType = FrequencyType.DAILY
     calendar_type: TuringCalendarTypes = TuringCalendarTypes.CHINA_IB
     
     def __post_init__(self):

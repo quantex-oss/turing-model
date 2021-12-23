@@ -4,7 +4,7 @@ from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.day_count import TuringDayCount
-from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 
 ###############################################################################
@@ -34,7 +34,7 @@ class TuringIborDeposit(object):
                  startDate: TuringDate,  #  When the interest starts to accrue
                  maturityDateOrTenor: (TuringDate, str),  # Repayment of interest
                  depositRate: float,  # MM rate using simple interest
-                 dayCountType: TuringDayCountTypes,  # How year fraction is calculated
+                 dayCountType: DayCountType,  # How year fraction is calculated
                  notional: float = 100.0,  # Amount borrowed
                  calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,  #  Holidays for maturity date
                  busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING):

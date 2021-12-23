@@ -1,29 +1,29 @@
 from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import DayCountType
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.instruments.rates.bond_putable_adjustable import BondPutableAdjustable
 # from turing_models.instruments.credit.bond_putable_plus_adjustable import BondPutableAdjustable as BondPutableAdjustable2
 
 
 bond_fr = BondPutableAdjustable(asset_id="BONDCN00000007",
-                        coupon=0.0316,
-                        curve_code="CBD100003",
-                        issue_date=TuringDate(2021, 8, 5),
-                        value_date=TuringDate(2021, 11, 26),
-                        due_date=TuringDate(2025, 8, 5),
-                        freq_type=TuringFrequencyTypes.ANNUAL,
-                        accrual_type=TuringDayCountTypes.ACT_365F,
-                        par=100,
-                        zero_dates=dates,
-                        zero_rates=rates,
-                        # adjust_bound_up= -1,
-                        # adjust_bound_down= 0,
-                        # forward_dates=dates,
-                        # forward_rates=rates,
-                        put_date=TuringDate(2023, 8, 5))
+                                coupon=0.0316,
+                                curve_code="CBD100003",
+                                issue_date=TuringDate(2021, 8, 5),
+                                value_date=TuringDate(2021, 11, 26),
+                                due_date=TuringDate(2025, 8, 5),
+                                freq_type=FrequencyType.ANNUAL,
+                                accrual_type=DayCountType.ACT_365F,
+                                par=100,
+                                zero_dates=dates,
+                                zero_rates=rates,
+                                # adjust_bound_up= -1,
+                                # adjust_bound_down= 0,
+                                # forward_dates=dates,
+                                # forward_rates=rates,
+                                put_date=TuringDate(2023, 8, 5))
 
-print(bond_fr._pure_bond.clean_price_)
+print(bond_fr._pure_bond._clean_price)
 price1 = bond_fr.clean_price_
 # price2 = bond_fr2.full_price_from_discount_curve()
 # ytm = bond_fr.yield_to_maturity()

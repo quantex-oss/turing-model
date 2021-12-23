@@ -5,7 +5,7 @@ from turing_models.utilities.error import TuringError
 from enum import Enum
 
 
-class TuringFrequencyTypes(Enum):
+class FrequencyType(Enum):
     SIMPLE = 0
     ANNUAL = 1
     SEMI_ANNUAL = 2
@@ -23,29 +23,29 @@ class TuringFrequencyTypes(Enum):
 def TuringFrequency(freqType):
     ''' This is a function that takes in a Frequency Type and returns an
     integer for the number of times a year a payment occurs.'''
-    if isinstance(freqType, TuringFrequencyTypes) is False:
+    if isinstance(freqType, FrequencyType) is False:
         print("TuringFrequency:", freqType)
         raise TuringError("Unknown frequency type")
 
-    if freqType == TuringFrequencyTypes.CONTINUOUS:
+    if freqType == FrequencyType.CONTINUOUS:
         return -1
-    elif freqType == TuringFrequencyTypes.SIMPLE:
+    elif freqType == FrequencyType.SIMPLE:
         return 0
-    elif freqType == TuringFrequencyTypes.ANNUAL:
+    elif freqType == FrequencyType.ANNUAL:
         return 1
-    elif freqType == TuringFrequencyTypes.SEMI_ANNUAL:
+    elif freqType == FrequencyType.SEMI_ANNUAL:
         return 2
-    elif freqType == TuringFrequencyTypes.TRI_ANNUAL:
+    elif freqType == FrequencyType.TRI_ANNUAL:
         return 3
-    elif freqType == TuringFrequencyTypes.QUARTERLY:
+    elif freqType == FrequencyType.QUARTERLY:
         return 4
-    elif freqType == TuringFrequencyTypes.MONTHLY:
+    elif freqType == FrequencyType.MONTHLY:
         return 12
-    elif freqType == TuringFrequencyTypes.BIWEEKLY:
+    elif freqType == FrequencyType.BIWEEKLY:
         return 26
-    elif freqType == TuringFrequencyTypes.WEEKLY:
+    elif freqType == FrequencyType.WEEKLY:
         return 52
-    elif freqType == TuringFrequencyTypes.DAILY:
+    elif freqType == FrequencyType.DAILY:
         return 365
 
 

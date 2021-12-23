@@ -107,7 +107,7 @@ class TuringYTMCalcType(Enum):
     US_TREASURY = 3
 
 
-class TuringCouponType(Enum):
+class CouponType(Enum):
     ZERO_COUPON = 1
     DISCOUNT = 2
     COUPON_CARRYING = 3

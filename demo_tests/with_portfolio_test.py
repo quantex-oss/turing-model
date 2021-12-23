@@ -8,8 +8,8 @@ from turing_models.instruments.common import RiskMeasure, Currency, CurrencyPair
 from turing_models.instruments.credit.bond_fixed_rate import BondFixedRate
 from turing_models.instruments.eq.knockout_option import KnockOutOption
 from turing_models.instruments.fx.fx_vanilla_option import FXVanillaOption
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import DayCountType
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.global_types import TuringOptionType
 from turing_models.utilities.turing_date import TuringDate
 
@@ -67,8 +67,8 @@ bond_fr = BondFixedRate(bond_symbol="111111",
                         issue_date=TuringDate(2015, 11, 13),
                         due_date=TuringDate(2025, 11, 14),
                         bond_term_year=10,
-                        freq_type=TuringFrequencyTypes.SEMI_ANNUAL,
-                        accrual_type=TuringDayCountTypes.ACT_365L,
+                        freq_type=FrequencyType.SEMI_ANNUAL,
+                        accrual_type=DayCountType.ACT_365L,
                         par=100)
 posiiton = Position(tradable=bond_fr, quantity=1.0)
 portfolio.add(posiiton)

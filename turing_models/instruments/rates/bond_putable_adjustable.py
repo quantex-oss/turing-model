@@ -6,14 +6,14 @@ from turing_models.utilities.bond_terms import EcnomicTerms
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.instruments.common import newton_fun
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.instruments.rates.bond import Bond
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import to_string
-from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
+from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
@@ -128,8 +128,8 @@ class BondPutableAdjustable(Bond):
     def discount_curve(self):
         if self._discount_curve:
             return self._discount_curve
-        self.curve_resolve()
-        return self.cv.discount_curve()
+        self._curve_resolve()
+        return self.cv._discount_curve()
 
     @discount_curve.setter
     def discount_curve(self, value: TuringDiscountCurve):
@@ -151,7 +151,7 @@ class BondPutableAdjustable(Bond):
         else:
             curve_spot = self.discount_curve
             dfIndex1 = curve_spot.df(self.exercise_dates)
-            dc = TuringDayCount(TuringDayCountTypes.ACT_365F)
+            dc = TuringDayCount(DayCountType.ACT_365F)
             forward_rates = []
             for i in range(len(self.forward_dates_)):
                 acc_factor = dc.yearFrac(self.exercise_dates, self.forward_dates_[i])[0]
@@ -164,7 +164,7 @@ class BondPutableAdjustable(Bond):
 
     @property
     def discount_curve_flat(self):
-        return TuringDiscountCurveFlat(self.settlement_date_,
+        return TuringDiscountCurveFlat(self._settlement_date,
                                        self.ytm_, self.pay_interest_cycle, self.interest_rules)
 
     @property
@@ -173,7 +173,7 @@ class BondPutableAdjustable(Bond):
             return self._forward_curve
         else:
             return TuringDiscountCurveZeros(
-                self.exercise_dates, self.forward_dates_, self.forward_rates_, TuringFrequencyTypes.ANNUAL)
+                self.exercise_dates, self.forward_dates_, self.forward_rates_, FrequencyType.ANNUAL)
 
     @forward_curve.setter
     def forward_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
@@ -214,9 +214,9 @@ class BondPutableAdjustable(Bond):
                                   accrual_type=self.interest_rules,
                                   par=self.par)
         curve_dates = []
-        dc = TuringDayCount(TuringDayCountTypes.ACT_365F)
+        dc = TuringDayCount(DayCountType.ACT_365F)
         for i in range(len(self.discount_curve._zeroDates)):
-            curve_dates.append(dc.yearFrac(self.settlement_date_, self.discount_curve._zeroDates[i])[0])
+            curve_dates.append(dc.yearFrac(self._settlement_date, self.discount_curve._zeroDates[i])[0])
         pure_bond.cv.curve_data = pd.DataFrame(data={'tenor': curve_dates, 'rate': self.discount_curve._zeroRates})
         return pure_bond
 
@@ -236,7 +236,7 @@ class BondPutableAdjustable(Bond):
         """ Calculate the equilibrium_rate by solving the price
         yield relationship using a one-dimensional root solver. """
 
-        dc = TuringDayCount(TuringDayCountTypes.ACT_365F)
+        dc = TuringDayCount(DayCountType.ACT_365F)
         forward_dates = []
         for i in range(len(self.forward_dates_)):
             forward_dates.append(dc.yearFrac(self.exercise_dates, self.forward_dates_[i])[0])
@@ -390,8 +390,8 @@ class BondPutableAdjustable(Bond):
             cpnAmounts = []
 
             for flow_date in self._flow_dates[1:]:
-                if self.settlement_date_ < flow_date < self.exercise_dates:
-                    cpnTime = (flow_date - self.settlement_date_) / gDaysInYear
+                if self._settlement_date < flow_date < self.exercise_dates:
+                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
@@ -439,8 +439,8 @@ class BondPutableAdjustable(Bond):
             cpnAmounts = []
 
             for flow_date in self._flow_dates[1:]:
-                if self.settlement_date_ < flow_date < self.exercise_dates:
-                    cpnTime = (flow_date - self.settlement_date_) / gDaysInYear
+                if self._settlement_date < flow_date < self.exercise_dates:
+                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
@@ -482,7 +482,7 @@ class BondPutableAdjustable(Bond):
             raise TuringError("Accrued interest - not enough flow dates.")
 
         for i_flow in range(1, num_flows):
-            if self._flow_dates[i_flow] >= self.settlement_date_:
+            if self._flow_dates[i_flow] >= self._settlement_date:
                 self._pcd = self._flow_dates[i_flow - 1]  # 结算日前一个现金流
                 self._ncd = self._flow_dates[i_flow]  # 结算日后一个现金流
                 break
@@ -493,11 +493,11 @@ class BondPutableAdjustable(Bond):
             self._ncd, -self.num_ex_dividend_days)  # 除息日
 
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
-                                           self.settlement_date_,
+                                           self._settlement_date,
                                            self._ncd,
                                            self.pay_interest_cycle)  # 计算应计日期，返回应计因数、应计天数、基数
 
-        if self.settlement_date_ > ex_dividend_date:  # 如果结算日大于除息日，减去一期
+        if self._settlement_date > ex_dividend_date:  # 如果结算日大于除息日，减去一期
             acc_factor = acc_factor - 1.0 / self.frequency
 
         self._alpha = 1.0 - acc_factor * self.frequency  # 计算alpha值供全价计算公式使用
@@ -590,13 +590,13 @@ class BondPutableAdjustable(Bond):
             cpnAmounts = []
             px = 0.0
             df = 1.0
-            df_settle = self.discount_curve.df(self.settlement_date_)
-            dc = TuringDayCount(TuringDayCountTypes.ACT_ACT_ISDA)
+            df_settle = self.discount_curve.df(self._settlement_date)
+            dc = TuringDayCount(DayCountType.ACT_ACT_ISDA)
 
             for flow_date in self._flow_dates[1:]:
-                dates = dc.yearFrac(self.settlement_date_, flow_date)[0]
-                if self.settlement_date_ < flow_date < self.exercise_dates:
-                    cpnTime = (flow_date - self.settlement_date_) / gDaysInYear
+                dates = dc.yearFrac(self._settlement_date, flow_date)[0]
+                if self._settlement_date < flow_date < self.exercise_dates:
+                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)

@@ -119,8 +119,8 @@ from turing_models.instruments.rates.ibor_deposit import TuringIborDeposit
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
 from turing_models.utilities.calendar import TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendarTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.frequency import FrequencyType
+from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_types import TuringSwapTypes
 
@@ -128,7 +128,7 @@ from turing_models.utilities.global_types import TuringSwapTypes
 def buildIborSingleCurve(valuationDate):
 
     settlementDate = valuationDate
-    dcType = TuringDayCountTypes.ACT_360
+    dcType = DayCountType.ACT_360
 
     depos = []
     fras = []
@@ -138,8 +138,8 @@ def buildIborSingleCurve(valuationDate):
     depo1 = TuringIborDeposit(valuationDate, maturityDate, -0.00251, dcType)
     depos.append(depo1)
 
-    fixedFreq = TuringFrequencyTypes.ANNUAL
-    dcType = TuringDayCountTypes.THIRTY_E_360
+    fixedFreq = FrequencyType.ANNUAL
+    dcType = DayCountType.THIRTY_E_360
     fixedLegType = TuringSwapTypes.PAY
 
     #######################################
@@ -292,12 +292,12 @@ def test_LiborSwap():
     endDate = TuringDate(2067, 12, 27)
 
     fixedCoupon = 0.015
-    fixedFreqType = TuringFrequencyTypes.ANNUAL
-    fixedDayCountType = TuringDayCountTypes.THIRTY_E_360
+    fixedFreqType = FrequencyType.ANNUAL
+    fixedDayCountType = DayCountType.THIRTY_E_360
 
     floatSpread = 0.0
-    floatFreqType = TuringFrequencyTypes.SEMI_ANNUAL
-    floatDayCountType = TuringDayCountTypes.ACT_360
+    floatFreqType = FrequencyType.SEMI_ANNUAL
+    floatDayCountType = DayCountType.ACT_360
     firstFixing = -0.00268
 
     swapCalendarType = TuringCalendarTypes.WEEKEND
@@ -348,24 +348,24 @@ rates = [0.023125, 0.023363, 0.023538,        0.023713,        0.024613,        
 irs = IRS(effective_date=TuringDate(2021, 7, 22),
           termination_date=TuringDate(2026, 7, 22),
           fixed_leg_type=TuringSwapTypes.PAY,
-          fixed_freq_type=TuringFrequencyTypes.QUARTERLY,
-          fixed_day_count_type=TuringDayCountTypes.ACT_365L,
+          fixed_freq_type=FrequencyType.QUARTERLY,
+          fixed_day_count_type=DayCountType.ACT_365L,
           fixed_coupon=0.029425,
           notional=600000,
           float_spread=0,
-          float_freq_type=TuringFrequencyTypes.QUARTERLY,
-          float_day_count_type=TuringDayCountTypes.ACT_365L,
+          float_freq_type=FrequencyType.QUARTERLY,
+          float_day_count_type=DayCountType.ACT_365L,
           value_date=TuringDate(2021, 8, 24),
           swap_curve_dates=dates,
           swap_curve_rates=rates,
           deposit_term=1/52,
           deposit_rate=0.0222,
           first_fixing_rate=0.02,
-          deposit_day_count_type=TuringDayCountTypes.ACT_365L,
-          fixed_freq_type_for_curve=TuringFrequencyTypes.QUARTERLY,
-          fixed_day_count_type_for_curve=TuringDayCountTypes.ACT_365L,
+          deposit_day_count_type=DayCountType.ACT_365L,
+          fixed_freq_type_for_curve=FrequencyType.QUARTERLY,
+          fixed_day_count_type_for_curve=DayCountType.ACT_365L,
           fixed_leg_type_for_curve=TuringSwapTypes.PAY,
-          reset_freq_type=TuringFrequencyTypes.WEEKLY)
+          reset_freq_type=FrequencyType.WEEKLY)
 
 print(irs.price())
 print(irs.pv01())

@@ -3,7 +3,7 @@ import datetime
 import pandas as pd
 
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 
@@ -58,12 +58,12 @@ class CurveAdjustmentImpl:
         curve = TuringDiscountCurveZeros(self.today, dates, self.rates)
         point_date = self.today.addYears(self.pivot_point)
         self.pivot_rate = curve.zeroRate(
-            point_date, freqType=TuringFrequencyTypes.ANNUAL)
+            point_date, freqType=FrequencyType.ANNUAL)
 
         if self.tenor_start:
             start_date = self.today.addYears(self.tenor_start)
             self.start_rate = curve.zeroRate(
-                start_date, freqType=TuringFrequencyTypes.ANNUAL)
+                start_date, freqType=FrequencyType.ANNUAL)
         else:
             self.tenor_start = self.tenors[0]
             self.start_rate = self.rates[0]
@@ -71,7 +71,7 @@ class CurveAdjustmentImpl:
         if self.tenor_end:
             end_date = self.today.addYears(self.tenor_end)
             self.end_rate = curve.zeroRate(
-                end_date, freqType=TuringFrequencyTypes.ANNUAL)
+                end_date, freqType=FrequencyType.ANNUAL)
         else:
             self.tenor_end = self.tenors[-1]
             self.end_rate = self.rates[-1]

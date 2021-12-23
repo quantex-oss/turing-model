@@ -2,8 +2,8 @@ import math
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.mathematics import ONE_MILLION
-from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import TuringDayCount, DayCountType
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.schedule import TuringSchedule
@@ -15,29 +15,29 @@ from turing_models.market.curves.discount_curve import TuringDiscountCurve
 def TuringFreqDaycount(freqType):
     ''' This is a function that takes in a Frequency Type and returns an
     integer for the number of times a year a payment occurs.'''
-    if isinstance(freqType, TuringFrequencyTypes) is False:
+    if isinstance(freqType, FrequencyType) is False:
         print("TuringFrequency:", freqType)
         raise TuringError("Unknown frequency type")
 
-    if freqType == TuringFrequencyTypes.CONTINUOUS:
+    if freqType == FrequencyType.CONTINUOUS:
         return 0.00001
-    elif freqType == TuringFrequencyTypes.SIMPLE:
+    elif freqType == FrequencyType.SIMPLE:
         return 0
-    elif freqType == TuringFrequencyTypes.ANNUAL:
+    elif freqType == FrequencyType.ANNUAL:
         return 365
-    elif freqType == TuringFrequencyTypes.SEMI_ANNUAL:
+    elif freqType == FrequencyType.SEMI_ANNUAL:
         return 183
-    elif freqType == TuringFrequencyTypes.TRI_ANNUAL:
+    elif freqType == FrequencyType.TRI_ANNUAL:
         return 120
-    elif freqType == TuringFrequencyTypes.QUARTERLY:
+    elif freqType == FrequencyType.QUARTERLY:
         return 90
-    elif freqType == TuringFrequencyTypes.MONTHLY:
+    elif freqType == FrequencyType.MONTHLY:
         return 30
-    elif freqType == TuringFrequencyTypes.BIWEEKLY:
+    elif freqType == FrequencyType.BIWEEKLY:
         return 14
-    elif freqType == TuringFrequencyTypes.WEEKLY:
+    elif freqType == FrequencyType.WEEKLY:
         return 7
-    elif freqType == TuringFrequencyTypes.DAILY:
+    elif freqType == FrequencyType.DAILY:
         return 1
 
 
@@ -51,9 +51,9 @@ class TuringFloatLeg(object):
                  endDate: (TuringDate, str),  # Date contract ends
                  legType: TuringSwapTypes,
                  spread: (float),
-                 freqType: TuringFrequencyTypes,
-                 dayCountType: TuringDayCountTypes,
-                 resetFreqType: TuringFrequencyTypes,
+                 freqType: FrequencyType,
+                 dayCountType: DayCountType,
+                 resetFreqType: FrequencyType,
                  notional: float = ONE_MILLION,
                  principal: float = 0.0,
                  paymentLag: int= 0,

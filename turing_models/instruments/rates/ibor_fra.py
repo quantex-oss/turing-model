@@ -3,7 +3,7 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.calendar import TuringBusDayAdjustTypes
-from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
+from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 
@@ -42,7 +42,7 @@ class TuringIborFRA(object):
                  startDate: TuringDate,  # The date the FRA starts to accrue
                  maturityDateOrTenor: (TuringDate, str),  # End of the Ibor rate period
                  fraRate: float,  # The fixed contractual FRA rate
-                 dayCountType: TuringDayCountTypes,  # For interest period
+                 dayCountType: DayCountType,  # For interest period
                  notional: float = 100.0,
                  payFixedRate: bool = True,  # True if the FRA rate is being paid
                  calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,

@@ -38,8 +38,8 @@ import pandas as pd
 # tenor_start：旋转起始点，单位是年，若不传该参数，表示从曲线的第一个时间点开始旋转
 # tenor_end：旋转结束点，单位是年，若不传该参数，表示从曲线的最后一个时间点结束旋转
 # pivot_point、tenor_start和tenor_end的范围为[原曲线的第一个时间点，原曲线的最后一个时间点]
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import DayCountType
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.turing_date import TuringDate
 
 curve_data = pd.DataFrame(data={'tenor': dates, 'rate': rates})
@@ -64,8 +64,8 @@ bond_fr = BondFixedRate(bond_symbol="143756.SH",
                         issue_date=TuringDate(2015, 11, 13),
                         # due_date=TuringDate(2025, 11, 14),
                         bond_term_year=10,
-                        freq_type=TuringFrequencyTypes.SEMI_ANNUAL,
-                        accrual_type=TuringDayCountTypes.ACT_365L,
+                        freq_type=FrequencyType.SEMI_ANNUAL,
+                        accrual_type=DayCountType.ACT_365L,
                         par=100)
 
 scenario_extreme = PricingContext(

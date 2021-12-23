@@ -1,9 +1,9 @@
 import numpy as np
 
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.mathematics import testMonotonicity
 from turing_models.utilities.helper_functions import to_string, timesFromDates, checkArgumentTypes
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
@@ -30,8 +30,8 @@ class TuringDiscountCurveFXImplied(TuringDiscountCurve):
                  domDates: (list, np.ndarray),
                  domCurve: TuringDiscountCurve,
                  fxFwdCurve: TuringDiscountCurve,
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
-                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_365F,
+                 freqType: FrequencyType = FrequencyType.CONTINUOUS,
+                 dayCountType: DayCountType = DayCountType.ACT_365F,
                  interpType: TuringInterpTypes = TuringInterpTypes.FLAT_FWD_RATES):
         ''' Create the discount curve from a vector of dates and zero rates
         factors. The first date is the curve anchor. Then a vector of zero
@@ -47,10 +47,10 @@ class TuringDiscountCurveFXImplied(TuringDiscountCurve):
         if len(domDates) == 0:
             raise TuringError("Dates has zero length")
 
-        if freqType not in TuringFrequencyTypes:
+        if freqType not in FrequencyType:
             raise TuringError("Unknown Frequency type " + str(freqType))
 
-        if dayCountType not in TuringDayCountTypes:
+        if dayCountType not in DayCountType:
             raise TuringError("Unknown Cap Floor DayCountRule type " +
                               str(dayCountType))
 
