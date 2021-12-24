@@ -8,9 +8,16 @@ Sync_To_Common:
     - cat "${KUBE_PASS_CONFIG}" > kubeconfig
     - cat "${SYNC_JOB}" > sync.yaml
   script:
-    - export KUBECONFIG=kubeconfig
-    - kubectl create -f sync.yaml
+    - |
+      set -x
+      export KUBECONFIG=kubeconfig
+      kubectl create -f sync.yaml
+      sleep 10
+      pods=$(kubectl get pods --selector=job-name=turing-model-repo-pull --output=jsonpath='{.items[*].metadata.name}' -n turing-dev)
+      kubectl exec -it $pods -n turing-dev -- bash -c "cd /home/shared/common/model && git pull && git log -n 1"
+      kubectl exec -it $pods -n turing-dev -- bash -c "cd /home/shared/common/sdk/fundamental && git pull && git log -n 1"
   after_script:
+    - export KUBECONFIG=kubeconfig
     - kubectl delete -f sync.yaml
   rules:
     - if: '$CI_COMMIT_BRANCH == "develop" && $KUBE_PASS_CONFIG'
