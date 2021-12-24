@@ -13,7 +13,9 @@ from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import to_string
 # from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
+from turing_models.utilities.helper_functions import datetime_to_turingdate
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
+from turing_models.utilities.turing_date import TuringDate
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -32,7 +34,7 @@ class BondAdvRedemption(Bond):
             prepayment_terms = self.ecnomic_terms.data.get('prepayment_terms')
             if prepayment_terms is not None:
                 prepayment_terms_data = prepayment_terms.data
-                self.pay_dates = prepayment_terms_data['pay_date'].tolist()  # TODO: 目前是datetime.datetime格式
+                self.pay_dates = datetime_to_turingdate(prepayment_terms_data['pay_date'].tolist())
                 self.pay_rates = prepayment_terms_data['pay_rate'].tolist()
         if len(self.pay_dates) != len(self.pay_rates):
             raise TuringError("redemption terms should match redemption percents.")
