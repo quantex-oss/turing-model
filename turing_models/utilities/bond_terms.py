@@ -3,12 +3,25 @@ from typing import Union
 import pandas as pd
 
 from turing_models.utilities.helper_functions import pascal_to_snake
+from turing_models.utilities.error import TuringError
 
 
 class EcnomicTerms:
     """"""
-    def __init__(self, *args):
-        self.data = {pascal_to_snake(type(arg).__name__): arg for arg in args}
+    def __init__(self, *args, **kwargs):
+        self.data = {}
+        if args:
+            self.data = {pascal_to_snake(type(arg).__name__): arg for arg in args}
+        if kwargs:
+            rules = ['floating_rate_terms',
+                     'prepayment_terms',
+                     'embedded_putable_options',
+                     'embedded_rate_adjustment_options']
+            kwargs_keys = kwargs.keys()
+            if all([key in rules for key in kwargs_keys]):
+                self.data = dict(self.data, **kwargs)
+            else:
+                raise TuringError('Please check the keys of kwargs')
 
 
 class FloatingRateTerms:
@@ -204,5 +217,5 @@ if __name__ == "__main__":
 
     ecnomic_terms = EcnomicTerms(floating_rate_terms,
                                  prepayment_terms,
-                                 embedded_putable_options,
-                                 embedded_rate_adjustment_options)
+                                 embedded_putable_options=embedded_putable_options,
+                                 embedded_rate_adjustment_options=embedded_rate_adjustment_options)
