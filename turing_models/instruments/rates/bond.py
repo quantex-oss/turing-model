@@ -4,7 +4,7 @@ from abc import ABCMeta
 from dataclasses import dataclass
 from typing import Union
 
-from utility.log.request_id_log import logger
+from turing_utils.log.request_id_log import logger
 from fundamental.turing_db.bond_data import BondApi
 from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, Curve, CurveAdjustment, Currency
 from turing_models.instruments.core import InstrumentBase
