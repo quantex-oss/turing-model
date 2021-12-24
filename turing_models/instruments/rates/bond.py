@@ -1,9 +1,10 @@
 import datetime
+import enum
 from abc import ABCMeta
 from dataclasses import dataclass
 from typing import Union
 
-from turing_utils.log.request_id_log import logger
+from utility.log.request_id_log import logger
 from fundamental.turing_db.bond_data import BondApi
 from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, Curve, CurveAdjustment, Currency
 from turing_models.instruments.core import InstrumentBase
@@ -60,7 +61,6 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self._flow_amounts = []                                    # 现金流发生额
         self._accrued_interest = None
         self._accrued_days = 0.0                                   # 应计利息天数
-        self.settlement_date = None
         self.value_date = datetime_to_turingdate(self.value_date)
         self.issue_date = datetime_to_turingdate(self.issue_date)
         self.due_date = datetime_to_turingdate(self.due_date)
@@ -70,14 +70,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
             self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
             if self.curve_code:
-                self.cv.resolve()
-        dc = TuringDayCount(DayCountType.ACT_365F)
-        if self.issue_date and self.due_date:
-            (acc_factor1, _, _) = dc.yearFrac(self.issue_date, self.due_date)
-            self.bond_term_year = acc_factor1
-        if self.settlement_date and  self.due_date:
-            (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
-            self.time_to_maturity_in_year = acc_factor2
+                self.cv.resolve()     
         if self.pay_interest_mode:
             if not isinstance(self.pay_interest_mode, CouponType):
                 rules = {"ZERO_COUPON": CouponType.ZERO_COUPON,
@@ -126,6 +119,11 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 if isinstance(self.interest_rules, TuringError):
                     raise self.interest_rules
         self.ca = CurveAdjustment()
+        dc = TuringDayCount(DayCountType.ACT_365F)
+        (acc_factor1, _, _) = dc.yearFrac(self.issue_date, self.due_date)
+        self.bond_term_year = acc_factor1
+        (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
+        self.time_to_maturity_in_year = acc_factor2
 
     @property
     def _settlement_date(self):
@@ -159,7 +157,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
 
     def isvalid(self):
         """提供给turing sdk做过期判断"""
-        if self._settlement_date and self.due_date and self._settlement_date > self.due_date:
+        if self._settlement_date > self.due_date:
             return False
         return True
 
@@ -167,14 +165,15 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         """ Determine the bond cashflow payment dates."""
 
         calendar_type = TuringCalendarTypes.CHINA_IB
-        bus_day_rule_type = TuringBusDayAdjustTypes.FOLLOWING
+        bus_day_rule_type = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
         date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
         self._flow_dates = TuringSchedule(self.issue_date,
                                           self.due_date,
                                           self.pay_interest_cycle,
                                           calendar_type,
                                           bus_day_rule_type,
-                                          date_gen_rule_type)._generate()
+                                          date_gen_rule_type,
+                                          False)._generate()
 
     def dollar_duration(self):
         if not self.isvalid():
