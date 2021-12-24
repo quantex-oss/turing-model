@@ -35,14 +35,14 @@ class BondFloatingRate(Bond):
         return self.ctx_next_base_interest_rate
 
     @property
-    def clean_price_(self):
+    def _clean_price(self):
         return self.ctx_clean_price or self.clean_price_from_dm()
 
     def full_price(self):
         return self.full_price_from_dm()
 
     def clean_price(self):
-        return self.clean_price_
+        return self._clean_price
 
     def dv01(self):
         current_ibor = self.base_interest_rate
@@ -202,7 +202,7 @@ class BondFloatingRate(Bond):
         # Needs to be adjusted to par notional
         accrued = self._accrued_interest
 
-        full_price = self.clean_price_ + accrued
+        full_price = self._clean_price + accrued
         dm_ori = self.dm
 
         argtuple = (self, full_price, "dm", "full_price_from_dm")

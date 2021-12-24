@@ -132,6 +132,7 @@ class RiskMeasure(Enum):
     FullPrice = "full_price"
     CleanPrice = "clean_price"
     YTM = 'ytm'
+    TimeToMaturity = 'time_to_maturity'
 
     def __repr__(self):
         return self.value

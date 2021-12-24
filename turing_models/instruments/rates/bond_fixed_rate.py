@@ -99,7 +99,7 @@ class BondFixedRate(Bond):
         self.calc_accrued_interest()
         full_price = self._market_clean_price + self._accrued_interest
 
-        argtuple = (self, full_price, 'spread_adjustment', 'full_price_from_discount_curve')
+        argtuple = (self, full_price, '_spread_adjustment', 'full_price_from_discount_curve')
 
         implied_spread = optimize.newton(newton_fun,
                                          x0=0.05,  # guess initial value of 5%
@@ -116,7 +116,7 @@ class BondFixedRate(Bond):
         """ 数值法计算dv01 """
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
-        return greek(self, self.full_price_from_ytm, "ytm_", dy) * -dy
+        return greek(self, self.full_price_from_ytm, "_ytm", dy) * -dy
 
     def macauley_duration(self):
         """ 麦考利久期 """
@@ -160,7 +160,7 @@ class BondFixedRate(Bond):
         """ 凸性 """
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
-        return greek(self, self.full_price_from_ytm, "ytm_", order=2)
+        return greek(self, self.full_price_from_ytm, "_ytm", order=2)
 
     def full_price_from_ytm(self):
         """ 通过YTM计算全价 """
@@ -301,7 +301,7 @@ class BondFixedRate(Bond):
         ytms = []
 
         for full_price in full_prices:
-            argtuple = (self, full_price, 'ytm_', 'full_price_from_ytm')
+            argtuple = (self, full_price, '_ytm', 'full_price_from_ytm')
 
             ytm = optimize.newton(newton_fun,
                                   x0=0.05,  # guess initial value of 5%
