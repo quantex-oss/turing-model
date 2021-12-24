@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from scipy import optimize
 
-from turing_models.instruments.common import newton_fun
+from turing_models.instruments.common import newton_fun, greek
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
@@ -15,6 +15,7 @@ class BondFloatingRate(Bond):
     # _next_base_interest_rate: float = None
     ecnomic_terms: EcnomicTerms = None
     dm: float = None
+    __ytm: float = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -32,28 +33,42 @@ class BondFloatingRate(Bond):
 
     @property
     def _next_base_interest_rate(self):
-        return self.ctx_next_base_interest_rate
+        # return self.ctx_next_base_interest_rate
+        return 0.03
 
     @property
     def _clean_price(self):
         return self.ctx_clean_price or self.clean_price_from_dm()
 
     def full_price(self):
-        return self.full_price_from_dm()
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return self._clean_price + self.calc_accrued_interest()
 
     def clean_price(self):
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
         return self._clean_price
+    
+    def ytm(self):
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return self._ytm
+
+    @property
+    def _ytm(self):
+        return self.__ytm or self.ctx_ytm or (self.discount_margin() + self._next_base_interest_rate)
+
+    @_ytm.setter
+    def _ytm(self, value: float):
+        self.__ytm = value
+
 
     def dv01(self):
-        current_ibor = self.base_interest_rate
-        self.base_interest_rate = current_ibor + dy
-        p0 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor - dy
-        p2 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return greek(self, self.full_price_from_ytm, "_ytm", dy) * -dy
 
-        dv = (p2 - p0) / 2.0
-        return dv
 
     def dollar_convexity(self):
         """ Calculate the bond convexity from the discount margin (DM) using a
@@ -63,17 +78,9 @@ class BondFloatingRate(Bond):
         is the level of subsequent future Ibor payments and the discount
         margin. """
 
-        current_ibor = self.base_interest_rate
-        self.base_interest_rate = current_ibor - dy
-        p0 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor
-        p1 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor + dy
-        p2 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor
-
-        conv = ((p2 + p0) - 2.0 * p1) / dy / dy
-        return conv
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return greek(self, self.full_price_from_ytm, "_ytm", dy, order=2)
 
     def dollar_credit_duration(self):
         """ Calculate the risk or dP/dy of the bond by bumping. """
@@ -164,12 +171,11 @@ class BondFloatingRate(Bond):
 
         # Now do all subsequent coupons that fall after the ncd
         for i_flow in range(1, num_flows):
-
+            
             if self._flow_dates[i_flow] > self._ncd:
                 pcd = self._flow_dates[i_flow - 1]
                 ncd = self._flow_dates[i_flow]
                 (alpha, _, _) = dc.yearFrac(pcd, ncd)
-
                 df = df / (1.0 + alpha * (self._next_base_interest_rate + self.dm))
                 c = self._next_base_interest_rate + q
                 pv = pv + c * alpha * df
@@ -192,6 +198,38 @@ class BondFloatingRate(Bond):
 
         clean_price = full_price - accrued
         return clean_price
+    
+    def full_price_from_ytm(self):
+        ''' Calculate the full price of the bond from its discount margin (DM)
+        using standard model based on assumptions about future Ibor rates. The
+        next Ibor payment which has reset is entered, so to is the current
+        Ibor rate from settlement to the next coupon date (NCD). Finally there
+        is the level of subsequent future Ibor payments and the discount
+        margin. '''
+
+        self.calc_accrued_interest()
+
+        ytm = self._ytm  # 向量化
+        ytm = ytm + 0.000000000012345  # 防止ytm = 0
+        dm = self.dm
+        self.dm = ytm - self._next_base_interest_rate
+        full_price = self.full_price_from_dm()
+        self.dm = dm
+        return full_price
+    
+    def clean_price_from_ytm(self):
+        ''' Calculate the bond clean price from the discount margin
+        using standard model based on assumptions about future Ibor rates. The
+        next Ibor payment which has reset is entered, so to is the current
+        Ibor rate from settlement to the next coupon date (NCD). Finally there
+        is the level of subsequent future Ibor payments and the discount
+        margin. '''
+
+        full_price = self.full_price_from_ytm()
+        accrued = self.calc_accrued_interest()
+        clean_price = full_price - accrued
+        return clean_price
+
 
     def discount_margin(self):
         """ Calculate the bond's yield to maturity by solving the price

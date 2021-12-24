@@ -138,9 +138,14 @@ class BondFixedRate(Bond):
             # 将结算日的票息加入计算
             if dt >= self._settlement_date:
                 df = self.curve_fitted.df(dt)
-                flow = self.coupon_rate / self.frequency
-                pv = flow * df * dates * self.par
-                px += pv
+                if self.pay_interest_mode == CouponType.COUPON_CARRYING:
+                    flow = self.coupon_rate / self.frequency
+                    pv = flow * df * dates * self.par
+                    px += pv
+                else:
+                    flow = self._flow_amounts[-1]
+                    pv = flow * df * dates * self.par
+                    px += pv
 
         px += df * self._redemption * self.par * dates
         px = px / df_settle
@@ -153,7 +158,10 @@ class BondFixedRate(Bond):
     def modified_duration(self):
         """ 修正久期 """
         dmac = self.macauley_duration()
-        md = dmac / (1.0 + self._ytm / self.frequency)
+        if self.pay_interest_mode == CouponType.COUPON_CARRYING:
+            md = dmac / (1.0 + self._ytm / self.frequency)
+        else:
+            md = dmac / (1.0 + self._ytm * self.time_to_maturity_in_year)
         return md
 
     def dollar_convexity(self):
