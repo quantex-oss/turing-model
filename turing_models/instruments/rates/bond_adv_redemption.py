@@ -77,7 +77,7 @@ class BondAdvRedemption(Bond):
         if self._discount_curve:
             return self._discount_curve
         self._curve_resolve()
-        return self.cv._discount_curve()
+        return self.cv.discount_curve()
     
     @discount_curve.setter
     def discount_curve(self, value: TuringDiscountCurve):

@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import dataclass, field
 import math
 from typing import Union, List, Any
@@ -15,12 +16,11 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
+from turing_models.utilities.helper_functions import datetime_to_turingdate
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-
 from turing_models.instruments.common import YieldCurveCode, RiskMeasure
-
 from fundamental.pricing_context import PricingContext
 
 import pandas as pd
@@ -49,12 +49,15 @@ class BondPutableAdjustable(Bond):
     _forward_curve = None
 
     def __new__(cls, *args, **kwargs):
+        if kwargs.get("value_date") is None:
+            kwargs['value_date'] = datetime.date.today()
         ecnomic_terms = kwargs.get("ecnomic_terms")
         if ecnomic_terms is not None:
             embedded_putable_options = ecnomic_terms.data.get('embedded_putable_options')
             if embedded_putable_options is not None:
-                exercise_dates = embedded_putable_options.data['exercise_date'].tolist()  # TODO: 目前是datetime.datetime格式
-                if exercise_dates[-1] > kwargs["value_date"]:
+                exercise_dates = datetime_to_turingdate(embedded_putable_options.data['exercise_date'].tolist())
+                value_date = datetime_to_turingdate(kwargs["value_date"])
+                if exercise_dates[-1] > value_date:
                     return super().__new__(cls, *args, **kwargs)
                 else:
                     fixed_rete_bond = BondFixedRate(issue_date=kwargs['issue_date'],
@@ -76,11 +79,11 @@ class BondPutableAdjustable(Bond):
             embedded_rate_adjustment_options = self.ecnomic_terms.data.get('embedded_rate_adjustment_options')
             if embedded_putable_options is not None:
                 embedded_putable_options_data = embedded_putable_options.data
-                self.exercise_dates = embedded_putable_options_data['exercise_date'].tolist()  # TODO: 目前是datetime.datetime格式
+                self.exercise_dates = datetime_to_turingdate(embedded_putable_options_data['exercise_date'].tolist())  # TODO: 目前是datetime.datetime格式
                 self.exercise_prices = embedded_putable_options_data['exercise_price'].tolist()
             if embedded_rate_adjustment_options is not None:
                 embedded_rate_adjustment_options_data = embedded_rate_adjustment_options.data
-                self.exercise_dates = embedded_rate_adjustment_options_data['exercise_date'].tolist()  # TODO: 目前是datetime.datetime格式
+                self.exercise_dates = datetime_to_turingdate(embedded_rate_adjustment_options_data['exercise_date'].tolist())  # TODO: 目前是datetime.datetime格式
                 self.high_rate_adjust = embedded_rate_adjustment_options_data['high_rate_adjust'].tolist()
                 self.low_rate_adjust = embedded_rate_adjustment_options_data['low_rate_adjust'].tolist()
 
