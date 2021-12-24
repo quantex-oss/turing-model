@@ -19,7 +19,6 @@ from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceG
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
-from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.turing_date import TuringDate
 
@@ -60,6 +59,9 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             #     raise TuringError(
             #         "Final delivery date must be on or after expiry.")
 
+        if self.start_date:
+            self.start_date_ql = ql.Date(self.start_date._d, self.start_date._m, self.start_date._y)
+
         if self.underlier_symbol:
             if isinstance(self.underlier_symbol, CurrencyPair):
                 self.underlier_symbol = self.underlier_symbol.value
@@ -75,7 +77,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
         if self.strike and np.any(self.strike < 0.0):
             raise TuringError("Negative strike.")
-        
+
         if not self.notional_currency and self.foreign_name:
             self.notional_currency = self.foreign_name
 
@@ -89,20 +91,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                 self.premium_currency != self.domestic_name and self.premium_currency != self.foreign_name:
             raise TuringError("Premium currency not in currency pair.")
 
-        if self.notional_currency and self.domestic_name and self.foreign_name and self.notional and self.strike:
-            if self.notional_currency == self.domestic_name:
-                self.notional_dom = self.notional
-                self.notional_for = self.notional / self.strike
-            elif self.notional_currency == self.foreign_name:
-                self.notional_for = self.notional
-                self.notional_dom = self.notional * self.strike
-            else:
-                raise TuringError("Invalid notional currency.")
-
         if not self.cut_off_time or not isinstance(self.cut_off_time, TuringDate):
             self.cut_off_time = self.expiry
-
-        self.daycount = ql.Actual365Fixed()
 
     @property
     def value_date_(self):
@@ -112,6 +102,10 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         # if date > self.expiry:
         #     raise TuringError('Option expired.')
         return date if date >= self.start_date else self.start_date
+
+    @property
+    def value_date_ql(self):
+        return ql.Date(self.value_date_._d, self.value_date_._m, self.value_date_._y)
 
     @property
     def get_exchange_rate(self):
@@ -126,7 +120,9 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_shibor_data(self):
         """从接口获取shibor"""
-        return TuringDB.shibor_curve(date=self.value_date_, df=False)
+        data = TuringDB.shibor_curve(date=self.value_date_, df=False)
+        data['origin_tenor'] = ['1D'] + data['origin_tenor'][1:]
+        return data
 
     @property
     def get_shibor_swap_data(self):
@@ -134,9 +130,23 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         return TuringDB.irs_curve(curve_type='Shibor3M', date=self.value_date_, df=False)['Shibor3M']
 
     @property
+    def get_shibor_swap_fixing_data(self):
+        date1 = '2019-07-05'
+        date2 = '2019-07-08'
+        date3 = '2019-07-09'
+        rate1 = TuringDB.shibor_curve(date=TuringDate.fromString(date1, '%Y-%m-%d'), df=False)['rate'][4]
+        rate2 = TuringDB.shibor_curve(date=TuringDate.fromString(date2, '%Y-%m-%d'), df=False)['rate'][4]
+        rate3 = TuringDB.shibor_curve(date=TuringDate.fromString(date3, '%Y-%m-%d'), df=False)['rate'][4]
+        fixing_data = {'Date': [date1, date2, date3], 'Fixing': [rate1, rate2, rate3]}
+        return fixing_data
+
+    @property
     def get_fx_swap_data(self):
         """获取外汇掉期曲线"""
-        return TuringDB.fx_swap_curve(symbol=self.underlier_symbol, date=self.value_date_, df=False)[self.underlier_symbol]
+        data = TuringDB.fx_swap_curve(symbol=self.underlier_symbol, date=self.value_date_, df=False)[
+            self.underlier_symbol]
+        data['origin_tenor'] = ['1D', '2D', '3D'] + data['origin_tenor'][3:]
+        return data
 
     @property
     def get_fx_implied_vol_data(self):
@@ -155,6 +165,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    shibor_swap_tenors=self.get_shibor_swap_data['tenor'],
                                    shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'],
                                    shibor_swap_rates=self.get_shibor_swap_data['average'],
+                                   shibor_swap_fixing_dates=self.get_shibor_swap_fixing_data['Date'],
+                                   shibor_swap_fixing_rates=self.get_shibor_swap_fixing_data['Fixing'],
                                    curve_type=DiscountCurveType.Shibor3M).discount_curve
 
     @property
@@ -230,10 +242,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def spot(self):
         return self.exchange_rate
 
-    @property
-    def orm(self):
-        return "fundamental.turing_db.orm.option.FxOptionOrm"
-    
     def check_underlier(self):
         if self.underlier_symbol and not self.underlier:
             if isinstance(self.underlier_symbol, Enum):

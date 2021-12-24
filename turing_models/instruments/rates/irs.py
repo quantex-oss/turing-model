@@ -1,6 +1,6 @@
 import datetime
 from dataclasses import dataclass
-from typing import Union, List, Any
+from typing import Union, List
 
 import numpy as np
 
@@ -8,15 +8,15 @@ from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gSmall
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import DayCountType
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.global_types import TuringSwapTypes
 from turing_models.instruments.rates.fixed_leg import TuringFixedLeg
 from turing_models.instruments.rates.float_leg import TuringFloatLeg
 from turing_models.instruments.rates.ibor_deposit import TuringIborDeposit
-from turing_models.instruments.rates.ibor_single_curve import TuringIborSingleCurve
+from turing_models.market.curves.ibor_single_curve import TuringIborSingleCurve
 from turing_models.instruments.core import InstrumentBase
 from turing_models.instruments.common import IR
 from turing_models.utilities.helper_functions import to_string
@@ -27,43 +27,43 @@ bump = 5e-4
 
 
 def modify_day_count_type(day_count_type):
-    if isinstance(day_count_type, TuringDayCountTypes):
+    if isinstance(day_count_type, DayCountType):
         return day_count_type
     else:
         if day_count_type == 'ACT/365':
-            return TuringDayCountTypes.ACT_365L
+            return DayCountType.ACT_365L
         elif day_count_type == 'ACT/ACT':
-            return TuringDayCountTypes.ACT_ACT_ISDA
+            return DayCountType.ACT_ACT_ISDA
         elif day_count_type == 'ACT/360':
-            return TuringDayCountTypes.ACT_360
+            return DayCountType.ACT_360
         elif day_count_type == '30/360':
-            return TuringDayCountTypes.THIRTY_E_360
+            return DayCountType.THIRTY_E_360
         elif day_count_type == 'ACT/365F':
-            return TuringDayCountTypes.ACT_365F
+            return DayCountType.ACT_365F
         else:
             raise TuringError('Please check the input of day_count_type')
 
 
 def modify_freq_type(freq_type):
-    if isinstance(freq_type, TuringFrequencyTypes):
+    if isinstance(freq_type, FrequencyType):
         return freq_type
     else:
         if freq_type == '每年付息' or freq_type == '每年重置':
-            return TuringFrequencyTypes.ANNUAL
+            return FrequencyType.ANNUAL
         elif freq_type == '半年付息' or freq_type == '半年重置':
-            return TuringFrequencyTypes.SEMI_ANNUAL
+            return FrequencyType.SEMI_ANNUAL
         elif freq_type == '4个月一次':
-            return TuringFrequencyTypes.TRI_ANNUAL
+            return FrequencyType.TRI_ANNUAL
         elif freq_type == '按季付息' or freq_type == '按季重置':
-            return TuringFrequencyTypes.QUARTERLY
+            return FrequencyType.QUARTERLY
         elif freq_type == '按月付息' or freq_type == '按月重置':
-            return TuringFrequencyTypes.MONTHLY
+            return FrequencyType.MONTHLY
         elif freq_type == '按周付息' or freq_type == '按周重置':
-            return TuringFrequencyTypes.WEEKLY
+            return FrequencyType.WEEKLY
         elif freq_type == '两周付息' or freq_type == '两周重置':
-            return TuringFrequencyTypes.BIWEEKLY
+            return FrequencyType.BIWEEKLY
         elif freq_type == '按天付息' or freq_type == '按天重置':
-            return TuringFrequencyTypes.DAILY
+            return FrequencyType.DAILY
         else:
             raise TuringError('Please check the input of freq_type')
 
@@ -83,12 +83,12 @@ def modify_leg_type(leg_type):
 def create_ibor_single_curve(value_date: TuringDate,
                              deposit_terms: (str, float, List[str], List[float]),
                              deposit_rates: (float, List[float]),
-                             deposit_day_count_type: TuringDayCountTypes,
+                             deposit_day_count_type: DayCountType,
                              swap_curve_dates: List,
                              fixed_leg_type: TuringSwapTypes,
                              swap_curve_rates: List[float],
-                             fixed_freq_type: TuringFrequencyTypes,
-                             fixed_day_count_type: TuringDayCountTypes,
+                             fixed_freq_type: FrequencyType,
+                             fixed_day_count_type: DayCountType,
                              dx: Union[int, float]):
 
     depos = []
@@ -144,12 +144,12 @@ class IRS(IR, InstrumentBase):
     termination_date: TuringDate = None
     fixed_leg_type: Union[str, TuringSwapTypes] = None
     fixed_coupon: float = 100000
-    fixed_freq_type: Union[str, TuringFrequencyTypes] = None
-    fixed_day_count_type: Union[str, TuringDayCountTypes] = None
+    fixed_freq_type: Union[str, FrequencyType] = None
+    fixed_day_count_type: Union[str, DayCountType] = None
     notional: float = 1000000.0
     float_spread: float = 0.0
-    float_freq_type: Union[str, TuringFrequencyTypes] = '按季付息'
-    float_day_count_type: Union[str, TuringDayCountTypes] = 'ACT/360'
+    float_freq_type: Union[str, FrequencyType] = '按季付息'
+    float_day_count_type: Union[str, DayCountType] = 'ACT/360'
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))  # 估值日期
     swap_curve_code: str = None
@@ -161,11 +161,11 @@ class IRS(IR, InstrumentBase):
     first_fixing_rate: float = None
     deposit_term: Union[float, str, list] = None  # 单位：年
     deposit_rate: Union[float, list]  = None
-    deposit_day_count_type: Union[str, TuringDayCountTypes] = None
-    fixed_freq_type_for_curve: Union[str, TuringFrequencyTypes] = None
-    fixed_day_count_type_for_curve: Union[str, TuringDayCountTypes] = None
+    deposit_day_count_type: Union[str, DayCountType] = None
+    fixed_freq_type_for_curve: Union[str, FrequencyType] = None
+    fixed_day_count_type_for_curve: Union[str, DayCountType] = None
     fixed_leg_type_for_curve: Union[str, TuringSwapTypes] = None
-    reset_freq_type: Union[str, TuringFrequencyTypes] = None
+    reset_freq_type: Union[str, FrequencyType] = None
     _index_curve = None
     _libor_curve = None
     date_gen_rule_type: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD

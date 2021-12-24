@@ -1,6 +1,6 @@
 from turing_models.utilities.turing_date import TuringDate, datediff, isLeapYear
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.frequency import TuringFrequencyTypes, TuringFrequency
+from turing_models.utilities.frequency import FrequencyType, TuringFrequency
 from turing_models.utilities.global_variables import gDaysInYear
 
 from enum import Enum
@@ -39,7 +39,7 @@ def isLastDayOfFeb(dt: TuringDate):
 #    ACT_365L = 9  # the 29 Feb is counted if it is in the date range
 ###############################################################################
 
-class TuringDayCountTypes(Enum):
+class DayCountType(Enum):
     THIRTY_360_BOND = 1
     THIRTY_E_360 = 2
     THIRTY_E_360_ISDA = 3
@@ -59,10 +59,10 @@ class TuringDayCount(object):
     specified day count convention. '''
 
     def __init__(self,
-                 dccType: TuringDayCountTypes):
+                 dccType: DayCountType):
         ''' Create Day Count convention by passing in the Day Count Type. '''
 
-        if dccType not in TuringDayCountTypes:
+        if dccType not in DayCountType:
             raise TuringError("Need to pass FinDayCountType")
 
         self._type = dccType
@@ -73,7 +73,7 @@ class TuringDayCount(object):
                  dt1: TuringDate,  # Start of coupon period
                  dt2: TuringDate,  # Settlement (for bonds) or period end(swaps)
                  dt3: TuringDate = None,  # End of coupon period for accrued
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.ANNUAL,
+                 freqType: FrequencyType = FrequencyType.ANNUAL,
                  isTerminationDate: bool = False):  # Is dt2 a termination date
         ''' This method performs two functions:
 
@@ -110,7 +110,7 @@ class TuringDayCount(object):
         num = 0
         den = 0
 
-        if self._type == TuringDayCountTypes.THIRTY_360_BOND:
+        if self._type == DayCountType.THIRTY_360_BOND:
             # It is in accordance with section 4.16(f) of ISDA 2006 Definitions
             # Also known as 30/360, Bond Basis, 30A/360, 30-360 US Municipal
             # This method does not consider February as a special case.
@@ -126,7 +126,7 @@ class TuringDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == TuringDayCountTypes.THIRTY_E_360:
+        elif self._type == DayCountType.THIRTY_E_360:
             # This is in section 4.16(g) of ISDA 2006 Definitions
             # Also known as 30/360 Eurobond, 30/360 ISMA, 30/360 ICMA,
             # 30/360 European, Special German, Eurobond basis (ISDA 2006)
@@ -143,7 +143,7 @@ class TuringDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == TuringDayCountTypes.THIRTY_E_360_ISDA:
+        elif self._type == DayCountType.THIRTY_E_360_ISDA:
             # This is 30E/360 (ISDA 2000), 30E/360 (ISDA) section 4.16(h)
             # of ISDA 2006 Definitions, German, Eurobond basis (ISDA 2000)
 
@@ -166,7 +166,7 @@ class TuringDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == TuringDayCountTypes.THIRTY_E_PLUS_360:
+        elif self._type == DayCountType.THIRTY_E_PLUS_360:
 
             if d1 == 31:
                 d1 = 30
@@ -180,7 +180,7 @@ class TuringDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == TuringDayCountTypes.ACT_ACT_ISDA:
+        elif self._type == DayCountType.ACT_ACT_ISDA:
 
             if isLeapYear(y1):
                 denom1 = 366
@@ -210,7 +210,7 @@ class TuringDayCount(object):
                 accFactor = accFactor1 + accFactor2 + yearDiff
                 return (accFactor, num, den)
 
-        elif self._type == TuringDayCountTypes.ACT_ACT_ICMA:
+        elif self._type == DayCountType.ACT_ACT_ICMA:
 
             freq = TuringFrequency(freqType)
 
@@ -222,21 +222,21 @@ class TuringDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == TuringDayCountTypes.ACT_365F:
+        elif self._type == DayCountType.ACT_365F:
 
             num = dt2 - dt1
             den = 365
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == TuringDayCountTypes.ACT_360:
+        elif self._type == DayCountType.ACT_360:
 
             num = dt2 - dt1
             den = 360
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == TuringDayCountTypes.ACT_365L:
+        elif self._type == DayCountType.ACT_365L:
 
             # The ISDA calculator sheet appears to split this across the
             # non-leap and the leap year which I do not see in any conventions.
@@ -269,7 +269,7 @@ class TuringDayCount(object):
             accFactor = num / den
             return (accFactor, num, den)
 
-        elif self._type == TuringDayCountTypes.SIMPLE:
+        elif self._type == DayCountType.SIMPLE:
 
             num = dt2 - dt1
             den = gDaysInYear

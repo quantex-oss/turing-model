@@ -3,8 +3,8 @@ import numpy as np
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.mathematics import testMonotonicity
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.frequency import FrequencyType
+from turing_models.utilities.day_count import DayCountType
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes, timesFromDates
 
@@ -21,8 +21,8 @@ class TuringDiscountCurvePWL(TuringDiscountCurve):
                  valuationDate: TuringDate,
                  zeroDates: list,
                  zeroRates: (list, np.ndarray),
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
-                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA):
+                 freqType: FrequencyType = FrequencyType.CONTINUOUS,
+                 dayCountType: DayCountType = DayCountType.ACT_ACT_ISDA):
         ''' Curve is defined by a vector of increasing times and zero rates.'''
 
         checkArgumentTypes(self.__init__, locals())

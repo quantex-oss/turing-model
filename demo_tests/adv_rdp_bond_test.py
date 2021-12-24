@@ -1,39 +1,46 @@
-from fundamental.pricing_context import CurveScenario
-
+import pandas as pd
 from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.instruments.credit.bond_adv_redemption import BondAdvRedemption
+from turing_models.utilities.day_count import DayCountType
+from turing_models.utilities.frequency import FrequencyType
+from turing_models.instruments.rates.bond_adv_redemption import BondAdvRedemption
 from turing_models.instruments.common import RiskMeasure
 
+from turing_models.instruments.common import RiskMeasure, YieldCurveCode
+from fundamental.pricing_context import PricingContext
 
-bond_fr = BondAdvRedemption(asset_id="BONDCN00000007",
-                            coupon=0.0675,
-                            curve_code="CBD100003",
+# curve_chinabond = YieldCurveCode.CBD100222
+curve_data = pd.DataFrame(data={'tenor': dates, 'rate': rates})
+
+
+
+bond_fr = BondAdvRedemption(coupon_rate=0.0675,
                             issue_date=TuringDate(2014, 1, 24),
                             value_date=TuringDate(2021, 9, 30),
                             due_date=TuringDate(2024, 1, 24),
-                            freq_type=TuringFrequencyTypes.ANNUAL,
-                            accrual_type=TuringDayCountTypes.ACT_365L,
+                            freq_type=FrequencyType.ANNUAL,
+                            accrual_type=DayCountType.ACT_365L,
                             par=100,
-                            zero_dates=dates,
-                            zero_rates=rates,
-                            rdp_terms=[3,4,5,6,7,8,9,10],
+                            rdp_dates=[TuringDate(2017, 1, 24),TuringDate(2018, 1, 24),TuringDate(2019, 1, 24),TuringDate(2020, 1, 24),TuringDate(2021, 1, 24),TuringDate(2022, 1, 24),TuringDate(2023, 1, 24),TuringDate(2024, 1, 24)],
                             rdp_pct=[0.1,0.1,0.1,0.1,0.15,0.15,0.15,0.15])
 
-price1 = bond_fr.full_price_from_discount_curve()
-price2 = bond_fr.full_price_from_ytm()
-dv01_1 = bond_fr.calc(RiskMeasure.Dv01)
-dollar_duration_1 = bond_fr.calc(RiskMeasure.DollarDuration)
-dollar_convexity_1 = bond_fr.calc(RiskMeasure.DollarConvexity)
+scenario_extreme = PricingContext(bond_yield_curve=[{"bond_symbol": "188560.SH", "value": curve_data}])
+# curves = TuringDB.bond_yield_curve(curve_code=curve_lists, date=date)
+with scenario_extreme:
 
-print('price:', price1)
-print('price:', price2)
-print('dollar_duration:', dollar_duration_1)
-print('dollar_convexity:', dollar_convexity_1)
+    price1 = bond_fr.full_price_from_discount_curve()
+    price2 = bond_fr.full_price_from_ytm()
+    print(bond_fr.ytm_)
+    dv01_1 = bond_fr.calc(RiskMeasure.Dv01)
+    dollar_duration_1 = bond_fr.calc(RiskMeasure.DollarDuration)
+    dollar_convexity_1 = bond_fr.calc(RiskMeasure.DollarConvexity)
 
-print("---------------------------------------------")
+    print('price:', price1)
+    print('price:', price2)
+    print('dollar_duration:', dollar_duration_1)
+    print('dollar_convexity:', dollar_convexity_1)
+
+    print("---------------------------------------------")
 
 # CurveScenario参数含义：
 # parallel_shift：曲线整体平移，单位bp，正值表示向上平移，负值相反

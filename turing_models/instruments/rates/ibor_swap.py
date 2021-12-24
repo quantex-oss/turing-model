@@ -3,8 +3,8 @@ import numpy as np
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gSmall
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes, TuringFrequency
+from turing_models.utilities.day_count import DayCountType
+from turing_models.utilities.frequency import FrequencyType, TuringFrequency
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string
@@ -37,12 +37,12 @@ class TuringIborSwap(object):
                  terminationDateOrTenor: (TuringDate, str),  # Date contract ends
                  fixedLegType: TuringSwapTypes,
                  fixedCoupon: float,  # Fixed coupon (annualised)
-                 fixedFreqType: TuringFrequencyTypes,
-                 fixedDayCountType: TuringDayCountTypes,
+                 fixedFreqType: FrequencyType,
+                 fixedDayCountType: DayCountType,
                  notional: float = ONE_MILLION,
                  floatSpread: float = 0.0,
-                 floatFreqType: TuringFrequencyTypes = TuringFrequencyTypes.QUARTERLY,
-                 floatDayCountType: TuringDayCountTypes = TuringDayCountTypes.THIRTY_E_360,
+                 floatFreqType: FrequencyType = FrequencyType.QUARTERLY,
+                 floatDayCountType: DayCountType = DayCountType.THIRTY_E_360,
                  calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
                  busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
                  dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD):

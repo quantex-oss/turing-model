@@ -1,10 +1,13 @@
+import datetime
+import re
 import sys
 from typing import Union
 
 import numpy as np
 from numba import njit, float64
+import QuantLib as ql
 
-from turing_models.utilities.day_count import TuringDayCountTypes, TuringDayCount
+from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
 from turing_models.utilities.turing_date import TuringDate
@@ -76,7 +79,7 @@ def pv01Times(t: float,
 
 def timesFromDates(dt: TuringDate,
                    valuationDate: TuringDate,
-                   dayCountType: TuringDayCountTypes = None):
+                   dayCountType: DayCountType = None):
     ''' If a single date is passed in then return the year from valuation date
     but if a whole vector of dates is passed in then convert to a vector of
     times from the valuation date. The output is always a numpy vector of times
@@ -509,3 +512,25 @@ def convert_argument_type(self, func, values):
                 elif '-' in str(value):
                     __value = TuringDate.fromString(value, '%Y-%m-%d')
                 setattr(self, value_name, __value)
+
+
+def pascal_to_snake(camel_case: str):
+    """驼峰转下划线"""
+    snake_case = re.sub(r"(?P<key>[A-Z])", r"_\g<key>", camel_case)
+    return snake_case.lower().strip('_')
+
+def turingdate_to_qldate(date: TuringDate):
+    """ Convert TuringDate to ql.Date """
+    if date is not None:
+        if isinstance(date, TuringDate):
+            return ql.Date(date._d, date._m, date._y)
+        else:
+            return date
+
+def datetime_to_turingdate(date: (datetime.datetime, datetime.date)):
+    """ Convert datetime to TuringDate """
+    if date is not None:
+        if isinstance(date, (datetime.datetime, datetime.date)):
+            return TuringDate(date.year, date.month, date.day)
+        else:
+            return date

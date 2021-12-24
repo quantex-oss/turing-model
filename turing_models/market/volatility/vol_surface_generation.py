@@ -12,6 +12,7 @@ from turing_models.market.curves.curve_generation import ForDiscountCurveGen, Do
      FXForwardCurveGen
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.volatility.fx_vol_surface_ql import FXVolSurface
+from turing_models.market.volatility.fx_vol_surface_ql_real_time import FXVolSurface as FXVolSurfaceRealTime
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.error import TuringError
@@ -144,12 +145,16 @@ class FXVolSurfaceGen:
                  fx_forward_curve=None,
                  tenors: List[float] = None,
                  origin_tenors: List[str] = None,
+                 vol_dates: List[str] = None,
                  atm_vols: List[float] = None,
                  butterfly_25delta_vols: List[float] = None,
                  risk_reversal_25delta_vols: List[float] = None,
                  butterfly_10delta_vols: List[float] = None,
                  risk_reversal_10delta_vols: List[float] = None,
                  volatility_function_type: TuringVolFunctionTypes = TuringVolFunctionTypes.QL,
+                 calendar=ql.China(ql.China.IB),
+                 convention=ql.Following,
+                 day_count=ql.Actual365Fixed(),
                  alpha: float = 1,
                  atm_method: TuringFXATMMethod = TuringFXATMMethod.FWD_DELTA_NEUTRAL,
                  delta_method: TuringFXDeltaMethod = TuringFXDeltaMethod.SPOT_DELTA,
@@ -182,11 +187,16 @@ class FXVolSurfaceGen:
 
         self.tenors = tenors
         self.origin_tenors = origin_tenors
+        self.vol_dates = vol_dates
         self.atm_vols = atm_vols
         self.butterfly_25delta_vols = butterfly_25delta_vols
         self.risk_reversal_25delta_vols = risk_reversal_25delta_vols
         self.butterfly_10delta_vols = butterfly_10delta_vols
         self.risk_reversal_10delta_vols = risk_reversal_10delta_vols
+
+        self.calendar = calendar
+        self.convention = convention
+        self.daycount = day_count
 
         self.alpha = alpha
         self.atm_method = atm_method
@@ -221,30 +231,51 @@ class FXVolSurfaceGen:
             ql.Settings.instance().evaluationDate = self.value_date_ql
             foreign_name = self.currency_pair[0:3]
             domestic_name = self.currency_pair[4:7]
-            data_dict = {'Tenor': self.origin_tenors,
-                         'ATM': self.atm_vols,
-                         '25DRR': self.risk_reversal_25delta_vols,
-                         '25DBF': self.butterfly_25delta_vols,
-                         '10DRR': self.risk_reversal_10delta_vols,
-                         '10DBF': self.butterfly_10delta_vols}
+            if self.vol_dates is not None:
+                data_dict = {'Tenor': self.origin_tenors,
+                             'Date': self.vol_dates,
+                             'ATM': self.atm_vols,
+                             '25DRR': self.risk_reversal_25delta_vols,
+                             '25DBF': self.butterfly_25delta_vols,
+                             '10DRR': self.risk_reversal_10delta_vols,
+                             '10DBF': self.butterfly_10delta_vols}
 
-            vol_data = pd.DataFrame(data_dict)
+                vol_data = pd.DataFrame(data_dict)
 
-            calendar = ql.China(ql.China.IB)
-            convention = ql.Following
-            daycount = ql.Actual365Fixed()
-            return FXVolSurface(vol_data,
-                                domestic_name,
-                                foreign_name,
-                                self.exchange_rate,
-                                self.fx_forward_curve,
-                                self.domestic_discount_curve,
-                                self.foreign_discount_curve,
-                                self.value_date_ql,
-                                calendar,
-                                convention,
-                                daycount,
-                                True)
+                return FXVolSurfaceRealTime(vol_data,
+                                            domestic_name,
+                                            foreign_name,
+                                            self.exchange_rate,
+                                            self.fx_forward_curve,
+                                            self.domestic_discount_curve,
+                                            self.foreign_discount_curve,
+                                            self.value_date_ql,
+                                            self.calendar,
+                                            self.convention,
+                                            self.daycount,
+                                            True)
+            else:
+                data_dict = {'Tenor': self.origin_tenors,
+                             'ATM': self.atm_vols,
+                             '25DRR': self.risk_reversal_25delta_vols,
+                             '25DBF': self.butterfly_25delta_vols,
+                             '10DRR': self.risk_reversal_10delta_vols,
+                             '10DBF': self.butterfly_10delta_vols}
+
+                vol_data = pd.DataFrame(data_dict)
+
+                return FXVolSurface(vol_data,
+                                    domestic_name,
+                                    foreign_name,
+                                    self.exchange_rate,
+                                    self.fx_forward_curve,
+                                    self.domestic_discount_curve,
+                                    self.foreign_discount_curve,
+                                    self.value_date_ql,
+                                    self.calendar,
+                                    self.convention,
+                                    self.daycount,
+                                    True)
 
 
 if __name__ == '__main__':

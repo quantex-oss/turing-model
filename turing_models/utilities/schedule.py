@@ -2,7 +2,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.calendar import TuringCalendar, TuringCalendarTypes, \
      TuringBusDayAdjustTypes, TuringDateGenRuleTypes
-from turing_models.utilities.frequency import TuringFrequency, TuringFrequencyTypes
+from turing_models.utilities.frequency import TuringFrequency, FrequencyType
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes
 
 ###############################################################################
@@ -20,7 +20,7 @@ class TuringSchedule(object):
     def __init__(self,
                  effectiveDate: TuringDate,  # Also known as the start date
                  terminationDate: TuringDate,  # This is UNADJUSTED (set flag to adjust it)
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.ANNUAL,
+                 freqType: FrequencyType = FrequencyType.ANNUAL,
                  calendarType: TuringCalendarTypes = TuringCalendarTypes.WEEKEND,
                  busDayAdjustType: TuringBusDayAdjustTypes = TuringBusDayAdjustTypes.FOLLOWING,
                  dateGenRuleType: TuringDateGenRuleTypes = TuringDateGenRuleTypes.BACKWARD,

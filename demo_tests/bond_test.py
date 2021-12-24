@@ -1,15 +1,11 @@
 from fundamental.pricing_context import CurveScenario
-from turing_models.instruments.credit.bond_adv_redemption import BondAdvRedemption
-from turing_models.instruments.credit.bond_floating_rate import BondFloatingRate
-from turing_models.instruments.credit.bond_putable_adjustable import BondPutableAdjustable
 from fundamental.portfolio.portfolio import Portfolio
 from fundamental.portfolio.position import Position
 
-from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.day_count import TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.instruments.credit.bond_fixed_rate import BondFixedRate
+from turing_models.utilities.day_count import DayCountType
+from turing_models.utilities.frequency import FrequencyType
+from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.instruments.common import RiskMeasure, YieldCurveCode
 
 from loguru import logger
@@ -44,9 +40,9 @@ bond_fr = BondFixedRate(bond_symbol="210001",
                         curve_code=curve_chinabond,
                         issue_date=TuringDate(2015, 11, 13),
                         # due_date=TuringDate(2025, 11, 14),
-                        bond_term_year=10,
-                        freq_type=TuringFrequencyTypes.SEMI_ANNUAL,
-                        accrual_type=TuringDayCountTypes.ACT_365L,
+                        # bond_term_year=10,
+                        freq_type=FrequencyType.SEMI_ANNUAL,
+                        accrual_type=DayCountType.ACT_365L,
                         par=100)
 
 price_1 = bond_fr.calc(RiskMeasure.FullPrice)

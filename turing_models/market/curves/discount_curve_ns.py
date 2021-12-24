@@ -1,11 +1,11 @@
 import numpy as np
 
 from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.global_variables import gSmall
 from turing_models.utilities.error import TuringError
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.helper_functions import checkArgumentTypes, to_string, timesFromDates
 
 ###############################################################################
@@ -24,8 +24,8 @@ class TuringDiscountCurveNS(TuringDiscountCurve):
                  beta1: float,
                  beta2: float,
                  tau: float,
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
-                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA):
+                 freqType: FrequencyType = FrequencyType.CONTINUOUS,
+                 dayCountType: DayCountType = DayCountType.ACT_ACT_ISDA):
         ''' Creation of a TuringDiscountCurveNS object. Parameters are provided
         individually for beta0, beta1, beta2 and tau. The zero rates produced
         by this parametrisation have an implicit compounding convention that
@@ -48,8 +48,8 @@ class TuringDiscountCurveNS(TuringDiscountCurve):
 
     def zeroRate(self,
                  dates: (list, TuringDate),
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
-                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360):
+                 freqType: FrequencyType = FrequencyType.CONTINUOUS,
+                 dayCountType: DayCountType = DayCountType.ACT_360):
         ''' Calculation of zero rates with specified frequency according to
         NS parametrisation. This method overrides that in TuringDiscountCurve.
         The parametrisation is not strictly in terms of continuously compounded
@@ -58,10 +58,10 @@ class TuringDiscountCurveNS(TuringDiscountCurve):
         of dates so must use Numpy functions. The default frequency is a
         continuously compounded rate and ACT ACT day counting. '''
 
-        if isinstance(freqType, TuringFrequencyTypes) is False:
+        if isinstance(freqType, FrequencyType) is False:
             raise TuringError("Invalid Frequency type.")
 
-        if isinstance(dayCountType, TuringDayCountTypes) is False:
+        if isinstance(dayCountType, DayCountType) is False:
             raise TuringError("Invalid Day Count type.")
 
         # Get day count times to use with curve day count convention

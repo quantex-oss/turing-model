@@ -1,10 +1,16 @@
 from abc import ABCMeta, abstractmethod
 from enum import Enum
+from dataclasses import dataclass
+from typing import Union
 
 import numpy as np
 from numba import njit
+import pandas as pd
 
 from fundamental import ctx
+from fundamental.turing_db.data import TuringDB
+from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
+from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
@@ -32,7 +38,7 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         if cus_func:
             _attr_value = cus_func(-args * count)
         else:
-            _attr_value-= count * bump
+            _attr_value -= count * bump
         setattr(obj, attr, _attr_value)
 
     def clear():
@@ -44,14 +50,14 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
             increment(attr_value)
             p_up = price()
             clear()
-            return (p_up- p0) / bump
+            return (p_up - p0) / bump
         increment(attr_value)
         p_up = price()
         clear()
         decrement(attr_value)
         p_down = price()
         clear()
-        return (p_up- p_down) / (bump * 2)
+        return (p_up - p_down) / (bump * 2)
     elif order == 2:
         p0 = price()
         decrement(attr_value)
@@ -59,7 +65,19 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
         increment(attr_value)
         p_up = price()
         clear()
-        return (p_up- 2.0 * p0 + p_down) / bump / bump
+        return (p_up - 2.0 * p0 + p_down) / bump / bump
+
+
+def newton_fun(y, *args):
+    """ Function is used by scipy.optimize.newton """
+    self = args[0]             # 实例对象
+    price = args[1]            # 对照的标准
+    attr = args[2]             # 需要调整的参数
+    fun = args[3]              # 调整参数后需重新计算的方法
+    setattr(self, attr, y)     # 调整参数
+    px = getattr(self, fun)()  # 重新计算方法的返回值
+    obj_fn = px - price        # 计算误差
+    return obj_fn
 
 
 @njit(fastmath=True, cache=True)
@@ -941,12 +959,12 @@ class RMBIRCurveType(Enum):
 class DiscountCurveType(Enum):
     Shibor3M = 'Shibor3M'
     Shibor3M_tr = 'Shibor3M_tr'
-    FlatForward = 'FlatForward'
+    CNYShibor3M = 'CNYShibor3M'
     FX_Implied = 'FX_Implied'
     FX_Implied_tr = 'FX_Implied_tr'
     USDLibor3M = 'USDLibor3M'
-    CNYbbg536 = "CNYbbg536"
     FX_Forword = 'FX_Forword'
+    FX_Forword_fq = 'FX_Forword_fq'
     FX_Forword_tr = 'FX_Forword_tr'
 
 
@@ -1098,6 +1116,33 @@ class AssetType(Enum):
         return self.value
 
 
+class DayCountType(Enum):
+    Actual360 = 'ACT/360'
+    Actual364 = 'ACT/364'
+    Actual365Fixed = 'ACT/365F'
+    Thirty360 = '30/360'
+    Thirty365 = '30/365'
+    ActualActual = 'ACT/ACT'
+
+
+class IBORType(Enum):
+    Shibor = 'Shibor'
+    Libor = 'Libor'
+    Tibor = 'Tibor'
+    Hibor = 'Hibor'
+    Euribor = 'Euribor'
+
+
+class IRType(Enum):
+    FR007 = 'FR007'
+    FDR001 = 'FDR001'
+    FDR007 = 'FDR007'
+    LPR1Y = 'LPR1Y'
+    Shibor3M = 'Shibor3M'
+    ShiborON = 'ShiborON'
+    LPR5Y = 'LPR5Y'
+
+
 class TuringFXATMMethod(Enum):
     SPOT = 1  # Spot FX Rate
     FWD = 2  # At the money forward
@@ -1129,6 +1174,18 @@ class Ctx:
         return getattr(self.ctx, f"clean_price_{asset_id}")
 
     @property
+    def ctx_bond_yield_curve(self):
+        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"bond_yield_curve_{asset_id}")
+
+    @property
+    def ctx_spread_adjustment(self):
+        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+            self, 'asset_id', None)
+        return getattr(self.ctx, f"spread_adjustment_{asset_id}")
+
+    @property
     def ctx_spot(self):
         asset_id = getattr(self, 'underlier', None) or getattr(
             self, 'asset_id', None)
@@ -1139,6 +1196,10 @@ class Ctx:
         asset_id = getattr(self, 'underlier', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"volatility_{asset_id}")
+
+    @property
+    def ctx_next_base_interest_rate(self):
+        return getattr(self.ctx, "next_base_interest_rate")
 
     @property
     def ctx_fx_implied_volatility_curve(self):
@@ -1175,10 +1236,6 @@ class Ctx:
     @property
     def ctx_pricing_date(self):
         return self.ctx.pricing_date
-
-    @property
-    def ctx_ytm(self):
-        return self.ctx.ytm
 
     @property
     def ctx_parallel_shift(self):
@@ -1284,14 +1341,112 @@ class IR(Priceable, metaclass=ABCMeta):
 
 class CD(Priceable, metaclass=ABCMeta):
 
-    @abstractmethod
-    def dv01(self):
-        pass
+    pass
 
-    @abstractmethod
-    def dollar_duration(self):
-        pass
 
-    @abstractmethod
-    def dollar_convexity(self):
-        pass
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
+class CurveAdjustment:
+    """存放曲线旋转平移参数"""
+    parallel_shift: float = None     # 平移量（bps)
+    curve_shift: float = None        # 旋转量（bps)
+    pivot_point: float = None        # 旋转点（年）
+    tenor_start: float = None        # 旋转起始（年）
+    tenor_end: float = None          # 旋转终点（年）
+
+    def set_parallel_shift(self, value):
+        self.parallel_shift = value
+
+    def set_curve_shift(self, value):
+        self.curve_shift = value
+
+    def set_pivot_point(self, value):
+        self.pivot_point = value
+
+    def set_tenor_start(self, value):
+        self.tenor_start = value
+
+    def set_tenor_end(self, value):
+        self.tenor_end = value
+
+    def isvalid(self):
+        return self.parallel_shift or self.curve_shift \
+               or self.pivot_point or self.tenor_start \
+               or self.tenor_end
+
+
+@dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
+class Curve:
+    value_date: TuringDate = None                    # 估值日期
+    curve_code: Union[str, YieldCurveCode] = None    # 曲线编码
+    curve_name: str = None                           # 曲线名称
+    curve_data: pd.DataFrame = None                  # 曲线数据，列索引为'tenor'和'rate'
+    curve_type: str = None                           # TODO: 兼容债券收益率之外的曲线类型
+
+    def __post_init__(self):
+        """估值日期和曲线编码不能为空"""
+        assert self.value_date, "value_date can't be None"
+        # assert self.curve_code, "curve_code can't be None"
+
+    def set_value_date(self, value):
+        """设置估值日期"""
+        self.value_date = value
+
+    def set_curve_data(self, value: pd.DataFrame):
+        """设置曲线数据"""
+        self.curve_data = value
+
+    def resolve(self):
+        """补全/更新数据"""
+        if self.curve_code is not None:
+            if isinstance(self.curve_code, YieldCurveCode):
+                curve_code = self.curve_code.name
+            else:
+                curve_code = self.curve_code
+            if self.curve_data is None:
+                self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date).\
+                                  loc[curve_code][['tenor', 'spot_rate']].rename(columns={'spot_rate': 'rate'})
+            if self.curve_name is None:
+                self.curve_name = getattr(YieldCurveCode, curve_code, '')
+        else:
+            if self.curve_data is None:
+                raise TuringError("curve_code and curve_data can't be empty at the same time")
+
+    def adjust(self, ca: CurveAdjustment):
+        """曲线旋转平移"""
+        parallel_shift = ca.parallel_shift
+        curve_shift = ca.curve_shift
+        pivot_point = ca.pivot_point
+        tenor_start = ca.tenor_start
+        tenor_end = ca.tenor_end
+        ca_impl = CurveAdjustmentImpl(self.curve_data,  # 曲线信息
+                                      parallel_shift,  # 平移量（bps)
+                                      curve_shift,  # 旋转量（bps)
+                                      pivot_point,  # 旋转点（年）
+                                      tenor_start,  # 旋转起始（年）
+                                      tenor_end,  # 旋转终点（年）
+                                      self.value_date)
+        self.curve_data = ca_impl.get_curve_data()
+
+    def discount_curve(self):
+        """生成折现曲线"""
+        tenors = self.curve_data['tenor'].tolist()
+        dates = self.value_date.addYears(tenors)
+        rates = self.curve_data['rate'].tolist()
+        return TuringDiscountCurveZeros(valuationDate=self.value_date,
+                                        zeroDates=dates,
+                                        zeroRates=rates)
+
+
+if __name__ == '__main__':
+    cv = Curve(value_date=TuringDate(2021, 12, 10),
+               curve_code=YieldCurveCode.CBD100222)
+    cv.resolve()
+    print(cv.curve_data)
+
+    ca = CurveAdjustment(parallel_shift=1000,
+                         curve_shift=1000,
+                         pivot_point=1,
+                         tenor_start=0.5,
+                         tenor_end=1.5)
+    cv.adjust(ca)
+    print(cv.curve_data)

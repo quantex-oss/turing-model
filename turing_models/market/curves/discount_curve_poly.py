@@ -4,8 +4,8 @@ from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gSmall
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.utilities.frequency import TuringFrequencyTypes
-from turing_models.utilities.day_count import TuringDayCountTypes
+from turing_models.utilities.frequency import FrequencyType
+from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.helper_functions import to_string, checkArgumentTypes, timesFromDates
 
 ###############################################################################
@@ -21,8 +21,8 @@ class TuringDiscountCurvePoly(TuringDiscountCurve):
     def __init__(self,
                  valuationDate: TuringDate,
                  coefficients: (list, np.ndarray),
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
-                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_ACT_ISDA):
+                 freqType: FrequencyType = FrequencyType.CONTINUOUS,
+                 dayCountType: DayCountType = DayCountType.ACT_ACT_ISDA):
         ''' Create zero rate curve parametrised using a cubic curve from
         coefficients and specifying a compounding frequency type and day count
         convention. '''
@@ -39,8 +39,8 @@ class TuringDiscountCurvePoly(TuringDiscountCurve):
 
     def zeroRate(self,
                  dts: (list, TuringDate),
-                 freqType: TuringFrequencyTypes = TuringFrequencyTypes.CONTINUOUS,
-                 dayCountType: TuringDayCountTypes = TuringDayCountTypes.ACT_360):
+                 freqType: FrequencyType = FrequencyType.CONTINUOUS,
+                 dayCountType: DayCountType = DayCountType.ACT_360):
         ''' Calculation of zero rates with specified frequency according to
         polynomial parametrisation. This method overrides TuringDiscountCurve.
         The parametrisation is not strictly in terms of continuously compounded
@@ -49,10 +49,10 @@ class TuringDiscountCurvePoly(TuringDiscountCurve):
         of dates so must use Numpy functions. The default frequency is a
         continuously compounded rate and ACT ACT day counting. '''
 
-        if isinstance(freqType, TuringFrequencyTypes) is False:
+        if isinstance(freqType, FrequencyType) is False:
             raise TuringError("Invalid Frequency type.")
 
-        if isinstance(dayCountType, TuringDayCountTypes) is False:
+        if isinstance(dayCountType, DayCountType) is False:
             raise TuringError("Invalid Day Count type.")
 
         # Get day count times to use with curve day count convention

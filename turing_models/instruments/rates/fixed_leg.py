@@ -1,8 +1,8 @@
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.mathematics import ONE_MILLION
-from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
-from turing_models.utilities.frequency import TuringFrequencyTypes
+from turing_models.utilities.day_count import TuringDayCount, DayCountType
+from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendarTypes,  TuringDateGenRuleTypes
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.schedule import TuringSchedule
@@ -22,8 +22,8 @@ class TuringFixedLeg(object):
                  endDate: (TuringDate, str),  # Date contract ends
                  legType: TuringSwapTypes,
                  coupon: (float),
-                 freqType: TuringFrequencyTypes,
-                 dayCountType: TuringDayCountTypes,
+                 freqType: FrequencyType,
+                 dayCountType: DayCountType,
                  notional: float = ONE_MILLION,
                  principal: float = 0.0,
                  paymentLag: int = 0,

@@ -4,7 +4,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.day_count import TuringDayCount, TuringDayCountTypes
+from turing_models.utilities.day_count import TuringDayCount, DayCountType
 
 ##########################################################################
 # TODO: Calibration
@@ -67,7 +67,7 @@ class TuringIborCapVolCurve():
 
         self._capMaturityDates = capMaturityDates
 
-        if isinstance(dayCountType, TuringDayCountTypes) is False:
+        if isinstance(dayCountType, DayCountType) is False:
             raise TuringError("DayCountType must be of type TuringDayCountTypes.")
 
         self._dayCountType = dayCountType
