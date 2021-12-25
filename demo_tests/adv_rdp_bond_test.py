@@ -24,7 +24,7 @@ bond_fr = BondAdvRedemption(coupon_rate=0.0675,
                             rdp_dates=[TuringDate(2017, 1, 24),TuringDate(2018, 1, 24),TuringDate(2019, 1, 24),TuringDate(2020, 1, 24),TuringDate(2021, 1, 24),TuringDate(2022, 1, 24),TuringDate(2023, 1, 24),TuringDate(2024, 1, 24)],
                             rdp_pct=[0.1,0.1,0.1,0.1,0.15,0.15,0.15,0.15])
 
-scenario_extreme = PricingContext(bond_yield_curve=[{"bond_symbol": "188560.SH", "value": curve_data}])
+scenario_extreme = PricingContext(bond_yield_curve=[{"comb_symbol": "188560.SH", "value": curve_data}])
 # curves = TuringDB.bond_yield_curve(curve_code=curve_lists, date=date)
 with scenario_extreme:
 

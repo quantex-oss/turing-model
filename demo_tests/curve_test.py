@@ -58,7 +58,7 @@ curve_data = pd.DataFrame(data={'tenor': dates, 'rate': rates})
 # print(curve)
 
 curve_chinabond = YieldCurveCode.CBD100222
-bond_fr = BondFixedRate(bond_symbol="143756.SH",
+bond_fr = BondFixedRate(comb_symbol="143756.SH",
                         coupon=0.04,
                         # curve_code=curve_chinabond,
                         issue_date=TuringDate(2015, 11, 13),
@@ -70,7 +70,7 @@ bond_fr = BondFixedRate(bond_symbol="143756.SH",
 
 scenario_extreme = PricingContext(
     bond_yield_curve=[
-        {"bond_symbol": "143756.SH", "value": curve_data},
+        {"comb_symbol": "143756.SH", "value": curve_data},
     ],
 
 )

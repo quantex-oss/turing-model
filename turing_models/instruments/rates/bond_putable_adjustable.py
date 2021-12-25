@@ -207,7 +207,7 @@ class BondPutableAdjustable(Bond):
 
     @property
     def _pure_bond(self):
-        pure_bond = BondFixedRate(bond_symbol="purebond",
+        pure_bond = BondFixedRate(comb_symbol="purebond",
                                   value_date=self.value_date,
                                   issue_date=self.issue_date,
                                   due_date=self.exercise_dates,
@@ -243,7 +243,7 @@ class BondPutableAdjustable(Bond):
         forward_dates = []
         for i in range(len(self.forward_dates_)):
             forward_dates.append(dc.yearFrac(self.exercise_dates, self.forward_dates_[i])[0])
-        self._exercised_bond = BondFixedRate(# bond_symbol="exercisedbond",
+        self._exercised_bond = BondFixedRate(# comb_symbol="exercisedbond",
                                              value_date=self.exercise_dates,
                                              issue_date=self.exercise_dates,
                                              due_date=self.due_date,
@@ -252,8 +252,8 @@ class BondPutableAdjustable(Bond):
                                              interest_rules=self.interest_rules,
                                              par=self.par)
         forward_curve = pd.DataFrame(data={'tenor': forward_dates, 'rate': self.forward_rates_})
-        scenario_extreme = PricingContext(bond_yield_curve=[{"bond_symbol": "exercisedbond", "value": forward_curve}],
-                                          clean_price=[{"bond_symbol": "exercisedbond", "value": self.exercise_prices}])
+        scenario_extreme = PricingContext(bond_yield_curve=[{"comb_symbol": "exercisedbond", "value": forward_curve}],
+                                          clean_price=[{"comb_symbol": "exercisedbond", "value": self.exercise_prices}])
         accruedAmount = 0
         with scenario_extreme:
             full_price = (self._exercised_bond.calc(RiskMeasure.CleanPrice) + accruedAmount)

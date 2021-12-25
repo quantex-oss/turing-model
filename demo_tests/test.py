@@ -23,7 +23,7 @@ dy = 0.0001
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     asset_id: str = None
-    bond_symbol: str = None
+    comb_symbol: str = None
     csname: str = None
     curr_code: (str, enum) = 'CNY'
     exchange_code: str = None
@@ -173,7 +173,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     def _resolve(self):
         # Bond_ 为自定义时自动生成
         if not self.asset_id:
-            asset_id = BondApi.fetch_comb_symbol_to_asset_id(self.bond_symbol)
+            asset_id = BondApi.fetch_comb_symbol_to_asset_id(self.comb_symbol)
             if asset_id:
                 setattr(self, 'asset_id', asset_id)
         if self.asset_id and not self.asset_id.startswith("Bond_"):
@@ -185,7 +185,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 except Exception:
                     pass
         if not self.csname:
-            csname = BondApi.fetch_comb_symbol_to_csname(self.bond_symbol)
+            csname = BondApi.fetch_comb_symbol_to_csname(self.comb_symbol)
             if csname:
                 setattr(self, 'csname', csname)
         self.__post_init__()

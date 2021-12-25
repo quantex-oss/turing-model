@@ -35,7 +35,7 @@ portfolio.show_table()
 
 # 2. What-If 新增固息债持仓
 curve_chinabond = YieldCurveCode.CBD100222
-bond_fr = BondFixedRate(bond_symbol="210001",
+bond_fr = BondFixedRate(comb_symbol="210001",
                         coupon=0.04,
                         curve_code=curve_chinabond,
                         issue_date=TuringDate(2015, 11, 13),

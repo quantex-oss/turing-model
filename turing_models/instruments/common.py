@@ -1164,25 +1164,25 @@ class Ctx:
 
     @property
     def ctx_ytm(self):
-        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+        asset_id = getattr(self, 'comb_symbol', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"ytm_{asset_id}")
 
     @property
     def ctx_clean_price(self):
-        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+        asset_id = getattr(self, 'comb_symbol', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"clean_price_{asset_id}")
 
     @property
     def ctx_bond_yield_curve(self):
-        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+        asset_id = getattr(self, 'comb_symbol', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"bond_yield_curve_{asset_id}")
 
     @property
     def ctx_spread_adjustment(self):
-        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+        asset_id = getattr(self, 'comb_symbol', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"spread_adjustment_{asset_id}")
 
