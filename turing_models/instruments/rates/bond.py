@@ -1,5 +1,4 @@
 import datetime
-import enum
 from abc import ABCMeta
 from dataclasses import dataclass
 from typing import Union
@@ -16,7 +15,6 @@ from turing_models.utilities.frequency import TuringFrequency, FrequencyType
 from turing_models.utilities.global_types import TuringYTMCalcType, CouponType
 from turing_models.utilities.helper_functions import to_string, datetime_to_turingdate
 from turing_models.utilities.schedule import TuringSchedule
-from turing_models.utilities.turing_date import TuringDate
 
 dy = 0.0001
 
@@ -204,28 +202,29 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self.__post_init__()
 
     def __repr__(self):
-        s = to_string("class_name", type(self).__name__)
-        s += to_string("wind_id", self.wind_id)
-        s += to_string("bbg_id", self.bbg_id)
-        s += to_string("cusip", self.cusip)
-        s += to_string("sedol", self.sedol)
-        s += to_string("ric", self.ric)
-        s += to_string("isin", self.isin)
-        s += to_string("ext_asset_id", self.ext_asset_id)
-        s += to_string("asset_name", self.asset_name)
-        s += to_string("asset_type", self.asset_type)
-        s += to_string("trd_curr_code", self.trd_curr_code)
-        s += to_string("symbol", self.symbol)
-        s += to_string("comb_symbol", self.comb_symbol)
-        s += to_string("exchange", self.exchange)
-        s += to_string("issuer", self.issuer)
-        s += to_string("issue_date", self.issue_date)
-        s += to_string("due_date", self.due_date)
-        s += to_string("par", self.par)
-        s += to_string("coupon_rate", self.coupon_rate)
-        s += to_string("interest_rate_type", self.interest_rate_type)
-        s += to_string("pay_interest_cycle", self.pay_interest_cycle)
-        s += to_string("interest_rules", self.interest_rules)
-        s += to_string("pay_interest_mode", self.pay_interest_mode)
-        s += to_string("curve_code", self.curve_code)
+        separator: str = "\n"
+        s = f"Class Name: {type(self).__name__}"
+        s += f"{separator}Wind Id: {self.wind_id}"
+        s += f"{separator}Bbg Id: {self.bbg_id}"
+        s += f"{separator}Cusip: {self.cusip}"
+        s += f"{separator}Sedol: {self.sedol}"
+        s += f"{separator}Ric: {self.ric}"
+        s += f"{separator}Isin: {self.isin}"
+        s += f"{separator}Ext Asset Id: {self.ext_asset_id}"
+        s += f"{separator}Asset Name: {self.asset_name}"
+        s += f"{separator}Asset Type: {self.asset_type}"
+        s += f"{separator}Trd Curr Code: {self.trd_curr_code}"
+        s += f"{separator}Symbol: {self.symbol}"
+        s += f"{separator}Comb Symbol: {self.comb_symbol}"
+        s += f"{separator}Exchange: {self.exchange}"
+        s += f"{separator}Issuer: {self.issuer}"
+        s += f"{separator}Issue Date: {self.issue_date}"
+        s += f"{separator}Due Date: {self.due_date}"
+        s += f"{separator}Par: {self.par}"
+        s += f"{separator}Coupon Rate: {self.coupon_rate}"
+        s += f"{separator}Interest Rate Type: {self.interest_rate_type}"
+        s += f"{separator}Pay Interest Cycle: {self.pay_interest_cycle}"
+        s += f"{separator}Interest Rules: {self.interest_rules}"
+        s += f"{separator}Pay Interest Mode: {self.pay_interest_mode}"
+        s += f"{separator}Curve Code: {self.curve_code}"
         return s

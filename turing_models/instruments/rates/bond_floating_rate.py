@@ -285,9 +285,7 @@ class BondFloatingRate(Bond):
 
     def __repr__(self):
         s = super().__repr__()
-        # s += to_string("Quoted Margin", self.floating_spread)
-        # s += to_string("Next Coupon", self.coupon_rate)
-        # s += to_string("Current Ibor", self.base_interest_rate)
-        # s += to_string("Future Ibor", self._next_base_interest_rate)
-        s += to_string("Discount Margin", self.dm, "")
+        separator: str = "\n"
+        if self.ecnomic_terms:
+            s += f"{separator}{self.ecnomic_terms}"
         return s

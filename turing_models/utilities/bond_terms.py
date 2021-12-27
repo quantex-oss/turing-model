@@ -23,6 +23,14 @@ class EcnomicTerms:
             else:
                 raise TuringError('Please check the keys of kwargs')
 
+    def __repr__(self):
+        if self.data:
+            s = ''
+            separator: str = "\n"
+            for key, value in self.data.items():
+                s += value.__repr__() + separator
+            return s.strip(separator)
+
 
 class FloatingRateTerms:
 
@@ -36,6 +44,15 @@ class FloatingRateTerms:
         self.floating_adjust_mode = floating_adjust_mode
         self.base_interest_rate = base_interest_rate
         self.name = "浮息债"
+
+    def __repr__(self):
+        separator: str = "\n"
+        s = f"Term Name: {type(self).__name__}"
+        s += f"{separator}Floating Rate Benchmark: {self.floating_rate_benchmark}"
+        s += f"{separator}Floating Spread: {self.floating_spread}"
+        s += f"{separator}Floating Adjust Mode: {self.floating_adjust_mode}"
+        s += f"{separator}Base Interest Rate: {self.base_interest_rate}"
+        return s
 
 
 class PrepaymentTerms:
@@ -71,6 +88,12 @@ class PrepaymentTerms:
             self.data = data
         self.name = "提前还款条款"
 
+    def __repr__(self):
+        separator: str = "\n"
+        s = f"Term Name: {type(self).__name__}"
+        s += f"{separator}{self.data}"
+        return s
+
 
 class EmbeddedPutableOptions:
     """
@@ -104,6 +127,12 @@ class EmbeddedPutableOptions:
         else:
             self.data = data
         self.name = "可回售条款"
+
+    def __repr__(self):
+        separator: str = "\n"
+        s = f"Term Name: {type(self).__name__}"
+        s += f"{separator}{self.data}"
+        return s
 
 
 class EmbeddedRateAdjustmentOptions:
@@ -142,6 +171,12 @@ class EmbeddedRateAdjustmentOptions:
         else:
             self.data = data
         self.name = "票面利率调整条款"
+
+    def __repr__(self):
+        separator: str = "\n"
+        s = f"Term Name: {type(self).__name__}"
+        s += f"{separator}{self.data}"
+        return s
 
 
 if __name__ == "__main__":
@@ -219,3 +254,11 @@ if __name__ == "__main__":
                                  prepayment_terms,
                                  embedded_putable_options=embedded_putable_options,
                                  embedded_rate_adjustment_options=embedded_rate_adjustment_options)
+
+    print(floating_rate_terms,
+          prepayment_terms,
+          embedded_putable_options,
+          embedded_rate_adjustment_options)
+    print('======')
+    print(ecnomic_terms)
+    print('======')
