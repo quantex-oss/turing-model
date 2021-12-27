@@ -22,8 +22,8 @@ from turing_models.utilities.turing_date import TuringDate
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondAdvRedemption(Bond):
     ecnomic_terms: EcnomicTerms = None
-    _ytm: float = None
-    _discount_curve = None
+    __ytm: float = None
+    __discount_curve = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -47,24 +47,24 @@ class BondAdvRedemption(Bond):
             self._calculate_flow_amounts()
             
     @property
-    def ytm_(self):
-        return self._ytm or self.ctx_ytm or self.yield_to_maturity()
+    def _ytm(self):
+        return self.__ytm or self.ctx_ytm or self.yield_to_maturity()
 
-    @ytm_.setter
-    def ytm_(self, value: float):
-        self._ytm = value
+    @_ytm.setter
+    def _ytm(self, value: float):
+        self.__ytm = value
 
     def ytm(self):
         # 定价接口调用
-        return self.ytm_
+        return self._ytm
 
     def full_price(self):
         # 定价接口调用
-        return self.clean_price_ + self.calc_accrued_interest()
+        return self._clean_price + self.calc_accrued_interest()
 
     def clean_price(self):
         # 定价接口调用
-        return self.clean_price_
+        return self._clean_price
 
     def _calculate_rdp_pcp(self):
         """ Determine the bond remaining principal."""
@@ -76,17 +76,17 @@ class BondAdvRedemption(Bond):
         
     @property
     def discount_curve(self):
-        if self._discount_curve:
-            return self._discount_curve
+        if self.__discount_curve:
+            return self.__discount_curve
         self._curve_resolve()
         return self.cv.discount_curve()
     
     @discount_curve.setter
     def discount_curve(self, value: TuringDiscountCurve):
-        self._discount_curve = value
+        self.__discount_curve = value
 
     @property
-    def clean_price_(self):
+    def _clean_price(self):
         return self.ctx_clean_price or self.clean_price_from_discount_curve()
 
     def _calculate_flow_amounts(self):
@@ -102,7 +102,7 @@ class BondAdvRedemption(Bond):
         """ 数值法计算dv01 """
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
-        return greek(self, self.full_price_from_ytm, "ytm_", dy) * -dy
+        return greek(self, self.full_price_from_ytm, "_ytm", dy) * -dy
 
 
     def macauley_duration(self):
@@ -111,7 +111,7 @@ class BondAdvRedemption(Bond):
         if self._settlement_date > self.due_date:
             raise TuringError("Bond settles after it matures.")
 
-        discount_curve_flat = TuringDiscountCurveFlat(self._settlement_date, self.ytm_, self.pay_interest_cycle, self.interest_rules)
+        discount_curve_flat = TuringDiscountCurveFlat(self._settlement_date, self._ytm, self.pay_interest_cycle, self.interest_rules)
 
         px = 0.0
         df = 1.0
@@ -155,26 +155,26 @@ class BondAdvRedemption(Bond):
         """ 修正久期 """
 
         dmac = self.macauley_duration()
-        md = dmac / (1.0 + self.ytm_ / self.frequency)
+        md = dmac / (1.0 + self._ytm / self.frequency)
         return md
 
     def dollar_convexity(self):
         """ 凸性 """
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
-        return greek(self, self.full_price_from_ytm, "ytm_", order=2)
+        return greek(self, self.full_price_from_ytm, "_ytm", order=2)
 
     def full_price_from_ytm(self):
         """ 通过YTM计算全价 """
         self.calc_accrued_interest()
 
-        ytm = np.array(self.ytm_)  # 向量化
+        ytm = np.array(self._ytm)  # 向量化
         ytm = ytm + 0.000000000012345  # 防止ytm = 0
 
         if self._settlement_date > self.due_date:
             raise TuringError("Bond settles after it matures.")
         
-        discount_curve_flat = TuringDiscountCurveFlat(self._settlement_date, self.ytm_, self.pay_interest_cycle, self.interest_rules)
+        discount_curve_flat = TuringDiscountCurveFlat(self._settlement_date, self._ytm, self.pay_interest_cycle, self.interest_rules)
 
         px = 0.0
         df = 1.0
@@ -264,13 +264,13 @@ class BondAdvRedemption(Bond):
     def current_yield(self):
         """ 当前收益 = 票息/净价 """
 
-        y = self.coupon_rate * self.par / self.clean_price_
+        y = self.coupon_rate * self.par / self._clean_price
         return y
 
     def yield_to_maturity(self):
         """ 通过一维求根器计算YTM """
 
-        clean_price = self.clean_price_
+        clean_price = self._clean_price
         if type(clean_price) is float \
                 or type(clean_price) is int \
                 or type(clean_price) is np.float64:
@@ -288,7 +288,7 @@ class BondAdvRedemption(Bond):
         ytms = []
 
         for full_price in full_prices:
-            argtuple = (self, full_price, "ytm_", "full_price_from_ytm")
+            argtuple = (self, full_price, "_ytm", "full_price_from_ytm")
 
             ytm = optimize.newton(newton_fun,
                                   x0=0.05,  # guess initial value of 5%
@@ -299,7 +299,7 @@ class BondAdvRedemption(Bond):
                                   fprime2=None)
 
             ytms.append(ytm)
-            self.ytm_ = None
+            self._ytm = None
 
         if len(ytms) == 1:
             return ytms[0]

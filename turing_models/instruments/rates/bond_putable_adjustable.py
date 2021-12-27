@@ -41,7 +41,7 @@ class BondPutableAdjustable(Bond):
     ecnomic_terms: EcnomicTerms = None
     forward_dates: List[Any] = field(default_factory=list)  # 支持手动传入远期曲线（日期）
     forward_rates: List[Any] = field(default_factory=list)  # 支持手动传入远期曲线（利率）
-    value_sys: str = "中债"
+    value_sys: str = "中证"
     __ytm: float = None
     __discount_curve = None
     __forward_curve = None
@@ -207,7 +207,7 @@ class BondPutableAdjustable(Bond):
 
     @property
     def _pure_bond(self):
-        pure_bond = BondFixedRate(comb_symbol="purebond",
+        pure_bond = BondFixedRate(comb_symbol=self.comb_symbol,
                                   value_date=self.value_date,
                                   issue_date=self.issue_date,
                                   due_date=self.exercise_dates,
@@ -250,8 +250,7 @@ class BondPutableAdjustable(Bond):
                                              pay_interest_cycle=self.pay_interest_cycle,
                                              pay_interest_mode=self.pay_interest_mode,
                                              interest_rules=self.interest_rules,
-                                             par=self.par,
-                                             curve_code="CBD100032")
+                                             par=self.par)
         forward_curve = pd.DataFrame(data={'tenor': forward_dates, 'rate': self._forward_rates})
         self._exercised_bond.cv.curve_data = forward_curve
         self._exercised_bond._clean_price = self.exercise_prices
