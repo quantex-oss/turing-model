@@ -5,7 +5,7 @@ from typing import Union, List, Any
 # from fundamental.turing_db.data import TuringDB
 from turing_models.utilities.bond_terms import EcnomicTerms
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.instruments.common import newton_fun
+from turing_models.instruments.common import newton_fun, Curve
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendar
@@ -79,6 +79,12 @@ class BondPutableAdjustable(Bond):
                 self.high_rate_adjust = embedded_rate_adjustment_options_data['high_rate_adjust'].tolist()
                 self.low_rate_adjust = embedded_rate_adjustment_options_data['low_rate_adjust'].tolist()
 
+        if self.issue_date and self.due_date:
+            self.forward_cv = Curve(value_date=self.settlement_date,
+                                    curve_code=self.curve_code,
+                                    curve_type='forward_spot_rate',
+                                    forward_term=self.time_to_maturity_in_year)
+
         for i in range(len(self.exercise_dates)):
             if self.exercise_dates[i] > self.value_date:
                 self.exercise_dates = self.exercise_dates[i]
@@ -132,6 +138,8 @@ class BondPutableAdjustable(Bond):
 
     @property
     def _forward_dates(self):
+        ctx_yield_curve = self.ctx_yield_curve(curve_type='forward_spot_rate',
+                                               forward_term=self.time_to_maturity_in_year)
         if self.forward_dates:
             return self.exercise_dates.addYears(self.forward_dates)
         else:

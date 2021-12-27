@@ -68,7 +68,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
             self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
             if self.curve_code:
-                self.cv.resolve()     
+                self.cv.resolve()
         if self.pay_interest_mode:
             if not isinstance(self.pay_interest_mode, CouponType):
                 rules = {"ZERO_COUPON": CouponType.ZERO_COUPON,
@@ -135,8 +135,9 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         if self.ctx_pricing_date:
             self.cv.set_value_date(self._settlement_date)
             self.cv.resolve()
-        if self.ctx_yield_curve is not None:
-            self.cv.set_curve_data(self.ctx_yield_curve)
+        ctx_yield_curve = self.ctx_yield_curve(curve_type='spot_rate')
+        if ctx_yield_curve is not None:
+            self.cv.set_curve_data(ctx_yield_curve)
             self.cv.resolve()
         self._curve_adjust()
 
