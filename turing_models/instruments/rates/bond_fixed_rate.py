@@ -15,6 +15,7 @@ from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFixedRate(Bond):
+    __clean_price: float = None
     __ytm: float = None
     __discount_curve = None
     __spread_adjustment = None
@@ -65,7 +66,11 @@ class BondFixedRate(Bond):
 
     @property
     def _clean_price(self):
-        return self.ctx_clean_price or self.clean_price_from_discount_curve()
+        return self.__clean_price or self.ctx_clean_price or self.clean_price_from_discount_curve()
+
+    @_clean_price.setter
+    def _clean_price(self, value: float):
+        self.__clean_price = value
 
     def clean_price(self):
         # 定价接口调用
