@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Union
 
+import pandas as pd
 from pydantic import BaseModel
 
 
@@ -112,7 +113,7 @@ class EcnomicTerms(BaseModel):
 
     def pay_date_list(self):
         if prepayment_terms:
-            return [x.get('pay_date') for x in prepayment_terms]
+            return pd.DataFrame([x.get('pay_date') for x in prepayment_terms])
         return []
 
 
