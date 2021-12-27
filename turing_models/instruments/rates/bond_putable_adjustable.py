@@ -199,7 +199,7 @@ class BondPutableAdjustable(Bond):
 
     @property
     def _pure_bond(self):
-        pure_bond = BondFixedRate(bond_symbol="purebond",
+        pure_bond = BondFixedRate(comb_symbol="purebond",
                                   value_date=self.value_date,
                                   issue_date=self.issue_date,
                                   due_date=self.exercise_dates,
