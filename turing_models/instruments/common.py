@@ -1175,10 +1175,9 @@ class Ctx:
         return getattr(self.ctx, f"clean_price_{asset_id}")
 
     @property
-    def ctx_bond_yield_curve(self):
-        asset_id = getattr(self, 'comb_symbol', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"bond_yield_curve_{asset_id}")
+    def ctx_yield_curve(self):
+        curve_code = getattr(self, 'curve_code', None)
+        return getattr(self.ctx, f"yield_curve_{curve_code}")
 
     @property
     def ctx_spread_adjustment(self):
@@ -1394,7 +1393,10 @@ class Curve:
 
     def set_curve_data(self, value: pd.DataFrame):
         """设置曲线数据"""
-        self.curve_data = value
+        if isinstance(value, list):
+            self.curve_data = pd.DataFrame(data=value)
+        else:
+            self.curve_data = value
 
     def resolve(self):
         """补全/更新数据"""

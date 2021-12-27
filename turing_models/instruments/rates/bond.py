@@ -119,11 +119,12 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 if isinstance(self.interest_rules, TuringError):
                     raise self.interest_rules
         self.ca = CurveAdjustment()
-        dc = TuringDayCount(DayCountType.ACT_365F)
-        (acc_factor1, _, _) = dc.yearFrac(self.issue_date, self.due_date)
-        self.bond_term_year = acc_factor1
-        (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
-        self.time_to_maturity_in_year = acc_factor2
+        if self.issue_date and self.due_date:
+            dc = TuringDayCount(DayCountType.ACT_365F)
+            (acc_factor1, _, _) = dc.yearFrac(self.issue_date, self.due_date)
+            self.bond_term_year = acc_factor1
+            (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
+            self.time_to_maturity_in_year = acc_factor2
 
     @property
     def _settlement_date(self):
@@ -136,8 +137,8 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         if self.ctx_pricing_date:
             self.cv.set_value_date(self._settlement_date)
             self.cv.resolve()
-        if self.ctx_bond_yield_curve is not None:
-            self.cv.set_curve_data(self.ctx_bond_yield_curve)
+        if self.ctx_yield_curve is not None:
+            self.cv.set_curve_data(self.ctx_yield_curve)
             self.cv.resolve()
         self._curve_adjust()
 

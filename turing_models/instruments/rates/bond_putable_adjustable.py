@@ -172,7 +172,7 @@ class BondPutableAdjustable(Bond):
 
     @forward_curve.setter
     def forward_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
-        self._forward = value
+        self.__forward_curve = value
 
     @property
     def forward_curve_flat(self):
@@ -203,10 +203,10 @@ class BondPutableAdjustable(Bond):
                                   value_date=self.value_date,
                                   issue_date=self.issue_date,
                                   due_date=self.exercise_dates,
-                                  coupon=self.coupon_rate,
-                                  cpn_type=self.pay_interest_mode,
-                                  freq_type=self.pay_interest_cycle,
-                                  accrual_type=self.interest_rules,
+                                  coupon_rate=self.coupon_rate,
+                                  pay_interest_mode=self.pay_interest_mode,
+                                  pay_interest_cycle=self.pay_interest_cycle,
+                                  interest_rules=self.interest_rules,
                                   par=self.par)
         curve_dates = []
         dc = TuringDayCount(DayCountType.ACT_365F)
@@ -242,9 +242,10 @@ class BondPutableAdjustable(Bond):
                                              pay_interest_cycle=self.pay_interest_cycle,
                                              pay_interest_mode=self.pay_interest_mode,
                                              interest_rules=self.interest_rules,
-                                             par=self.par)
+                                             par=self.par,
+                                             curve_code="CBD100032")
         forward_curve = pd.DataFrame(data={'tenor': forward_dates, 'rate': self._forward_rates})
-        scenario_extreme = PricingContext(bond_yield_curve=[{"comb_symbol": "exercisedbond", "value": forward_curve}],
+        scenario_extreme = PricingContext(yield_curve=[{"curve_code": "CBD100032", "value": forward_curve}],
                                           clean_price=[{"comb_symbol": "exercisedbond", "value": self.exercise_prices}])
         accruedAmount = 0
         with scenario_extreme:

@@ -20,8 +20,6 @@ from turing_models.utilities.turing_date import TuringDate
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondAdvRedemption(Bond):
-    # rdp_dates: List[Any] = field(default_factory=list)  # 提前偿还各期日期
-    # rdp_pct: List[Any] = field(default_factory=list)  # 提前偿还各期百分比
     ecnomic_terms: EcnomicTerms = None
     _ytm: float = None
     _discount_curve = None
