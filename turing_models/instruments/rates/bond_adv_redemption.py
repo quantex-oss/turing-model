@@ -4,11 +4,12 @@ import numpy as np
 from scipy import optimize
 
 # from fundamental.turing_db.data import TuringDB
-from turing_models.instruments.common import newton_fun
+from turing_models.instruments.common import newton_fun, greek
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.bond_terms import EcnomicTerms
-from turing_models.utilities.calendar import TuringCalendar
+from turing_models.utilities.calendar import TuringCalendar, TuringCalendarTypes, TuringBusDayAdjustTypes, \
+     TuringDateGenRuleTypes
 from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import to_string
@@ -33,10 +34,13 @@ class BondAdvRedemption(Bond):
             if prepayment_terms is not None:
                 prepayment_terms_data = prepayment_terms.data
                 self.pay_dates = datetime_to_turingdate(prepayment_terms_data['pay_date'].tolist())
+                cal = TuringCalendar(self.calendar_type)
+                for i in range(len(self.pay_dates)):
+                    self.pay_dates[i] = cal.adjust(self.pay_dates[i],TuringBusDayAdjustTypes.MODIFIED_FOLLOWING) 
                 self.pay_rates = prepayment_terms_data['pay_rate'].tolist()
         if len(self.pay_dates) != len(self.pay_rates):
             raise TuringError("redemption terms should match redemption percents.")
-        if sum(self.pay_rates) != 1:
+        if round(sum(self.pay_rates), 10)!= 1:  #防止因为数据精度问题导致求和不为1
             raise TuringError("total redemption doesn't equal to 1.")
         self._calculate_rdp_pcp()
         if self.coupon_rate:
@@ -56,7 +60,7 @@ class BondAdvRedemption(Bond):
 
     def full_price(self):
         # 定价接口调用
-        return self.full_price_from_discount_curve()
+        return self.clean_price_ + self.calc_accrued_interest()
 
     def clean_price(self):
         # 定价接口调用
@@ -96,14 +100,10 @@ class BondAdvRedemption(Bond):
 
     def dv01(self):
         """ 数值法计算dv01 """
-        ytm = self.ytm_
-        self.ytm_ = ytm - dy
-        p0 = self.full_price_from_ytm()
-        self.ytm_ = ytm + dy
-        p2 = self.full_price_from_ytm()
-        self.ytm_ = None
-        dv = -(p2 - p0) / 2.0
-        return dv
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return greek(self, self.full_price_from_ytm, "ytm_", dy) * -dy
+
 
     def macauley_duration(self):
         """ 麦考利久期 """
@@ -111,7 +111,7 @@ class BondAdvRedemption(Bond):
         if self._settlement_date > self.due_date:
             raise TuringError("Bond settles after it matures.")
 
-        discount_curve_flat = TuringDiscountCurveFlat(self._settlement_date, self.ytm_)
+        discount_curve_flat = TuringDiscountCurveFlat(self._settlement_date, self.ytm_, self.pay_interest_cycle, self.interest_rules)
 
         px = 0.0
         df = 1.0
@@ -160,16 +160,9 @@ class BondAdvRedemption(Bond):
 
     def dollar_convexity(self):
         """ 凸性 """
-        ytm = self.ytm_
-        self.ytm_ = ytm - dy
-        p0 = self.full_price_from_ytm()
-        self.ytm_ = ytm
-        p1 = self.full_price_from_ytm()
-        self.ytm_ = ytm + dy
-        p2 = self.full_price_from_ytm()
-        self.ytm_ = None
-        dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
-        return dollar_conv
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return greek(self, self.full_price_from_ytm, "ytm_", order=2)
 
     def full_price_from_ytm(self):
         """ 通过YTM计算全价 """
