@@ -1,5 +1,6 @@
-from typing import List, Union
 from datetime import datetime
+from typing import List, Union
+
 from pydantic import BaseModel
 
 
@@ -104,10 +105,15 @@ class EmbeddedRateAdjustmentOptions(BaseModel):
 
 class EcnomicTerms(BaseModel):
     """"""
-    floating_rate_terms : FloatingRateTerms
-    prepayment_terms : List[PrepaymentTerms]
-    embedded_putable_options : List[EmbeddedPutableOptions]
-    embedded_rate_adjustment_options : List[EmbeddedRateAdjustmentOptions]
+    floating_rate_terms: FloatingRateTerms
+    prepayment_terms: List[PrepaymentTerms]
+    embedded_putable_options: List[EmbeddedPutableOptions]
+    embedded_rate_adjustment_options: List[EmbeddedRateAdjustmentOptions]
+
+    def pay_date_list(self):
+        if prepayment_terms:
+            return [x.get('pay_date') for x in prepayment_terms]
+        return []
 
 
 if __name__ == "__main__":
@@ -181,5 +187,5 @@ if __name__ == "__main__":
                           "embedded_rate_adjustment_options": embedded_rate_adjustment_options}
 
     ecnomic_terms = EcnomicTerms.parse_obj(ecnomic_terms_dict)
-
+    print(ecnomic_terms.pay_date_list())
     print(ecnomic_terms)
