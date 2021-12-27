@@ -63,12 +63,10 @@ class BondFloatingRate(Bond):
     def _ytm(self, value: float):
         self.__ytm = value
 
-
     def dv01(self):
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
         return greek(self, self.full_price_from_ytm, "_ytm", dy) * -dy
-
 
     def dollar_convexity(self):
         """ Calculate the bond convexity from the discount margin (DM) using a

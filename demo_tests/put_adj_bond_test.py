@@ -24,7 +24,7 @@ bond_fr = BondPutableAdjustable(asset_id="BONDCN00000007",
                                 put_date=TuringDate(2023, 8, 5))
 
 print(bond_fr._pure_bond._clean_price)
-price1 = bond_fr.clean_price_
+price1 = bond_fr._clean_price
 # price2 = bond_fr2.full_price_from_discount_curve()
 # ytm = bond_fr.yield_to_maturity()
 # md = bond_fr.macauley_duration()
