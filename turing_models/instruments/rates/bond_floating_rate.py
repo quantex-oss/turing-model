@@ -6,7 +6,6 @@ from turing_models.instruments.common import newton_fun, greek
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.bond_terms import EcnomicTerms
 
 

@@ -5,7 +5,7 @@ from typing import Union, List, Any
 # from fundamental.turing_db.data import TuringDB
 from turing_models.utilities.bond_terms import EcnomicTerms
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.instruments.common import newton_fun
+from turing_models.instruments.common import newton_fun, Curve
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendar
@@ -41,7 +41,7 @@ class BondPutableAdjustable(Bond):
     ecnomic_terms: EcnomicTerms = None
     forward_dates: List[Any] = field(default_factory=list)  # 支持手动传入远期曲线（日期）
     forward_rates: List[Any] = field(default_factory=list)  # 支持手动传入远期曲线（利率）
-    value_sys: str = "中债"
+    value_sys: str = "中证"
     __ytm: float = None
     __discount_curve = None
     __forward_curve = None
@@ -78,6 +78,12 @@ class BondPutableAdjustable(Bond):
                 self.exercise_dates = datetime_to_turingdate(embedded_rate_adjustment_options_data['exercise_date'].tolist())
                 self.high_rate_adjust = embedded_rate_adjustment_options_data['high_rate_adjust'].tolist()
                 self.low_rate_adjust = embedded_rate_adjustment_options_data['low_rate_adjust'].tolist()
+
+        if self.issue_date and self.due_date:
+            self.forward_cv = Curve(value_date=self.settlement_date,
+                                    curve_code=self.curve_code,
+                                    curve_type='forward_spot_rate',
+                                    forward_term=self.time_to_maturity_in_year)
 
         for i in range(len(self.exercise_dates)):
             if self.exercise_dates[i] > self.value_date:
@@ -132,6 +138,8 @@ class BondPutableAdjustable(Bond):
 
     @property
     def _forward_dates(self):
+        ctx_yield_curve = self.ctx_yield_curve(curve_type='forward_spot_rate',
+                                               forward_term=self.time_to_maturity_in_year)
         if self.forward_dates:
             return self.exercise_dates.addYears(self.forward_dates)
         else:
@@ -199,7 +207,7 @@ class BondPutableAdjustable(Bond):
 
     @property
     def _pure_bond(self):
-        pure_bond = BondFixedRate(comb_symbol="purebond",
+        pure_bond = BondFixedRate(comb_symbol=self.comb_symbol,
                                   value_date=self.value_date,
                                   issue_date=self.issue_date,
                                   due_date=self.exercise_dates,
@@ -242,8 +250,7 @@ class BondPutableAdjustable(Bond):
                                              pay_interest_cycle=self.pay_interest_cycle,
                                              pay_interest_mode=self.pay_interest_mode,
                                              interest_rules=self.interest_rules,
-                                             par=self.par,
-                                             curve_code="CBD100032")
+                                             par=self.par)
         forward_curve = pd.DataFrame(data={'tenor': forward_dates, 'rate': self._forward_rates})
         self._exercised_bond.cv.curve_data = forward_curve
         self._exercised_bond._clean_price = self.exercise_prices
