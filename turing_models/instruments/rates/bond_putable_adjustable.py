@@ -245,22 +245,22 @@ class BondPutableAdjustable(Bond):
                                              par=self.par,
                                              curve_code="CBD100032")
         forward_curve = pd.DataFrame(data={'tenor': forward_dates, 'rate': self._forward_rates})
-        scenario_extreme = PricingContext(yield_curve=[{"curve_code": "CBD100032", "value": forward_curve}],
-                                          clean_price=[{"comb_symbol": "exercisedbond", "value": self.exercise_prices}])
+        self._exercised_bond.cv.curve_data = forward_curve
+        self._exercised_bond._clean_price = self.exercise_prices
+        
         accruedAmount = 0
-        with scenario_extreme:
-            full_price = (self._exercised_bond.calc(RiskMeasure.CleanPrice) + accruedAmount)
-            argtuple = (self._exercised_bond, full_price, "coupon_rate", "full_price_from_discount_curve")
+        full_price = (self._exercised_bond.calc(RiskMeasure.CleanPrice) + accruedAmount)
+        argtuple = (self._exercised_bond, full_price, "coupon_rate", "full_price_from_discount_curve")
 
-            c = optimize.newton(newton_fun,
-                                x0=0.05,  # guess initial value of 5%
-                                fprime=None,
-                                args=argtuple,
-                                tol=1e-8,
-                                maxiter=50,
-                                fprime2=None)
+        c = optimize.newton(newton_fun,
+                            x0=0.05,  # guess initial value of 5%
+                            fprime=None,
+                            args=argtuple,
+                            tol=1e-8,
+                            maxiter=50,
+                            fprime2=None)
 
-            return c
+        return c
 
     def _recommend_dir(self):
         if self.value_sys == "中债":
