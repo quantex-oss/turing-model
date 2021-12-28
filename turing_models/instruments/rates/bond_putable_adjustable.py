@@ -136,8 +136,6 @@ class BondPutableAdjustable(Bond):
 
     @property
     def _forward_dates(self):
-        ctx_yield_curve = self.ctx_yield_curve(curve_type='forward_spot_rate',
-                                               forward_term=self.time_to_maturity_in_year)
         forward_dates = self.discount_curve._zeroDates.copy()
         forward_dates = list(filter(lambda x: x >= self.exercise_dates, forward_dates))
         return forward_dates
@@ -164,9 +162,17 @@ class BondPutableAdjustable(Bond):
 
     @property
     def forward_curve(self):
+        dc = TuringDayCount(DayCountType.ACT_365F)
+        forward_term = dc.yearFrac(self.value_date, self.exercise_dates)
+        ctx_yield_curve = self.ctx_yield_curve(curve_type='forward_spot_rate',
+                                               forward_term=forward_term)
         if self.__forward_curve:
             return self.__forward_curve
+        elif ctx_yield_curve:
+            return ctx_yield_curve
         else:
+            
+            print("????????????????????????????????????????????")
             return TuringDiscountCurveZeros(
                 self.exercise_dates, self._forward_dates, self._forward_rates, FrequencyType.ANNUAL)
 
@@ -238,7 +244,7 @@ class BondPutableAdjustable(Bond):
         forward_dates = []
         for i in range(len(self._forward_dates)):
             forward_dates.append(dc.yearFrac(self.exercise_dates, self._forward_dates[i])[0])
-        self._exercised_bond = BondFixedRate(comb_symbol=self.comb_symbol,
+        exercised_bond = BondFixedRate(comb_symbol=self.comb_symbol,
                                              value_date=self.exercise_dates,
                                              issue_date=self.exercise_dates,
                                              due_date=self.due_date,
@@ -248,12 +254,12 @@ class BondPutableAdjustable(Bond):
                                              par=self.par,
                                              curve_code=self.curve_code)
         forward_curve = pd.DataFrame(data={'tenor': forward_dates, 'rate': self._forward_rates})
-        self._exercised_bond.cv.curve_data = forward_curve
-        self._exercised_bond._clean_price = self.exercise_prices
+        exercised_bond.cv.curve_data = forward_curve
+        exercised_bond._clean_price = self.exercise_prices
         
         accruedAmount = 0
-        full_price = (self._exercised_bond.calc(RiskMeasure.CleanPrice) + accruedAmount)
-        argtuple = (self._exercised_bond, full_price, "coupon_rate", "full_price_from_discount_curve")
+        full_price = (exercised_bond._clean_price + accruedAmount)
+        argtuple = (exercised_bond, full_price, "coupon_rate", "full_price_from_discount_curve")
 
         c = optimize.newton(newton_fun,
                             x0=0.05,  # guess initial value of 5%
