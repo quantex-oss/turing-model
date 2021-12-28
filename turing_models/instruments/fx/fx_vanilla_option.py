@@ -29,7 +29,7 @@ class FXVanillaOption(FXOption):
                 raise TuringError("Invalid notional currency.")
 
         if self.domestic_name and self.foreign_name \
-           and self.strike and self.start_date_ql and self.expiry_ql \
+           and self.strike and self.start_date and self.expiry_ql \
            and self.option_type and self.notional:
             self.option = FXVanilla(d_ccy=self.domestic_name,
                                     f_ccy=self.foreign_name,
