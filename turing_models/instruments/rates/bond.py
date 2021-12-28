@@ -57,7 +57,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self._redemption = 1.0                                     # 到期支付额
         self._flow_dates = []                                      # 现金流发生日
         self._flow_amounts = []                                    # 现金流发生额
-        self._accrued_interest = None
+        # self._accrued_interest = None
         self._accrued_days = 0.0                                   # 应计利息天数
         self.value_date = datetime_to_turingdate(self.value_date)
         self.issue_date = datetime_to_turingdate(self.issue_date)
@@ -69,53 +69,13 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
             if self.curve_code:
                 self.cv.resolve()
-        if self.pay_interest_mode:
-            if not isinstance(self.pay_interest_mode, CouponType):
-                rules = {"ZERO_COUPON": CouponType.ZERO_COUPON,
-                         "DISCOUNT": CouponType.DISCOUNT,
-                         "COUPON_CARRYING": CouponType.COUPON_CARRYING,
-                         # "OTHERS": None
-                         }
-                self.pay_interest_mode = rules.get(self.pay_interest_mode,
-                                                   TuringError('Please check the input of pay_interest_mode'))
-                if isinstance(self.pay_interest_mode, TuringError):
-                    raise self.pay_interest_mode
+        self.check_param()
         if self.pay_interest_cycle:
-            if not isinstance(self.pay_interest_cycle, FrequencyType):
-                rules = {"ANNUAL": FrequencyType.ANNUAL,
-                         "SEMI_ANNUAL": FrequencyType.SEMI_ANNUAL,
-                         # "ONCE_ON_DUE": None,
-                         "QUARTERLY": FrequencyType.QUARTERLY,
-                         "MONTHLY": FrequencyType.MONTHLY,
-                         # "PERIODIC": None,
-                         "TRI_ANNUAL": FrequencyType.TRI_ANNUAL,
-                         # "THREE_QUARTERLY": None,
-                         # "15_DAYS": None,
-                         # "BIMONTHLY": None,
-                         # "OTHERS": None
-                         }
-                self.pay_interest_cycle = rules.get(self.pay_interest_cycle,
-                                                    TuringError('Please check the input of pay_interest_cycle'))
-                if isinstance(self.pay_interest_cycle, TuringError):
-                    raise self.pay_interest_cycle
             self._calculate_cash_flow_dates()
             self.frequency = TuringFrequency(self.pay_interest_cycle)
         else:
             self._flow_dates = [self.issue_date, self.due_date]    
-        if self.interest_rules:
-            if not isinstance(self.interest_rules, DayCountType):
-                rules = {"ACT/365": DayCountType.ACT_365L,
-                         "ACT/ACT": DayCountType.ACT_ACT_ISDA,
-                         "ACT/360": DayCountType.ACT_360,
-                         "30/360": DayCountType.THIRTY_E_360,
-                         # "ACT/366": None,
-                         "ACT/365F": DayCountType.ACT_365F,
-                         # "AVG/ACT": None
-                         }
-                self.interest_rules = rules.get(self.interest_rules,
-                                                TuringError('Please check the input of interest_rules'))
-                if isinstance(self.interest_rules, TuringError):
-                    raise self.interest_rules
+
         self.ca = CurveAdjustment()
         if self.issue_date and self.due_date:
             dc = TuringDayCount(DayCountType.ACT_365F)
@@ -123,6 +83,57 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             self.bond_term_year = acc_factor1
             (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
             self.time_to_maturity_in_year = acc_factor2
+
+    def check_param(self):
+        """将字符串转换为枚举类型"""
+        if self.pay_interest_mode:
+            if not isinstance(self.pay_interest_mode, CouponType):
+                rules = {
+                    "ZERO_COUPON": CouponType.ZERO_COUPON,
+                    "DISCOUNT": CouponType.DISCOUNT,
+                    "COUPON_CARRYING": CouponType.COUPON_CARRYING,
+                    # "OTHERS": None
+                    }
+                self.pay_interest_mode = rules.get(self.pay_interest_mode,
+                                                   TuringError('Please check the input of pay_interest_mode'))
+                if isinstance(self.pay_interest_mode, TuringError):
+                    raise self.pay_interest_mode
+
+        if self.pay_interest_cycle:
+            if not isinstance(self.pay_interest_cycle, FrequencyType):
+                rules = {
+                    "ANNUAL": FrequencyType.ANNUAL,
+                    "SEMI_ANNUAL": FrequencyType.SEMI_ANNUAL,
+                    # "ONCE_ON_DUE": None,
+                    "QUARTERLY": FrequencyType.QUARTERLY,
+                    "MONTHLY": FrequencyType.MONTHLY,
+                    # "PERIODIC": None,
+                    "TRI_ANNUAL": FrequencyType.TRI_ANNUAL,
+                    # "THREE_QUARTERLY": None,
+                    # "15_DAYS": None,
+                    # "BIMONTHLY": None,
+                    # "OTHERS": None
+                    }
+                self.pay_interest_cycle = rules.get(self.pay_interest_cycle,
+                                                    TuringError('Please check the input of pay_interest_cycle'))
+                if isinstance(self.pay_interest_cycle, TuringError):
+                    raise self.pay_interest_cycle
+
+        if self.interest_rules:
+            if not isinstance(self.interest_rules, DayCountType):
+                rules = {
+                    "ACT/365": DayCountType.ACT_365L,
+                    "ACT/ACT": DayCountType.ACT_ACT_ISDA,
+                    "ACT/360": DayCountType.ACT_360,
+                    "30/360": DayCountType.THIRTY_E_360,
+                    # "ACT/366": None,
+                    "ACT/365F": DayCountType.ACT_365F,
+                    # "AVG/ACT": None
+                    }
+                self.interest_rules = rules.get(self.interest_rules,
+                                                TuringError('Please check the input of interest_rules'))
+                if isinstance(self.interest_rules, TuringError):
+                    raise self.interest_rules
 
     @property
     def _settlement_date(self):
@@ -145,13 +156,13 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         if self.ctx_parallel_shift:
             self.ca.set_parallel_shift(self.ctx_parallel_shift)
         if self.ctx_curve_shift:
-            self.ca.set_parallel_shift(self.ctx_curve_shift)
+            self.ca.set_curve_shift(self.ctx_curve_shift)
         if self.ctx_pivot_point:
-            self.ca.set_parallel_shift(self.ctx_pivot_point)
+            self.ca.set_pivot_point(self.ctx_pivot_point)
         if self.ctx_tenor_start:
-            self.ca.set_parallel_shift(self.ctx_tenor_start)
+            self.ca.set_tenor_start(self.ctx_tenor_start)
         if self.ctx_tenor_end:
-            self.ca.set_parallel_shift(self.ctx_tenor_end)
+            self.ca.set_tenor_end(self.ctx_tenor_end)
         if self.ca.isvalid():
             self.cv.adjust(self.ca)
 

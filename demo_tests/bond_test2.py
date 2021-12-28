@@ -8,7 +8,6 @@ from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.instruments.rates.bond_floating_rate import BondFloatingRate
 from turing_models.instruments.rates.bond_adv_redemption import BondAdvRedemption
 from turing_models.instruments.rates.bond_putable_adjustable import BondPutableAdjustable
-from turing_models.market.data.china_money_yield_curve import dates, rates
 from turing_models.utilities.bond_terms import FloatingRateTerms, EcnomicTerms, PrepaymentTerms, EmbeddedPutableOptions, \
     EmbeddedRateAdjustmentOptions
 
@@ -37,11 +36,9 @@ bond_fixed_rate = BondFixedRate(
     pay_interest_cycle="ANNUAL",
     interest_rules="ACT/365",
     pay_interest_mode="COUPON_CARRYING",
-    # curve_code="CBD100252"
+    curve_code="CBD100032",
+    value_date=datetime.datetime(2021, 11, 10)
 )
-
-curve_data = pd.DataFrame(data={'tenor': dates, 'rate': rates})
-bond_fixed_rate.cv.curve_data = curve_data
 
 full_price = bond_fixed_rate.calc(RiskMeasure.FullPrice)
 clean_price = bond_fixed_rate.calc(RiskMeasure.CleanPrice)
@@ -90,8 +87,9 @@ bond_floating_rate = BondFloatingRate(
     pay_interest_cycle="ANNUAL",
     interest_rules="ACT/365",
     pay_interest_mode="COUPON_CARRYING",
-    # curve_code="CBD100252",
-    ecnomic_terms=ecnomic_terms
+    curve_code="CBD100032",
+    ecnomic_terms=ecnomic_terms,
+    value_date=datetime.datetime(2021, 11, 10)
 )
 
 full_price = bond_floating_rate.calc(RiskMeasure.FullPrice)
@@ -155,12 +153,10 @@ bond_adv_redemption = BondAdvRedemption(
     pay_interest_cycle="ANNUAL",
     interest_rules="ACT/365",
     pay_interest_mode="COUPON_CARRYING",
-    # curve_code="CBD100252",
-    ecnomic_terms=ecnomic_terms
+    curve_code="CBD100032",
+    ecnomic_terms=ecnomic_terms,
+    value_date=datetime.datetime(2021, 11, 10)
 )
-
-curve_data = pd.DataFrame(data={'tenor': dates, 'rate': rates})
-bond_adv_redemption.cv.curve_data = curve_data
 
 full_price = bond_adv_redemption.calc(RiskMeasure.FullPrice)
 clean_price = bond_adv_redemption.calc(RiskMeasure.CleanPrice)
@@ -227,91 +223,12 @@ bond_putable_adjustable = BondPutableAdjustable(
     value_date=datetime.datetime(2021, 11, 10)
 )
 
-curve_data = pd.DataFrame(data={'tenor': dates[:180], 'rate': rates[:180]})
-bond_putable_adjustable.cv.curve_data = curve_data
-print(bond_putable_adjustable.cv.curve_data)
-# print('full price', bond_putable_adjustable.full_price())
+print('full price', bond_putable_adjustable.full_price())
 print('clean_price', bond_putable_adjustable.calc(RiskMeasure.CleanPrice))
-# print('ytm:', bond_putable_adjustable.calc(RiskMeasure.YTM))
-# print('dv01:', bond_putable_adjustable.calc(RiskMeasure.Dv01))
-# print('modified_duration:', bond_putable_adjustable.calc(RiskMeasure.ModifiedDuration))
-# print('dollar_convexity:', bond_putable_adjustable.calc(RiskMeasure.DollarConvexity))
-# print('time_to_maturity:', bond_putable_adjustable.calc(RiskMeasure.TimeToMaturity))
+print('ytm:', bond_putable_adjustable.calc(RiskMeasure.YTM))
+print('dv01:', bond_putable_adjustable.calc(RiskMeasure.Dv01))
+print('modified_duration:', bond_putable_adjustable.calc(RiskMeasure.ModifiedDuration))
+print('dollar_convexity:', bond_putable_adjustable.calc(RiskMeasure.DollarConvexity))
+print('time_to_maturity:', bond_putable_adjustable.calc(RiskMeasure.TimeToMaturity))
 
-scenario_extreme = PricingContext(clean_price=[{"comb_symbol": "127157.SH", "value": 39.5805}])
-with scenario_extreme:
-    print("==========")
-    # print('price', bond_putable_adjustable.calc(RiskMeasure.FullPrice))
-    print('clean_price', bond_putable_adjustable.calc(RiskMeasure.CleanPrice))
-    # print('dv01:', bond_putable_adjustable.calc(RiskMeasure.Dv01))
-    # print('ytm:', bond_putable_adjustable.calc(RiskMeasure.YTM))
-    # print('modified_duration:', bond_putable_adjustable.calc(RiskMeasure.ModifiedDuration))
-    # print('dollar_convexity:', bond_putable_adjustable.calc(RiskMeasure.DollarConvexity))
-print("---------------------------------------------")
 
-scenario_extreme = PricingContext(yield_curve=[{
-    "curve_code": "CBD100252",
-    "type": "forward_spot_rate",
-    "forward_term": bond_putable_adjustable.time_to_maturity_in_year,
-    "value": [
-        {
-            "tenor": 0.25,
-            "origin_tenor": "3M",
-            "rate": 0.02489
-        },
-        {
-            "tenor": 0.5,
-            "origin_tenor": "6M",
-            "rate": 0.02522
-        },
-        {
-            "tenor": 0.75,
-            "origin_tenor": "9M",
-            "rate": 0.02558
-        },
-        {
-            "tenor": 1.0,
-            "origin_tenor": "12M",
-            "rate": 0.02592
-        },
-        {
-            "tenor": 2.0,
-            "origin_tenor": "2Y",
-            "rate": 0.02748
-        },
-        {
-            "tenor": 3.0,
-            "origin_tenor": "3Y",
-            "rate": 0.02907
-        },
-        {
-            "tenor": 4.0,
-            "origin_tenor": "4Y",
-            "rate": 0.03070
-        },
-        {
-            "tenor": 5.0,
-            "origin_tenor": "5Y",
-            "rate": 0.03154
-        },
-        {
-            "tenor": 7.0,
-            "origin_tenor": "7Y",
-            "rate": 0.03326
-        },
-        {
-            "tenor": 10.0,
-            "origin_tenor": "10Y",
-            "rate": 0.03537
-        }
-    ]
-}])
-with scenario_extreme:
-    print("==========")
-    print('price', bond_putable_adjustable.calc(RiskMeasure.FullPrice))
-    print(bond_putable_adjustable.cv.curve_data)
-    print('clean_price', bond_putable_adjustable.calc(RiskMeasure.CleanPrice))
-    print('dv01:', bond_putable_adjustable.calc(RiskMeasure.Dv01))
-    print('ytm:', bond_putable_adjustable.calc(RiskMeasure.YTM))
-    print('modified_duration:', bond_putable_adjustable.calc(RiskMeasure.ModifiedDuration))
-    print('dollar_convexity:', bond_putable_adjustable.calc(RiskMeasure.DollarConvexity))

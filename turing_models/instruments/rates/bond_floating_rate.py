@@ -6,12 +6,11 @@ from turing_models.instruments.common import newton_fun, greek
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.bond_terms import EcnomicTerms
+from turing_models.utilities.bond_terms import EcnomicTerms, FloatingRateTerms
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFloatingRate(Bond):
-    # _next_base_interest_rate: float = None
     ecnomic_terms: EcnomicTerms = None
     dm: float = None
     __ytm: float = None
@@ -19,7 +18,7 @@ class BondFloatingRate(Bond):
     def __post_init__(self):
         super().__post_init__()
         if self.ecnomic_terms is not None:
-            floating_rate_terms = self.ecnomic_terms.data.get('floating_rate_terms')
+            floating_rate_terms = self.ecnomic_terms.get_instance(FloatingRateTerms)
             if floating_rate_terms is not None:
                 self.floating_rate_benchmark = floating_rate_terms.floating_rate_benchmark
                 self.floating_spread = floating_rate_terms.floating_spread

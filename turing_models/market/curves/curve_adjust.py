@@ -103,7 +103,6 @@ class CurveAdjustmentImpl:
             self.tenors.append(self.tenor_end)
             self.rates.append(self.end_rate)
 
-
     def get_data_index(self):
         self.pivot_index = self.tenors.index(self.pivot_point)
         self.start_index = self.tenors.index(self.tenor_start)

@@ -3,7 +3,8 @@ from dataclasses import dataclass, field
 import math
 from typing import Union, List, Any
 # from fundamental.turing_db.data import TuringDB
-from turing_models.utilities.bond_terms import EcnomicTerms
+from turing_models.utilities.bond_terms import EcnomicTerms, EmbeddedPutableOptions, \
+     EmbeddedRateAdjustmentOptions
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.instruments.common import newton_fun, Curve
 from turing_models.utilities.error import TuringError
@@ -11,17 +12,12 @@ from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.instruments.rates.bond import Bond
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
-
-from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.day_count import TuringDayCount, DayCountType
-from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 from turing_models.utilities.helper_functions import datetime_to_turingdate
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.instruments.common import YieldCurveCode, RiskMeasure
-from fundamental.pricing_context import PricingContext
+from turing_models.instruments.common import RiskMeasure
 
 import pandas as pd
 import numpy as np
@@ -51,7 +47,7 @@ class BondPutableAdjustable(Bond):
             kwargs['value_date'] = datetime.date.today()
         ecnomic_terms = kwargs.get("ecnomic_terms")
         if ecnomic_terms is not None:
-            embedded_putable_options = ecnomic_terms.data.get('embedded_putable_options')
+            embedded_putable_options = ecnomic_terms.get_instance(EmbeddedPutableOptions)
             if embedded_putable_options is not None:
                 exercise_dates = datetime_to_turingdate(embedded_putable_options.data['exercise_date'].tolist())
                 value_date = datetime_to_turingdate(kwargs["value_date"])
@@ -67,8 +63,8 @@ class BondPutableAdjustable(Bond):
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
         if self.ecnomic_terms is not None:
-            embedded_putable_options = self.ecnomic_terms.data.get('embedded_putable_options')
-            embedded_rate_adjustment_options = self.ecnomic_terms.data.get('embedded_rate_adjustment_options')
+            embedded_putable_options = self.ecnomic_terms.get_instance(EmbeddedPutableOptions)
+            embedded_rate_adjustment_options = self.ecnomic_terms.get_instance(EmbeddedRateAdjustmentOptions)
             if embedded_putable_options is not None:
                 embedded_putable_options_data = embedded_putable_options.data
                 self.exercise_dates = datetime_to_turingdate(embedded_putable_options_data['exercise_date'].tolist())

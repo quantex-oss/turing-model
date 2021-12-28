@@ -2,37 +2,37 @@ from typing import Union
 
 import pandas as pd
 
-from turing_models.utilities.helper_functions import pascal_to_snake
 from turing_models.utilities.error import TuringError
 
 
 class EcnomicTerms:
     """"""
-    def __init__(self, *args, **kwargs):
-        self.data = {}
-        if args:
-            self.data = {pascal_to_snake(type(arg).__name__): arg for arg in args}
-        if kwargs:
-            rules = ['floating_rate_terms',
-                     'prepayment_terms',
-                     'embedded_putable_options',
-                     'embedded_rate_adjustment_options']
-            kwargs_keys = kwargs.keys()
-            if all([key in rules for key in kwargs_keys]):
-                self.data = dict(self.data, **kwargs)
-            else:
-                raise TuringError('Please check the keys of kwargs')
+    def __init__(self, *args):
+        if all([isinstance(arg, EcnomicTerm) for arg in args]):
+            self.terms = list(args)
+        else:
+            raise TuringError('Please check the args')
+
+    def get_instance(self, class_name):
+        if issubclass(class_name, EcnomicTerm):
+            for term in self.terms:
+                if isinstance(term, class_name):
+                    return term
 
     def __repr__(self):
-        if self.data:
+        if getattr(self, 'terms'):
             s = ''
             separator: str = "\n"
-            for key, value in self.data.items():
-                s += value.__repr__() + separator
+            for term in self.terms:
+                s += term.__repr__() + separator
             return s.strip(separator)
 
 
-class FloatingRateTerms:
+class EcnomicTerm:
+    pass
+
+
+class FloatingRateTerms(EcnomicTerm):
 
     def __init__(self,
                  floating_rate_benchmark: str = None,
@@ -55,7 +55,7 @@ class FloatingRateTerms:
         return s
 
 
-class PrepaymentTerms:
+class PrepaymentTerms(EcnomicTerm):
     """
     代码示例：
     data_list = [
@@ -95,7 +95,7 @@ class PrepaymentTerms:
         return s
 
 
-class EmbeddedPutableOptions:
+class EmbeddedPutableOptions(EcnomicTerm):
     """
         代码示例：
         data_list = [
@@ -135,7 +135,7 @@ class EmbeddedPutableOptions:
         return s
 
 
-class EmbeddedRateAdjustmentOptions:
+class EmbeddedRateAdjustmentOptions(EcnomicTerm):
     """
         代码示例：
         data_list = [
@@ -252,8 +252,8 @@ if __name__ == "__main__":
 
     ecnomic_terms = EcnomicTerms(floating_rate_terms,
                                  prepayment_terms,
-                                 embedded_putable_options=embedded_putable_options,
-                                 embedded_rate_adjustment_options=embedded_rate_adjustment_options)
+                                 embedded_putable_options,
+                                 embedded_rate_adjustment_options)
 
     print(floating_rate_terms,
           prepayment_terms,
@@ -262,3 +262,4 @@ if __name__ == "__main__":
     print('======')
     print(ecnomic_terms)
     print('======')
+    print(issubclass(EmbeddedRateAdjustmentOptions, EcnomicTerm))

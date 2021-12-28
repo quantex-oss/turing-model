@@ -7,16 +7,12 @@ from scipy import optimize
 from turing_models.instruments.common import newton_fun, greek
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.utilities.bond_terms import EcnomicTerms
-from turing_models.utilities.calendar import TuringCalendar, TuringCalendarTypes, TuringBusDayAdjustTypes, \
-     TuringDateGenRuleTypes
+from turing_models.utilities.bond_terms import EcnomicTerms, PrepaymentTerms
+from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
 from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.helper_functions import to_string
-# from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 from turing_models.utilities.helper_functions import datetime_to_turingdate
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.utilities.turing_date import TuringDate
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -30,7 +26,7 @@ class BondAdvRedemption(Bond):
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
         if self.ecnomic_terms is not None:
-            prepayment_terms = self.ecnomic_terms.data.get('prepayment_terms')
+            prepayment_terms = self.ecnomic_terms.get_instance(PrepaymentTerms)
             if prepayment_terms is not None:
                 prepayment_terms_data = prepayment_terms.data
                 self.pay_dates = datetime_to_turingdate(prepayment_terms_data['pay_date'].tolist())
