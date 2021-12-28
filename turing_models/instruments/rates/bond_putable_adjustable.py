@@ -38,7 +38,6 @@ class BondPutableAdjustable(Bond):
     value_sys: str = "中债"
     __ytm: float = None
     __discount_curve = None
-    __forward_curve = None
 
     def __new__(cls, *args, **kwargs):
         if kwargs.get("value_date") is None:
@@ -72,15 +71,9 @@ class BondPutableAdjustable(Bond):
                 self.exercise_dates = datetime_to_turingdate(embedded_rate_adjustment_options_data['exercise_date'].tolist())
                 self.high_rate_adjust = embedded_rate_adjustment_options_data['high_rate_adjust'].tolist()
                 self.low_rate_adjust = embedded_rate_adjustment_options_data['low_rate_adjust'].tolist()
-
-        if self.issue_date and self.due_date:
-            self.forward_cv = Curve(value_date=self.settlement_date,
-                                    curve_code=self.curve_code,
-                                    curve_type='forward_spot_rate',
-                                    forward_term=self.time_to_maturity_in_year)
-
+                
         for i in range(len(self.exercise_dates)):
-            if self.exercise_dates[i] > self.value_date:
+            if self.exercise_dates[i] > self._settlement_date:
                 self.exercise_dates = self.exercise_dates[i]
                 self.exercise_prices = self.exercise_prices[i]
                 if len(self.high_rate_adjust) > 0:
@@ -92,6 +85,14 @@ class BondPutableAdjustable(Bond):
                 else:
                     self.low_rate_adjust = None
                 break
+        
+        if self.issue_date and self.due_date:
+            dc = TuringDayCount(DayCountType.ACT_365F)
+            forward_term = dc.yearFrac(self.settlement_date, self.exercise_dates)
+            self.forward_cv = Curve(value_date=self.settlement_date,
+                                    curve_code=self.curve_code,
+                                    curve_type='forward_spot_rate',
+                                    forward_term=forward_term)
 
         if self.value_sys == "中债":
             if self.high_rate_adjust is not None:
@@ -118,6 +119,11 @@ class BondPutableAdjustable(Bond):
     @_ytm.setter
     def _ytm(self, value: float):
         self.__ytm = value
+     
+    @property
+    def _forward_term(self):   
+        dc = TuringDayCount(DayCountType.ACT_365F)
+        return dc.yearFrac(self._settlement_date, self.exercise_dates)
 
     @property
     def discount_curve(self):
@@ -129,25 +135,35 @@ class BondPutableAdjustable(Bond):
     @discount_curve.setter
     def discount_curve(self, value: TuringDiscountCurve):
         self.__discount_curve = value
+    
+    def _forward_curve_resolve(self):
+        if self.ctx_pricing_date:
+            self.forward_cv.set_value_date(self._settlement_date)
+        ctx_forward_curve = self.ctx_yield_curve(curve_type='forward_spot_rate',
+                                               forward_term=self._forward_term)
+        if ctx_forward_curve is not None:
+            self.forward_cv.set_curve_data(ctx_forward_curve)
 
     @property
     def _forward_dates(self):
         forward_dates = self.discount_curve._zeroDates.copy()
         forward_dates = list(filter(lambda x: x >= self.exercise_dates, forward_dates))
+        
         return forward_dates
 
     @property
     def _forward_rates(self):
+        forward_dates = self._forward_dates
         curve_spot = self.discount_curve
         dfIndex1 = curve_spot.df(self.exercise_dates)
         dc = TuringDayCount(DayCountType.ACT_365F)
         forward_rates = []
-        for i in range(len(self._forward_dates)):
-            acc_factor = dc.yearFrac(self.exercise_dates, self._forward_dates[i])[0]
+        for i in range(len(forward_dates)):
+            acc_factor = dc.yearFrac(self.exercise_dates, forward_dates[i])[0]
             if acc_factor == 0:
                 forward_rates.append(0)
             else:
-                dfIndex2 = curve_spot.df(self._forward_dates[i])
+                dfIndex2 = curve_spot.df(forward_dates[i])
                 forward_rates.append(math.pow(dfIndex1 / dfIndex2, 1 / acc_factor) - 1)
         return forward_rates
 
@@ -157,27 +173,19 @@ class BondPutableAdjustable(Bond):
                                        self._ytm, self.pay_interest_cycle, self.interest_rules)
 
     @property
-    def forward_curve(self):
-        dc = TuringDayCount(DayCountType.ACT_365F)
-        forward_term = dc.yearFrac(self.value_date, self.exercise_dates)
-        ctx_yield_curve = self.ctx_yield_curve(curve_type='forward_spot_rate',
-                                               forward_term=forward_term)
-        if self.__forward_curve:
-            return self.__forward_curve
-        elif ctx_yield_curve:
-            return ctx_yield_curve
-        else:
-            
-            print("????????????????????????????????????????????")
-            return TuringDiscountCurveZeros(
-                self.exercise_dates, self._forward_dates, self._forward_rates, FrequencyType.ANNUAL)
-
-    @forward_curve.setter
-    def forward_curve(self, value: Union[TuringDiscountCurveZeros, TuringDiscountCurveFlat]):
-        self.__forward_curve = value
+    def _forward_curve_data(self):
+        self._forward_curve_resolve()
+        if self.forward_cv.curve_data is None:
+            dc = TuringDayCount(DayCountType.ACT_365F)
+            forward_tenor = []
+            for i in range(len(self._forward_dates)):
+                forward_tenor.append(dc.yearFrac(self.exercise_dates, self._forward_dates[i])[0])
+            curve_data = pd.DataFrame(data={'tenor': forward_tenor, 'rate': self._forward_rates})
+            self.forward_cv.set_curve_data(curve_data)
+        return self.forward_cv.curve_data
 
     @property
-    def forward_curve_flat(self):
+    def _forward_curve_flat(self):
         return TuringDiscountCurveFlat(self.exercise_dates,
                                        self._ytm)
 
@@ -202,7 +210,7 @@ class BondPutableAdjustable(Bond):
     @property
     def _pure_bond(self):  # 假设行权日到期的债券
         pure_bond = BondFixedRate(comb_symbol=self.comb_symbol,
-                                  value_date=self.value_date,
+                                  value_date=self._settlement_date,
                                   issue_date=self.issue_date,
                                   due_date=self.exercise_dates,
                                   coupon_rate=self.coupon_rate,
@@ -236,10 +244,6 @@ class BondPutableAdjustable(Bond):
         """ Calculate the equilibrium_rate by solving the price
         yield relationship using a one-dimensional root solver. """
 
-        dc = TuringDayCount(DayCountType.ACT_365F)
-        forward_dates = []
-        for i in range(len(self._forward_dates)):
-            forward_dates.append(dc.yearFrac(self.exercise_dates, self._forward_dates[i])[0])
         exercised_bond = BondFixedRate(comb_symbol=self.comb_symbol,
                                              value_date=self.exercise_dates,
                                              issue_date=self.exercise_dates,
@@ -249,8 +253,7 @@ class BondPutableAdjustable(Bond):
                                              interest_rules=self.interest_rules,
                                              par=self.par,
                                              curve_code=self.curve_code)
-        forward_curve = pd.DataFrame(data={'tenor': forward_dates, 'rate': self._forward_rates})
-        exercised_bond.cv.curve_data = forward_curve
+        exercised_bond.cv.set_curve_data(self._forward_curve_data) 
         exercised_bond._clean_price = self.exercise_prices
         
         accruedAmount = 0
@@ -391,14 +394,14 @@ class BondPutableAdjustable(Bond):
             cpnAmounts = []
 
             for flow_date in self._flow_dates[1:]:
-                if self._settlement_date < flow_date < self.exercise_dates:
+                if self._settlement_date < flow_date <= self.exercise_dates:
                     cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
                     cpnAmounts.append(cpn1)
-                if flow_date >= self.exercise_dates:
-                    cpnTime = (flow_date - self.settlement_date) / gDaysInYear
+                if flow_date > self.exercise_dates:
+                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
@@ -408,7 +411,7 @@ class BondPutableAdjustable(Bond):
             cpnAmounts = np.array(cpnAmounts)
 
             pv = 0
-            dfSettle = self.discount_curve_flat.df(self.settlement_date)
+            dfSettle = self.discount_curve_flat.df(self._settlement_date)
             numCoupons = len(cpnTimes)
             for i in range(0, numCoupons):
                 # tcpn = cpnTimes[i]
@@ -440,14 +443,14 @@ class BondPutableAdjustable(Bond):
             cpnAmounts = []
 
             for flow_date in self._flow_dates[1:]:
-                if self._settlement_date < flow_date < self.exercise_dates:
+                if self._settlement_date < flow_date <= self.exercise_dates:
                     cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
                     cpnAmounts.append(cpn1)
-                if flow_date >= self.exercise_dates:
-                    cpnTime = (flow_date - self.settlement_date) / gDaysInYear
+                if flow_date > self.exercise_dates:
+                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
@@ -457,7 +460,7 @@ class BondPutableAdjustable(Bond):
             cpnAmounts = np.array(cpnAmounts)
 
             pv = 0
-            dfSettle = self.discount_curve.df(self.settlement_date)
+            dfSettle = self.discount_curve.df(self._settlement_date)
             numCoupons = len(cpnTimes)
             for i in range(0, numCoupons):
                 # tcpn = cpnTimes[i]
@@ -603,7 +606,7 @@ class BondPutableAdjustable(Bond):
                     cpn_dates.append(cpn_date)
                     cpnAmounts.append(cpn1)
                 if flow_date >= self.exercise_dates:
-                    cpnTime = (flow_date - self.settlement_date) / gDaysInYear
+                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                     cpn_date = flow_date
                     cpnTimes.append(cpnTime)
                     cpn_dates.append(cpn_date)
