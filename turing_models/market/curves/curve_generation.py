@@ -211,6 +211,8 @@ class DomDiscountCurveGen:
             if len(shibor_origin_tenors) >= 5:
                 shibor_origin_tenors = shibor_origin_tenors[:5]
                 shibor_rates = shibor_rates[:5]
+            if shibor_origin_tenors[0] == 'ON':
+                shibor_origin_tenors = ['1D'] + shibor_origin_tenors[1:]
             # 与中金现在的模型代码兼容，故拼成同格式的DataFrame
             shibor_deposit_mkt_data = pd.DataFrame(data=shibor_rates, index=shibor_origin_tenors).T
             shibor_swap_mkt_data = pd.DataFrame(data=shibor_swap_rates, index=shibor_swap_origin_tenors).T
@@ -274,8 +276,9 @@ class FXForwardCurveGen:
             self.fx_forward_curve = TuringDiscountCurve(value_date_turing, future_dates, fwd_dfs)
         elif curve_type == DiscountCurveType.FX_Forword:
             ql.Settings.instance().evaluationDate = value_date_ql
-            # if fx_swap_origin_tenors[0: 3] == ['ON', 'TN', 'SN']:
-            #     fx_swap_origin_tenors[0: 3] = ['1D', '2D', '3D']  # 把'ON', 'TN', 'SN'转换成'1D', '2D', '3D'，ql不支持ON', 'TN', 'SN'
+            if fx_swap_origin_tenors[0: 3] == ['ON', 'TN', 'SN']:
+                # 把'ON', 'TN', 'SN'转换成'1D', '2D', '3D'，ql不支持ON', 'TN', 'SN'
+                fx_swap_origin_tenors = ['1D', '2D', '3D'] + fx_swap_origin_tenors[3:]
             # 与中金现在的模型代码兼容，故拼成同格式的DataFrame
             data_dict = {'Tenor': fx_swap_origin_tenors, 'Spread': fx_swap_quotes}
             fwd_data = pd.DataFrame(data=data_dict)

@@ -10,6 +10,7 @@ from enum import Enum
 
 import numpy as np
 import QuantLib as ql
+import pandas as pd
 
 from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.instruments.common import FX, Currency, CurrencyPair, DiscountCurveType
@@ -110,7 +111,13 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_exchange_rate(self):
         """从接口获取汇率"""
-        return TuringDB.exchange_rate(symbol=self.underlier_symbol, date=self.value_date_)[self.underlier_symbol]
+        date = self.value_date_.datetime()
+        original_data = TuringDB.exchange_rate(symbol=self.underlier_symbol, date=date)
+        if original_data is not None:
+            data = original_data[self.underlier_symbol]
+            return data
+        else:
+            raise TuringError(f"Cannot find exchange rate for {self.underlier_symbol}")
 
     @property
     def exchange_rate(self):
@@ -120,51 +127,87 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_shibor_data(self):
         """从接口获取shibor"""
-        data = TuringDB.shibor_curve(date=self.value_date_, df=False)
-        data['origin_tenor'] = ['1D'] + data['origin_tenor'][1:]
-        return data
+        date = self.value_date_.datetime()
+        original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc[date]
+            return data
+        else:
+            raise TuringError(f"Cannot find shibor data")
 
     @property
     def get_shibor_swap_data(self):
         """从接口获取利率互换曲线"""
-        return TuringDB.irs_curve(curve_type='Shibor3M', date=self.value_date_, df=False)['Shibor3M']
+        date = self.value_date_.datetime()
+        original_data = Turing.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc["Shibor3M"].loc[date]
+            return data
+        else:
+            raise TuringError("Cannot find shibor swap curve data for 'CNY'")
 
     @property
     def get_shibor_swap_fixing_data(self):
+        """参照cicc模型确定数据日期"""
         date1 = '2019-07-05'
         date2 = '2019-07-08'
         date3 = '2019-07-09'
-        rate1 = TuringDB.shibor_curve(date=TuringDate.fromString(date1, '%Y-%m-%d'), df=False)['rate'][4]
-        rate2 = TuringDB.shibor_curve(date=TuringDate.fromString(date2, '%Y-%m-%d'), df=False)['rate'][4]
-        rate3 = TuringDB.shibor_curve(date=TuringDate.fromString(date3, '%Y-%m-%d'), df=False)['rate'][4]
-        fixing_data = {'Date': [date1, date2, date3], 'Fixing': [rate1, rate2, rate3]}
-        return fixing_data
+        original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date1, end=date3)
+        if original_data is not None:
+            rate1 = original_data.loc[datetime.datetime.strptime(date1, '%Y-%m-%d')].loc[4, 'rate']
+            rate2 = original_data.loc[datetime.datetime.strptime(date2, '%Y-%m-%d')].loc[4, 'rate']
+            rate3 = original_data.loc[datetime.datetime.strptime(date3, '%Y-%m-%d')].loc[4, 'rate']
+            fixing_data = {'Date': [date1, date2, date3], 'Fixing': [rate1, rate2, rate3]}
+            return fixing_data
+        else:
+            raise TuringError(f"Cannot find shibor data")
 
     @property
     def get_fx_swap_data(self):
         """获取外汇掉期曲线"""
-        data = TuringDB.fx_swap_curve(symbol=self.underlier_symbol, date=self.value_date_, df=False)[
-            self.underlier_symbol]
-        data['origin_tenor'] = ['1D', '2D', '3D'] + data['origin_tenor'][3:]
-        return data
+        date = self.value_date_.datetime()
+        original_data = TuringDB.get_fx_swap_curve(currency_pair=self.underlier_symbol, start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc[self.underlier_symbol].loc[date]
+            return data
+        else:
+            raise TuringError(f"Cannot find fx swap curve data for {self.underlier_symbol}")
 
     @property
     def get_fx_implied_vol_data(self):
         """获取外汇期权隐含波动率曲线"""
-        return TuringDB.fx_implied_volatility_curve(symbol=self.underlier_symbol,
-                                                    volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
-                                                    date=self.value_date_,
-                                                    df=False)[self.underlier_symbol]
+        date = self.value_date_.datetime()
+        original_data = TuringDB.get_fx_implied_volatility_curve(currency_pair=self.underlier_symbol,
+                                                                 volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
+                                                                 start=date,
+                                                                 end=date)
+        if original_data is not None:
+            tenor = original_data.loc[self.underlier_symbol].loc["ATM"].loc[date]['tenor']
+            origin_tenor = original_data.loc[self.underlier_symbol].loc["ATM"].loc[date]['origin_tenor']
+            atm_vols = original_data.loc[self.underlier_symbol].loc["ATM"].loc[date]['volatility']
+            butterfly_25delta_vols = original_data.loc[self.underlier_symbol].loc["25D BF"].loc[date]['volatility']
+            risk_reversal_25delta_vols = original_data.loc[self.underlier_symbol].loc["25D RR"].loc[date]['volatility']
+            butterfly_10delta_vols = original_data.loc[self.underlier_symbol].loc["10D BF"].loc[date]['volatility']
+            risk_reversal_10delta_vols = original_data.loc[self.underlier_symbol].loc["10D RR"].loc[date]['volatility']
+            return pd.DataFrame(data={'tenor': tenor,
+                                      'origin_tenor': origin_tenor,
+                                      "ATM": atm_vols,
+                                      "25D BF": butterfly_25delta_vols,
+                                      "25D RR": risk_reversal_25delta_vols,
+                                      "10D BF": butterfly_10delta_vols,
+                                      "10D RR": risk_reversal_10delta_vols})
+        else:
+            raise TuringError(f"Cannot find fx implied vol data for {self.underlier_symbol}")
 
     @property
     def domestic_discount_curve(self):
         return DomDiscountCurveGen(value_date=self.value_date_,
-                                   shibor_tenors=self.get_shibor_data['tenor'],
-                                   shibor_origin_tenors=self.get_shibor_data['origin_tenor'],
-                                   shibor_rates=self.get_shibor_data['rate'],
-                                   shibor_swap_tenors=self.get_shibor_swap_data['tenor'],
-                                   shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'],
-                                   shibor_swap_rates=self.get_shibor_swap_data['average'],
+                                   shibor_tenors=self.get_shibor_data['tenor'].tolist(),
+                                   shibor_origin_tenors=self.get_shibor_data['origin_tenor'].tolist(),
+                                   shibor_rates=self.get_shibor_data['rate'].tolist(),
+                                   shibor_swap_tenors=self.get_shibor_swap_data['tenor'].tolist(),
+                                   shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'].tolist(),
+                                   shibor_swap_rates=self.get_shibor_swap_data['average'].tolist(),
                                    shibor_swap_fixing_dates=self.get_shibor_swap_fixing_data['Date'],
                                    shibor_swap_fixing_rates=self.get_shibor_swap_fixing_data['Fixing'],
                                    curve_type=DiscountCurveType.Shibor3M).discount_curve
@@ -173,8 +216,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def fx_forward_curve(self):
         return FXForwardCurveGen(value_date=self.value_date_,
                                  exchange_rate=self.exchange_rate,
-                                 fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'],
-                                 fx_swap_quotes=self.get_fx_swap_data['swap_point']).discount_curve
+                                 fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'].tolist(),
+                                 fx_swap_quotes=self.get_fx_swap_data['swap_point'].tolist()).discount_curve
 
     @property
     def foreign_discount_curve(self):
@@ -192,13 +235,13 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    domestic_discount_curve=self.domestic_discount_curve,
                                    foreign_discount_curve=self.foreign_discount_curve,
                                    fx_forward_curve=self.fx_forward_curve,
-                                   tenors=self.get_fx_implied_vol_data["tenor"],
-                                   origin_tenors=self.get_fx_implied_vol_data["origin_tenor"],
-                                   atm_vols=self.get_fx_implied_vol_data["ATM"],
-                                   butterfly_25delta_vols=self.get_fx_implied_vol_data["25D BF"],
-                                   risk_reversal_25delta_vols=self.get_fx_implied_vol_data["25D RR"],
-                                   butterfly_10delta_vols=self.get_fx_implied_vol_data["10D BF"],
-                                   risk_reversal_10delta_vols=self.get_fx_implied_vol_data["10D RR"],
+                                   tenors=self.get_fx_implied_vol_data["tenor"].tolist(),
+                                   origin_tenors=self.get_fx_implied_vol_data["origin_tenor"].tolist(),
+                                   atm_vols=self.get_fx_implied_vol_data["ATM"].tolist(),
+                                   butterfly_25delta_vols=self.get_fx_implied_vol_data["25D BF"].tolist(),
+                                   risk_reversal_25delta_vols=self.get_fx_implied_vol_data["25D RR"].tolist(),
+                                   butterfly_10delta_vols=self.get_fx_implied_vol_data["10D BF"].tolist(),
+                                   risk_reversal_10delta_vols=self.get_fx_implied_vol_data["10D RR"].tolist(),
                                    volatility_function_type=TuringVolFunctionTypes.QL).volatility_surface
 
     @property
