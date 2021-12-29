@@ -172,7 +172,7 @@ class FXQuantoDigital(FXOption):
 
     @property
     def domestic_discount_curve_f_d(self):
-        return DomDiscountCurveGen(value_date=self.value_date_,
+        return DomDiscountCurveGen(value_date=self._value_date,
                                    libor_swap_origin_tenors=self.get_libor_swap_data['Tenor'],
                                    libor_swap_rates=self.get_libor_swap_data['Rate'],
                                    libor_swap_fixing_dates=self.get_libor_swap_fixing_data['Date'],
@@ -181,14 +181,14 @@ class FXQuantoDigital(FXOption):
 
     @property
     def foreign_discount_curve_f_d(self):
-        return ForDiscountCurveGen(value_date=self.value_date_,
+        return ForDiscountCurveGen(value_date=self._value_date,
                                    domestic_discount_curve=self.domestic_discount_curve_f_d,
                                    fx_forward_curve=self.fx_forward_curve_f_d,
                                    curve_type=DiscountCurveType.FX_Implied).discount_curve
 
     @property
     def domestic_discount_curve_d_q(self):
-        return DomDiscountCurveGen(value_date=self.value_date_,
+        return DomDiscountCurveGen(value_date=self._value_date,
                                    shibor_swap_origin_tenors=self.get_shibor_swap_data['Tenor'],
                                    shibor_swap_rates=self.get_shibor_swap_data['Rate'],
                                    shibor_swap_fixing_dates=self.CNYShibor3M_fixing['Date'],
@@ -197,7 +197,7 @@ class FXQuantoDigital(FXOption):
 
     @property
     def fx_forward_curve_f_d(self):
-        return FXForwardCurveGen(value_date=self.value_date_,
+        return FXForwardCurveGen(value_date=self._value_date,
                                  exchange_rate=self.exchange_rate_f_d,
                                  fx_swap_origin_tenors=self.get_fx_swap_data[self.underlier_symbol]['Tenor'],
                                  fx_swap_quotes=self.get_fx_swap_data[self.underlier_symbol]['Spread'],
@@ -207,7 +207,7 @@ class FXQuantoDigital(FXOption):
 
     @property
     def fx_forward_curve_d_q(self):
-        return FXForwardCurveGen(value_date=self.value_date_,
+        return FXForwardCurveGen(value_date=self._value_date,
                                  exchange_rate=self.exchange_rate_d_q,
                                  fx_swap_origin_tenors=self.get_fx_swap_data[self.d_q_symbol]['Tenor'],
                                  fx_swap_quotes=self.get_fx_swap_data[self.d_q_symbol]['Spread'],
@@ -227,7 +227,7 @@ class FXQuantoDigital(FXOption):
     @property
     def volatility_surface_f_d(self):
         if self.underlier_symbol:
-            return FXVolSurfaceGen(value_date=self.value_date_,
+            return FXVolSurfaceGen(value_date=self._value_date,
                                    currency_pair=self.underlier_symbol,
                                    exchange_rate=self.exchange_rate_f_d,
                                    domestic_discount_curve=self.domestic_discount_curve_f_d,
@@ -248,7 +248,7 @@ class FXQuantoDigital(FXOption):
     @property
     def volatility_surface_d_q(self):
         if self.d_q_symbol:
-            return FXVolSurfaceGen(value_date=self.value_date_,
+            return FXVolSurfaceGen(value_date=self._value_date,
                                    currency_pair=self.d_q_symbol,
                                    exchange_rate=self.exchange_rate_d_q,
                                    domestic_discount_curve=self.domestic_discount_curve_d_q,
