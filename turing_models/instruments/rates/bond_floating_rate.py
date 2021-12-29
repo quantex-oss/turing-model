@@ -31,8 +31,7 @@ class BondFloatingRate(Bond):
 
     @property
     def _next_base_interest_rate(self):
-        # return self.ctx_next_base_interest_rate
-        return 0.03
+        return self.ctx_next_base_interest_rate or 0.03
 
     @property
     def _clean_price(self):

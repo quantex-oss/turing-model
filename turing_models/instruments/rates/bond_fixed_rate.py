@@ -88,15 +88,18 @@ class BondFixedRate(Bond):
         """ 保存票息现金流信息 """
 
         self._flow_amounts = [0.0]
-
-        for _ in self._flow_dates[1:]:
-            if self.pay_interest_mode == CouponType.DISCOUNT:
-                cpn = 0
-            elif self.pay_interest_mode == CouponType.ZERO_COUPON:
-                cpn = self.coupon_rate * self.bond_term_year
-            elif self.pay_interest_mode == CouponType.COUPON_CARRYING:
-                cpn = self.coupon_rate / self.frequency
-            self._flow_amounts.append(cpn)
+        if getattr(self, 'pay_interest_mode', None) and \
+           getattr(self, 'coupon_rate', None) and \
+           getattr(self, 'bond_term_year', None) and \
+           getattr(self, 'frequency', None):
+            for _ in self._flow_dates[1:]:
+                if self.pay_interest_mode == CouponType.DISCOUNT:
+                    cpn = 0
+                elif self.pay_interest_mode == CouponType.ZERO_COUPON:
+                    cpn = self.coupon_rate * self.bond_term_year
+                elif self.pay_interest_mode == CouponType.COUPON_CARRYING:
+                    cpn = self.coupon_rate / self.frequency
+                self._flow_amounts.append(cpn)
 
     def implied_spread(self):
         """ 通过行情价格和隐含利率曲线推算债券的隐含基差"""
