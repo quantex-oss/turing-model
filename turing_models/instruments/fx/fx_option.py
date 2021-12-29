@@ -96,22 +96,19 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             self.cut_off_time = self.expiry
 
     @property
-    def value_date_(self):
+    def _value_date(self):
         """优先考虑通过what-if传出的估值日期"""
         date = self.ctx_pricing_date or self.value_date
-        # 判断期权是否过期
-        # if date > self.expiry:
-        #     raise TuringError('Option expired.')
         return date if date >= self.start_date else self.start_date
 
     @property
     def value_date_ql(self):
-        return ql.Date(self.value_date_._d, self.value_date_._m, self.value_date_._y)
+        return ql.Date(self._value_date._d, self._value_date._m, self._value_date._y)
 
     @property
     def get_exchange_rate(self):
         """从接口获取汇率"""
-        date = self.value_date_.datetime()
+        date = self._value_date.datetime()
         original_data = TuringDB.exchange_rate(symbol=self.underlier_symbol, date=date)
         if original_data is not None:
             data = original_data[self.underlier_symbol]
@@ -127,7 +124,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_shibor_data(self):
         """从接口获取shibor"""
-        date = self.value_date_.datetime()
+        date = self._value_date.datetime()
         original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
         if original_data is not None:
             data = original_data.loc[date]
@@ -138,7 +135,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_shibor_swap_data(self):
         """从接口获取利率互换曲线"""
-        date = self.value_date_.datetime()
+        date = self._value_date.datetime()
         original_data = Turing.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
         if original_data is not None:
             data = original_data.loc["Shibor3M"].loc[date]
@@ -165,7 +162,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_fx_swap_data(self):
         """获取外汇掉期曲线"""
-        date = self.value_date_.datetime()
+        date = self._value_date.datetime()
         original_data = TuringDB.get_fx_swap_curve(currency_pair=self.underlier_symbol, start=date, end=date)
         if original_data is not None:
             data = original_data.loc[self.underlier_symbol].loc[date]
@@ -176,7 +173,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_fx_implied_vol_data(self):
         """获取外汇期权隐含波动率曲线"""
-        date = self.value_date_.datetime()
+        date = self._value_date.datetime()
         original_data = TuringDB.get_fx_implied_volatility_curve(currency_pair=self.underlier_symbol,
                                                                  volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
                                                                  start=date,
@@ -201,7 +198,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def domestic_discount_curve(self):
-        return DomDiscountCurveGen(value_date=self.value_date_,
+        return DomDiscountCurveGen(value_date=self._value_date,
                                    shibor_tenors=self.get_shibor_data['tenor'].tolist(),
                                    shibor_origin_tenors=self.get_shibor_data['origin_tenor'].tolist(),
                                    shibor_rates=self.get_shibor_data['rate'].tolist(),
@@ -214,14 +211,14 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def fx_forward_curve(self):
-        return FXForwardCurveGen(value_date=self.value_date_,
+        return FXForwardCurveGen(value_date=self._value_date,
                                  exchange_rate=self.exchange_rate,
                                  fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'].tolist(),
                                  fx_swap_quotes=self.get_fx_swap_data['swap_point'].tolist()).discount_curve
 
     @property
     def foreign_discount_curve(self):
-        return ForDiscountCurveGen(value_date=self.value_date_,
+        return ForDiscountCurveGen(value_date=self._value_date,
                                    domestic_discount_curve=self.domestic_discount_curve,
                                    fx_forward_curve=self.fx_forward_curve,
                                    curve_type=DiscountCurveType.FX_Implied).discount_curve
@@ -229,7 +226,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def volatility_surface(self):
         if self.underlier_symbol:
-            return FXVolSurfaceGen(value_date=self.value_date_,
+            return FXVolSurfaceGen(value_date=self._value_date,
                                    currency_pair=self.underlier_symbol,
                                    exchange_rate=self.exchange_rate,
                                    domestic_discount_curve=self.domestic_discount_curve,
