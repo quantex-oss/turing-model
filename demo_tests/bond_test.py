@@ -1,117 +1,148 @@
-from fundamental.pricing_context import CurveScenario
-from fundamental.portfolio.portfolio import Portfolio
-from fundamental.portfolio.position import Position
-
-from turing_models.utilities.turing_date import TuringDate
-from turing_models.utilities.day_count import DayCountType
-from turing_models.utilities.frequency import FrequencyType
+from fundamental import PricingContext
+from turing_models.instruments.common import RiskMeasure
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
-from turing_models.instruments.common import RiskMeasure, YieldCurveCode
+from turing_models.instruments.rates.bond_floating_rate import BondFloatingRate
+from turing_models.instruments.rates.bond_adv_redemption import BondAdvRedemption
+from turing_models.instruments.rates.bond_putable_adjustable import BondPutableAdjustable
 
-from loguru import logger
-import sys
-logger.remove()
-logger.add(sys.stderr, level="ERROR")
+print("==============固息债示例==============")
+bond_fixed_rate = BondFixedRate(
+    comb_symbol="200004.IB"
+)
+bond_fixed_rate.resolve()
+print(bond_fixed_rate)
+full_price = bond_fixed_rate.calc(RiskMeasure.FullPrice)
+clean_price = bond_fixed_rate.calc(RiskMeasure.CleanPrice)
+ytm = bond_fixed_rate.calc(RiskMeasure.YTM)
+dv01 = bond_fixed_rate.calc(RiskMeasure.Dv01)
+modified_duration = bond_fixed_rate.calc(RiskMeasure.ModifiedDuration)
+dollar_convexity = bond_fixed_rate.calc(RiskMeasure.DollarConvexity)
+time_to_maturity = bond_fixed_rate.calc(RiskMeasure.TimeToMaturity)
 
-# pricing_date = TuringDate(2021, 11, 24)
+print('full price', full_price)
+print('clean_price', clean_price)
+print('ytm', ytm)
+print('dv01:', dv01)
+print('modified_duration:', modified_duration)
+print('dollar_convexity:', dollar_convexity)
+print('time_to_maturity:', time_to_maturity)
 
-# 1. 获取组合持仓
-portfolio = Portfolio(portfolio_name="Rates")
-portfolio.calc(
-    [
-        RiskMeasure.FullPrice,
-        RiskMeasure.CleanPrice,
-        RiskMeasure.YTM,
-        RiskMeasure.Dv01,
-        RiskMeasure.DollarDuration,
-        RiskMeasure.DollarConvexity
+print("==============浮息债示例==============")
+bond_floating_rate = BondFloatingRate(
+    comb_symbol="200217.IB"
+)
+bond_floating_rate.resolve()
+full_price = bond_floating_rate.calc(RiskMeasure.FullPrice)
+clean_price = bond_floating_rate.calc(RiskMeasure.CleanPrice)
+dv01 = bond_floating_rate.calc(RiskMeasure.Dv01)
+modified_duration = bond_floating_rate.calc(RiskMeasure.ModifiedDuration)
+dollar_convexity = bond_floating_rate.calc(RiskMeasure.DollarConvexity)
+time_to_maturity = bond_floating_rate.calc(RiskMeasure.TimeToMaturity)
 
-    ])
+print('full price', full_price)
+print('clean_price', clean_price)
+print('dv01:', dv01)
+print('modified_duration:', modified_duration)
+print('dollar_convexity:', dollar_convexity)
+print('time_to_maturity:', time_to_maturity)
 
-print("---------------------------------------------")
-print("原始持仓和风险")
-portfolio.show_table()
+print("==============固息债（含提前偿还条款）==============")
+bond_adv_redemption = BondAdvRedemption(
+    comb_symbol="2180432.IB"
+)
+bond_adv_redemption.resolve()
+full_price = bond_adv_redemption.calc(RiskMeasure.FullPrice)
+clean_price = bond_adv_redemption.calc(RiskMeasure.CleanPrice)
+ytm = bond_adv_redemption.calc(RiskMeasure.YTM)
+dv01 = bond_adv_redemption.calc(RiskMeasure.Dv01)
+modified_duration = bond_adv_redemption.calc(RiskMeasure.ModifiedDuration)
+dollar_convexity = bond_adv_redemption.calc(RiskMeasure.DollarConvexity)
+time_to_maturity = bond_adv_redemption.calc(RiskMeasure.TimeToMaturity)
 
+print('full price', full_price)
+print('clean_price', clean_price)
+print('ytm:', ytm)
+print('dv01:', dv01)
+print('modified_duration:', modified_duration)
+print('dollar_convexity:', dollar_convexity)
+print('time_to_maturity:', time_to_maturity)
 
-# 2. What-If 新增固息债持仓
-curve_chinabond = YieldCurveCode.CBD100222
-bond_fr = BondFixedRate(comb_symbol="210001",
-                        coupon=0.04,
-                        curve_code=curve_chinabond,
-                        issue_date=TuringDate(2015, 11, 13),
-                        # due_date=TuringDate(2025, 11, 14),
-                        # bond_term_year=10,
-                        freq_type=FrequencyType.SEMI_ANNUAL,
-                        accrual_type=DayCountType.ACT_365L,
-                        par=100)
+print("==============固息债（回售+调整票面利率）==============")
+bond_putable_adjustable = BondPutableAdjustable(
+    comb_symbol="1880106.IB"
+)
+bond_putable_adjustable.resolve()
+print('full price', bond_putable_adjustable.full_price())
+print('clean_price', bond_putable_adjustable.calc(RiskMeasure.CleanPrice))
+print('ytm:', bond_putable_adjustable.calc(RiskMeasure.YTM))
+print('dv01:', bond_putable_adjustable.calc(RiskMeasure.Dv01))
+print('modified_duration:', bond_putable_adjustable.calc(RiskMeasure.ModifiedDuration))
+print('dollar_convexity:', bond_putable_adjustable.calc(RiskMeasure.DollarConvexity))
+print('time_to_maturity:', bond_putable_adjustable.calc(RiskMeasure.TimeToMaturity))
 
-price_1 = bond_fr.calc(RiskMeasure.FullPrice)
-clean_price_1 = bond_fr.calc(RiskMeasure.CleanPrice)
-ytm_1 = bond_fr.calc(RiskMeasure.YTM)
-dv01_1 = bond_fr.calc(RiskMeasure.Dv01)
-modified_duration_1 = bond_fr.calc(RiskMeasure.ModifiedDuration)
-dollar_convexity_1 = bond_fr.calc(RiskMeasure.DollarConvexity)
-
-print("---------------------------------------------")
-print("Fixed Rate Bond to be added:")
-print('price', price_1)
-print('clean_price', clean_price_1)
-print('ytm', ytm_1)
-print('dv01:', dv01_1)
-print('modified_duration:', modified_duration_1)
-print('dollar_convexity:', dollar_convexity_1)
-print("---------------------------------------------")
-
-posiiton = Position(tradable=bond_fr, quantity=100000.0)
-portfolio.add(posiiton)
-portfolio.calc(
-    [
-        RiskMeasure.FullPrice,
-        RiskMeasure.CleanPrice,
-        RiskMeasure.YTM,
-        RiskMeasure.Dv01,
-        RiskMeasure.DollarDuration,
-        RiskMeasure.DollarConvexity
-
-    ])
-print("---------------------------------------------")
-print("新增债券后新持仓和风险")
-portfolio.show_table()
-
-# 3. What-If 调整曲线：1. 平移100bps；2. 以2年为中点，1.655年到40年的曲线区间，向上旋转100bps
-
-# CurveScenario参数含义：
-# parallel_shift：曲线整体平移，单位bp，正值表示向上平移，负值相反
-# curve_shift：曲线旋转，单位bp，表示曲线左端和右端分别绕pivot_point旋转的绝对值之和，正值表示右侧向上旋转，负值相反
-# pivot_point：旋转中心，单位是年，若不传该参数，表示旋转中心是曲线的第一个时间点
-# tenor_start：旋转起始点，单位是年，若不传该参数，表示从曲线的第一个时间点开始旋转
-# tenor_end：旋转结束点，单位是年，若不传该参数，表示从曲线的最后一个时间点结束旋转
-# pivot_point、tenor_start和tenor_end的范围为[原曲线的第一个时间点，原曲线的最后一个时间点]
-curve_aaabond = YieldCurveCode.CBD100252
-curve_scenario = CurveScenario(
-    parallel_shift=[{"curve_code": curve_chinabond, "value": 100},
-                    {"curve_code": curve_aaabond, "value": 100}],
-    curve_shift=[{"curve_code": curve_chinabond, "value": 100},
-                 {"curve_code": curve_aaabond, "value": 100}],
-    pivot_point=[{"curve_code": curve_chinabond, "value": 2},
-                 {"curve_code": curve_aaabond, "value": 2}],
-    tenor_start=[{"curve_code": curve_chinabond, "value": 1.655},
-                 {"curve_code": curve_aaabond, "value": 1.655}],
-    tenor_end=[{"curve_code": curve_chinabond, "value": 40},
-               {"curve_code": curve_aaabond, "value": 40}])
-
-with curve_scenario:
-    portfolio.calc(
-        [
-            RiskMeasure.FullPrice,
-            RiskMeasure.CleanPrice,
-            RiskMeasure.YTM,
-            RiskMeasure.Dv01,
-            RiskMeasure.DollarDuration,
-            RiskMeasure.DollarConvexity
-
-        ])
-
-    print("---------------------------------------------")
-    print("新增债券且利率曲线修正后持仓和风险")
-    portfolio.show_table()
+scenario_extreme = PricingContext(yield_curve=[{
+    "curve_code": "CBD100541",                             # 比如和债券的曲线编码对应
+    "type": "forward_spot_rate",
+    "forward_term": bond_putable_adjustable.forward_term,  # 必须显式传入匹配的forward_term
+    "value": [
+        {
+            "tenor": 0.25,
+            "origin_tenor": "3M",
+            "rate": 0.02489
+        },
+        {
+            "tenor": 0.5,
+            "origin_tenor": "6M",
+            "rate": 0.02522
+        },
+        {
+            "tenor": 0.75,
+            "origin_tenor": "9M",
+            "rate": 0.02558
+        },
+        {
+            "tenor": 1.0,
+            "origin_tenor": "12M",
+            "rate": 0.02592
+        },
+        {
+            "tenor": 2.0,
+            "origin_tenor": "2Y",
+            "rate": 0.02748
+        },
+        {
+            "tenor": 3.0,
+            "origin_tenor": "3Y",
+            "rate": 0.02907
+        },
+        {
+            "tenor": 4.0,
+            "origin_tenor": "4Y",
+            "rate": 0.03070
+        },
+        {
+            "tenor": 5.0,
+            "origin_tenor": "5Y",
+            "rate": 0.03154
+        },
+        {
+            "tenor": 7.0,
+            "origin_tenor": "7Y",
+            "rate": 0.03326
+        },
+        {
+            "tenor": 10.0,
+            "origin_tenor": "10Y",
+            "rate": 0.03537
+        }
+    ]
+}])
+with scenario_extreme:
+    print("修改远期的即期收益率曲线后")
+    print(bond_putable_adjustable.forward_cv.curve_data)
+    print('price', bond_putable_adjustable.calc(RiskMeasure.FullPrice))
+    print('clean_price', bond_putable_adjustable.calc(RiskMeasure.CleanPrice))
+    print('dv01:', bond_putable_adjustable.calc(RiskMeasure.Dv01))
+    print('ytm:', bond_putable_adjustable.calc(RiskMeasure.YTM))
+    print('modified_duration:', bond_putable_adjustable.calc(RiskMeasure.ModifiedDuration))
+    print('dollar_convexity:', bond_putable_adjustable.calc(RiskMeasure.DollarConvexity))

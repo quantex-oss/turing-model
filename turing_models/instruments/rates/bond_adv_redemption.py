@@ -347,6 +347,7 @@ class BondAdvRedemption(Bond):
             prepayment_terms = PrepaymentTerms(data=ecnomic_terms.get('prepayment_terms'))
             ecnomic_terms = EcnomicTerms(prepayment_terms)
             setattr(self, 'ecnomic_terms', ecnomic_terms)
+        self.__post_init__()
 
     def __repr__(self):
         s = super().__repr__()

@@ -231,4 +231,71 @@ print('modified_duration:', bond_putable_adjustable.calc(RiskMeasure.ModifiedDur
 print('dollar_convexity:', bond_putable_adjustable.calc(RiskMeasure.DollarConvexity))
 print('time_to_maturity:', bond_putable_adjustable.calc(RiskMeasure.TimeToMaturity))
 
+scenario_extreme = PricingContext(yield_curve=[{
+    "curve_code": "CBD100032",
+    "type": "forward_spot_rate",
+    "forward_term": bond_putable_adjustable.forward_term,  # 必须显式传入匹配的forward_term
+    "value": [
+        {
+            "tenor": 0.25,
+            "origin_tenor": "3M",
+            "rate": 0.02489
+        },
+        {
+            "tenor": 0.5,
+            "origin_tenor": "6M",
+            "rate": 0.02522
+        },
+        {
+            "tenor": 0.75,
+            "origin_tenor": "9M",
+            "rate": 0.02558
+        },
+        {
+            "tenor": 1.0,
+            "origin_tenor": "12M",
+            "rate": 0.02592
+        },
+        {
+            "tenor": 2.0,
+            "origin_tenor": "2Y",
+            "rate": 0.02748
+        },
+        {
+            "tenor": 3.0,
+            "origin_tenor": "3Y",
+            "rate": 0.02907
+        },
+        {
+            "tenor": 4.0,
+            "origin_tenor": "4Y",
+            "rate": 0.03070
+        },
+        {
+            "tenor": 5.0,
+            "origin_tenor": "5Y",
+            "rate": 0.03154
+        },
+        {
+            "tenor": 7.0,
+            "origin_tenor": "7Y",
+            "rate": 0.03326
+        },
+        {
+            "tenor": 10.0,
+            "origin_tenor": "10Y",
+            "rate": 0.03537
+        }
+    ]
+}])
+with scenario_extreme:
+    print("修改远期的即期收益率曲线后")
+    print(bond_putable_adjustable.full_price())
+    # print('price', bond_putable_adjustable.calc(RiskMeasure.FullPrice))
+    print(bond_putable_adjustable.forward_cv.curve_data)
+    print('clean_price', bond_putable_adjustable.calc(RiskMeasure.CleanPrice))
+    print('dv01:', bond_putable_adjustable.calc(RiskMeasure.Dv01))
+    print('ytm:', bond_putable_adjustable.calc(RiskMeasure.YTM))
+    print('modified_duration:', bond_putable_adjustable.calc(RiskMeasure.ModifiedDuration))
+    print('dollar_convexity:', bond_putable_adjustable.calc(RiskMeasure.DollarConvexity))
 

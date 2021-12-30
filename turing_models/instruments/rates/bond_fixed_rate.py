@@ -381,6 +381,10 @@ class BondFixedRate(Bond):
 
         return self._accrued_interest
 
+    def _resolve(self):
+        super()._resolve()
+        self.__post_init__()
+
     def __repr__(self):
         s = super().__repr__()
         return s

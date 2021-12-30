@@ -2,17 +2,13 @@ import datetime
 
 import pandas as pd
 
-from fundamental.pricing_context import PricingContext 
+from fundamental.pricing_context import PricingContext, CurveScenario
 from turing_models.instruments.common import RiskMeasure
 from turing_models.instruments.rates.bond_adv_redemption import \
-    BondAdvRedemption
+     BondAdvRedemption
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.instruments.rates.bond_floating_rate import BondFloatingRate
 from turing_models.market.data.china_money_yield_curve import dates, rates
-from turing_models.utilities.bond_terms import (EcnomicTerms,
-                                                FloatingRateTerms,
-                                                PrepaymentTerms)
-from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.rates.bond_putable_adjustable import BondPutableAdjustable
 from turing_models.utilities.bond_terms import FloatingRateTerms, EcnomicTerms, PrepaymentTerms, EmbeddedPutableOptions, \
     EmbeddedRateAdjustmentOptions
@@ -42,15 +38,13 @@ bond_fixed_rate = BondFixedRate(
     pay_interest_cycle="SEMI_ANNUAL",
     interest_rules="ACT/ACT",
     pay_interest_mode="COUPON_CARRYING",
-    # curve_code="CBD100252"
+    curve_code="CBD100311"
 )
 
-curve_data = pd.DataFrame(data={'tenor': dates, 'rate': rates})
-bond_fixed_rate.cv.curve_data = curve_data
-
 scenario_extreme = PricingContext(clean_price=[{"comb_symbol": "200004.IB", "value": 99.1455}],
-                                  pricing_date=TuringDate(2021, 12, 28))
+                                  pricing_date=datetime.datetime(2021, 12, 27))
 with scenario_extreme:
+    print(bond_fixed_rate._market_clean_price)
     full_price = bond_fixed_rate.calc(RiskMeasure.FullPrice)
     clean_price = bond_fixed_rate.calc(RiskMeasure.CleanPrice)
     ytm = bond_fixed_rate.calc(RiskMeasure.YTM)
@@ -98,12 +92,12 @@ bond_floating_rate = BondFloatingRate(
     pay_interest_cycle="QUARTERLY",
     interest_rules="ACT/ACT",
     pay_interest_mode="COUPON_CARRYING",
-    # curve_code="CBD100252",
+    curve_code="CBD100332",
     ecnomic_terms=ecnomic_terms
 )
 
 scenario_extreme = PricingContext(clean_price=[{"comb_symbol": "200217.IB", "value": 100.1974}],
-                                  pricing_date=TuringDate(2021, 12, 28))
+                                  pricing_date=datetime.datetime(2021, 12, 27))
 with scenario_extreme:
 
     full_price = bond_floating_rate.calc(RiskMeasure.FullPrice)
@@ -151,7 +145,7 @@ prepayment_terms = PrepaymentTerms(data=data)
 ecnomic_terms = EcnomicTerms(prepayment_terms)
 
 bond_adv_redemption = BondAdvRedemption(
-    asset_id="SEC022533308",
+    asset_id="SEC045926019",
     wind_id="",
     bbg_id="",
     cusip="",
@@ -174,7 +168,7 @@ bond_adv_redemption = BondAdvRedemption(
     pay_interest_cycle="ANNUAL",
     interest_rules="ACT/365F",
     pay_interest_mode="COUPON_CARRYING",
-    # curve_code="CBD100252",
+    curve_code="CBD100461",
     ecnomic_terms=ecnomic_terms
 )
 
@@ -182,7 +176,7 @@ curve_data = pd.DataFrame(data={'tenor': dates, 'rate': rates})
 bond_adv_redemption.cv.curve_data = curve_data
 
 scenario_extreme = PricingContext(clean_price=[{"comb_symbol": "2180432.IB", "value": 101.0978}],
-                                  pricing_date=TuringDate(2021,12,28))
+                                  pricing_date=datetime.datetime(2021, 12, 27))
 with scenario_extreme:
     full_price = bond_adv_redemption.calc(RiskMeasure.FullPrice)
     clean_price = bond_adv_redemption.calc(RiskMeasure.CleanPrice)
@@ -245,14 +239,10 @@ bond_putable_adjustable = BondPutableAdjustable(
     pay_interest_cycle="ANNUAL",
     interest_rules="ACT/ACT",
     pay_interest_mode="COUPON_CARRYING",
-    # curve_code="CBD100252",
+    curve_code="CBD100541",
     ecnomic_terms=ecnomic_terms,
-    value_date=datetime.datetime(2021, 12, 28)
+    value_date=datetime.datetime(2021, 12, 27)
 )
-
-curve_data = pd.DataFrame(data={'tenor': dates, 'rate': rates})
-bond_putable_adjustable.cv.curve_data = curve_data
-
 
 print("==========")
 print(bond_putable_adjustable.recommend_dir)

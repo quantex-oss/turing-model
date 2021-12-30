@@ -681,6 +681,7 @@ class BondPutableAdjustable(Bond):
                 embedded_rate_adjustment_options
             )
             setattr(self, 'ecnomic_terms', ecnomic_terms)
+        self.__post_init__()
 
     def __repr__(self):
         s = super().__repr__()

@@ -23,7 +23,7 @@ class BondFloatingRate(Bond):
                 self.floating_rate_benchmark = floating_rate_terms.floating_rate_benchmark
                 self.floating_spread = floating_rate_terms.floating_spread
                 self.floating_adjust_mode = floating_rate_terms.floating_adjust_mode
-                self.base_interest_rate = floating_rate_terms.base_interest_rate
+                self.base_interest_rate = floating_rate_terms.base_interest_rate or 0.03
         if not self.dm and getattr(self, 'floating_spread', None):
             self.dm = self.floating_spread
         if self.dm and self.dm > 10.0:
@@ -289,6 +289,7 @@ class BondFloatingRate(Bond):
             floating_rate_terms = FloatingRateTerms(**floating_rate_terms)
             ecnomic_terms = EcnomicTerms(floating_rate_terms)
             setattr(self, 'ecnomic_terms', ecnomic_terms)
+        self.__post_init__()
 
     def __repr__(self):
         s = super().__repr__()

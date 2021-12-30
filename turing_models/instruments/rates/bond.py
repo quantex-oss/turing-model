@@ -13,7 +13,7 @@ from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, FrequencyType
 from turing_models.utilities.global_types import TuringYTMCalcType, CouponType
-from turing_models.utilities.helper_functions import to_string, datetime_to_turingdate
+from turing_models.utilities.helper_functions import datetime_to_turingdate
 from turing_models.utilities.schedule import TuringSchedule
 
 dy = 0.0001
@@ -213,7 +213,6 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         if self.curve_code is not None and self.curve_name is None:
             curve_name = getattr(CurveCode, self.curve_code, '')
             setattr(self, 'curve_name', curve_name)
-        self.__post_init__()
 
     def __repr__(self):
         separator: str = "\n"

@@ -88,7 +88,7 @@ class PrepaymentTerms(EcnomicTerm):
         else:
             self.data = data
         # 确保存储的数据中的时间均为datetime.datetime格式
-        data['pay_date'] = data.apply(func=convert_date('pay_date'), axis=1)
+        self.data['pay_date'] = self.data.apply(func=convert_date('pay_date'), axis=1)
         self.name = "提前还款条款"
 
     def __repr__(self):
@@ -130,7 +130,7 @@ class EmbeddedPutableOptions(EcnomicTerm):
         else:
             self.data = data
         # 确保存储的数据中的时间均为datetime.datetime格式
-        data['exercise_date'] = data.apply(func=convert_date('exercise_date'), axis=1)
+        self.data['exercise_date'] = self.data.apply(func=convert_date('exercise_date'), axis=1)
         self.name = "可回售条款"
 
     def __repr__(self):
@@ -176,7 +176,7 @@ class EmbeddedRateAdjustmentOptions(EcnomicTerm):
         else:
             self.data = data
         # 确保存储的数据中的时间均为datetime.datetime格式
-        data['exercise_date'] = data.apply(func=convert_date('exercise_date'), axis=1)
+        self.data['exercise_date'] = self.data.apply(func=convert_date('exercise_date'), axis=1)
         self.name = "票面利率调整条款"
 
     def __repr__(self):
