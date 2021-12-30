@@ -43,17 +43,21 @@ class BondPutableAdjustable(Bond):
         if kwargs.get("value_date") is None:
             kwargs['value_date'] = datetime.date.today()
         ecnomic_terms = kwargs.get("ecnomic_terms")
+        if not ecnomic_terms:
+            return super().__new__(cls)
         if ecnomic_terms is not None:
             embedded_putable_options = ecnomic_terms.get_instance(EmbeddedPutableOptions)
             if embedded_putable_options is not None:
                 exercise_dates = datetime_to_turingdate(embedded_putable_options.data['exercise_date'].tolist())
                 value_date = datetime_to_turingdate(kwargs["value_date"])
+
                 if exercise_dates[-1] > value_date:
                     return super().__new__(cls)
                 else:
                     del kwargs['ecnomic_terms']
                     fixed_rete_bond = BondFixedRate(**kwargs)
                     return fixed_rete_bond
+
 
     def __post_init__(self):
         super().__post_init__()
@@ -72,19 +76,19 @@ class BondPutableAdjustable(Bond):
                 self.high_rate_adjust = embedded_rate_adjustment_options_data['high_rate_adjust'].tolist()
                 self.low_rate_adjust = embedded_rate_adjustment_options_data['low_rate_adjust'].tolist()
                 
-        for i in range(len(self.exercise_dates)):
-            if self.exercise_dates[i] > self._settlement_date:
-                self.exercise_dates = self.exercise_dates[i]
-                self.exercise_prices = self.exercise_prices[i]
-                if len(self.high_rate_adjust) > 0:
-                    self.high_rate_adjust = self.high_rate_adjust[i]
-                else:
-                    self.high_rate_adjust = None
-                if len(self.low_rate_adjust) > 0:
-                    self.low_rate_adjust = self.low_rate_adjust[i]
-                else:
-                    self.low_rate_adjust = None
-                break
+            for i in range(len(self.exercise_dates)):
+                if self.exercise_dates[i] > self._settlement_date:
+                    self.exercise_dates = self.exercise_dates[i]
+                    self.exercise_prices = self.exercise_prices[i]
+                    if len(self.high_rate_adjust) > 0:
+                        self.high_rate_adjust = self.high_rate_adjust[i]
+                    else:
+                        self.high_rate_adjust = None
+                    if len(self.low_rate_adjust) > 0:
+                        self.low_rate_adjust = self.low_rate_adjust[i]
+                    else:
+                        self.low_rate_adjust = None
+                    break
         
         if self.issue_date and self.due_date:
             dc = TuringDayCount(DayCountType.ACT_365F)
@@ -94,7 +98,7 @@ class BondPutableAdjustable(Bond):
                                     curve_type='forward_spot_rate',
                                     forward_term=forward_term)
 
-        if self.value_sys == "中债":
+        if self.value_sys == "中债" and getattr(self, 'high_rate_adjust', None):
             if self.high_rate_adjust is not None:
                 self._bound_up = self.coupon_rate + self.high_rate_adjust
             else:

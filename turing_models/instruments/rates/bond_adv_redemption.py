@@ -34,11 +34,11 @@ class BondAdvRedemption(Bond):
                 for i in range(len(self.pay_dates)):
                     self.pay_dates[i] = cal.adjust(self.pay_dates[i],TuringBusDayAdjustTypes.MODIFIED_FOLLOWING) 
                 self.pay_rates = prepayment_terms_data['pay_rate'].tolist()
-        if len(self.pay_dates) != len(self.pay_rates):
-            raise TuringError("redemption terms should match redemption percents.")
-        if round(sum(self.pay_rates), 10)!= 1:  #防止因为数据精度问题导致求和不为1
-            raise TuringError("total redemption doesn't equal to 1.")
-        self._calculate_rdp_pcp()
+                if len(self.pay_dates) != len(self.pay_rates):
+                    raise TuringError("redemption terms should match redemption percents.")
+                if round(sum(self.pay_rates), 10)!= 1:  #防止因为数据精度问题导致求和不为1
+                    raise TuringError("total redemption doesn't equal to 1.")
+                self._calculate_rdp_pcp()
         if self.coupon_rate:
             self._calculate_flow_amounts()
             

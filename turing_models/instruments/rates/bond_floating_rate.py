@@ -24,7 +24,7 @@ class BondFloatingRate(Bond):
                 self.floating_spread = floating_rate_terms.floating_spread
                 self.floating_adjust_mode = floating_rate_terms.floating_adjust_mode
                 self.base_interest_rate = floating_rate_terms.base_interest_rate
-        if not self.dm and self.floating_spread:
+        if not self.dm and getattr(self, 'floating_spread', None):
             self.dm = self.floating_spread
         if self.dm and self.dm > 10.0:
             raise TuringError("Discount margin exceeds 100000bp")
