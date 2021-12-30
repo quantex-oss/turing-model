@@ -143,13 +143,15 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         return self.settlement_date
 
     def _curve_resolve(self):
-        if self.ctx_pricing_date:
-            self.cv.set_value_date(self._settlement_date)
-            self.cv.resolve()
+        # 为了实时响应what-if调整pricing date
+        self.cv.set_value_date(self._settlement_date)
+        # 查询用户是否通过what-if传入self.curve_code对应的即期收益率曲线数据
         ctx_yield_curve = self.ctx_yield_curve(curve_type='spot_rate')
         if ctx_yield_curve is not None:
             self.cv.set_curve_data(ctx_yield_curve)
+        else:
             self.cv.resolve()
+        # 检测用户是否对self.curve_code所对应的收益率曲线做变换  TODO: 考虑是否需要区分即期、到期和远期，目前未区分
         self._curve_adjust()
 
     def _curve_adjust(self):

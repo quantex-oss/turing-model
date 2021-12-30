@@ -34,13 +34,14 @@ class BondAdvRedemption(Bond):
                 for i in range(len(self.pay_dates)):
                     self.pay_dates[i] = cal.adjust(self.pay_dates[i],TuringBusDayAdjustTypes.MODIFIED_FOLLOWING) 
                 self.pay_rates = prepayment_terms_data['pay_rate'].tolist()
-        if len(self.pay_dates) != len(self.pay_rates):
-            raise TuringError("redemption terms should match redemption percents.")
-        if round(sum(self.pay_rates), 10)!= 1:  #防止因为数据精度问题导致求和不为1
-            raise TuringError("total redemption doesn't equal to 1.")
-        self._calculate_rdp_pcp()
-        if self.coupon_rate:
-            self._calculate_flow_amounts()
+            if len(self.pay_dates) != len(self.pay_rates):
+                raise TuringError("redemption terms should match redemption percents.")
+            if round(sum(self.pay_rates), 10) != 1:  # 防止因为数据精度问题导致求和不为1
+                raise TuringError("total redemption doesn't equal to 1.")
+            if self.issue_date:
+                self._calculate_rdp_pcp()
+            if self.coupon_rate:
+                self._calculate_flow_amounts()
             
     @property
     def _ytm(self):
@@ -71,14 +72,14 @@ class BondAdvRedemption(Bond):
             self.remaining_principal.append(self.remaining_principal[i] - self.pay_rates[i])
         
     @property
-    def discount_curve(self):
+    def _discount_curve(self):
         if self.__discount_curve:
             return self.__discount_curve
         self._curve_resolve()
         return self.cv.discount_curve()
     
-    @discount_curve.setter
-    def discount_curve(self, value: TuringDiscountCurve):
+    @_discount_curve.setter
+    def _discount_curve(self, value: TuringDiscountCurve):
         self.__discount_curve = value
 
     @property
@@ -99,7 +100,6 @@ class BondAdvRedemption(Bond):
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
         return greek(self, self.full_price_from_ytm, "_ytm", dy) * -dy
-
 
     def macauley_duration(self):
         """ 麦考利久期 """
@@ -139,9 +139,9 @@ class BondAdvRedemption(Bond):
         px += df * last_pcp * self.par * dates
         px = px / df_settle
 
-        self.discount_curve = discount_curve_flat
+        self._discount_curve = discount_curve_flat
         fp = self.full_price_from_discount_curve()
-        self.discount_curve = None
+        self._discount_curve = None
 
         dmac = px / fp
 
@@ -218,7 +218,7 @@ class BondAdvRedemption(Bond):
 
         px = 0.0
         df = 1.0
-        df_settle = self.discount_curve.df(self._settlement_date)
+        df_settle = self._discount_curve.df(self._settlement_date)
         for rdp in range(len(self.pay_dates)):
             if self._settlement_date < self.pay_dates[rdp]:
                 break
@@ -229,7 +229,7 @@ class BondAdvRedemption(Bond):
         for dt in self._flow_dates[1:]:
 
             if dt >= self._settlement_date:  # 将结算日的票息加入计算
-                df = self.discount_curve.df(dt)
+                df = self._discount_curve.df(dt)
                 if dt < next_rdp:
                     flow = self.coupon_rate / self.frequency * last_pcp
                     pv = flow * df
@@ -339,6 +339,15 @@ class BondAdvRedemption(Bond):
         self._accrued_days = num
 
         return self._accrued_interest
+
+    def _resolve(self):
+        super()._resolve()
+        # 对ecnomic_terms属性做单独处理
+        ecnomic_terms = getattr(self, 'ecnomic_terms', None)
+        if ecnomic_terms is not None and isinstance(ecnomic_terms, dict):
+            prepayment_terms = PrepaymentTerms(data=ecnomic_terms.get('prepayment_terms'))
+            ecnomic_terms = EcnomicTerms(prepayment_terms)
+            setattr(self, 'ecnomic_terms', ecnomic_terms)
 
     def __repr__(self):
         s = super().__repr__()

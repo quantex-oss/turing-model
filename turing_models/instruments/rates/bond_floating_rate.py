@@ -31,7 +31,7 @@ class BondFloatingRate(Bond):
 
     @property
     def _next_base_interest_rate(self):
-        return self.ctx_next_base_interest_rate or 0.03
+        return self.ctx_next_base_interest_rate or 0.03  # TODO: 等接口数据处理好，接上接口
 
     @property
     def _clean_price(self):
@@ -279,6 +279,16 @@ class BondFloatingRate(Bond):
         self._accrued_interest = acc_factor * self.par * self.coupon_rate
         self._accrued_days = num
         return self._accrued_interest
+
+    def _resolve(self):
+        super()._resolve()
+        # 对ecnomic_terms属性做单独处理
+        ecnomic_terms = getattr(self, 'ecnomic_terms', None)
+        if ecnomic_terms is not None and isinstance(ecnomic_terms, dict):
+            floating_rate_terms = ecnomic_terms.get('floating_rate_terms')
+            floating_rate_terms = FloatingRateTerms(**floating_rate_terms)
+            ecnomic_terms = EcnomicTerms(floating_rate_terms)
+            setattr(self, 'ecnomic_terms', ecnomic_terms)
 
     def __repr__(self):
         s = super().__repr__()

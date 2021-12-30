@@ -3,6 +3,7 @@ from typing import Union
 import pandas as pd
 
 from turing_models.utilities.error import TuringError
+from turing_models.utilities.helper_functions import convert_date
 
 
 class EcnomicTerms:
@@ -86,6 +87,8 @@ class PrepaymentTerms(EcnomicTerm):
             self.data = pd.DataFrame(data=data)
         else:
             self.data = data
+        # 确保存储的数据中的时间均为datetime.datetime格式
+        data['pay_date'] = data.apply(func=convert_date('pay_date'), axis=1)
         self.name = "提前还款条款"
 
     def __repr__(self):
@@ -126,6 +129,8 @@ class EmbeddedPutableOptions(EcnomicTerm):
             self.data = pd.DataFrame(data=data)
         else:
             self.data = data
+        # 确保存储的数据中的时间均为datetime.datetime格式
+        data['exercise_date'] = data.apply(func=convert_date('exercise_date'), axis=1)
         self.name = "可回售条款"
 
     def __repr__(self):
@@ -170,6 +175,8 @@ class EmbeddedRateAdjustmentOptions(EcnomicTerm):
             self.data = pd.DataFrame(data=data)
         else:
             self.data = data
+        # 确保存储的数据中的时间均为datetime.datetime格式
+        data['exercise_date'] = data.apply(func=convert_date('exercise_date'), axis=1)
         self.name = "票面利率调整条款"
 
     def __repr__(self):
@@ -187,79 +194,85 @@ if __name__ == "__main__":
                                             base_interest_rate=0.02)
     data_list = [
         {
-            "pay_date": datetime.datetime(2015, 4, 25),
+            "pay_date": '2015-04-25T00:00:00.000+0800',
             "pay_rate": 0.04
         },
         {
-            "pay_date": datetime.datetime(2017, 4, 25),
+            "pay_date": '2017-04-25T00:00:00.000+0800',
             "pay_rate": 0.041
         },
         {
-            "pay_date": datetime.datetime(2019, 4, 25),
+            "pay_date": '2019-04-25T00:00:00.000+0800',
             "pay_rate": 0.042
         },
         {
-            "pay_date": datetime.datetime(2021, 4, 25),
+            "pay_date": '2021-04-25T00:00:00.000+0800',
             "pay_rate": 0.043
         }
     ]
     data = pd.DataFrame(data=data_list)
     prepayment_terms = PrepaymentTerms(data=data)
-    data_list = [
-        {
-            "exercise_date": datetime.datetime(2015, 4, 25),
-            "exercise_price": 100.0
-        },
-        {
-            "exercise_date": datetime.datetime(2017, 4, 25),
-            "exercise_price": 100.0
-        },
-        {
-            "exercise_date": datetime.datetime(2019, 4, 25),
-            "exercise_price": 100.0
-        },
-        {
-            "exercise_date": datetime.datetime(2021, 4, 25),
-            "exercise_price": 100.0
-        }
-    ]
-    data = pd.DataFrame(data=data_list)
-    embedded_putable_options = EmbeddedPutableOptions(data=data)
-    data_list = [
-        {
-            "exercise_date": datetime.datetime(2015, 4, 25),
-            "high_rate_adjust": 0.07,
-            "low_rate_adjust": 0.03
-        },
-        {
-            "exercise_date": datetime.datetime(2017, 4, 25),
-            "high_rate_adjust": 0.07,
-            "low_rate_adjust": 0.03
-        },
-        {
-            "exercise_date": datetime.datetime(2019, 4, 25),
-            "high_rate_adjust": 0.07,
-            "low_rate_adjust": 0.03
-        },
-        {
-            "exercise_date": datetime.datetime(2021, 4, 25),
-            "high_rate_adjust": 0.07,
-            "low_rate_adjust": 0.03
-        }
-    ]
-    data = pd.DataFrame(data=data_list)
-    embedded_rate_adjustment_options = EmbeddedRateAdjustmentOptions(data=data)
-
-    ecnomic_terms = EcnomicTerms(floating_rate_terms,
-                                 prepayment_terms,
-                                 embedded_putable_options,
-                                 embedded_rate_adjustment_options)
-
-    print(floating_rate_terms,
-          prepayment_terms,
-          embedded_putable_options,
-          embedded_rate_adjustment_options)
-    print('======')
-    print(ecnomic_terms)
-    print('======')
-    print(issubclass(EmbeddedRateAdjustmentOptions, EcnomicTerm))
+    data = prepayment_terms.data
+    # fun = lambda x: datetime.datetime.strptime(x['pay_date'], '%Y-%m-%d') if isinstance(x['pay_date'], str) else x['pay_date']
+    # fun = lambda x: x.pay_rate+1
+    data['pay_date'] = data.apply(func=convert_date('pay_date'), axis=1)
+    print(data)
+    print(type(data.loc[0, 'pay_date']))
+    # data_list = [
+    #     {
+    #         "exercise_date": datetime.datetime(2015, 4, 25),
+    #         "exercise_price": 100.0
+    #     },
+    #     {
+    #         "exercise_date": datetime.datetime(2017, 4, 25),
+    #         "exercise_price": 100.0
+    #     },
+    #     {
+    #         "exercise_date": datetime.datetime(2019, 4, 25),
+    #         "exercise_price": 100.0
+    #     },
+    #     {
+    #         "exercise_date": datetime.datetime(2021, 4, 25),
+    #         "exercise_price": 100.0
+    #     }
+    # ]
+    # data = pd.DataFrame(data=data_list)
+    # embedded_putable_options = EmbeddedPutableOptions(data=data)
+    # data_list = [
+    #     {
+    #         "exercise_date": datetime.datetime(2015, 4, 25),
+    #         "high_rate_adjust": 0.07,
+    #         "low_rate_adjust": 0.03
+    #     },
+    #     {
+    #         "exercise_date": datetime.datetime(2017, 4, 25),
+    #         "high_rate_adjust": 0.07,
+    #         "low_rate_adjust": 0.03
+    #     },
+    #     {
+    #         "exercise_date": datetime.datetime(2019, 4, 25),
+    #         "high_rate_adjust": 0.07,
+    #         "low_rate_adjust": 0.03
+    #     },
+    #     {
+    #         "exercise_date": datetime.datetime(2021, 4, 25),
+    #         "high_rate_adjust": 0.07,
+    #         "low_rate_adjust": 0.03
+    #     }
+    # ]
+    # data = pd.DataFrame(data=data_list)
+    # embedded_rate_adjustment_options = EmbeddedRateAdjustmentOptions(data=data)
+    #
+    # ecnomic_terms = EcnomicTerms(floating_rate_terms,
+    #                              prepayment_terms,
+    #                              embedded_putable_options,
+    #                              embedded_rate_adjustment_options)
+    #
+    # print(floating_rate_terms,
+    #       prepayment_terms,
+    #       embedded_putable_options,
+    #       embedded_rate_adjustment_options)
+    # print('======')
+    # print(ecnomic_terms)
+    # print('======')
+    # print(issubclass(EmbeddedRateAdjustmentOptions, EcnomicTerm))

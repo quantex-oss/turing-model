@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 
+from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.common import greek, newton_fun
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
@@ -51,7 +52,13 @@ class BondFixedRate(Bond):
 
     @property
     def _market_clean_price(self):
-        return 110
+        date = self._settlement_date.datetime()
+        original_data = TuringDB.get_bond_valuation_cnbd_history(symbols=self.comb_symbol, start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc[self.comb_symbol].loc[0, 'net_prc']
+            return data
+        else:
+            raise TuringError(f"Cannot find cnbd bond clean price for {self.comb_symbol}")
 
     @property
     def _discount_curve(self):
@@ -130,7 +137,7 @@ class BondFixedRate(Bond):
         """ 麦考利久期 """
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
-        self._curve_resolve()
+        self._curve_resolve()  # 要调用曲线对象前需要先调用curve_resolve，用以兼容what-if
         self.curve_fitted = CurveAdjustmentImpl(curve_data=self.cv.curve_data,
                                                 parallel_shift=self._spread_adjustment,
                                                 value_date=self._settlement_date).get_curve_result()
@@ -255,7 +262,7 @@ class BondFixedRate(Bond):
 
         if not self.isvalid():
             raise TuringError("Bond settles after it matures.")
-        self._curve_resolve()
+        self._curve_resolve()  # 要调用曲线对象前需要先调用curve_resolve，用以兼容what-if
         self.curve_fitted = CurveAdjustmentImpl(curve_data=self.cv.curve_data,
                                                 parallel_shift=self._spread_adjustment,
                                                 value_date=self._settlement_date).get_curve_result()

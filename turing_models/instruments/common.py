@@ -1393,6 +1393,10 @@ class Curve:
     def set_value_date(self, value):
         """设置估值日期"""
         self.value_date = value
+        # 如果重新设置了value_date，则需要把原来的曲线数据清空，再通过以下两种方式补全曲线数据：
+        # 1、调用resolve方法，根据新的value_date从接口获取曲线数据
+        # 2、调用set_curve_data方法，从外部传入曲线数据
+        self.curve_data = None
 
     def set_curve_data(self, value: pd.DataFrame):
         """设置曲线数据"""
@@ -1400,6 +1404,10 @@ class Curve:
             self.curve_data = pd.DataFrame(data=value)
         else:
             self.curve_data = value
+
+    def set_forward_term(self, value: (float, int)):
+        """设置估值日期"""
+        self.forward_term = value
 
     def resolve(self):
         """补全/更新数据"""
