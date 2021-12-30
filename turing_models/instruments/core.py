@@ -128,10 +128,9 @@ class InstrumentBase(PricingMixin):
         pass
 
     def resolve(self, expand_dict=None):
-        if not expand_dict:
-            getattr(self, '_resolve')()
-        else:
+        if expand_dict:
             self._set_by_dict(expand_dict)
+        getattr(self, '_resolve')()
         getattr(self, "__post_init__")()
 
     def __repr__(self):
