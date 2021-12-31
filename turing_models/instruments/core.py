@@ -58,7 +58,7 @@ class PricingMixin:
                 else:
                     setattr(self.ctx, k, v)
 
-    def main(self, *args, **kw):
+    def evaluation(self, *args, **kw):
         context = kw.pop('context', '')
         try:
             if context:
