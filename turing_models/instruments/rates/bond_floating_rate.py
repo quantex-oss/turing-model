@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from scipy import optimize
 
+from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.common import newton_fun, greek
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
@@ -31,7 +32,14 @@ class BondFloatingRate(Bond):
 
     @property
     def _next_base_interest_rate(self):
-        return self.ctx_next_base_interest_rate or 0.03  # TODO: 等接口数据处理好，接上接口
+        if self.ctx_next_base_interest_rate:
+            return self.ctx_next_base_interest_rate
+        else:
+            date = self._settlement_date.datetime()
+            original_data = TuringDB.rate_interest_rate_levels(ir_codes=self.floating_rate_benchmark, date=date)
+            if original_data is not None:
+                data = original_data.loc[self.floating_rate_benchmark, 'rate']
+                return data
 
     @property
     def _clean_price(self):

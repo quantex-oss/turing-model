@@ -39,7 +39,7 @@ class BondPutableAdjustable(Bond):
     __ytm: float = None
     __discount_curve = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):  # TODO: 处理__new__不能兼容what-if修改pricing_date和不能兼容resolve的问题
         if kwargs.get("value_date") is None:
             kwargs['value_date'] = datetime.date.today()
         ecnomic_terms = kwargs.get("ecnomic_terms")
@@ -57,7 +57,6 @@ class BondPutableAdjustable(Bond):
                     del kwargs['ecnomic_terms']
                     fixed_rete_bond = BondFixedRate(**kwargs)
                     return fixed_rete_bond
-
 
     def __post_init__(self):
         super().__post_init__()
