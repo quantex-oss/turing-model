@@ -19,12 +19,13 @@ class BondFloatingRate(Bond):
     def __post_init__(self):
         super().__post_init__()
         if self.ecnomic_terms is not None:
+            self.check_ecnomic_terms()
             floating_rate_terms = self.ecnomic_terms.get_instance(FloatingRateTerms)
             if floating_rate_terms is not None:
                 self.floating_rate_benchmark = floating_rate_terms.floating_rate_benchmark
                 self.floating_spread = floating_rate_terms.floating_spread
                 self.floating_adjust_mode = floating_rate_terms.floating_adjust_mode
-                self.base_interest_rate = floating_rate_terms.base_interest_rate or 0.03
+                self.base_interest_rate = floating_rate_terms.base_interest_rate
         if not self.dm and getattr(self, 'floating_spread', None):
             self.dm = self.floating_spread
         if self.dm and self.dm > 10.0:
@@ -288,15 +289,19 @@ class BondFloatingRate(Bond):
         self._accrued_days = num
         return self._accrued_interest
 
-    def _resolve(self):
-        super()._resolve()
-        # 对ecnomic_terms属性做单独处理
+    def check_ecnomic_terms(self):
+        """检测ecnomic_terms是否为字典格式，若为字典格式，则处理成EcnomicTerms的实例对象"""
         ecnomic_terms = getattr(self, 'ecnomic_terms', None)
         if ecnomic_terms is not None and isinstance(ecnomic_terms, dict):
             floating_rate_terms = ecnomic_terms.get('floating_rate_terms')
             floating_rate_terms = FloatingRateTerms(**floating_rate_terms)
             ecnomic_terms = EcnomicTerms(floating_rate_terms)
             setattr(self, 'ecnomic_terms', ecnomic_terms)
+
+    def _resolve(self):
+        super()._resolve()
+        # 对ecnomic_terms属性做单独处理
+        self.check_ecnomic_terms()
         self.__post_init__()
 
     def __repr__(self):

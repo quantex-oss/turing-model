@@ -26,6 +26,7 @@ class BondAdvRedemption(Bond):
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
         if self.ecnomic_terms is not None:
+            self.check_ecnomic_terms()
             prepayment_terms = self.ecnomic_terms.get_instance(PrepaymentTerms)
             if prepayment_terms is not None:
                 prepayment_terms_data = prepayment_terms.data
@@ -339,14 +340,18 @@ class BondAdvRedemption(Bond):
 
         return self._accrued_interest
 
-    def _resolve(self):
-        super()._resolve()
-        # 对ecnomic_terms属性做单独处理
+    def check_ecnomic_terms(self):
+        """检测ecnomic_terms是否为字典格式，若为字典格式，则处理成EcnomicTerms的实例对象"""
         ecnomic_terms = getattr(self, 'ecnomic_terms', None)
         if ecnomic_terms is not None and isinstance(ecnomic_terms, dict):
             prepayment_terms = PrepaymentTerms(data=ecnomic_terms.get('prepayment_terms'))
             ecnomic_terms = EcnomicTerms(prepayment_terms)
             setattr(self, 'ecnomic_terms', ecnomic_terms)
+
+    def _resolve(self):
+        super()._resolve()
+        # 对ecnomic_terms属性做单独处理
+        self.check_ecnomic_terms()
         self.__post_init__()
 
     def __repr__(self):
