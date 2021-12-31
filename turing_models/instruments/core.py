@@ -4,8 +4,8 @@ from typing import Union, List, Iterable
 
 from fundamental import PricingContext
 from fundamental.base import ctx, Context
-from turing_utils.log.request_id_log import logger
 from turing_models.instruments.common import RiskMeasure
+from turing_utils.log.request_id_log import logger
 
 
 class IsPriceable:
@@ -21,12 +21,75 @@ class IsPriceable:
         return class_names
 
 
-class InstrumentBase:
+class PricingMixin:
+    """所有models定价服务入口,默认走main方法"""
+    def __init__(self):
+        self.ctx: Context = ctx
+
+    def api_calc(self, risk_measure: list):
+        """calc 结果集"""
+        logger.debug(self.__dict__)
+        msg = ''
+        response_data = []
+        if risk_measure:
+            if isinstance(risk_measure, list):
+                for risk_fun in risk_measure:
+                    try:
+                        result = getattr(self, risk_fun)()
+                    except Exception as e:
+                        traceback.print_exc()
+                        msg += f'{risk_fun} error: {str(e)};'
+                        result = ''
+                        msg += f'调用{risk_fun}出错;'
+                    response = {}
+                    response['risk_measure'] = risk_fun
+                    response['value'] = result
+                    response_data.append(response)
+            elif isinstance(risk_measure, str):
+                result = getattr(self, risk_measure)()
+                return result
+        return response_data
+
+    def api_data(self, **kw):
+        for k, v in kw.items():
+            for _k, _v in self.__dict__.items():
+                if k == _k:
+                    setattr(self, k, v)
+                else:
+                    setattr(self.ctx, k, v)
+
+    def evaluation(self, *args, **kw):
+        context = kw.pop('context', '')
+        try:
+            if context:
+                self.ctx.context = context
+        except Exception:
+            pass
+        scenario = PricingContext()
+        asset_id = kw.pop('asset_id', '')
+        request_id = kw.pop('request_id', '')
+        if request_id:
+            self.ctx.request_id = request_id
+        if asset_id:
+            setattr(self, 'asset_id', asset_id)
+            getattr(self, '_resolve')()
+        pricing_context = kw.pop('pricing_context', '')
+        risk = kw.pop('risk_measure', '')
+        self.api_data(**kw)
+        if pricing_context:
+            scenario.resolve(pricing_context)
+            with scenario:
+                return self.api_calc(risk)
+        else:
+            return self.api_calc(risk)
+
+
+class InstrumentBase(PricingMixin):
     _ = IsPriceable()
 
     def __init__(self):
-        self.ctx: Context = ctx
-        self.check_param()
+        super().__init__()
+        getattr(self, "check_param")()
 
     def check_param(self):
         getattr(self, '_')
@@ -59,75 +122,16 @@ class InstrumentBase:
                 try:
                     setattr(self, k, v)
                 except:
-                    pass
+                    ...
 
     def type(self):
         pass
 
     def resolve(self, expand_dict=None):
-        if not expand_dict:
-            getattr(self, '_resolve')()
-        else:
+        if expand_dict:
             self._set_by_dict(expand_dict)
+        getattr(self, '_resolve')()
         getattr(self, "__post_init__")()
-
-    def api_calc(self, riskMeasure: list):
-        """api calc 结果集"""
-        logger.debug(self.__dict__)
-        msg = ''
-        response_data = []
-        if riskMeasure:
-            if isinstance(riskMeasure, list):
-                for risk_fun in riskMeasure:
-                    try:
-                        result = getattr(self, risk_fun)()
-                    except Exception as e:
-                        traceback.print_exc()
-                        msg += f'{risk_fun} error: {str(e)};'
-                        result = ''
-                        msg += f'调用{risk_fun}出错;'
-                    response = {}
-                    response['riskMeasure'] = risk_fun
-                    response['value'] = result
-                    response_data.append(response)
-            elif isinstance(riskMeasure, str):
-                result = getattr(self, riskMeasure)()
-                return result
-        return response_data
-
-    def api_data(self, **kw):
-        for k, v in kw.items():
-            for _k, _v in self.__dict__.items():
-                if k == _k:
-                    setattr(self, k, v)
-                else:
-                    setattr(self.ctx, k, v)
-
-    def main(self, *args, **kw):
-        context = kw.pop('context', '')
-        try:
-            if context:
-                self.ctx.context = context
-        except Exception:
-            pass
-        """api默认入口"""
-        scenario = PricingContext()
-        asset_id = kw.pop('assetId', '')
-        request_id = kw.pop('request_id', '')
-        if request_id:
-            self.ctx.request_id = request_id
-        if asset_id:
-            setattr(self, 'asset_id', asset_id)
-            getattr(self, '_resolve')()
-        pricing_context = kw.pop('pricingContext', '')
-        risk = kw.pop('riskMeasure', '')
-        self.api_data(**kw)
-        if pricing_context:
-            scenario.resolve(pricing_context)
-            with scenario:
-                return self.api_calc(risk)
-        else:
-            return self.api_calc(risk)
 
     def __repr__(self):
         return self.__class__.__name__

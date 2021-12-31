@@ -527,10 +527,28 @@ def turingdate_to_qldate(date: TuringDate):
         else:
             return date
 
-def datetime_to_turingdate(date: (datetime.datetime, datetime.date)):
+def datetime_to_turingdate(date):
     """ Convert datetime to TuringDate """
     if date is not None:
         if isinstance(date, (datetime.datetime, datetime.date)):
             return TuringDate(date.year, date.month, date.day)
+        elif isinstance(date, list):
+            return [TuringDate(dt.year, dt.month, dt.day) for dt in date]
         else:
             return date
+
+
+def date_str_to_datetime(date_str):
+    """例：2021-08-04T00:00:00.000+080（字符串）转datetime"""
+    date_str = ' '.join(date_str.split('+')[0].split('T'))[:-4]
+    return datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+
+
+def convert_date(column_name: str):
+    """提供给pd.DataFrame的apply方法使用，把str转成datetime.datetime"""
+    def fun(x):
+        if isinstance(x[column_name], str):
+            return date_str_to_datetime(x[column_name])
+        else:
+            return x[column_name]
+    return fun

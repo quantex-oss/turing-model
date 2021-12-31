@@ -742,7 +742,7 @@ class TuringDate():
 
     def datetime(self):
         ''' Returns a datetime of the date '''
-        return datetime.date(self._y, self._m, self._d)
+        return datetime.datetime(self._y, self._m, self._d)
 
     ###########################################################################
     # TODO: Find elegant way to return long and short strings

@@ -132,6 +132,7 @@ class RiskMeasure(Enum):
     FullPrice = "full_price"
     CleanPrice = "clean_price"
     YTM = 'ytm'
+    TimeToMaturity = 'time_to_maturity'
 
     def __repr__(self):
         return self.value
@@ -1163,25 +1164,26 @@ class Ctx:
 
     @property
     def ctx_ytm(self):
-        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+        asset_id = getattr(self, 'comb_symbol', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"ytm_{asset_id}")
 
     @property
     def ctx_clean_price(self):
-        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+        asset_id = getattr(self, 'comb_symbol', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"clean_price_{asset_id}")
 
-    @property
-    def ctx_bond_yield_curve(self):
-        asset_id = getattr(self, 'bond_symbol', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"bond_yield_curve_{asset_id}")
+    def ctx_yield_curve(self, curve_type: str, forward_term: float = None):
+        curve_code = getattr(self, 'curve_code', None)
+        if forward_term is None:
+            return getattr(self.ctx, f"yield_curve_{curve_code}_{curve_type}")
+        else:
+            return getattr(self.ctx, f"yield_curve_{curve_code}_{curve_type}_{forward_term}")
 
     @property
     def ctx_spread_adjustment(self):
-        asset_id = getattr(self, 'bond_symbol', None) or getattr(
+        asset_id = getattr(self, 'comb_symbol', None) or getattr(
             self, 'asset_id', None)
         return getattr(self.ctx, f"spread_adjustment_{asset_id}")
 
@@ -1380,7 +1382,8 @@ class Curve:
     curve_code: Union[str, YieldCurveCode] = None    # 曲线编码
     curve_name: str = None                           # 曲线名称
     curve_data: pd.DataFrame = None                  # 曲线数据，列索引为'tenor'和'rate'
-    curve_type: str = None                           # TODO: 兼容债券收益率之外的曲线类型
+    curve_type: str = 'spot_rate'                    # TODO: 处理成枚举类型
+    forward_term: float = None
 
     def __post_init__(self):
         """估值日期和曲线编码不能为空"""
@@ -1390,10 +1393,21 @@ class Curve:
     def set_value_date(self, value):
         """设置估值日期"""
         self.value_date = value
+        # 如果重新设置了value_date，则需要把原来的曲线数据清空，再通过以下两种方式补全曲线数据：
+        # 1、调用resolve方法，根据新的value_date从接口获取曲线数据
+        # 2、调用set_curve_data方法，从外部传入曲线数据
+        self.curve_data = None
 
     def set_curve_data(self, value: pd.DataFrame):
         """设置曲线数据"""
-        self.curve_data = value
+        if isinstance(value, list):
+            self.curve_data = pd.DataFrame(data=value)
+        else:
+            self.curve_data = value
+
+    def set_forward_term(self, value: (float, int)):
+        """设置估值日期"""
+        self.forward_term = value
 
     def resolve(self):
         """补全/更新数据"""
@@ -1403,8 +1417,27 @@ class Curve:
             else:
                 curve_code = self.curve_code
             if self.curve_data is None:
-                self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date).\
-                                  loc[curve_code][['tenor', 'spot_rate']].rename(columns={'spot_rate': 'rate'})
+                if self.curve_type == 'spot_rate':
+                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date).\
+                                      loc[curve_code][['tenor', 'spot_rate']].rename(columns={'spot_rate': 'rate'})
+                elif self.curve_type == 'ytm':
+                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date).\
+                                      loc[curve_code][['tenor', 'ytm']].rename(columns={'ytm': 'rate'})
+                elif self.curve_type == 'forward_spot_rate':
+                    if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
+                        print(TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date, forward_term=self.forward_term))
+                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date, forward_term=self.forward_term).\
+                                          loc[curve_code][['tenor', 'forward_spot_rate']].rename(columns={'forward_spot_rate': 'rate'})
+                    else:
+                        raise TuringError('Please check the input of forward_term')
+                elif self.curve_type == 'forward_ytm':
+                    if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
+                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date, forward_term=self.forward_term).\
+                                          loc[curve_code][['tenor', 'forward_ytm']].rename(columns={'forward_ytm': 'rate'})
+                    else:
+                        raise TuringError('Please check the input of forward_term')
+                else:
+                    raise TuringError('Please check the input of curve_type')
             if self.curve_name is None:
                 self.curve_name = getattr(YieldCurveCode, curve_code, '')
         else:
@@ -1438,15 +1471,17 @@ class Curve:
 
 
 if __name__ == '__main__':
-    cv = Curve(value_date=TuringDate(2021, 12, 10),
-               curve_code=YieldCurveCode.CBD100222)
+    cv = Curve(value_date=TuringDate(2021, 11, 10),
+               curve_code=YieldCurveCode.CBD100032,
+               curve_type='forward_ytm',
+               forward_term=0.5)
     cv.resolve()
     print(cv.curve_data)
 
-    ca = CurveAdjustment(parallel_shift=1000,
-                         curve_shift=1000,
-                         pivot_point=1,
-                         tenor_start=0.5,
-                         tenor_end=1.5)
-    cv.adjust(ca)
-    print(cv.curve_data)
+    # ca = CurveAdjustment(parallel_shift=1000,
+    #                      curve_shift=1000,
+    #                      pivot_point=1,
+    #                      tenor_start=0.5,
+    #                      tenor_end=1.5)
+    # cv.adjust(ca)
+    # print(cv.curve_data)

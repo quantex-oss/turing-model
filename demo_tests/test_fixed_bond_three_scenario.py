@@ -7,7 +7,7 @@ curve_chinabond = YieldCurveCode.CBD100222
 
 # 情景1：通过传入净价净算:
 bond_fr1 = BondFixedRate(#asset_id="BONDCN00000007",
-                         bond_symbol = "143756.SH",
+                         comb_symbol = "143756.SH",
                         # coupon=0.04,
                         curve_code=curve_chinabond)
                         # issue_date=TuringDate(2015, 11, 13),
@@ -17,7 +17,7 @@ bond_fr1 = BondFixedRate(#asset_id="BONDCN00000007",
                         # accrual_type=TuringDayCountTypes.ACT_365L,
                         # par=100)
 bond_fr1.resolve()
-scenario_extreme = PricingContext(clean_price=[{"bond_symbol": "143756.SH", "value": 80}])
+scenario_extreme = PricingContext(clean_price=[{"comb_symbol": "143756.SH", "value": 80}])
 # curves = TuringDB.bond_yield_curve(curve_code=curve_lists, date=date)
 with scenario_extreme:
     price_1 = bond_fr1.calc(RiskMeasure.FullPrice)
@@ -38,7 +38,7 @@ print('dollar_convexity:', dollar_convexity_1)
 print("---------------------------------------------")
 
 # 情景2：通过收益率曲线计算债券定价，
-bond_fr2 = BondFixedRate(bond_symbol = "143756.SH",
+bond_fr2 = BondFixedRate(comb_symbol = "143756.SH",
                         curve_code=curve_chinabond)
                   
 bond_fr2.resolve()
@@ -64,7 +64,7 @@ print('dollar_convexity:', dollar_convexity_2)
 print("---------------------------------------------")
 
 # 情景3：通过收益率曲线和spread调整试算价格
-bond_fr3 = BondFixedRate(bond_symbol = "143756.SH",
+bond_fr3 = BondFixedRate(comb_symbol = "143756.SH",
                         curve_code=curve_chinabond)
 
 print("Fixed Rate Bond:")

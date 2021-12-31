@@ -2,58 +2,77 @@ from dataclasses import dataclass
 
 from scipy import optimize
 
-from turing_models.instruments.common import newton_fun
+from fundamental.turing_db.data import TuringDB
+from turing_models.instruments.common import newton_fun, greek
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.helper_functions import to_string
-from turing_models.utilities.bond_terms import EcnomicTerms
+from turing_models.utilities.bond_terms import EcnomicTerms, FloatingRateTerms
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondFloatingRate(Bond):
-    # _next_base_interest_rate: float = None
     ecnomic_terms: EcnomicTerms = None
     dm: float = None
+    __ytm: float = None
 
     def __post_init__(self):
         super().__post_init__()
         if self.ecnomic_terms is not None:
-            floating_rate_terms = self.ecnomic_terms.data.get('floating_rate_terms')
+            self.check_ecnomic_terms()
+            floating_rate_terms = self.ecnomic_terms.get_instance(FloatingRateTerms)
             if floating_rate_terms is not None:
                 self.floating_rate_benchmark = floating_rate_terms.floating_rate_benchmark
                 self.floating_spread = floating_rate_terms.floating_spread
                 self.floating_adjust_mode = floating_rate_terms.floating_adjust_mode
                 self.base_interest_rate = floating_rate_terms.base_interest_rate
-        if not self.dm and self.floating_spread:
+        if not self.dm and getattr(self, 'floating_spread', None):
             self.dm = self.floating_spread
         if self.dm and self.dm > 10.0:
             raise TuringError("Discount margin exceeds 100000bp")
 
     @property
     def _next_base_interest_rate(self):
-        return self.ctx_next_base_interest_rate
+        if self.ctx_next_base_interest_rate:
+            return self.ctx_next_base_interest_rate
+        else:
+            date = self._settlement_date.datetime()
+            original_data = TuringDB.rate_interest_rate_levels(ir_codes=self.floating_rate_benchmark, date=date)
+            if original_data is not None:
+                data = original_data.loc[self.floating_rate_benchmark, 'rate']
+                return data
 
     @property
-    def clean_price_(self):
+    def _clean_price(self):
         return self.ctx_clean_price or self.clean_price_from_dm()
 
     def full_price(self):
-        return self.full_price_from_dm()
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return self._clean_price + self.calc_accrued_interest()
 
     def clean_price(self):
-        return self.clean_price_
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return self._clean_price
+    
+    def ytm(self):
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return self._ytm
+
+    @property
+    def _ytm(self):
+        return self.__ytm or self.ctx_ytm or (self.discount_margin() + self._next_base_interest_rate)
+
+    @_ytm.setter
+    def _ytm(self, value: float):
+        self.__ytm = value
 
     def dv01(self):
-        current_ibor = self.base_interest_rate
-        self.base_interest_rate = current_ibor + dy
-        p0 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor - dy
-        p2 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor
-
-        dv = (p2 - p0) / 2.0
-        return dv
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return greek(self, self.full_price_from_ytm, "_ytm", dy) * -dy
 
     def dollar_convexity(self):
         """ Calculate the bond convexity from the discount margin (DM) using a
@@ -63,17 +82,9 @@ class BondFloatingRate(Bond):
         is the level of subsequent future Ibor payments and the discount
         margin. """
 
-        current_ibor = self.base_interest_rate
-        self.base_interest_rate = current_ibor - dy
-        p0 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor
-        p1 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor + dy
-        p2 = self.full_price_from_dm()
-        self.base_interest_rate = current_ibor
-
-        conv = ((p2 + p0) - 2.0 * p1) / dy / dy
-        return conv
+        if not self.isvalid():
+            raise TuringError("Bond settles after it matures.")
+        return greek(self, self.full_price_from_ytm, "_ytm", dy, order=2)
 
     def dollar_credit_duration(self):
         """ Calculate the risk or dP/dy of the bond by bumping. """
@@ -164,12 +175,11 @@ class BondFloatingRate(Bond):
 
         # Now do all subsequent coupons that fall after the ncd
         for i_flow in range(1, num_flows):
-
+            
             if self._flow_dates[i_flow] > self._ncd:
                 pcd = self._flow_dates[i_flow - 1]
                 ncd = self._flow_dates[i_flow]
                 (alpha, _, _) = dc.yearFrac(pcd, ncd)
-
                 df = df / (1.0 + alpha * (self._next_base_interest_rate + self.dm))
                 c = self._next_base_interest_rate + q
                 pv = pv + c * alpha * df
@@ -192,6 +202,38 @@ class BondFloatingRate(Bond):
 
         clean_price = full_price - accrued
         return clean_price
+    
+    def full_price_from_ytm(self):
+        ''' Calculate the full price of the bond from its discount margin (DM)
+        using standard model based on assumptions about future Ibor rates. The
+        next Ibor payment which has reset is entered, so to is the current
+        Ibor rate from settlement to the next coupon date (NCD). Finally there
+        is the level of subsequent future Ibor payments and the discount
+        margin. '''
+
+        self.calc_accrued_interest()
+
+        ytm = self._ytm  # 向量化
+        ytm = ytm + 0.000000000012345  # 防止ytm = 0
+        dm = self.dm
+        self.dm = ytm - self._next_base_interest_rate
+        full_price = self.full_price_from_dm()
+        self.dm = dm
+        return full_price
+    
+    def clean_price_from_ytm(self):
+        ''' Calculate the bond clean price from the discount margin
+        using standard model based on assumptions about future Ibor rates. The
+        next Ibor payment which has reset is entered, so to is the current
+        Ibor rate from settlement to the next coupon date (NCD). Finally there
+        is the level of subsequent future Ibor payments and the discount
+        margin. '''
+
+        full_price = self.full_price_from_ytm()
+        accrued = self.calc_accrued_interest()
+        clean_price = full_price - accrued
+        return clean_price
+
 
     def discount_margin(self):
         """ Calculate the bond's yield to maturity by solving the price
@@ -202,7 +244,7 @@ class BondFloatingRate(Bond):
         # Needs to be adjusted to par notional
         accrued = self._accrued_interest
 
-        full_price = self.clean_price_ + accrued
+        full_price = self._clean_price + accrued
         dm_ori = self.dm
 
         argtuple = (self, full_price, "dm", "full_price_from_dm")
@@ -247,11 +289,24 @@ class BondFloatingRate(Bond):
         self._accrued_days = num
         return self._accrued_interest
 
+    def check_ecnomic_terms(self):
+        """检测ecnomic_terms是否为字典格式，若为字典格式，则处理成EcnomicTerms的实例对象"""
+        ecnomic_terms = getattr(self, 'ecnomic_terms', None)
+        if ecnomic_terms is not None and isinstance(ecnomic_terms, dict):
+            floating_rate_terms = ecnomic_terms.get('floating_rate_terms')
+            floating_rate_terms = FloatingRateTerms(**floating_rate_terms)
+            ecnomic_terms = EcnomicTerms(floating_rate_terms)
+            setattr(self, 'ecnomic_terms', ecnomic_terms)
+
+    def _resolve(self):
+        super()._resolve()
+        # 对ecnomic_terms属性做单独处理
+        self.check_ecnomic_terms()
+        self.__post_init__()
+
     def __repr__(self):
         s = super().__repr__()
-        # s += to_string("Quoted Margin", self.floating_spread)
-        # s += to_string("Next Coupon", self.coupon_rate)
-        # s += to_string("Current Ibor", self.base_interest_rate)
-        # s += to_string("Future Ibor", self._next_base_interest_rate)
-        s += to_string("Discount Margin", self.dm, "")
+        separator: str = "\n"
+        if self.ecnomic_terms:
+            s += f"{separator}{self.ecnomic_terms}"
         return s

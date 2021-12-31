@@ -61,7 +61,7 @@ scenario_extreme = PricingContext(
 # posiiton = Position(tradable=knockout_option, quantity=1.0)
 # portfolio.add(posiiton)
 
-bond_fr = BondFixedRate(bond_symbol="111111",
+bond_fr = BondFixedRate(comb_symbol="111111",
                         coupon=0.04,
                         curve_code="CBD100252",
                         issue_date=TuringDate(2015, 11, 13),
