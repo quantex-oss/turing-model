@@ -66,13 +66,10 @@ class PricingMixin:
         except Exception:
             pass
         scenario = PricingContext()
-        asset_id = kw.pop('asset_id', '')
         request_id = kw.pop('request_id', '')
         if request_id:
             self.ctx.request_id = request_id
-        if asset_id:
-            setattr(self, 'asset_id', asset_id)
-            getattr(self, '_resolve')()
+        getattr(self, '_resolve')()
         pricing_context = kw.pop('pricing_context', '')
         risk = kw.pop('risk_measure', '')
         self.api_data(**kw)

@@ -3,18 +3,18 @@ from abc import ABCMeta
 from dataclasses import dataclass
 from typing import Union
 
-from turing_utils.log.request_id_log import logger
 from fundamental.turing_db.bond_data import BondApi
 from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, Curve, CurveAdjustment, Currency
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
-     TuringDateGenRuleTypes
+    TuringDateGenRuleTypes
 from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, FrequencyType
 from turing_models.utilities.global_types import TuringYTMCalcType, CouponType
 from turing_models.utilities.helper_functions import datetime_to_turingdate
 from turing_models.utilities.schedule import TuringSchedule
+from turing_utils.log.request_id_log import logger
 
 dy = 0.0001
 
@@ -37,33 +37,33 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     exchange: str = None
     issuer_id: str = None
     issuer: str = None
-    issue_date: datetime.datetime = None                                    # 发行日
-    due_date: datetime.datetime = None                                      # 到期日
-    par: float = None                                                       # 面值
+    issue_date: datetime.datetime = None  # 发行日
+    due_date: datetime.datetime = None  # 到期日
+    par: float = None  # 面值
     coupon_rate: float = None
     interest_rate_type: str = None
-    pay_interest_cycle: (str, FrequencyType) = None                         # 付息频率
-    interest_rules: (str, DayCountType) = None                              # 计息类型
-    pay_interest_mode: (str, CouponType) = None                             # 付息方式
-    curve_code: Union[str, YieldCurveCode] = None                           # 曲线编码
+    pay_interest_cycle: (str, FrequencyType) = None  # 付息频率
+    interest_rules: (str, DayCountType) = None  # 计息类型
+    pay_interest_mode: (str, CouponType) = None  # 付息方式
+    curve_code: Union[str, YieldCurveCode] = None  # 曲线编码
     curve_name: str = None
     value_date: (datetime.datetime, datetime.date) = datetime.date.today()  # 估值日
-    settlement_terms: int = 0                                               # 结算天数，0即T+0结算
+    settlement_terms: int = 0  # 结算天数，0即T+0结算
 
     def __post_init__(self):
         super().__init__()
-        self.convention = TuringYTMCalcType.UK_DMO                 # 惯例
-        self.calendar_type = TuringCalendarTypes.CHINA_IB          # 日历类型
-        self._redemption = 1.0                                     # 到期支付额
-        self._flow_dates = []                                      # 现金流发生日
-        self._flow_amounts = []                                    # 现金流发生额
+        self.convention = TuringYTMCalcType.UK_DMO  # 惯例
+        self.calendar_type = TuringCalendarTypes.CHINA_IB  # 日历类型
+        self._redemption = 1.0  # 到期支付额
+        self._flow_dates = []  # 现金流发生日
+        self._flow_amounts = []  # 现金流发生额
         # self._accrued_interest = None
-        self._accrued_days = 0.0                                   # 应计利息天数
+        self._accrued_days = 0.0  # 应计利息天数
         self.value_date = datetime_to_turingdate(self.value_date)
         self.issue_date = datetime_to_turingdate(self.issue_date)
         self.due_date = datetime_to_turingdate(self.due_date)
         if self.trd_curr_code and isinstance(self.trd_curr_code, Currency):
-            self.trd_curr_code = self.trd_curr_code.value          # 转换成字符串，便于rich表格显示
+            self.trd_curr_code = self.trd_curr_code.value  # 转换成字符串，便于rich表格显示
         if self.issue_date:
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
             self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
@@ -74,7 +74,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             self._calculate_cash_flow_dates()
             self.frequency = TuringFrequency(self.pay_interest_cycle)
         else:
-            self._flow_dates = [self.issue_date, self.due_date]    
+            self._flow_dates = [self.issue_date, self.due_date]
 
         self.ca = CurveAdjustment()
         if self.issue_date and self.due_date:
@@ -93,7 +93,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                     "DISCOUNT": CouponType.DISCOUNT,
                     "COUPON_CARRYING": CouponType.COUPON_CARRYING,
                     # "OTHERS": None
-                    }
+                }
                 self.pay_interest_mode = rules.get(self.pay_interest_mode,
                                                    TuringError('Please check the input of pay_interest_mode'))
                 if isinstance(self.pay_interest_mode, TuringError):
@@ -113,7 +113,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                     # "15_DAYS": None,
                     # "BIMONTHLY": None,
                     # "OTHERS": None
-                    }
+                }
                 self.pay_interest_cycle = rules.get(self.pay_interest_cycle,
                                                     TuringError('Please check the input of pay_interest_cycle'))
                 if isinstance(self.pay_interest_cycle, TuringError):
@@ -129,7 +129,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                     # "ACT/366": None,
                     "ACT/365F": DayCountType.ACT_365F,
                     # "AVG/ACT": None
-                    }
+                }
                 self.interest_rules = rules.get(self.interest_rules,
                                                 TuringError('Please check the input of interest_rules'))
                 if isinstance(self.interest_rules, TuringError):
@@ -170,7 +170,11 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
 
     def isvalid(self):
         """提供给turing sdk做过期判断"""
-        if self._settlement_date > self.due_date:
+
+        if getattr(self, '_settlement_date', '') \
+                and getattr(self, 'due_date', '') \
+                and getattr(self, '_settlement_date', '') > \
+                    getattr(self, 'due_date', ''):
             return False
         return True
 
@@ -204,6 +208,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 setattr(self, 'asset_id', asset_id)
         if self.asset_id and not self.asset_id.startswith("Bond_"):  # Bond_ 为自定义时自动生成
             bond = BondApi.fetch_one_bond_orm(asset_id=self.asset_id)
+            logger.debug(bond.__dict__)
             for k, v in bond.items():
                 try:
                     if getattr(self, k, None) is None and v:

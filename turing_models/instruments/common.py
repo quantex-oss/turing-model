@@ -1201,7 +1201,8 @@ class Ctx:
 
     @property
     def ctx_next_base_interest_rate(self):
-        return getattr(self.ctx, "next_base_interest_rate")
+        floating_rate_benchmark = getattr(self, 'floating_rate_benchmark', None)
+        return getattr(self.ctx, f"next_base_interest_rate_{floating_rate_benchmark}")
 
     @property
     def ctx_fx_implied_volatility_curve(self):
