@@ -208,7 +208,6 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 setattr(self, 'asset_id', asset_id)
         if self.asset_id and not self.asset_id.startswith("Bond_"):  # Bond_ 为自定义时自动生成
             bond = BondApi.fetch_one_bond_orm(asset_id=self.asset_id)
-            logger.debug(bond.__dict__)
             for k, v in bond.items():
                 try:
                     if getattr(self, k, None) is None and v:
