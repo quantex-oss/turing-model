@@ -519,23 +519,35 @@ def pascal_to_snake(camel_case: str):
     snake_case = re.sub(r"(?P<key>[A-Z])", r"_\g<key>", camel_case)
     return snake_case.lower().strip('_')
 
+
 def turingdate_to_qldate(date: TuringDate):
     """ Convert TuringDate to ql.Date """
     if date is not None:
         if isinstance(date, TuringDate):
             return ql.Date(date._d, date._m, date._y)
-        else:
+        elif isinstance(date, list) and all(isinstance(dt, TuringDate) for dt in date):
+            return [ql.Date(dt._d, dt._m, dt._y) for dt in date]
+        elif isinstance(date, ql.Date):
             return date
+        elif isinstance(date, list) and all(isinstance(dt, ql.Date) for dt in date):
+            return date
+        else:
+            raise TuringError('Please check the input of date')
+
 
 def datetime_to_turingdate(date):
     """ Convert datetime to TuringDate """
     if date is not None:
         if isinstance(date, (datetime.datetime, datetime.date)):
             return TuringDate(date.year, date.month, date.day)
-        elif isinstance(date, list):
+        elif isinstance(date, list) and all(isinstance(dt, (datetime.datetime, datetime.date)) for dt in date):
             return [TuringDate(dt.year, dt.month, dt.day) for dt in date]
-        else:
+        elif isinstance(date, TuringDate):
             return date
+        elif isinstance(date, list) and all(isinstance(dt, TuringDate) for dt in date):
+            return date
+        else:
+            raise TuringError('Please check the input of date')
 
 
 def date_str_to_datetime(date_str):

@@ -19,47 +19,97 @@ from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.global_types import TuringSwapTypes
+from turing_models.utilities.helper_functions import datetime_to_turingdate
 from turing_models.utilities.turing_date import TuringDate
 
 
 class CurveGeneration:
-    def __init__(self,
-                 annualized_term: list,
-                 spot_rate: list,
-                 base_date: TuringDate = TuringDate(
-                     *(datetime.date.today().timetuple()[:3])),
-                 frequency_type: FrequencyType = FrequencyType.ANNUAL,
-                 number_of_days: int = 730):
-        self.term = base_date.addYears(annualized_term)
-        self.spot_rate = spot_rate
-        self.base_date = base_date
-        self.frequency_type = frequency_type  # 传入利率的frequency type，默认是年化的
-        self.number_of_days = number_of_days  # 默认是两年的自然日：365*2
-        self.curve = TuringDiscountCurveZeros(
-            self.base_date, self.term, self.spot_rate, self.frequency_type)
-        self._generate_nature_day()
-        self._generate_nature_day_rate()
+    def __init__(
+            self,
+            value_date: (datetime.datetime, datetime.date) = datetime.date.today(),
+            curve_type: DiscountCurveType = DiscountCurveType.Shibor3M,
+            number_of_days: int = 730  # 表示返回曲线的长度，默认是两年的自然日：365*2
+    ):
+        self.value_date = datetime_to_turingdate(value_date)
+        self.curve_type = curve_type
+        self.number_of_days = number_of_days
+
+    @property
+    def get_shibor_data(self):
+        """从接口获取shibor"""
+        date = self.value_date.datetime()
+        original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc[date]
+            return data
+        else:
+            raise TuringError(f"Cannot find shibor data")
+
+    @property
+    def get_shibor_swap_data(self):
+        """从接口获取利率互换曲线"""
+        date = self.value_date.datetime()
+        original_data = TuringDB.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc["Shibor3M"].loc[date]
+            return data
+        else:
+            raise TuringError("Cannot find shibor swap curve data for 'CNY'")
+
+    @property
+    def get_shibor_swap_fixing_data(self):
+        """参照cicc模型确定数据日期"""
+        date1 = '2019-07-05'
+        date2 = '2019-07-08'
+        date3 = '2019-07-09'
+        original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date1, end=date3)
+        if original_data is not None:
+            rate1 = original_data.loc[datetime.datetime.strptime(date1, '%Y-%m-%d')].loc[4, 'rate']
+            rate2 = original_data.loc[datetime.datetime.strptime(date2, '%Y-%m-%d')].loc[4, 'rate']
+            rate3 = original_data.loc[datetime.datetime.strptime(date3, '%Y-%m-%d')].loc[4, 'rate']
+            fixing_data = {'Date': [date1, date2, date3], 'Fixing': [rate1, rate2, rate3]}
+            return fixing_data
+        else:
+            raise TuringError(f"Cannot find shibor data")
+
+    def discount_curve(self):
+        if self.curve_type == DiscountCurveType.Shibor3M:
+            discount_curve = DomDiscountCurveGen(
+                value_date=self.value_date,
+                shibor_tenors=self.get_shibor_data['tenor'].tolist(),
+                shibor_origin_tenors=self.get_shibor_data['origin_tenor'].tolist(),
+                shibor_rates=self.get_shibor_data['rate'].tolist(),
+                shibor_swap_tenors=self.get_shibor_swap_data['tenor'].tolist(),
+                shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'].tolist(),
+                shibor_swap_rates=self.get_shibor_swap_data['average'].tolist(),
+                shibor_swap_fixing_dates=self.get_shibor_swap_fixing_data['Date'],
+                shibor_swap_fixing_rates=self.get_shibor_swap_fixing_data['Fixing'],
+                curve_type=DiscountCurveType.Shibor3M
+            ).discount_curve
+            return discount_curve
+        else:
+            raise TuringError('Unsupported curve type')
 
     def _generate_nature_day(self):
-        """根据base_date和number_of_days生成TuringDate列表"""
-        self.nature_days = []
+        """根据value_date和number_of_days生成TuringDate列表"""
+        self.nature_days = [self.value_date]
         for i in range(1, self.number_of_days):
-            day = self.base_date.addDays(i)
+            day = self.value_date.addDays(i)
             self.nature_days.append(day)
-
-    def _generate_nature_day_rate(self):
-        """根据nature_days生成对应的即期收益率列表"""
-        self.nature_days_rate = self.curve.zeroRate(self.nature_days, freqType=FrequencyType.ANNUAL).tolist()
-
-    def get_dates(self):
-        return [day.datetime() for day in self.nature_days]
-
-    def get_rates(self):
-        return self.nature_days_rate
-
-    def get_data_dict(self):
-        nature_days = [day.datetime() for day in self.nature_days]
-        return dict(zip(nature_days, self.nature_days_rate))
+    #
+    # def _generate_nature_day_rate(self):
+    #     """根据nature_days生成对应的即期收益率列表"""
+    #     self.nature_days_rate = self.curve.zeroRate(self.nature_days, freqType=FrequencyType.ANNUAL).tolist()
+    #
+    # def get_dates(self):
+    #     return [day.datetime() for day in self.nature_days]
+    #
+    # def get_rates(self):
+    #     return self.nature_days_rate
+    #
+    # def get_data_dict(self):
+    #     nature_days = [day.datetime() for day in self.nature_days]
+    #     return dict(zip(nature_days, self.nature_days_rate))
 
 
 class FXIRCurve:
@@ -358,12 +408,15 @@ class ForDiscountCurveGen:
 
 
 if __name__ == '__main__':
-    fx_curve = FXIRCurve(fx_symbol=CurrencyPair.USDCNY)
-    print('CCY1 Curve\n', fx_curve.get_ccy1_curve())
-    print('CCY2 Curve\n', fx_curve.get_ccy2_curve())
+    # fx_curve = FXIRCurve(fx_symbol=CurrencyPair.USDCNY)
+    # print('CCY1 Curve\n', fx_curve.get_ccy1_curve())
+    # print('CCY2 Curve\n', fx_curve.get_ccy2_curve())
     # dom = DomDiscountCurveGen()
-    # day_count = ql.Actual365Fixed()
-    # expiry = ql.Date(16, 10, 2021)
+    day_count = ql.Actual365Fixed()
+    expiry = ql.Date(27, 12, 2021)
     # print(dom.discount_curve.zeroRate(expiry, day_count, ql.Continuous))
     # fore = ForDiscountCurveGen(currency_pair='USD/CNY')
     # print(fore.discount_curve.zeroRate(expiry, day_count, ql.Continuous))
+    curve = CurveGeneration(value_date=datetime.date(2021, 12, 27))
+    discount_curve = curve.discount_curve()
+    print(discount_curve.zeroRate(expiry, day_count, ql.Continuous).rate())
