@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy import optimize
 
-from turing_models.instruments.common import newton_fun, Curve
+from turing_models.instruments.common import newton_fun, Curve, greek
 from turing_models.instruments.rates.bond import Bond
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
@@ -32,6 +32,7 @@ class BondPutableAdjustable(Bond):
     """ Class for fixed coupon bonds with embedded put optionality and rights to adjust coupon on exercise date. """
     ecnomic_terms: EcnomicTerms = None
     value_sys: str = "中债"
+    fixed_rate_bond: BondFixedRate = None
     __ytm: float = None
     __discount_curve = None
 
@@ -40,6 +41,10 @@ class BondPutableAdjustable(Bond):
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
         self.dc = TuringDayCount(DayCountType.ACT_365F)
+        if self.issue_date:
+            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
+            if self.curve_code:
+                self.cv.resolve()
         if self.ecnomic_terms is not None:
             self.check_ecnomic_terms()
             embedded_putable_options = self.ecnomic_terms.get_instance(EmbeddedPutableOptions)
@@ -54,30 +59,10 @@ class BondPutableAdjustable(Bond):
                     embedded_rate_adjustment_options_data['exercise_date'].tolist())
                 self.high_rate_adjust = embedded_rate_adjustment_options_data['high_rate_adjust'].tolist()
                 self.low_rate_adjust = embedded_rate_adjustment_options_data['low_rate_adjust'].tolist()
-            if self.exercise_dates and getattr(self, 'settlement_date', None):
-                for i in range(len(self.exercise_dates)):
-                    if self.exercise_dates[i] > self._settlement_date:
-                        self.exercise_dates = self.exercise_dates[i]
-                        self.exercise_prices = self.exercise_prices[i]
-                        if len(self.high_rate_adjust) > 0:
-                            self.high_rate_adjust = self.high_rate_adjust[i]
-                        else:
-                            self.high_rate_adjust = None
-                        if len(self.low_rate_adjust) > 0:
-                            self.low_rate_adjust = self.low_rate_adjust[i]
-                        else:
-                            self.low_rate_adjust = None
-                        break
+            self.first_exe_info()
+            self.forward_init()
 
-        if self.issue_date and self.due_date and not isinstance(self.exercise_dates, list):
-            forward_term = self.dc.yearFrac(self.settlement_date, self.exercise_dates)
-            # 远期曲线目前支持两种生成方式：1、用户通过what-if传入；2、模型自己计算
-            # 不需要调用接口获取，故不需要调用resolve
-            self.forward_cv = Curve(value_date=self.settlement_date,
-                                    curve_code=self.curve_code,
-                                    curve_type='forward_spot_rate',
-                                    forward_term=forward_term)
-        if self.coupon_rate:
+        if self.coupon_rate and self.fixed_rate_bond is None:
             if self.value_sys == "中债":
                 if getattr(self, 'high_rate_adjust', None) and isinstance(self.high_rate_adjust, (float, int)):
                     self._bound_up = self.coupon_rate + self.high_rate_adjust
@@ -208,6 +193,45 @@ class BondPutableAdjustable(Bond):
             curve_dates.append(self.dc.yearFrac(self._settlement_date, self._discount_curve._zeroDates[i])[0])
         pure_bond.cv.curve_data = pd.DataFrame(data={'tenor': curve_dates, 'rate': self._discount_curve._zeroRates})
         return pure_bond
+    
+    def forward_init(self):
+        if self.issue_date and self.due_date and not isinstance(self.exercise_dates, list):
+            forward_term = self.dc.yearFrac(self._settlement_date, self.exercise_dates)
+            # 远期曲线目前支持两种生成方式：1、用户通过what-if传入；2、模型自己计算
+            # 不需要调用接口获取，故不需要调用resolve
+            self.forward_cv = Curve(value_date=self.settlement_date,
+                                    curve_code=self.curve_code,
+                                    curve_type='forward_spot_rate',
+                                    forward_term=forward_term)
+    
+    def first_exe_info(self):
+        if self.exercise_dates and getattr(self, '_settlement_date', None):
+            for i in range(len(self.exercise_dates)):
+                if self.exercise_dates[i] > self._settlement_date:
+                    self.exercise_dates = self.exercise_dates[i]
+                    self.exercise_prices = self.exercise_prices[i]
+                    if len(self.high_rate_adjust) > 0:
+                        self.high_rate_adjust = self.high_rate_adjust[i]
+                    else:
+                        self.high_rate_adjust = None
+                    if len(self.low_rate_adjust) > 0:
+                        self.low_rate_adjust = self.low_rate_adjust[i]
+                    else:
+                        self.low_rate_adjust = None
+                    break
+            if isinstance(self.exercise_dates, list) and self.exercise_dates[-1] <= self._settlement_date:
+                print("No exercise info after valation date. Treat as a fixed rate bond")
+                self.fixed_rate_bond = BondFixedRate(comb_symbol=self.comb_symbol,
+                                                    value_date=self._settlement_date,
+                                                    issue_date=self.exercise_dates[-1],
+                                                    due_date=self.due_date,
+                                                    coupon_rate=self.coupon_rate,
+                                                    pay_interest_cycle=self.pay_interest_cycle,
+                                                    pay_interest_mode=self.pay_interest_mode,
+                                                    interest_rules=self.interest_rules,
+                                                    par=self.par,
+                                                    curve_code=self.curve_code)
+                self.fixed_rate_bond.cv.set_curve_data(self._discount_curve)
 
     def clean_price(self):
         # 定价接口调用
@@ -369,48 +393,51 @@ class BondPutableAdjustable(Bond):
         The valuation is made according to the ZhongZheng recommendation. """
 
         # Valuation:
-        if self.recommend_dir == "long":
-            # Generate bond coupon flow schedule
-            cpn1 = self.coupon_rate / self.frequency
-            cpn2 = self.adjust_fix / self.frequency
-            cpnTimes = []
-            cpn_dates = []
-            cpnAmounts = []
+        if self.fixed_rate_bond is not None:
+            return self.fixed_rate_bond.full_price_from_ytm()
+        else:
+            if self.recommend_dir == "long":
+                # Generate bond coupon flow schedule
+                cpn1 = self.coupon_rate / self.frequency
+                cpn2 = self.adjust_fix / self.frequency
+                cpnTimes = []
+                cpn_dates = []
+                cpnAmounts = []
 
-            for flow_date in self._flow_dates[1:]:
-                if self._settlement_date < flow_date <= self.exercise_dates:
-                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
-                    cpn_date = flow_date
-                    cpnTimes.append(cpnTime)
-                    cpn_dates.append(cpn_date)
-                    cpnAmounts.append(cpn1)
-                if flow_date > self.exercise_dates:
-                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
-                    cpn_date = flow_date
-                    cpnTimes.append(cpnTime)
-                    cpn_dates.append(cpn_date)
-                    cpnAmounts.append(cpn2)
+                for flow_date in self._flow_dates[1:]:
+                    if self._settlement_date < flow_date <= self.exercise_dates:
+                        cpnTime = (flow_date - self._settlement_date) / gDaysInYear
+                        cpn_date = flow_date
+                        cpnTimes.append(cpnTime)
+                        cpn_dates.append(cpn_date)
+                        cpnAmounts.append(cpn1)
+                    if flow_date > self.exercise_dates:
+                        cpnTime = (flow_date - self._settlement_date) / gDaysInYear
+                        cpn_date = flow_date
+                        cpnTimes.append(cpnTime)
+                        cpn_dates.append(cpn_date)
+                        cpnAmounts.append(cpn2)
 
-            cpnTimes = np.array(cpnTimes)
-            cpnAmounts = np.array(cpnAmounts)
+                cpnTimes = np.array(cpnTimes)
+                cpnAmounts = np.array(cpnAmounts)
 
-            pv = 0
-            dfSettle = self.discount_curve_flat.df(self._settlement_date)
-            numCoupons = len(cpnTimes)
-            for i in range(0, numCoupons):
-                # tcpn = cpnTimes[i]
-                # df_flow = _uinterpolate(tcpn, dfTimes, dfValues, interp)
-                df = self.discount_curve_flat.df(cpn_dates[i])
-                flow = cpnAmounts[i]
-                pv += flow * df
+                pv = 0
+                dfSettle = self.discount_curve_flat.df(self._settlement_date)
+                numCoupons = len(cpnTimes)
+                for i in range(0, numCoupons):
+                    # tcpn = cpnTimes[i]
+                    # df_flow = _uinterpolate(tcpn, dfTimes, dfValues, interp)
+                    df = self.discount_curve_flat.df(cpn_dates[i])
+                    flow = cpnAmounts[i]
+                    pv += flow * df
 
-            pv += df * self._redemption / dfSettle
+                pv += df * self._redemption / dfSettle
 
-            return pv * self.par
+                return pv * self.par
 
-        elif self.recommend_dir == "short":
-            v = self._pure_bond.full_price_from_ytm()
-        return v
+            elif self.recommend_dir == "short":
+                v = self._pure_bond.full_price_from_ytm()
+            return v
 
     def full_price_from_discount_curve(self):
         ''' Value the bond that settles on the specified date, which have
@@ -418,48 +445,51 @@ class BondPutableAdjustable(Bond):
         The valuation is made according to the ZhongZheng recommendation. '''
 
         # Valuation:
-        if self.recommend_dir == "long":
-            # Generate bond coupon flow schedule
-            cpn1 = self.coupon_rate / self.frequency
-            cpn2 = self.adjust_fix / self.frequency
-            cpnTimes = []
-            cpn_dates = []
-            cpnAmounts = []
+        if self.fixed_rate_bond is not None:
+            return self.fixed_rate_bond.full_price_from_discount_curve()
+        else:
+            if self.recommend_dir == "long":
+                # Generate bond coupon flow schedule
+                cpn1 = self.coupon_rate / self.frequency
+                cpn2 = self.adjust_fix / self.frequency
+                cpnTimes = []
+                cpn_dates = []
+                cpnAmounts = []
 
-            for flow_date in self._flow_dates[1:]:
-                if self._settlement_date < flow_date <= self.exercise_dates:
-                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
-                    cpn_date = flow_date
-                    cpnTimes.append(cpnTime)
-                    cpn_dates.append(cpn_date)
-                    cpnAmounts.append(cpn1)
-                if flow_date > self.exercise_dates:
-                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
-                    cpn_date = flow_date
-                    cpnTimes.append(cpnTime)
-                    cpn_dates.append(cpn_date)
-                    cpnAmounts.append(cpn2)
+                for flow_date in self._flow_dates[1:]:
+                    if self._settlement_date < flow_date <= self.exercise_dates:
+                        cpnTime = (flow_date - self._settlement_date) / gDaysInYear
+                        cpn_date = flow_date
+                        cpnTimes.append(cpnTime)
+                        cpn_dates.append(cpn_date)
+                        cpnAmounts.append(cpn1)
+                    if flow_date > self.exercise_dates:
+                        cpnTime = (flow_date - self._settlement_date) / gDaysInYear
+                        cpn_date = flow_date
+                        cpnTimes.append(cpnTime)
+                        cpn_dates.append(cpn_date)
+                        cpnAmounts.append(cpn2)
 
-            cpnTimes = np.array(cpnTimes)
-            cpnAmounts = np.array(cpnAmounts)
+                cpnTimes = np.array(cpnTimes)
+                cpnAmounts = np.array(cpnAmounts)
 
-            pv = 0
-            dfSettle = self._discount_curve.df(self._settlement_date)
-            numCoupons = len(cpnTimes)
-            for i in range(0, numCoupons):
-                # tcpn = cpnTimes[i]
-                # df_flow = _uinterpolate(tcpn, dfTimes, dfValues, interp)
-                df = self._discount_curve.df(cpn_dates[i])
-                flow = cpnAmounts[i]
-                pv += flow * df
+                pv = 0
+                dfSettle = self._discount_curve.df(self._settlement_date)
+                numCoupons = len(cpnTimes)
+                for i in range(0, numCoupons):
+                    # tcpn = cpnTimes[i]
+                    # df_flow = _uinterpolate(tcpn, dfTimes, dfValues, interp)
+                    df = self._discount_curve.df(cpn_dates[i])
+                    flow = cpnAmounts[i]
+                    pv += flow * df
 
-            pv += df * self._redemption / dfSettle
+                pv += df * self._redemption / dfSettle
 
-            return pv * self.par
+                return pv * self.par
 
-        elif self.recommend_dir == "short":
-            v = self._pure_bond.full_price_from_discount_curve()
-        return v
+            elif self.recommend_dir == "short":
+                v = self._pure_bond.full_price_from_discount_curve()
+            return v
 
     def calc_accrued_interest(self):
         """ 应计利息 """
@@ -513,136 +543,137 @@ class BondPutableAdjustable(Bond):
 
     def yield_to_maturity(self):
         """ 通过一维求根器计算YTM """
-        if self.recommend_dir == "long":
-            clean_price = self._clean_price
-            if type(clean_price) is float \
-                    or type(clean_price) is int \
-                    or type(clean_price) is np.float64:
-                clean_prices = np.array([clean_price])
-            elif type(clean_price) is list \
-                    or type(clean_price) is np.ndarray:
-                clean_prices = np.array(clean_price)
-            else:
-                raise TuringError("Unknown type for market_clean_price "
-                                  + str(type(clean_price)))
+        if self.fixed_rate_bond is not None:
+            return self.fixed_rate_bond._ytm
+        else:
+            if self.recommend_dir == "long":
+                clean_price = self._clean_price
+                if type(clean_price) is float \
+                        or type(clean_price) is int \
+                        or type(clean_price) is np.float64:
+                    clean_prices = np.array([clean_price])
+                elif type(clean_price) is list \
+                        or type(clean_price) is np.ndarray:
+                    clean_prices = np.array(clean_price)
+                else:
+                    raise TuringError("Unknown type for market_clean_price "
+                                    + str(type(clean_price)))
 
-            self.calc_accrued_interest()
-            accrued_amount = self._accrued_interest
-            full_prices = (clean_prices + accrued_amount)
-            ytms = []
+                self.calc_accrued_interest()
+                accrued_amount = self._accrued_interest
+                full_prices = (clean_prices + accrued_amount)
+                ytms = []
 
-            for full_price in full_prices:
-                argtuple = (self, full_price, "_ytm", "full_price_from_ytm")
+                for full_price in full_prices:
+                    argtuple = (self, full_price, "_ytm", "full_price_from_ytm")
 
-                ytm = optimize.newton(newton_fun,
-                                      x0=0.05,  # guess initial value of 5%
-                                      fprime=None,
-                                      args=argtuple,
-                                      tol=1e-8,
-                                      maxiter=50,
-                                      fprime2=None)
+                    ytm = optimize.newton(newton_fun,
+                                        x0=0.05,  # guess initial value of 5%
+                                        fprime=None,
+                                        args=argtuple,
+                                        tol=1e-8,
+                                        maxiter=50,
+                                        fprime2=None)
 
-                ytms.append(ytm)
-                self._ytm = None
+                    ytms.append(ytm)
+                    self._ytm = None
 
-            if len(ytms) == 1:
-                return ytms[0]
-            else:
-                return np.array(ytms)
+                if len(ytms) == 1:
+                    return ytms[0]
+                else:
+                    return np.array(ytms)
 
-        elif self.recommend_dir == "short":
-            return self._pure_bond.yield_to_maturity()
+            elif self.recommend_dir == "short":
+                return self._pure_bond.yield_to_maturity()
 
     def dv01(self):
         """ 数值法计算dv01 """
-        if self.recommend_dir == "long":
-            ytm = self._ytm
-            self._ytm = ytm - dy
-            p0 = self.full_price_from_ytm()
-            self._ytm = ytm + dy
-            p2 = self.full_price_from_ytm()
-            self._ytm = None
-            dv = -(p2 - p0) / 2.0
-            return dv
-        elif self.recommend_dir == "short":
-            return self._pure_bond.dv01()
+        if self.fixed_rate_bond is not None:
+            return self.fixed_rate_bond.dv01()
+        else:
+            if self.recommend_dir == "long":
+                if not self.isvalid():
+                    raise TuringError("Bond settles after it matures.")
+                return greek(self, self.full_price_from_ytm, "_ytm", dy) * -dy
+            elif self.recommend_dir == "short":
+                return self._pure_bond.dv01()
 
     def macauley_duration(self):
         """ 麦考利久期 """
+        if self.fixed_rate_bond is not None:
+            return self.fixed_rate_bond.macauley_duration()
+        else:
+            if self.recommend_dir == "long":
+                cpn1 = self.coupon_rate / self.frequency
+                cpn2 = self.adjust_fix / self.frequency
+                cpnTimes = []
+                cpn_dates = []
+                cpnAmounts = []
+                px = 0.0
+                df = 1.0
+                df_settle = self._discount_curve.df(self._settlement_date)
+                dc = TuringDayCount(DayCountType.ACT_ACT_ISDA)
 
-        if self.recommend_dir == "long":
-            cpn1 = self.coupon_rate / self.frequency
-            cpn2 = self.adjust_fix / self.frequency
-            cpnTimes = []
-            cpn_dates = []
-            cpnAmounts = []
-            px = 0.0
-            df = 1.0
-            df_settle = self._discount_curve.df(self._settlement_date)
-            dc = TuringDayCount(DayCountType.ACT_ACT_ISDA)
+                for flow_date in self._flow_dates[1:]:
+                    dates = dc.yearFrac(self._settlement_date, flow_date)[0]
+                    if self._settlement_date < flow_date < self.exercise_dates:
+                        cpnTime = (flow_date - self._settlement_date) / gDaysInYear
+                        cpn_date = flow_date
+                        cpnTimes.append(cpnTime)
+                        cpn_dates.append(cpn_date)
+                        cpnAmounts.append(cpn1)
+                    if flow_date >= self.exercise_dates:
+                        cpnTime = (flow_date - self._settlement_date) / gDaysInYear
+                        cpn_date = flow_date
+                        cpnTimes.append(cpnTime)
+                        cpn_dates.append(cpn_date)
+                        cpnAmounts.append(cpn2)
 
-            for flow_date in self._flow_dates[1:]:
-                dates = dc.yearFrac(self._settlement_date, flow_date)[0]
-                if self._settlement_date < flow_date < self.exercise_dates:
-                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
-                    cpn_date = flow_date
-                    cpnTimes.append(cpnTime)
-                    cpn_dates.append(cpn_date)
-                    cpnAmounts.append(cpn1)
-                if flow_date >= self.exercise_dates:
-                    cpnTime = (flow_date - self._settlement_date) / gDaysInYear
-                    cpn_date = flow_date
-                    cpnTimes.append(cpnTime)
-                    cpn_dates.append(cpn_date)
-                    cpnAmounts.append(cpn2)
+                cpnTimes = np.array(cpnTimes)
+                cpnAmounts = np.array(cpnAmounts)
 
-            cpnTimes = np.array(cpnTimes)
-            cpnAmounts = np.array(cpnAmounts)
+                pv = 0
+                numCoupons = len(cpnTimes)
+                for i in range(0, numCoupons):
+                    # tcpn = cpnTimes[i]
+                    # df_flow = _uinterpolate(tcpn, dfTimes, dfValues, interp)
+                    df = self._discount_curve.df(cpn_dates[i])
+                    flow = cpnAmounts[i]
+                    pv += flow * df * dates * self.par
 
-            pv = 0
-            numCoupons = len(cpnTimes)
-            for i in range(0, numCoupons):
-                # tcpn = cpnTimes[i]
-                # df_flow = _uinterpolate(tcpn, dfTimes, dfValues, interp)
-                df = self._discount_curve.df(cpn_dates[i])
-                flow = cpnAmounts[i]
-                pv += flow * df * dates * self.par
+                pv += df * self._redemption * self.par * dates
+                px = pv / df_settle
+                fp = self.full_price_from_ytm()
 
-            pv += df * self._redemption * self.par * dates
-            px = pv / df_settle
-            fp = self.full_price_from_ytm()
+                dmac = px / fp
 
-            dmac = px / fp
+                return dmac
+
+            elif self.recommend_dir == "short":
+                dmac = self._pure_bond.macauley_duration()
 
             return dmac
 
-        elif self.recommend_dir == "short":
-            dmac = self._pure_bond.macauley_duration()
-
-        return dmac
-
     def modified_duration(self):
         """ 修正久期 """
-
-        dmac = self.macauley_duration()
-        md = dmac / (1.0 + self._ytm / self.frequency)
-        return md
+        if self.fixed_rate_bond is not None:
+            return self.fixed_rate_bond.modified_duration()
+        else:
+            dmac = self.macauley_duration()
+            md = dmac / (1.0 + self._ytm / self.frequency)
+            return md
 
     def dollar_convexity(self):
         """ 凸性 """
-        if self.recommend_dir == 'long':
-            ytm = self._ytm
-            self._ytm = ytm - dy
-            p0 = self.full_price_from_ytm()
-            self._ytm = ytm
-            p1 = self.full_price_from_ytm()
-            self._ytm = ytm + dy
-            p2 = self.full_price_from_ytm()
-            self._ytm = None
-            dollar_conv = ((p2 + p0) - 2.0 * p1) / dy / dy
-            return dollar_conv
-        elif self.recommend_dir == "short":
-            return self._pure_bond.dollar_convexity()
+        if self.fixed_rate_bond is not None:
+            return self.fixed_rate_bond.dollar_convexity()
+        else:
+            if self.recommend_dir == 'long':
+                if not self.isvalid():
+                    raise TuringError("Bond settles after it matures.")
+                return greek(self, self.full_price_from_ytm, "_ytm", order=2)
+            elif self.recommend_dir == "short":
+                return self._pure_bond.dollar_convexity()
 
     def check_ecnomic_terms(self):
         """检测ecnomic_terms是否为字典格式，若为字典格式，则处理成EcnomicTerms的实例对象"""

@@ -66,9 +66,6 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             self.trd_curr_code = self.trd_curr_code.value  # 转换成字符串，便于rich表格显示
         if self.issue_date:
             self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
-            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
-            if self.curve_code:
-                self.cv.resolve()
         self.check_param()
         if self.pay_interest_cycle:
             self._calculate_cash_flow_dates()

@@ -4,7 +4,7 @@ import numpy as np
 from scipy import optimize
 
 # from fundamental.turing_db.data import TuringDB
-from turing_models.instruments.common import newton_fun, greek
+from turing_models.instruments.common import newton_fun, greek, Curve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.bond_terms import EcnomicTerms, PrepaymentTerms
@@ -25,6 +25,10 @@ class BondAdvRedemption(Bond):
         super().__post_init__()
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
+        if self.issue_date:
+            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
+            if self.curve_code:
+                self.cv.resolve()
         if self.ecnomic_terms is not None:
             self.check_ecnomic_terms()
             prepayment_terms = self.ecnomic_terms.get_instance(PrepaymentTerms)

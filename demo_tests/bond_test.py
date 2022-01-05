@@ -1,3 +1,5 @@
+import datetime
+
 from fundamental import PricingContext
 from turing_models.instruments.common import RiskMeasure
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
@@ -5,9 +7,12 @@ from turing_models.instruments.rates.bond_floating_rate import BondFloatingRate
 from turing_models.instruments.rates.bond_adv_redemption import BondAdvRedemption
 from turing_models.instruments.rates.bond_putable_adjustable import BondPutableAdjustable
 
+
+value_date = datetime.datetime(2021, 12, 27)
 print("==============固息债示例==============")
 bond_fixed_rate = BondFixedRate(
-    comb_symbol="200004.IB"
+    comb_symbol="200004.IB",
+    value_date=value_date
 )
 bond_fixed_rate.resolve()
 print(bond_fixed_rate)
@@ -29,7 +34,8 @@ print('time_to_maturity:', time_to_maturity)
 
 print("==============浮息债示例==============")
 bond_floating_rate = BondFloatingRate(
-    comb_symbol="200217.IB"
+    comb_symbol="200217.IB",
+    value_date=value_date
 )
 bond_floating_rate.resolve()
 full_price = bond_floating_rate.calc(RiskMeasure.FullPrice)
@@ -48,7 +54,8 @@ print('time_to_maturity:', time_to_maturity)
 
 print("==============固息债（含提前偿还条款）==============")
 bond_adv_redemption = BondAdvRedemption(
-    comb_symbol="2180432.IB"
+    comb_symbol="2180432.IB",
+    value_date=value_date
 )
 bond_adv_redemption.resolve()
 full_price = bond_adv_redemption.calc(RiskMeasure.FullPrice)
@@ -69,7 +76,8 @@ print('time_to_maturity:', time_to_maturity)
 
 print("==============固息债（回售+调整票面利率）==============")
 bond_putable_adjustable = BondPutableAdjustable(
-    comb_symbol="1880106.IB"
+    comb_symbol="1880106.IB",
+    value_date=value_date
 )
 bond_putable_adjustable.resolve()
 print('full price', bond_putable_adjustable.full_price())
