@@ -1164,92 +1164,92 @@ class Ctx:
 
     @property
     def ctx_ytm(self):
-        return getattr(self.ctx, f"ytm_{getattr(self, 'asset_id', '')}") or \
-               getattr(self.ctx, f"ytm_{getattr(self, 'comb_symbol', '')}")
+        return getattr(ctx, f"ytm_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"ytm_{getattr(self, 'comb_symbol', '')}")
 
     @property
     def ctx_clean_price(self):
-        return getattr(self.ctx, f"clean_price_{getattr(self, 'asset_id', '')}") or \
-               getattr(self.ctx, f"clean_price_{getattr(self, 'comb_symbol', '')}")
+        return getattr(ctx, f"clean_price_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"clean_price_{getattr(self, 'comb_symbol', '')}")
 
     @property
     def ctx_spread_adjustment(self):
-        return getattr(self.ctx, f"spread_adjustment_{getattr(self, 'asset_id', '')}") or \
-               getattr(self.ctx, f"spread_adjustment_{getattr(self, 'comb_symbol', '')}")
+        return getattr(ctx, f"spread_adjustment_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"spread_adjustment_{getattr(self, 'comb_symbol', '')}")
 
     @property
     def ctx_spot(self):
-        return getattr(self.ctx, f"spot_{getattr(self, 'asset_id', '')}") or \
-               getattr(self.ctx, f"spot_{getattr(self, 'underlier', '')}")
+        return getattr(ctx, f"spot_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"spot_{getattr(self, 'underlier', '')}")
 
     @property
     def ctx_volatility(self):
-        return getattr(self.ctx, f"volatility_{getattr(self, 'asset_id', '')}") or \
-               getattr(self.ctx, f"volatility_{getattr(self, 'underlier', '')}")
+        return getattr(ctx, f"volatility_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"volatility_{getattr(self, 'underlier', '')}")
 
     @property
     def ctx_next_base_interest_rate(self):
         floating_rate_benchmark = getattr(self, 'floating_rate_benchmark', '')
-        return getattr(self.ctx, f"next_base_interest_rate_{floating_rate_benchmark}")
+        return getattr(ctx, f"next_base_interest_rate_{floating_rate_benchmark}")
 
     @property
     def ctx_fx_implied_volatility_curve(self):
-        return getattr(self.ctx, f"fx_implied_volatility_curve_{getattr(self, 'asset_id', '')}") or \
-               getattr(self.ctx, f"fx_implied_volatility_curve_{getattr(self, 'underlier', '')}")
+        return getattr(ctx, f"fx_implied_volatility_curve_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"fx_implied_volatility_curve_{getattr(self, 'underlier', '')}")
 
     @property
     def ctx_irs_curve(self):
-        return getattr(self.ctx, f"irs_curve_{getattr(self, 'asset_id', '')}") or \
-               getattr(self.ctx, f"irs_curve_{getattr(self, 'underlier', '')}")
+        return getattr(ctx, f"irs_curve_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"irs_curve_{getattr(self, 'underlier', '')}")
 
     @property
     def ctx_shibor_curve(self):
-        return getattr(self.ctx, f"shibor_curve_{getattr(self, 'asset_id', '')}") or \
-               getattr(self.ctx, f"shibor_curve_{getattr(self, 'underlier', '')}")
+        return getattr(ctx, f"shibor_curve_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"shibor_curve_{getattr(self, 'underlier', '')}")
 
     @property
     def ctx_swap_curve(self):
-        return getattr(self.ctx, f"swap_curve_{getattr(self, 'asset_id', '')}") or \
-               getattr(self.ctx, f"swap_curve_{getattr(self, 'underlier', '')}")
+        return getattr(ctx, f"swap_curve_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"swap_curve_{getattr(self, 'underlier', '')}")
 
     @property
     def ctx_interest_rate(self):
-        return self.ctx.interest_rate
+        return ctx.interest_rate
 
     @property
     def ctx_dividend_yield(self):
-        return self.ctx.dividend_yield
+        return ctx.dividend_yield
 
     @property
     def ctx_pricing_date(self):
-        return self.ctx.pricing_date
+        return ctx.pricing_date
 
     @property
     def ctx_parallel_shift(self):
-        return getattr(self.ctx, f"parallel_shift_{self.curve_code}")
+        return getattr(ctx, f"parallel_shift_{self.curve_code}")
 
     @property
     def ctx_curve_shift(self):
-        return getattr(self.ctx, f"curve_shift_{self.curve_code}")
+        return getattr(ctx, f"curve_shift_{self.curve_code}")
 
     @property
     def ctx_pivot_point(self):
-        return getattr(self.ctx, f"pivot_point_{self.curve_code}")
+        return getattr(ctx, f"pivot_point_{self.curve_code}")
 
     @property
     def ctx_tenor_start(self):
-        return getattr(self.ctx, f"tenor_start_{self.curve_code}")
+        return getattr(ctx, f"tenor_start_{self.curve_code}")
 
     @property
     def ctx_tenor_end(self):
-        return getattr(self.ctx, f"tenor_end_{self.curve_code}")
+        return getattr(ctx, f"tenor_end_{self.curve_code}")
 
     def ctx_yield_curve(self, curve_type: str, forward_term: float = None):
         curve_code = getattr(self, 'curve_code', None)
         if forward_term is None:
-            return getattr(self.ctx, f"yield_curve_{curve_code}_{curve_type}")
+            return getattr(ctx, f"yield_curve_{curve_code}_{curve_type}")
         else:
-            return getattr(self.ctx, f"yield_curve_{curve_code}_{curve_type}_{forward_term}")
+            return getattr(ctx, f"yield_curve_{curve_code}_{curve_type}_{forward_term}")
 
 
 class Priceable(Ctx):

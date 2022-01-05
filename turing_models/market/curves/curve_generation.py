@@ -1,18 +1,20 @@
 import datetime
 from typing import List, Union
 
-import pandas as pd
-import numpy as np
 import QuantLib as ql
+import numpy as np
+import pandas as pd
+from pydantic import BaseModel
 
+from fundamental import PricingContext, ctx
 from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.common import CurrencyPair, DiscountCurveType, Ctx
 from turing_models.instruments.rates.irs import create_ibor_single_curve
 from turing_models.market.curves.curve_ql import Shibor3M, FXImpliedAssetCurve, \
-     FXForwardCurve, CNYShibor3M, USDLibor3M, FXForwardCurveFQ
+    FXForwardCurve, CNYShibor3M, USDLibor3M, FXForwardCurveFQ
 from turing_models.market.curves.curve_ql_real_time import FXForwardCurve as FXForwardCurveFQRealTime, \
-     CNYShibor3M as CNYShibor3MRealTime, \
-     USDLibor3M as USDLibor3MRealTime
+    CNYShibor3M as CNYShibor3MRealTime, \
+    USDLibor3M as USDLibor3MRealTime
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
 from turing_models.utilities.day_count import DayCountType
@@ -23,17 +25,47 @@ from turing_models.utilities.helper_functions import datetime_to_turingdate, tur
 from turing_models.utilities.turing_date import TuringDate
 
 
-class CurveGeneration(Ctx):
-    def __init__(
-            self,
-            value_date: datetime.datetime = datetime.datetime.today(),
-            curve_type: (str, DiscountCurveType) = DiscountCurveType.Shibor3M,
-            interval=0.1  # 表示每隔0.1年计算一个rate
-    ):
-        super().__init__()
-        self.value_date = value_date
-        self.curve_type = curve_type
-        self.interval = interval
+class Base(BaseModel):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def api_data(self, **kw):
+        ...
+
+    def evaluation(self, *args, **kw):
+        context = kw.pop('context', '')
+        try:
+            if context:
+                ctx.context = context
+        except Exception:
+            pass
+        scenario = PricingContext()
+        request_id = kw.pop('request_id', '')
+        if request_id:
+            ctx.request_id = request_id
+
+        pricing_context = kw.pop('pricing_context', '')
+        self.api_data(**kw)
+        if pricing_context:
+            scenario.resolve(pricing_context)
+            with scenario:
+                return self._generate()
+        else:
+            return self._generate()
+
+    def _generate(self):
+        return getattr(self, "generate_data")()
+
+
+class CurveGeneration(Base, Ctx):
+    value_date: Union[str, datetime.datetime] = None
+    curve_type: str = None
+    interval = 0.1  # 表示每隔0.1年计算一个rate
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if not self.value_date:
+            self.value_date = datetime.datetime.today()
         self.check_param()
 
     def check_param(self):
@@ -135,7 +167,7 @@ class CurveGeneration(Ctx):
             raise TuringError('Unsupported date type')
         return tenors, nature_days
 
-    def generate_curve_data(self):
+    def generate_data(self):
         """ 生成dataframe """
         discount_curve, term = self.generate_discount_curve_and_term()
         if isinstance(discount_curve, ql.YieldTermStructure):
@@ -195,7 +227,7 @@ class FXIRCurve:
                                                           curve_type=for_curve_type).discount_curve
 
         self.nature_days = []
-        for i in range(1, number_of_days+1):
+        for i in range(1, number_of_days + 1):
             day = value_date.addDays(i)
             self.nature_days.append(day)
 
@@ -458,7 +490,7 @@ if __name__ == '__main__':
     # fore = ForDiscountCurveGen(currency_pair='USD/CNY')
     # print(fore.discount_curve.zeroRate(expiry, day_count, ql.Continuous))
     curve = CurveGeneration(value_date=datetime.datetime(2021, 12, 27), curve_type='Shibor3M')
-    print(curve.generate_curve_data())
+    print(curve.generate_data())
     # discount_curve = curve.discount_curve()
     # print(isinstance(discount_curve, ql.YieldTermStructure))
     # print(discount_curve.zeroRate(expiry, day_count, ql.Continuous).rate())
