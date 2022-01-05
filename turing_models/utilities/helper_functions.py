@@ -550,6 +550,21 @@ def datetime_to_turingdate(date):
             raise TuringError('Please check the input of date')
 
 
+def datetime_to_qldate(date):
+    """ Convert datetime to ql.Date """
+    if date is not None:
+        if isinstance(date, (datetime.datetime, datetime.date)):
+            return ql.Date(date.day, date.month, date.year)
+        elif isinstance(date, list) and all(isinstance(dt, (datetime.datetime, datetime.date)) for dt in date):
+            return [ql.Date(dt.day, dt.month, dt.year) for dt in date]
+        elif isinstance(date, ql.Date):
+            return date
+        elif isinstance(date, list) and all(isinstance(dt, ql.Date) for dt in date):
+            return date
+        else:
+            raise TuringError('Please check the input of date')
+
+
 def date_str_to_datetime(date_str):
     """例：2021-08-04T00:00:00.000+080（字符串）转datetime"""
     date_str = ' '.join(date_str.split('+')[0].split('T'))[:-4]
