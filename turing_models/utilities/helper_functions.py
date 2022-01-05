@@ -7,6 +7,7 @@ import numpy as np
 from numba import njit, float64
 import QuantLib as ql
 
+from turing_utils.log.request_id_log import logger
 from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
@@ -579,3 +580,50 @@ def convert_date(column_name: str):
         else:
             return x[column_name]
     return fun
+
+
+def utc2local(utc_dtm):
+    # UTC 时间转本地时间（ +8:00 ）
+    local_tm = datetime.datetime.fromtimestamp(0)
+    utc_tm = datetime.datetime.utcfromtimestamp(0)
+    offset = local_tm - utc_tm
+    return utc_dtm + offset
+
+
+def to_datetime(date: Union[str, datetime.datetime, datetime.date, TuringDate]) -> datetime.datetime:
+    if isinstance(date, datetime.datetime):
+        return date.replace(hour=0, minute=0, second=0, microsecond=0)
+    elif isinstance(date, datetime.date):
+        return datetime.datetime(date.year, date.month, date.day)
+    elif isinstance(date, TuringDate):
+        return datetime.datetime(date._y, date._m, date._d)
+    try:
+        if date == 'latest':
+            return datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+        fmt = "%Y%m%d"
+        if '-' not in str(date):
+            date = datetime.datetime.strptime(str(date), fmt)
+        if '-' in str(date):
+            if len(str(date)) == 10:
+                fmt = "%Y-%m-%d"
+            elif len(str(date)) == 19:
+                fmt = "%Y-%m-%d %H:%M:%S"
+            else:
+                fmt = "%Y-%m-%dT%H:%M:%S.%f%z"
+            date = datetime.datetime.strptime(str(date), fmt)
+        date = utc2local(date)
+        res_tuple = (date.year, date.month, date.day,)
+        return datetime.datetime(*res_tuple)
+    except ValueError as e:
+        logger.debug(str(e))
+    except Exception as e:
+        logger.debug(str(e))
+
+
+if __name__ == '__main__':
+    print(to_datetime(datetime.datetime.today()))
+    print(to_datetime(datetime.date.today()))
+    print(to_datetime(TuringDate(2021, 10, 10)))
+    print(to_datetime('20211010'))
+    print(to_datetime('2021-10-10'))
+    print(to_datetime('2021-12-27T00:00:00.000+0800'))

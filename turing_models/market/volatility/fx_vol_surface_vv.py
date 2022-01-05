@@ -156,9 +156,7 @@ def _deltaFit(k, *args):
 ###############################################################################
 
 
-@njit(float64(float64, float64, float64, float64, int64, float64,
-              int64, float64, float64[:]),
-      fastmath=True)
+@njit(fastmath=True)
 def _solveForSmileStrike(s, t, rd, rf,
                          optionTypeValue,
                          deltaTarget,
@@ -187,8 +185,7 @@ def _solveForSmileStrike(s, t, rd, rf,
 ###############################################################################
 
 
-@njit(float64(float64, float64, float64, float64, int64, float64,
-              int64, float64), fastmath=True)
+@njit(fastmath=True)
 def solveForStrike(spotFXRate,
                    tdel, rd, rf,
                    optionTypeValue,

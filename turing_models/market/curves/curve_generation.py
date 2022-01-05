@@ -4,72 +4,38 @@ from typing import List, Union
 import QuantLib as ql
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel
 
-from fundamental import PricingContext, ctx
 from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.common import CurrencyPair, DiscountCurveType, Ctx
 from turing_models.instruments.rates.irs import create_ibor_single_curve
 from turing_models.market.curves.curve_ql import Shibor3M, FXImpliedAssetCurve, \
     FXForwardCurve, CNYShibor3M, USDLibor3M, FXForwardCurveFQ
 from turing_models.market.curves.curve_ql_real_time import FXForwardCurve as FXForwardCurveFQRealTime, \
-    CNYShibor3M as CNYShibor3MRealTime, \
-    USDLibor3M as USDLibor3MRealTime
+     CNYShibor3M as CNYShibor3MRealTime, USDLibor3M as USDLibor3MRealTime
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
 from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.global_types import TuringSwapTypes
-from turing_models.utilities.helper_functions import datetime_to_turingdate, turingdate_to_qldate
+from turing_models.utilities.helper_classes import Base
+from turing_models.utilities.helper_functions import datetime_to_turingdate, turingdate_to_qldate, to_datetime
 from turing_models.utilities.turing_date import TuringDate
 
 
-class Base(BaseModel):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def api_data(self, **kw):
-        ...
-
-    def evaluation(self, *args, **kw):
-        context = kw.pop('context', '')
-        try:
-            if context:
-                ctx.context = context
-        except Exception:
-            pass
-        scenario = PricingContext()
-        request_id = kw.pop('request_id', '')
-        if request_id:
-            ctx.request_id = request_id
-
-        pricing_context = kw.pop('pricing_context', '')
-        self.api_data(**kw)
-        if pricing_context:
-            scenario.resolve(pricing_context)
-            with scenario:
-                return self._generate()
-        else:
-            return self._generate()
-
-    def _generate(self):
-        return getattr(self, "generate_data")()
-
-
 class CurveGeneration(Base, Ctx):
-    value_date: Union[str, datetime.datetime] = None
-    curve_type: str = None
+    value_date: Union[str, datetime.datetime, datetime.date] = datetime.datetime.today()
+    curve_type: Union[str, DiscountCurveType] = DiscountCurveType.Shibor3M
     interval = 0.1  # 表示每隔0.1年计算一个rate
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if not self.value_date:
-            self.value_date = datetime.datetime.today()
         self.check_param()
 
     def check_param(self):
-        """ 将字符串转换为枚举类型 """
+        """ 将字符串转换为枚举类型、时间转换为datetime.datetime格式 """
+        if self.value_date is not None:
+            self.value_date = to_datetime(self.value_date)
         if self.curve_type is not None:
             if not isinstance(self.curve_type, DiscountCurveType):
                 rules = {
@@ -86,7 +52,7 @@ class CurveGeneration(Base, Ctx):
     def _value_date(self):
         if self.ctx_pricing_date is not None:
             if isinstance(self.ctx_pricing_date, TuringDate):
-                return self.ctx_pricing_date.datetime()
+                return to_datetime(self.ctx_pricing_date)
         return self.value_date
 
     @property
@@ -167,7 +133,7 @@ class CurveGeneration(Base, Ctx):
             raise TuringError('Unsupported date type')
         return tenors, nature_days
 
-    def generate_data(self):
+    def get_curve(self):
         """ 生成dataframe """
         discount_curve, term = self.generate_discount_curve_and_term()
         if isinstance(discount_curve, ql.YieldTermStructure):
@@ -179,6 +145,17 @@ class CurveGeneration(Base, Ctx):
             return result
         else:
             raise TuringError('Unsupported curve type')
+
+    def generate_data(self):
+        """ 提供给定价服务调用 """
+        original_data = self.get_curve()
+        curve_data = []
+        tenors = original_data['tenor'].tolist()
+        rates = original_data['rate'].tolist()
+        length = len(tenors)
+        for i in range(length):
+            curve_data.append({"tenor": tenors[i], 'rate': rates[i]})
+        return curve_data
 
 
 class FXIRCurve:
@@ -490,6 +467,7 @@ if __name__ == '__main__':
     # fore = ForDiscountCurveGen(currency_pair='USD/CNY')
     # print(fore.discount_curve.zeroRate(expiry, day_count, ql.Continuous))
     curve = CurveGeneration(value_date=datetime.datetime(2021, 12, 27), curve_type='Shibor3M')
+    print(curve.get_curve())
     print(curve.generate_data())
     # discount_curve = curve.discount_curve()
     # print(isinstance(discount_curve, ql.YieldTermStructure))
