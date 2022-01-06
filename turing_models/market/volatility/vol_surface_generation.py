@@ -390,8 +390,14 @@ if __name__ == '__main__':
     pd.set_option('display.max_columns', None)
     pd.set_option('display.max_rows', None)
     print('Volatility Surface\n', vol)
-    print(vol.to_dict())
     print(fx_vol_surface.generate_data())
+    from fundamental.pricing_context import PricingContext
+
+    scenario_extreme = PricingContext(
+        pricing_date="2021-12-28T00:00:00.000+0800"
+    )
+    with scenario_extreme:
+        print(fx_vol_surface.generate_data())
 
     # print(fx_vol_surface.generate_data())
     # vol_sur = FXVolSurfaceGen(currency_pair=CurrencyPair.USDCNY).volatility_surface

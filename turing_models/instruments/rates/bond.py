@@ -12,7 +12,7 @@ from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, FrequencyType
 from turing_models.utilities.global_types import TuringYTMCalcType, CouponType
-from turing_models.utilities.helper_functions import datetime_to_turingdate
+from turing_models.utilities.helper_functions import to_turing_date
 from turing_models.utilities.schedule import TuringSchedule
 from turing_utils.log.request_id_log import logger
 
@@ -59,13 +59,14 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self._flow_amounts = []  # 现金流发生额
         # self._accrued_interest = None
         self._accrued_days = 0.0  # 应计利息天数
-        self.value_date = datetime_to_turingdate(self.value_date)
-        self.issue_date = datetime_to_turingdate(self.issue_date)
-        self.due_date = datetime_to_turingdate(self.due_date)
+        self.value_date = to_turing_date(self.value_date)
+        self.issue_date = to_turing_date(self.issue_date)
+        self.due_date = to_turing_date(self.due_date)
         if self.trd_curr_code and isinstance(self.trd_curr_code, Currency):
             self.trd_curr_code = self.trd_curr_code.value  # 转换成字符串，便于rich表格显示
         if self.issue_date:
-            self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
+            self.value_date = max(self.value_date, self.issue_date)
+            self.settlement_date = self.value_date.addDays(self.settlement_terms)  # 计算结算日期
         self.check_param()
         if self.pay_interest_cycle:
             self._calculate_cash_flow_dates()
@@ -133,15 +134,21 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                     raise self.interest_rules
 
     @property
+    def date_for_interface(self):
+        # turing sdk提供的接口支持传datetime.datetime格式的时间
+        if self.ctx_pricing_date is not None:
+            value_date = to_turing_date(self.ctx_pricing_date)
+            return max(value_date, self.issue_date)
+        else:
+            return self.value_date
+
+    @property
     def _settlement_date(self):
-        if self.ctx_pricing_date:
-            value_date = max(self.ctx_pricing_date.addDays(self.settlement_terms), self.issue_date)
-            return value_date
-        return self.settlement_date
+        return self.date_for_interface.addDays(self.settlement_terms)
 
     def _curve_resolve(self):
         # 为了实时响应what-if调整pricing date
-        self.cv.set_value_date(self._settlement_date)
+        self.cv.set_value_date(self.date_for_interface)
         # 查询用户是否通过what-if传入self.curve_code对应的即期收益率曲线数据
         ctx_yield_curve = self.ctx_yield_curve(curve_type='spot_rate')
         if ctx_yield_curve is not None:

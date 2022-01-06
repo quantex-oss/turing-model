@@ -466,9 +466,19 @@ if __name__ == '__main__':
     # print(dom.discount_curve.zeroRate(expiry, day_count, ql.Continuous))
     # fore = ForDiscountCurveGen(currency_pair='USD/CNY')
     # print(fore.discount_curve.zeroRate(expiry, day_count, ql.Continuous))
-    curve = CurveGeneration(value_date=datetime.datetime(2021, 12, 27), curve_type='Shibor3M')
+    # curve = CurveGeneration(value_date=datetime.datetime(2021, 12, 27), curve_type='Shibor3M')
+    # print(curve.get_curve())
+    from fundamental.pricing_context import PricingContext
+    scenario_extreme = PricingContext(
+        pricing_date="2021-12-28T00:00:00.000+0800"
+    )
+    # print(curve.generate_data())
+    curve = CurveGeneration(value_date="2021-12-27T00:00:00.000+0800", curve_type='Shibor3M')
     print(curve.get_curve())
     print(curve.generate_data())
+    with scenario_extreme:
+        print(curve.get_curve())
+        print(curve.generate_data())
     # discount_curve = curve.discount_curve()
     # print(isinstance(discount_curve, ql.YieldTermStructure))
     # print(discount_curve.zeroRate(expiry, day_count, ql.Continuous).rate())

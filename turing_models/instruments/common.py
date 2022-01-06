@@ -1,3 +1,4 @@
+import datetime
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
@@ -1369,7 +1370,7 @@ class CurveAdjustment:
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class Curve:
-    value_date: TuringDate = None  # 估值日期
+    value_date: Union[TuringDate, str] = None  # 估值日期
     curve_code: Union[str, YieldCurveCode] = None  # 曲线编码
     curve_name: str = None  # 曲线名称
     curve_data: pd.DataFrame = None  # 曲线数据，列索引为'tenor'和'rate'
@@ -1379,11 +1380,22 @@ class Curve:
     def __post_init__(self):
         """估值日期和曲线编码不能为空"""
         assert self.value_date, "value_date can't be None"
-        # assert self.curve_code, "curve_code can't be None"
+        self.check_param()
+
+    def check_param(self):
+        """对时间做格式校验和转换处理"""
+        if isinstance(self.value_date, str) and self.value_date == 'latest':
+            self.value_date = TuringDate(*(datetime.date.today().timetuple()[:3]))
+            self._date_for_interface = 'latest'
+        elif isinstance(self.value_date, TuringDate):
+            self._date_for_interface = self.value_date
+        else:
+            raise TuringError("value must be 'latest'/TuringDate")
 
     def set_value_date(self, value):
         """设置估值日期"""
         self.value_date = value
+        self.check_param()
         # 如果重新设置了value_date，则需要把原来的曲线数据清空，再通过以下两种方式补全曲线数据：
         # 1、调用resolve方法，根据新的value_date从接口获取曲线数据
         # 2、调用set_curve_data方法，从外部传入曲线数据
@@ -1397,8 +1409,13 @@ class Curve:
             self.curve_data = value
 
     def set_forward_term(self, value: (float, int)):
-        """设置估值日期"""
+        """设置远期期限"""
         self.forward_term = value
+        # 如果重新设置了forward_term，同时curve_type为远期，则需要把原来的曲线数据清空，再通过以下两种方式补全曲线数据：
+        # 1、调用resolve方法，根据新的forward_term从接口获取曲线数据
+        # 2、调用set_curve_data方法，从外部传入曲线数据
+        if self.curve_type == 'forward_spot_rate' or self.curve_type == 'forward_ytm':
+            self.curve_data = None
 
     def resolve(self):
         """补全/更新数据"""
@@ -1409,16 +1426,14 @@ class Curve:
                 curve_code = self.curve_code
             if self.curve_data is None:
                 if self.curve_type == 'spot_rate':
-                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date). \
+                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface). \
                         loc[curve_code][['tenor', 'spot_rate']].rename(columns={'spot_rate': 'rate'})
                 elif self.curve_type == 'ytm':
-                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date). \
+                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface). \
                         loc[curve_code][['tenor', 'ytm']].rename(columns={'ytm': 'rate'})
                 elif self.curve_type == 'forward_spot_rate':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
-                        print(TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date,
-                                                        forward_term=self.forward_term))
-                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date,
+                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface,
                                                                     forward_term=self.forward_term). \
                             loc[curve_code][['tenor', 'forward_spot_rate']].rename(
                             columns={'forward_spot_rate': 'rate'})
@@ -1426,7 +1441,7 @@ class Curve:
                         raise TuringError('Please check the input of forward_term')
                 elif self.curve_type == 'forward_ytm':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
-                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date,
+                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface,
                                                                     forward_term=self.forward_term). \
                             loc[curve_code][['tenor', 'forward_ytm']].rename(columns={'forward_ytm': 'rate'})
                     else:
@@ -1466,10 +1481,8 @@ class Curve:
 
 
 if __name__ == '__main__':
-    cv = Curve(value_date=TuringDate(2021, 11, 10),
-               curve_code=YieldCurveCode.CBD100032,
-               curve_type='forward_ytm',
-               forward_term=0.5)
+    cv = Curve(value_date='latest',
+               curve_code='CBD100461')
     cv.resolve()
     print(cv.curve_data)
 

@@ -10,9 +10,8 @@ from turing_models.instruments.rates.bond import Bond
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-# from fundamental.turing_db.data import TuringDB
 from turing_models.utilities.bond_terms import EcnomicTerms, EmbeddedPutableOptions, \
-    EmbeddedRateAdjustmentOptions
+     EmbeddedRateAdjustmentOptions
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.utilities.error import TuringError
@@ -42,7 +41,7 @@ class BondPutableAdjustable(Bond):
         self._alpha = 0.0
         self.dc = TuringDayCount(DayCountType.ACT_365F)
         if self.issue_date:
-            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
+            self.cv = Curve(value_date=self.value_date, curve_code=self.curve_code)
             if self.curve_code:
                 self.cv.resolve()
         if self.ecnomic_terms is not None:

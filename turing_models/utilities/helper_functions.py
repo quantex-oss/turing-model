@@ -620,10 +620,48 @@ def to_datetime(date: Union[str, datetime.datetime, datetime.date, TuringDate]) 
         logger.debug(str(e))
 
 
+def to_turing_date(res: Union[str, datetime.datetime, datetime.date, TuringDate]) -> TuringDate:
+    if res is None:
+        return None
+    if isinstance(res, TuringDate):
+        return res
+    elif isinstance(res, (datetime.datetime, datetime.date)):
+        res_tuple = (res.year, res.month, res.day)
+        return TuringDate(*res_tuple)
+    try:
+        if res == 'latest':
+            return TuringDate(*(datetime.date.today().timetuple()[:3]))
+        fmt = "%Y%m%d"
+        if '-' not in str(res):
+            res = datetime.datetime.strptime(str(res), fmt)
+        if '-' in str(res):
+            if len(str(res)) == 10:
+                fmt = "%Y-%m-%d"
+            elif len(str(res)) == 19:
+                fmt = "%Y-%m-%d %H:%M:%S"
+            else:
+                fmt = "%Y-%m-%dT%H:%M:%S.%f%z"
+            res = datetime.datetime.strptime(str(res), fmt)
+        res = utc2local(res)
+        res_tuple = (res.year, res.month, res.day,)
+        return TuringDate(*res_tuple)
+    except ValueError as e:
+        logger.debug(str(e))
+    except Exception as e:
+        logger.debug(str(e))
+
+
 if __name__ == '__main__':
-    print(to_datetime(datetime.datetime.today()))
-    print(to_datetime(datetime.date.today()))
-    print(to_datetime(TuringDate(2021, 10, 10)))
-    print(to_datetime('20211010'))
-    print(to_datetime('2021-10-10'))
-    print(to_datetime('2021-12-27T00:00:00.000+0800'))
+    # print(to_datetime(datetime.datetime.today()))
+    # print(to_datetime(datetime.date.today()))
+    # print(to_datetime(TuringDate(2021, 10, 10)))
+    # print(to_datetime('20211010'))
+    # print(to_datetime('2021-10-10'))
+    # print(to_datetime('2021-12-27T00:00:00.000+0800'))
+    print(to_turing_date(datetime.datetime.today()))
+    print(to_turing_date(datetime.date.today()))
+    print(to_turing_date(TuringDate(2021, 10, 10)))
+    print(to_turing_date('20211010'))
+    print(to_turing_date('2021-10-10'))
+    print(to_turing_date('2021-12-27T00:00:00.000+0800'))
+    print(to_turing_date(None))
