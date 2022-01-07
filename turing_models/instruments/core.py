@@ -92,6 +92,9 @@ class InstrumentBase(PricingMixin):
         getattr(self, '_')
 
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], option_all=None):
+        if self.__class__.__name__ == "Position" and getattr(self, 'tradble', None) and  not getattr(self.tradble, 'isvalid')():
+            logger.debug(f"{getattr(self,'asset_id')}: is not valid")
+            return
         result: Union[float, List] = []
         try:
             if not isinstance(risk_measure, Iterable) or isinstance(risk_measure, str):
