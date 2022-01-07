@@ -84,7 +84,7 @@ class SnowballOption(EqOption):
     @property
     def bus_days(self) -> List[TuringDate]:
         """生成从估值日到到期日的交易日时间表（包含首尾日）"""
-        schedule_daily = TuringSchedule(self.value_date_,
+        schedule_daily = TuringSchedule(self._value_date,
                                         self.expiry,
                                         freqType=FrequencyType.DAILY,
                                         calendarType=TuringCalendarTypes.CHINA_SSE,
@@ -135,7 +135,7 @@ class SnowballOption(EqOption):
         start_date = self.start_date
         initial_spot = self.initial_spot
         expiry = self.expiry
-        value_date = self.value_date_
+        value_date = self._value_date
         r = self.r
         rebate = self.rebate
         untriggered_rebate = self.untriggered_rebate

@@ -7,6 +7,7 @@ import numpy as np
 from numba import njit, float64
 import QuantLib as ql
 
+from turing_utils.log.request_id_log import logger
 from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
@@ -550,6 +551,21 @@ def datetime_to_turingdate(date):
             raise TuringError('Please check the input of date')
 
 
+def datetime_to_qldate(date):
+    """ Convert datetime to ql.Date """
+    if date is not None:
+        if isinstance(date, (datetime.datetime, datetime.date)):
+            return ql.Date(date.day, date.month, date.year)
+        elif isinstance(date, list) and all(isinstance(dt, (datetime.datetime, datetime.date)) for dt in date):
+            return [ql.Date(dt.day, dt.month, dt.year) for dt in date]
+        elif isinstance(date, ql.Date):
+            return date
+        elif isinstance(date, list) and all(isinstance(dt, ql.Date) for dt in date):
+            return date
+        else:
+            raise TuringError('Please check the input of date')
+
+
 def date_str_to_datetime(date_str):
     """例：2021-08-04T00:00:00.000+080（字符串）转datetime"""
     date_str = ' '.join(date_str.split('+')[0].split('T'))[:-4]
@@ -564,3 +580,90 @@ def convert_date(column_name: str):
         else:
             return x[column_name]
     return fun
+
+
+def utc2local(utc_dtm):
+    # UTC 时间转本地时间（ +8:00 ）
+    local_tm = datetime.datetime.fromtimestamp(0)
+    utc_tm = datetime.datetime.utcfromtimestamp(0)
+    offset = local_tm - utc_tm
+    return utc_dtm + offset
+
+
+def to_datetime(date: Union[str, datetime.datetime, datetime.date, TuringDate]) -> datetime.datetime:
+    if date is None:
+        return None
+    if isinstance(date, datetime.datetime):
+        return date.replace(hour=0, minute=0, second=0, microsecond=0)
+    elif isinstance(date, datetime.date):
+        return datetime.datetime(date.year, date.month, date.day)
+    elif isinstance(date, TuringDate):
+        return datetime.datetime(date._y, date._m, date._d)
+    try:
+        if date == 'latest':
+            return datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+        fmt = "%Y%m%d"
+        if '-' not in str(date):
+            date = datetime.datetime.strptime(str(date), fmt)
+        if '-' in str(date):
+            if len(str(date)) == 10:
+                fmt = "%Y-%m-%d"
+            elif len(str(date)) == 19:
+                fmt = "%Y-%m-%d %H:%M:%S"
+            else:
+                fmt = "%Y-%m-%dT%H:%M:%S.%f%z"
+            date = datetime.datetime.strptime(str(date), fmt)
+        date = utc2local(date)
+        res_tuple = (date.year, date.month, date.day,)
+        return datetime.datetime(*res_tuple)
+    except ValueError as e:
+        logger.debug(str(e))
+    except Exception as e:
+        logger.debug(str(e))
+
+
+def to_turing_date(res: Union[str, datetime.datetime, datetime.date, TuringDate]) -> TuringDate:
+    if res is None:
+        return None
+    if isinstance(res, TuringDate):
+        return res
+    elif isinstance(res, (datetime.datetime, datetime.date)):
+        res_tuple = (res.year, res.month, res.day)
+        return TuringDate(*res_tuple)
+    try:
+        if res == 'latest':
+            return TuringDate(*(datetime.date.today().timetuple()[:3]))
+        fmt = "%Y%m%d"
+        if '-' not in str(res):
+            res = datetime.datetime.strptime(str(res), fmt)
+        if '-' in str(res):
+            if len(str(res)) == 10:
+                fmt = "%Y-%m-%d"
+            elif len(str(res)) == 19:
+                fmt = "%Y-%m-%d %H:%M:%S"
+            else:
+                fmt = "%Y-%m-%dT%H:%M:%S.%f%z"
+            res = datetime.datetime.strptime(str(res), fmt)
+        res = utc2local(res)
+        res_tuple = (res.year, res.month, res.day,)
+        return TuringDate(*res_tuple)
+    except ValueError as e:
+        logger.debug(str(e))
+    except Exception as e:
+        logger.debug(str(e))
+
+
+if __name__ == '__main__':
+    # print(to_datetime(datetime.datetime.today()))
+    # print(to_datetime(datetime.date.today()))
+    # print(to_datetime(TuringDate(2021, 10, 10)))
+    # print(to_datetime('20211010'))
+    # print(to_datetime('2021-10-10'))
+    # print(to_datetime('2021-12-27T00:00:00.000+0800'))
+    print(to_turing_date(datetime.datetime.today()))
+    print(to_turing_date(datetime.date.today()))
+    print(to_turing_date(TuringDate(2021, 10, 10)))
+    print(to_turing_date('20211010'))
+    print(to_turing_date('2021-10-10'))
+    print(to_turing_date('2021-12-27T00:00:00.000+0800'))
+    print(to_turing_date(None))

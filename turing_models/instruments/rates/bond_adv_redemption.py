@@ -3,7 +3,6 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 
-# from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.common import newton_fun, greek, Curve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
@@ -26,7 +25,7 @@ class BondAdvRedemption(Bond):
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
         if self.issue_date:
-            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
+            self.cv = Curve(value_date=self.value_date, curve_code=self.curve_code)
             if self.curve_code:
                 self.cv.resolve()
         if self.ecnomic_terms is not None:
@@ -133,7 +132,7 @@ class BondAdvRedemption(Bond):
                     pv = flow * df * self.par * dates
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df * dates * self.par
                     px += pv
@@ -195,7 +194,7 @@ class BondAdvRedemption(Bond):
                     pv = flow * df
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df
                     px += pv
@@ -239,7 +238,7 @@ class BondAdvRedemption(Bond):
                     pv = flow * df
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df
                     px += pv

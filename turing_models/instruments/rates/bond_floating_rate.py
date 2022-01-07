@@ -19,7 +19,7 @@ class BondFloatingRate(Bond):
     def __post_init__(self):
         super().__post_init__()
         if self.issue_date:
-            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code, curve_type='ytm')
+            self.cv = Curve(value_date=self.value_date, curve_code=self.curve_code, curve_type='ytm')
             if self.curve_code:
                 self.cv.resolve()
         if self.ecnomic_terms is not None:
@@ -40,7 +40,7 @@ class BondFloatingRate(Bond):
         if self.ctx_next_base_interest_rate:
             return self.ctx_next_base_interest_rate
         else:
-            date = self._settlement_date.datetime()
+            date = self.date_for_interface.datetime()
             original_data = TuringDB.rate_interest_rate_levels(ir_codes=self.floating_rate_benchmark, date=date)
             if original_data is not None:
                 data = original_data.loc[self.floating_rate_benchmark, 'rate']

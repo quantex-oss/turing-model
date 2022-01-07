@@ -1,11 +1,12 @@
+import datetime
 from abc import ABCMeta, abstractmethod
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 from typing import Union
 
 import numpy as np
-from numba import njit
 import pandas as pd
+from numba import njit
 
 from fundamental import ctx
 from fundamental.turing_db.data import TuringDB
@@ -70,13 +71,13 @@ def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
 
 def newton_fun(y, *args):
     """ Function is used by scipy.optimize.newton """
-    self = args[0]             # 实例对象
-    price = args[1]            # 对照的标准
-    attr = args[2]             # 需要调整的参数
-    fun = args[3]              # 调整参数后需重新计算的方法
-    setattr(self, attr, y)     # 调整参数
+    self = args[0]  # 实例对象
+    price = args[1]  # 对照的标准
+    attr = args[2]  # 需要调整的参数
+    fun = args[3]  # 调整参数后需重新计算的方法
+    setattr(self, attr, y)  # 调整参数
     px = getattr(self, fun)()  # 重新计算方法的返回值
-    obj_fn = px - price        # 计算误差
+    obj_fn = px - price  # 计算误差
     return obj_fn
 
 
@@ -95,11 +96,11 @@ def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
         return pips_fwd_delta
     elif deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
         vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
-        pct_spot_delta_prem_adj = pips_spot_delta- vpctf
+        pct_spot_delta_prem_adj = pips_spot_delta - vpctf
         return pct_spot_delta_prem_adj
     elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
         vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
-        pct_fwd_delta_prem_adj = np.exp(rf * t) * (pips_spot_delta- vpctf)
+        pct_fwd_delta_prem_adj = np.exp(rf * t) * (pips_spot_delta - vpctf)
         return pct_fwd_delta_prem_adj
     else:
         raise TuringError("Unknown TuringFXDeltaMethod")
@@ -1164,101 +1165,92 @@ class Ctx:
 
     @property
     def ctx_ytm(self):
-        asset_id = getattr(self, 'comb_symbol', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"ytm_{asset_id}")
+        return getattr(ctx, f"ytm_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"ytm_{getattr(self, 'comb_symbol', '')}")
 
     @property
     def ctx_clean_price(self):
-        asset_id = getattr(self, 'comb_symbol', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"clean_price_{asset_id}")
+        return getattr(ctx, f"clean_price_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"clean_price_{getattr(self, 'comb_symbol', '')}")
+
+    @property
+    def ctx_spread_adjustment(self):
+        return getattr(ctx, f"spread_adjustment_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"spread_adjustment_{getattr(self, 'comb_symbol', '')}")
+
+    @property
+    def ctx_spot(self):
+        return getattr(ctx, f"spot_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"spot_{getattr(self, 'underlier', '')}")
+
+    @property
+    def ctx_volatility(self):
+        return getattr(ctx, f"volatility_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"volatility_{getattr(self, 'underlier', '')}")
+
+    @property
+    def ctx_next_base_interest_rate(self):
+        floating_rate_benchmark = getattr(self, 'floating_rate_benchmark', '')
+        return getattr(ctx, f"next_base_interest_rate_{floating_rate_benchmark}")
+
+    @property
+    def ctx_fx_implied_volatility_curve(self):
+        return getattr(ctx, f"fx_implied_volatility_curve_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"fx_implied_volatility_curve_{getattr(self, 'underlier', '')}")
+
+    @property
+    def ctx_irs_curve(self):
+        return getattr(ctx, f"irs_curve_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"irs_curve_{getattr(self, 'underlier', '')}")
+
+    @property
+    def ctx_shibor_curve(self):
+        return getattr(ctx, f"shibor_curve_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"shibor_curve_{getattr(self, 'underlier', '')}")
+
+    @property
+    def ctx_swap_curve(self):
+        return getattr(ctx, f"swap_curve_{getattr(self, 'asset_id', '')}") or \
+               getattr(ctx, f"swap_curve_{getattr(self, 'underlier', '')}")
+
+    @property
+    def ctx_interest_rate(self):
+        return ctx.interest_rate
+
+    @property
+    def ctx_dividend_yield(self):
+        return ctx.dividend_yield
+
+    @property
+    def ctx_pricing_date(self):
+        return ctx.pricing_date
+
+    @property
+    def ctx_parallel_shift(self):
+        return getattr(ctx, f"parallel_shift_{self.curve_code}")
+
+    @property
+    def ctx_curve_shift(self):
+        return getattr(ctx, f"curve_shift_{self.curve_code}")
+
+    @property
+    def ctx_pivot_point(self):
+        return getattr(ctx, f"pivot_point_{self.curve_code}")
+
+    @property
+    def ctx_tenor_start(self):
+        return getattr(ctx, f"tenor_start_{self.curve_code}")
+
+    @property
+    def ctx_tenor_end(self):
+        return getattr(ctx, f"tenor_end_{self.curve_code}")
 
     def ctx_yield_curve(self, curve_type: str, forward_term: float = None):
         curve_code = getattr(self, 'curve_code', None)
         if forward_term is None:
-            return getattr(self.ctx, f"yield_curve_{curve_code}_{curve_type}")
+            return getattr(ctx, f"yield_curve_{curve_code}_{curve_type}")
         else:
-            return getattr(self.ctx, f"yield_curve_{curve_code}_{curve_type}_{forward_term}")
-
-    @property
-    def ctx_spread_adjustment(self):
-        asset_id = getattr(self, 'comb_symbol', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"spread_adjustment_{asset_id}")
-
-    @property
-    def ctx_spot(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"spot_{asset_id}")
-
-    @property
-    def ctx_volatility(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"volatility_{asset_id}")
-
-    @property
-    def ctx_next_base_interest_rate(self):
-        floating_rate_benchmark = getattr(self, 'floating_rate_benchmark', None)
-        return getattr(self.ctx, f"next_base_interest_rate_{floating_rate_benchmark}")
-
-    @property
-    def ctx_fx_implied_volatility_curve(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"fx_implied_volatility_curve_{asset_id}")
-
-    @property
-    def ctx_irs_curve(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"irs_curve_{asset_id}")
-
-    @property
-    def ctx_shibor_curve(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"shibor_curve_{asset_id}")
-
-    @property
-    def ctx_swap_curve(self):
-        asset_id = getattr(self, 'underlier', None) or getattr(
-            self, 'asset_id', None)
-        return getattr(self.ctx, f"swap_curve_{asset_id}")
-
-    @property
-    def ctx_interest_rate(self):
-        return self.ctx.interest_rate
-
-    @property
-    def ctx_dividend_yield(self):
-        return self.ctx.dividend_yield
-
-    @property
-    def ctx_pricing_date(self):
-        return self.ctx.pricing_date
-
-    @property
-    def ctx_parallel_shift(self):
-        return getattr(self.ctx, f"parallel_shift_{self.curve_code}")
-
-    @property
-    def ctx_curve_shift(self):
-        return getattr(self.ctx, f"curve_shift_{self.curve_code}")
-
-    @property
-    def ctx_pivot_point(self):
-        return getattr(self.ctx, f"pivot_point_{self.curve_code}")
-
-    @property
-    def ctx_tenor_start(self):
-        return getattr(self.ctx, f"tenor_start_{self.curve_code}")
-
-    @property
-    def ctx_tenor_end(self):
-        return getattr(self.ctx, f"tenor_end_{self.curve_code}")
+            return getattr(ctx, f"yield_curve_{curve_code}_{curve_type}_{forward_term}")
 
 
 class Priceable(Ctx):
@@ -1343,18 +1335,17 @@ class IR(Priceable, metaclass=ABCMeta):
 
 
 class CD(Priceable, metaclass=ABCMeta):
-
     pass
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class CurveAdjustment:
     """存放曲线旋转平移参数"""
-    parallel_shift: float = None     # 平移量（bps)
-    curve_shift: float = None        # 旋转量（bps)
-    pivot_point: float = None        # 旋转点（年）
-    tenor_start: float = None        # 旋转起始（年）
-    tenor_end: float = None          # 旋转终点（年）
+    parallel_shift: float = None  # 平移量（bps)
+    curve_shift: float = None  # 旋转量（bps)
+    pivot_point: float = None  # 旋转点（年）
+    tenor_start: float = None  # 旋转起始（年）
+    tenor_end: float = None  # 旋转终点（年）
 
     def set_parallel_shift(self, value):
         self.parallel_shift = value
@@ -1379,21 +1370,32 @@ class CurveAdjustment:
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class Curve:
-    value_date: TuringDate = None                    # 估值日期
-    curve_code: Union[str, YieldCurveCode] = None    # 曲线编码
-    curve_name: str = None                           # 曲线名称
-    curve_data: pd.DataFrame = None                  # 曲线数据，列索引为'tenor'和'rate'
-    curve_type: str = 'spot_rate'                    # TODO: 处理成枚举类型
+    value_date: Union[TuringDate, str] = None  # 估值日期
+    curve_code: Union[str, YieldCurveCode] = None  # 曲线编码
+    curve_name: str = None  # 曲线名称
+    curve_data: pd.DataFrame = None  # 曲线数据，列索引为'tenor'和'rate'
+    curve_type: str = 'spot_rate'  # TODO: 处理成枚举类型
     forward_term: float = None
 
     def __post_init__(self):
         """估值日期和曲线编码不能为空"""
         assert self.value_date, "value_date can't be None"
-        # assert self.curve_code, "curve_code can't be None"
+        self.check_param()
+
+    def check_param(self):
+        """对时间做格式校验和转换处理"""
+        if isinstance(self.value_date, str) and self.value_date == 'latest':
+            self.value_date = TuringDate(*(datetime.date.today().timetuple()[:3]))
+            self._date_for_interface = 'latest'
+        elif isinstance(self.value_date, TuringDate):
+            self._date_for_interface = self.value_date
+        else:
+            raise TuringError("value must be 'latest'/TuringDate")
 
     def set_value_date(self, value):
         """设置估值日期"""
         self.value_date = value
+        self.check_param()
         # 如果重新设置了value_date，则需要把原来的曲线数据清空，再通过以下两种方式补全曲线数据：
         # 1、调用resolve方法，根据新的value_date从接口获取曲线数据
         # 2、调用set_curve_data方法，从外部传入曲线数据
@@ -1407,8 +1409,13 @@ class Curve:
             self.curve_data = value
 
     def set_forward_term(self, value: (float, int)):
-        """设置估值日期"""
+        """设置远期期限"""
         self.forward_term = value
+        # 如果重新设置了forward_term，同时curve_type为远期，则需要把原来的曲线数据清空，再通过以下两种方式补全曲线数据：
+        # 1、调用resolve方法，根据新的forward_term从接口获取曲线数据
+        # 2、调用set_curve_data方法，从外部传入曲线数据
+        if self.curve_type == 'forward_spot_rate' or self.curve_type == 'forward_ytm':
+            self.curve_data = None
 
     def resolve(self):
         """补全/更新数据"""
@@ -1419,22 +1426,31 @@ class Curve:
                 curve_code = self.curve_code
             if self.curve_data is None:
                 if self.curve_type == 'spot_rate':
-                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date).\
-                                      loc[curve_code][['tenor', 'spot_rate']].rename(columns={'spot_rate': 'rate'})
+                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface)
+                    if not self.curve_data.empty:
+                        self.curve_data = self.curve_data.loc[curve_code][['tenor', 'spot_rate']].\
+                            rename(columns={'spot_rate': 'rate'})
                 elif self.curve_type == 'ytm':
-                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date).\
-                                      loc[curve_code][['tenor', 'ytm']].rename(columns={'ytm': 'rate'})
+                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface)
+                    if not self.curve_data.empty:
+                        self.curve_data = self.curve_data.loc[curve_code][['tenor', 'ytm']].\
+                            rename(columns={'ytm': 'rate'})
                 elif self.curve_type == 'forward_spot_rate':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
-                        print(TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date, forward_term=self.forward_term))
-                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date, forward_term=self.forward_term).\
-                                          loc[curve_code][['tenor', 'forward_spot_rate']].rename(columns={'forward_spot_rate': 'rate'})
+                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface,
+                                                                    forward_term=self.forward_term)
+                        if not self.curve_data.empty:
+                            self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_spot_rate']].\
+                                rename(columns={'forward_spot_rate': 'rate'})
                     else:
                         raise TuringError('Please check the input of forward_term')
                 elif self.curve_type == 'forward_ytm':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
-                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self.value_date, forward_term=self.forward_term).\
-                                          loc[curve_code][['tenor', 'forward_ytm']].rename(columns={'forward_ytm': 'rate'})
+                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface,
+                                                                    forward_term=self.forward_term)
+                        if not self.curve_data.empty:
+                            self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_ytm']].\
+                                rename(columns={'forward_ytm': 'rate'})
                     else:
                         raise TuringError('Please check the input of forward_term')
                 else:
@@ -1472,10 +1488,8 @@ class Curve:
 
 
 if __name__ == '__main__':
-    cv = Curve(value_date=TuringDate(2021, 11, 10),
-               curve_code=YieldCurveCode.CBD100032,
-               curve_type='forward_ytm',
-               forward_term=0.5)
+    cv = Curve(value_date='latest',
+               curve_code='CBD100461')
     cv.resolve()
     print(cv.curve_data)
 

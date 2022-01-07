@@ -7,12 +7,12 @@ from fundamental.turing_db.bond_data import BondApi
 from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, Curve, CurveAdjustment, Currency
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
-    TuringDateGenRuleTypes
+    TuringDateGenRuleTypes, TuringCalendar
 from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, FrequencyType
 from turing_models.utilities.global_types import TuringYTMCalcType, CouponType
-from turing_models.utilities.helper_functions import datetime_to_turingdate
+from turing_models.utilities.helper_functions import to_turing_date
 from turing_models.utilities.schedule import TuringSchedule
 from turing_utils.log.request_id_log import logger
 
@@ -59,27 +59,30 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         self._flow_amounts = []  # 现金流发生额
         # self._accrued_interest = None
         self._accrued_days = 0.0  # 应计利息天数
-        self.value_date = datetime_to_turingdate(self.value_date)
-        self.issue_date = datetime_to_turingdate(self.issue_date)
-        self.due_date = datetime_to_turingdate(self.due_date)
+        self.value_date = to_turing_date(self.value_date)
+        self.issue_date = to_turing_date(self.issue_date)
+        self.due_date = to_turing_date(self.due_date)
         if self.trd_curr_code and isinstance(self.trd_curr_code, Currency):
             self.trd_curr_code = self.trd_curr_code.value  # 转换成字符串，便于rich表格显示
         if self.issue_date:
-            self.settlement_date = max(self.value_date.addDays(self.settlement_terms), self.issue_date)  # 计算结算日期
+            self.value_date = max(self.value_date, self.issue_date)
+            self.settlement_date = self.value_date.addDays(self.settlement_terms)  # 计算结算日期
         self.check_param()
+
+        self.ca = CurveAdjustment()
+        if self.issue_date and self.due_date:
+            dc = TuringDayCount(DayCountType.ACT_365F)
+            cal = TuringCalendar(self.calendar_type)
+            self.maturity_date = cal.adjust(self.due_date, TuringBusDayAdjustTypes.MODIFIED_FOLLOWING)
+            (acc_factor1, _, _) = dc.yearFrac(self.issue_date, self.due_date)
+            self.bond_term_year = acc_factor1
+            (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
+            self.time_to_maturity_in_year = acc_factor2
         if self.pay_interest_cycle:
             self._calculate_cash_flow_dates()
             self.frequency = TuringFrequency(self.pay_interest_cycle)
         else:
             self._flow_dates = [self.issue_date, self.due_date]
-
-        self.ca = CurveAdjustment()
-        if self.issue_date and self.due_date:
-            dc = TuringDayCount(DayCountType.ACT_365F)
-            (acc_factor1, _, _) = dc.yearFrac(self.issue_date, self.due_date)
-            self.bond_term_year = acc_factor1
-            (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
-            self.time_to_maturity_in_year = acc_factor2
 
     def check_param(self):
         """将字符串转换为枚举类型"""
@@ -133,21 +136,26 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                     raise self.interest_rules
 
     @property
+    def date_for_interface(self):
+        # TuringDate或者latest
+        return self.ctx_pricing_date or self.value_date
+
+    @property
     def _settlement_date(self):
-        if self.ctx_pricing_date:
-            value_date = max(self.ctx_pricing_date.addDays(self.settlement_terms), self.issue_date)
-            return value_date
-        return self.settlement_date
+        value_date = max(to_turing_date(self.date_for_interface), self.issue_date)
+        return value_date.addDays(self.settlement_terms)
 
     def _curve_resolve(self):
         # 为了实时响应what-if调整pricing date
-        self.cv.set_value_date(self._settlement_date)
+        if self.ctx_pricing_date is not None:
+            self.cv.set_value_date(self.date_for_interface)
         # 查询用户是否通过what-if传入self.curve_code对应的即期收益率曲线数据
         ctx_yield_curve = self.ctx_yield_curve(curve_type='spot_rate')
         if ctx_yield_curve is not None:
             self.cv.set_curve_data(ctx_yield_curve)
         else:
             self.cv.resolve()
+        # print(self.cv.curve_data)
         # 检测用户是否对self.curve_code所对应的收益率曲线做变换  TODO: 考虑是否需要区分即期、到期和远期，目前未区分
         self._curve_adjust()
 
@@ -188,6 +196,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                                           bus_day_rule_type,
                                           date_gen_rule_type,
                                           False)._generate()
+        self._flow_dates[-1] = self.maturity_date
 
     def dollar_duration(self):
         if not self.isvalid():

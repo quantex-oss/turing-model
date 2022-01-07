@@ -61,7 +61,7 @@ class AsianOption(EqOption):
 
     def _value_geometric(self):
         # the years to the start of the averaging period
-        t0 = (self.start_averaging_date - self.value_date_) / gDaysInYear
+        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -111,7 +111,7 @@ class AsianOption(EqOption):
         return v
 
     def _value_turnbull_wakeman(self):
-        t0 = (self.start_averaging_date - self.value_date_) / gDaysInYear
+        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -178,7 +178,7 @@ class AsianOption(EqOption):
 
     def _value_curran(self):
         # the years to the start of the averaging period
-        t0 = (self.start_averaging_date - self.value_date_) / gDaysInYear
+        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 

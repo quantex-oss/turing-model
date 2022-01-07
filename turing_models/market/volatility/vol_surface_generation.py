@@ -1,3 +1,4 @@
+import copy
 import datetime
 from typing import List, Union
 
@@ -6,7 +7,7 @@ import pandas as pd
 import QuantLib as ql
 
 from fundamental.turing_db.data import TuringDB
-from turing_models.instruments.common import CurrencyPair, DiscountCurveType
+from turing_models.instruments.common import CurrencyPair, DiscountCurveType, Ctx
 from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMethod
 from turing_models.market.curves.curve_generation import ForDiscountCurveGen, DomDiscountCurveGen, \
      FXForwardCurveGen
@@ -17,110 +18,201 @@ from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurface
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringSolverTypes
+from turing_models.utilities.helper_classes import Base
+from turing_models.utilities.helper_functions import to_datetime, datetime_to_turingdate
 from turing_models.utilities.turing_date import TuringDate
 
 
-class FXOptionImpliedVolatilitySurface:
-    def __init__(self,
-                 fx_symbol: (str, CurrencyPair),  # 货币对symbol，例如：'USD/CNY'
-                 value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3])),
-                 strikes: List[float] = None,  # 行权价 如果不传，就用exchange_rate * np.linspace(0.8, 1.2, 16)
-                 tenors: List[float] = None,  # 期限（年化） 如果不传，就用[1/12, 2/12, 0.25, 0.5, 1, 2]
-                 volatility_function_type=TuringVolFunctionTypes.QL):
+class FXOptionImpliedVolatilitySurface(Base, Ctx):
+    fx_symbol: Union[str, CurrencyPair] = CurrencyPair.USDCNY  # 货币对symbol，例如：'USD/CNY'
+    value_date: Union[str, datetime.datetime, datetime.date] = datetime.datetime.today()
+    strikes: List[float] = None                                # 行权价 如果不传，就用exchange_rate * np.linspace(0.8, 1.2, 16)
+    tenors: List[float] = None                                 # 期限（年化） 如果不传，就用[1/12, 2/12, 0.25, 0.5, 1, 2]
+    volatility_function_type: Union[str, TuringVolFunctionTypes] = TuringVolFunctionTypes.QL
 
-        if isinstance(fx_symbol, CurrencyPair):
-            fx_symbol = fx_symbol.value
-        elif isinstance(fx_symbol, str):
-            pass
-        else:
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.check_param()
+
+    def check_param(self):
+        """ 数据格式转换 """
+        if isinstance(self.fx_symbol, CurrencyPair):
+            self.fx_symbol = self.fx_symbol.value
+        elif not isinstance(self.fx_symbol, str):
             raise TuringError('fx_symbol: (str, CurrencyPair)')
+        if self.value_date is not None:
+            self.value_date = to_datetime(self.value_date)
+        if self.volatility_function_type is not None:
+            if not isinstance(self.volatility_function_type, TuringVolFunctionTypes):
+                rules = {
+                    "QL": TuringVolFunctionTypes.QL
+                }
+                self.volatility_function_type = rules.get(
+                    self.volatility_function_type,
+                    TuringError('Please check the input of volatility_function_type')
+                )
+                if isinstance(self.volatility_function_type, TuringError):
+                    raise self.volatility_function_type
 
-        exchange_rate = TuringDB.exchange_rate(symbol=fx_symbol, date=value_date)[fx_symbol]
+    @property
+    def _value_date(self):
+        if self.ctx_pricing_date is not None:
+            if isinstance(self.ctx_pricing_date, TuringDate):
+                return to_datetime(self.ctx_pricing_date)
+        return self.value_date
 
-        if strikes:
-            self.strikes = np.array(strikes)
+    @property
+    def get_exchange_rate(self):
+        """从接口获取汇率"""
+        date = self._value_date
+        original_data = TuringDB.exchange_rate(symbol=self.fx_symbol, date=date)
+        if original_data is not None:
+            data = original_data[self.fx_symbol]
+            return data
         else:
-            strike_percent = np.linspace(0.8, 1.2, 16)
-            self.strikes = exchange_rate * strike_percent
+            raise TuringError(f"Cannot find exchange rate for {self.fx_symbol}")
 
-        if not tenors:
-            self.tenors = [1 / 12, 2 / 12, 0.25, 0.5, 1, 2]
+    @property
+    def get_shibor_data(self):
+        """ 从接口获取shibor """
+        date = self._value_date
+        original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc[date]
+            return data
         else:
-            self.tenors = tenors
+            raise TuringError(f"Cannot find shibor data")
 
-        self.expiry = value_date.addYears(self.tenors)
-
-        self.volatility_function_type = volatility_function_type
-
-        shibor_data = TuringDB.shibor_curve(date=value_date, df=False)
-        shibor_swap_data = TuringDB.irs_curve(curve_type='Shibor3M', date=value_date, df=False)['Shibor3M']
-
-        fx_swap_data = TuringDB.fx_swap_curve(symbol=fx_symbol, date=value_date, df=False)[fx_symbol]
-        fx_implied_vol_data = TuringDB.fx_implied_volatility_curve(symbol=fx_symbol,
-                                                                   volatility_type=["ATM", "25D BF", "25D RR", "10D BF",
-                                                                                    "10D RR"],
-                                                                   date=value_date,
-                                                                   df=False)[fx_symbol]
-
-        if volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
-            dom_curve_type = DiscountCurveType.Shibor3M_tr
-            for_curve_type = DiscountCurveType.FX_Implied_tr
-            fx_forward_curve_type = DiscountCurveType.FX_Forword_tr
-        elif volatility_function_type == TuringVolFunctionTypes.QL:
-            dom_curve_type = DiscountCurveType.Shibor3M
-            for_curve_type = DiscountCurveType.FX_Implied
-            fx_forward_curve_type = DiscountCurveType.FX_Forword
+    @property
+    def get_shibor_swap_data(self):
+        """ 从接口获取利率互换曲线 """
+        date = self._value_date
+        original_data = TuringDB.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc["Shibor3M"].loc[date]
+            return data
         else:
-            raise TuringError('Unsupported volatility function type')
+            raise TuringError("Cannot find shibor swap curve data for 'CNY'")
 
-        domestic_discount_curve = DomDiscountCurveGen(value_date=value_date,
-                                                      shibor_tenors=shibor_data['tenor'],
-                                                      shibor_origin_tenors=shibor_data['origin_tenor'],
-                                                      shibor_rates=shibor_data['rate'],
-                                                      shibor_swap_tenors=shibor_swap_data['tenor'],
-                                                      shibor_swap_origin_tenors=shibor_swap_data['origin_tenor'],
-                                                      shibor_swap_rates=shibor_swap_data['average'],
-                                                      curve_type=dom_curve_type).discount_curve
+    @property
+    def get_shibor_swap_fixing_data(self):
+        """ 参照cicc模型确定数据日期 """
+        date1 = '2019-07-05'
+        date2 = '2019-07-08'
+        date3 = '2019-07-09'
+        original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date1, end=date3)
+        if original_data is not None:
+            rate1 = original_data.loc[datetime.datetime.strptime(date1, '%Y-%m-%d')].loc[4, 'rate']
+            rate2 = original_data.loc[datetime.datetime.strptime(date2, '%Y-%m-%d')].loc[4, 'rate']
+            rate3 = original_data.loc[datetime.datetime.strptime(date3, '%Y-%m-%d')].loc[4, 'rate']
+            fixing_data = {'Date': [date1, date2, date3], 'Fixing': [rate1, rate2, rate3]}
+            return fixing_data
+        else:
+            raise TuringError(f"Cannot find shibor data")
 
-        fx_forward_curve = FXForwardCurveGen(value_date=value_date,
-                                             exchange_rate=exchange_rate,
-                                             fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
-                                             fx_swap_quotes=fx_swap_data['swap_point'],
-                                             curve_type=fx_forward_curve_type).discount_curve
+    @property
+    def get_fx_swap_data(self):
+        """ 获取外汇掉期曲线 """
+        date = self._value_date
+        original_data = TuringDB.get_fx_swap_curve(currency_pair=self.fx_symbol, start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc[self.fx_symbol].loc[date]
+            return data
+        else:
+            raise TuringError(f"Cannot find fx swap curve data for {self.fx_symbol}")
 
-        foreign_discount_curve = ForDiscountCurveGen(value_date=value_date,
-                                                     domestic_discount_curve=domestic_discount_curve,
-                                                     fx_forward_curve=fx_forward_curve,
-                                                     curve_type=for_curve_type).discount_curve
+    @property
+    def get_fx_implied_vol_data(self):
+        """ 获取外汇期权隐含波动率曲线 """
+        date = self._value_date
+        original_data = TuringDB.get_fx_implied_volatility_curve(currency_pair=self.fx_symbol,
+                                                                 volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
+                                                                 start=date,
+                                                                 end=date)
+        if original_data is not None:
+            tenor = original_data.loc[self.fx_symbol].loc["ATM"].loc[date]['tenor']
+            origin_tenor = original_data.loc[self.fx_symbol].loc["ATM"].loc[date]['origin_tenor']
+            atm_vols = original_data.loc[self.fx_symbol].loc["ATM"].loc[date]['volatility']
+            butterfly_25delta_vols = original_data.loc[self.fx_symbol].loc["25D BF"].loc[date]['volatility']
+            risk_reversal_25delta_vols = original_data.loc[self.fx_symbol].loc["25D RR"].loc[date]['volatility']
+            butterfly_10delta_vols = original_data.loc[self.fx_symbol].loc["10D BF"].loc[date]['volatility']
+            risk_reversal_10delta_vols = original_data.loc[self.fx_symbol].loc["10D RR"].loc[date]['volatility']
+            return pd.DataFrame(data={'tenor': tenor,
+                                      'origin_tenor': origin_tenor,
+                                      "ATM": atm_vols,
+                                      "25D BF": butterfly_25delta_vols,
+                                      "25D RR": risk_reversal_25delta_vols,
+                                      "10D BF": butterfly_10delta_vols,
+                                      "10D RR": risk_reversal_10delta_vols})
+        else:
+            raise TuringError(f"Cannot find fx implied vol data for {self.fx_symbol}")
 
-        self.volatility_surface = FXVolSurfaceGen(value_date=value_date,
-                                                  currency_pair=fx_symbol,
-                                                  exchange_rate=exchange_rate,
-                                                  domestic_discount_curve=domestic_discount_curve,
-                                                  foreign_discount_curve=foreign_discount_curve,
-                                                  fx_forward_curve=fx_forward_curve,
-                                                  tenors=fx_implied_vol_data["tenor"],
-                                                  origin_tenors=fx_implied_vol_data["origin_tenor"],
-                                                  atm_vols=fx_implied_vol_data["ATM"],
-                                                  butterfly_25delta_vols=fx_implied_vol_data["25D BF"],
-                                                  risk_reversal_25delta_vols=fx_implied_vol_data["25D RR"],
-                                                  butterfly_10delta_vols=fx_implied_vol_data["10D BF"],
-                                                  risk_reversal_10delta_vols=fx_implied_vol_data["10D RR"],
-                                                  volatility_function_type=volatility_function_type).volatility_surface
+    @property
+    def domestic_discount_curve(self):
+        return DomDiscountCurveGen(value_date=datetime_to_turingdate(self._value_date),
+                                   shibor_tenors=self.get_shibor_data['tenor'].tolist(),
+                                   shibor_origin_tenors=self.get_shibor_data['origin_tenor'].tolist(),
+                                   shibor_rates=self.get_shibor_data['rate'].tolist(),
+                                   shibor_swap_tenors=self.get_shibor_swap_data['tenor'].tolist(),
+                                   shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'].tolist(),
+                                   shibor_swap_rates=self.get_shibor_swap_data['average'].tolist(),
+                                   shibor_swap_fixing_dates=self.get_shibor_swap_fixing_data['Date'],
+                                   shibor_swap_fixing_rates=self.get_shibor_swap_fixing_data['Fixing'],
+                                   curve_type=DiscountCurveType.Shibor3M).discount_curve
+
+    @property
+    def fx_forward_curve(self):
+        return FXForwardCurveGen(value_date=datetime_to_turingdate(self._value_date),
+                                 exchange_rate=self.get_exchange_rate,
+                                 fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'].tolist(),
+                                 fx_swap_quotes=self.get_fx_swap_data['swap_point'].tolist()).discount_curve
+
+    @property
+    def foreign_discount_curve(self):
+        return ForDiscountCurveGen(value_date=datetime_to_turingdate(self._value_date),
+                                   domestic_discount_curve=self.domestic_discount_curve,
+                                   fx_forward_curve=self.fx_forward_curve,
+                                   curve_type=DiscountCurveType.FX_Implied).discount_curve
+
+    @property
+    def volatility_surface(self):
+        if self.volatility_function_type == TuringVolFunctionTypes.QL:
+            return FXVolSurfaceGen(value_date=datetime_to_turingdate(self._value_date),
+                                   currency_pair=self.fx_symbol,
+                                   exchange_rate=self.get_exchange_rate,
+                                   domestic_discount_curve=self.domestic_discount_curve,
+                                   foreign_discount_curve=self.foreign_discount_curve,
+                                   fx_forward_curve=self.fx_forward_curve,
+                                   tenors=self.get_fx_implied_vol_data["tenor"].tolist(),
+                                   origin_tenors=self.get_fx_implied_vol_data["origin_tenor"].tolist(),
+                                   atm_vols=self.get_fx_implied_vol_data["ATM"].tolist(),
+                                   butterfly_25delta_vols=self.get_fx_implied_vol_data["25D BF"].tolist(),
+                                   risk_reversal_25delta_vols=self.get_fx_implied_vol_data["25D RR"].tolist(),
+                                   butterfly_10delta_vols=self.get_fx_implied_vol_data["10D BF"].tolist(),
+                                   risk_reversal_10delta_vols=self.get_fx_implied_vol_data["10D RR"].tolist(),
+                                   volatility_function_type=TuringVolFunctionTypes.QL).volatility_surface
 
     def get_vol_surface(self):
         """获取波动率曲面的DataFrame"""
+        if self.strikes is not None:
+            self.strikes = np.array(self.strikes)
+        else:
+            strike_percent = np.linspace(0.8, 1.2, 16)
+            self.strikes = self.get_exchange_rate * strike_percent
+
+        if self.tenors is None:
+            self.tenors = [1 / 12, 2 / 12, 0.25, 0.5, 1, 2]
+
+        expiry = datetime_to_turingdate(self._value_date).addYears(self.tenors)
         data = {}
-        expiry = self.expiry
         tenors = self.tenors
         strikes = self.strikes
         volatility_surface = self.volatility_surface
         volatility_function_type = self.volatility_function_type
-        for i in range(len(tenors)):
-            ex = expiry[i]
-            tenor = tenors[i]
-            data[tenor] = []
-            for strike in strikes:
+        for strike in strikes:
+            data[strike] = []
+            for i in range(len(tenors)):
+                ex = expiry[i]
                 if volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
                     v = volatility_surface.volatilityFromStrikeDate(strike, ex)
                 elif volatility_function_type == TuringVolFunctionTypes.QL:
@@ -128,11 +220,22 @@ class FXOptionImpliedVolatilitySurface:
                     v = volatility_surface.interp_vol(ex_ql, strike)
                 else:
                     raise TuringError('Unsupported volatility function type')
-                data[tenor].append(v)
-        data_df = pd.DataFrame(data, index=strikes)
-        data_df.index.name = 'strike'
-        data_df.columns.name = 'tenor'
+                data[strike].append(v)
+        data_df = pd.DataFrame(data, index=tenors)
+        data_df.index.name = 'tenor'
+        data_df.columns.name = 'strike'
         return data_df
+
+    def generate_data(self):
+        """ 提供给定价服务调用 """
+        original_data = self.get_vol_surface().to_dict()
+        surface_data = []
+        for strike, value in original_data.items():
+            value_list = []
+            for tenor, rate in value.items():
+                value_list.append({"tenor": tenor, "rate": rate})
+            surface_data.append({"strike": strike, "value": copy.deepcopy(value_list)})
+        return surface_data
 
 
 class FXVolSurfaceGen:
@@ -280,8 +383,23 @@ class FXVolSurfaceGen:
 
 if __name__ == '__main__':
     fx_vol_surface = FXOptionImpliedVolatilitySurface(
-        fx_symbol=CurrencyPair.USDCNY)
-    print('Volatility Surface\n', fx_vol_surface.get_vol_surface())
+        fx_symbol='USD/CNY',
+        value_date="2021-08-20T00:00:00.000+0800"
+    )
+    vol = fx_vol_surface.get_vol_surface()
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)
+    print('Volatility Surface\n', vol)
+    print(fx_vol_surface.generate_data())
+    from fundamental.pricing_context import PricingContext
+
+    scenario_extreme = PricingContext(
+        pricing_date="2021-12-28T00:00:00.000+0800"
+    )
+    with scenario_extreme:
+        print(fx_vol_surface.generate_data())
+
+    # print(fx_vol_surface.generate_data())
     # vol_sur = FXVolSurfaceGen(currency_pair=CurrencyPair.USDCNY).volatility_surface
     # strike = 6.6
     # expiry = ql.Date(16, 10, 2021)
