@@ -65,7 +65,7 @@ class BasketSnowballOption(SnowballOption):
             curve_list = []
             for dividend_yield in self.dividend_yield_:
                 curve = TuringDiscountCurveFlat(
-                    self.value_date_, dividend_yield)
+                    self._value_date, dividend_yield)
                 curve_list.append(curve)
             return curve_list
 
@@ -75,7 +75,7 @@ class BasketSnowballOption(SnowballOption):
 
     @property
     def q(self) -> np.ndarray:
-        if self.expiry > self.value_date_:
+        if self.expiry > self._value_date:
             q_list = []
             for curve in self.dividend_curve:
                 dq = curve.df(self.expiry)
