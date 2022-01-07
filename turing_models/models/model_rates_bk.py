@@ -16,12 +16,7 @@ interp = TuringInterpTypes.FLAT_FWD_RATES.value
 # TODO : Convergence is unstable - investigate how to improve it
 # TODO : Write a fallback for gradient based alpha using bisection
 # TODO : Fix treatment of accrued interest on the option expiry date.
-###############################################################################
 
-# (c) Dominic O'Kane - December-2019
-# Fergal O'Kane - search root function - 16-12-2019
-
-###############################################################################
 
 def optionExerciseTypesToInt(optionExerciseType):
 

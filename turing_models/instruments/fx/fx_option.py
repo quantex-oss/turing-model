@@ -55,10 +55,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         self.notional_for = None
         if self.expiry and isinstance(self.expiry, TuringDate):
             self.expiry_ql = ql.Date(self.expiry._d, self.expiry._m, self.expiry._y)
-            # self.final_delivery = self.expiry.addWeekDays(self.spot_days)
-            # if self.final_delivery < self.expiry:
-            #     raise TuringError(
-            #         "Final delivery date must be on or after expiry.")
 
         if self.start_date:
             self.start_date_ql = ql.Date(self.start_date._d, self.start_date._m, self.start_date._y)
@@ -116,10 +112,20 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
             return value_date
         return self.value_date
 
+    def isvalid(self):
+        """提供给turing sdk做过期判断"""
+
+        if getattr(self, '_value_date', '') \
+                and getattr(self, 'expiry', '') \
+                and getattr(self, '_value_date', '') > \
+                    getattr(self, 'expiry', ''):
+            return False
+        return True
+
     @property
     def get_exchange_rate(self):
         """从接口获取汇率"""
-        date = self._value_date.datetime()
+        date = self.date_for_interface
         original_data = TuringDB.exchange_rate(symbol=self.underlier_symbol, date=date)
         if original_data is not None:
             data = original_data[self.underlier_symbol]
@@ -135,10 +141,10 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_shibor_data(self):
         """从接口获取shibor"""
-        date = self._value_date.datetime()
+        date = self.date_for_interface
         original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
         if original_data is not None:
-            data = original_data.loc[date]
+            data = original_data
             return data
         else:
             raise TuringError(f"Cannot find shibor data")
@@ -146,10 +152,10 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_shibor_swap_data(self):
         """从接口获取利率互换曲线"""
-        date = self._value_date.datetime()
+        date = self.date_for_interface
         original_data = Turing.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
         if original_data is not None:
-            data = original_data.loc["Shibor3M"].loc[date]
+            data = original_data.loc["Shibor3M"]
             return data
         else:
             raise TuringError("Cannot find shibor swap curve data for 'CNY'")
@@ -173,10 +179,10 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_fx_swap_data(self):
         """获取外汇掉期曲线"""
-        date = self._value_date.datetime()
+        date = self.date_for_interface
         original_data = TuringDB.get_fx_swap_curve(currency_pair=self.underlier_symbol, start=date, end=date)
         if original_data is not None:
-            data = original_data.loc[self.underlier_symbol].loc[date]
+            data = original_data.loc[self.underlier_symbol]
             return data
         else:
             raise TuringError(f"Cannot find fx swap curve data for {self.underlier_symbol}")
@@ -184,19 +190,19 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_fx_implied_vol_data(self):
         """获取外汇期权隐含波动率曲线"""
-        date = self._value_date.datetime()
+        date = self.date_for_interface
         original_data = TuringDB.get_fx_implied_volatility_curve(currency_pair=self.underlier_symbol,
                                                                  volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
                                                                  start=date,
                                                                  end=date)
         if original_data is not None:
-            tenor = original_data.loc[self.underlier_symbol].loc["ATM"].loc[date]['tenor']
-            origin_tenor = original_data.loc[self.underlier_symbol].loc["ATM"].loc[date]['origin_tenor']
-            atm_vols = original_data.loc[self.underlier_symbol].loc["ATM"].loc[date]['volatility']
-            butterfly_25delta_vols = original_data.loc[self.underlier_symbol].loc["25D BF"].loc[date]['volatility']
-            risk_reversal_25delta_vols = original_data.loc[self.underlier_symbol].loc["25D RR"].loc[date]['volatility']
-            butterfly_10delta_vols = original_data.loc[self.underlier_symbol].loc["10D BF"].loc[date]['volatility']
-            risk_reversal_10delta_vols = original_data.loc[self.underlier_symbol].loc["10D RR"].loc[date]['volatility']
+            tenor = original_data.loc[self.underlier_symbol].loc["ATM"]['tenor']
+            origin_tenor = original_data.loc[self.underlier_symbol].loc["ATM"]['origin_tenor']
+            atm_vols = original_data.loc[self.underlier_symbol].loc["ATM"]['volatility']
+            butterfly_25delta_vols = original_data.loc[self.underlier_symbol].loc["25D BF"]['volatility']
+            risk_reversal_25delta_vols = original_data.loc[self.underlier_symbol].loc["25D RR"]['volatility']
+            butterfly_10delta_vols = original_data.loc[self.underlier_symbol].loc["10D BF"]['volatility']
+            risk_reversal_10delta_vols = original_data.loc[self.underlier_symbol].loc["10D RR"]['volatility']
             return pd.DataFrame(data={'tenor': tenor,
                                       'origin_tenor': origin_tenor,
                                       "ATM": atm_vols,

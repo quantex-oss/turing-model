@@ -29,8 +29,8 @@ class EuropeanOption(EqOption):
     @property
     def texp(self) -> float:
         """欧式期权bs模型中的t采用交易日计数"""
-        if self.expiry >= self.value_date_:
-            schedule_daily = TuringSchedule(self.value_date_,
+        if self.expiry >= self._value_date:
+            schedule_daily = TuringSchedule(self._value_date,
                                             self.expiry,
                                             freqType=FrequencyType.DAILY,
                                             calendarType=TuringCalendarTypes.CHINA_SSE)
