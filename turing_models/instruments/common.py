@@ -1426,24 +1426,31 @@ class Curve:
                 curve_code = self.curve_code
             if self.curve_data is None:
                 if self.curve_type == 'spot_rate':
-                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface). \
-                        loc[curve_code][['tenor', 'spot_rate']].rename(columns={'spot_rate': 'rate'})
+                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface)
+                    if not self.curve_data.empty:
+                        self.curve_data = self.curve_data.loc[curve_code][['tenor', 'spot_rate']].\
+                            rename(columns={'spot_rate': 'rate'})
                 elif self.curve_type == 'ytm':
-                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface). \
-                        loc[curve_code][['tenor', 'ytm']].rename(columns={'ytm': 'rate'})
+                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface)
+                    if not self.curve_data.empty:
+                        self.curve_data = self.curve_data.loc[curve_code][['tenor', 'ytm']].\
+                            rename(columns={'ytm': 'rate'})
                 elif self.curve_type == 'forward_spot_rate':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
                         self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface,
-                                                                    forward_term=self.forward_term). \
-                            loc[curve_code][['tenor', 'forward_spot_rate']].rename(
-                            columns={'forward_spot_rate': 'rate'})
+                                                                    forward_term=self.forward_term)
+                        if not self.curve_data.empty:
+                            self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_spot_rate']].\
+                                rename(columns={'forward_spot_rate': 'rate'})
                     else:
                         raise TuringError('Please check the input of forward_term')
                 elif self.curve_type == 'forward_ytm':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
                         self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._date_for_interface,
-                                                                    forward_term=self.forward_term). \
-                            loc[curve_code][['tenor', 'forward_ytm']].rename(columns={'forward_ytm': 'rate'})
+                                                                    forward_term=self.forward_term)
+                        if not self.curve_data.empty:
+                            self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_ytm']].\
+                                rename(columns={'forward_ytm': 'rate'})
                     else:
                         raise TuringError('Please check the input of forward_term')
                 else:

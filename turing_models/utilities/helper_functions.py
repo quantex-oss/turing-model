@@ -591,6 +591,8 @@ def utc2local(utc_dtm):
 
 
 def to_datetime(date: Union[str, datetime.datetime, datetime.date, TuringDate]) -> datetime.datetime:
+    if date is None:
+        return None
     if isinstance(date, datetime.datetime):
         return date.replace(hour=0, minute=0, second=0, microsecond=0)
     elif isinstance(date, datetime.date):

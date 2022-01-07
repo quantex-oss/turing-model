@@ -20,7 +20,7 @@ from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceG
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
-from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.helper_functions import to_string, to_datetime, to_turing_date
 from turing_models.utilities.turing_date import TuringDate
 
 
@@ -98,12 +98,23 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def _value_date(self):
         """优先考虑通过what-if传出的估值日期"""
-        date = self.ctx_pricing_date or self.value_date
+        date = to_turing_date(self.date_for_interface)
         return date if date >= self.start_date else self.start_date
 
     @property
     def value_date_ql(self):
         return ql.Date(self._value_date._d, self._value_date._m, self._value_date._y)
+
+    @property
+    def date_for_interface(self):
+        # turing sdk提供的接口支持传datetime.datetime格式的时间或者latest
+        if self.ctx_pricing_date is not None:
+            if isinstance(self.ctx_pricing_date, str):
+                value_date = self.ctx_pricing_date
+            else:
+                value_date = to_datetime(self.ctx_pricing_date)
+            return value_date
+        return self.value_date
 
     @property
     def get_exchange_rate(self):

@@ -132,7 +132,7 @@ class BondAdvRedemption(Bond):
                     pv = flow * df * self.par * dates
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df * dates * self.par
                     px += pv
@@ -194,7 +194,7 @@ class BondAdvRedemption(Bond):
                     pv = flow * df
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df
                     px += pv
@@ -238,7 +238,7 @@ class BondAdvRedemption(Bond):
                     pv = flow * df
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df
                     px += pv

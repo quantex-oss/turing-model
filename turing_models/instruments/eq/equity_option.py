@@ -15,7 +15,7 @@ from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionType
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.helper_functions import convert_argument_type
+from turing_models.utilities.helper_functions import convert_argument_type, to_turing_date
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.turing_date import TuringDate
 
@@ -66,7 +66,7 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def value_date_(self):
-        date = self._value_date or self.ctx_pricing_date or self.value_date
+        date = self._value_date or to_turing_date(self.ctx_pricing_date) or self.value_date
         return date if date >= self.start_date else self.start_date
 
     @value_date_.setter
