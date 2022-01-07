@@ -35,7 +35,7 @@ dy = 0.0001
 class BondPAwizAdvRep(Bond):
     """ Class for fixed coupon bonds with embedded put optionality and rights to adjust coupon on exercise date. """
     ecnomic_terms: EcnomicTerms = None
-    value_sys: str = "中债"
+    value_sys: str = "中证"
     adv_rdp_bond: BondAdvRedemption = None
     __ytm: float = None
     __discount_curve = None
@@ -262,7 +262,10 @@ class BondPAwizAdvRep(Bond):
                                                     par=self.par,
                                                     curve_code=self.curve_code,
                                                     ecnomic_terms=ecnomic_terms)
-                self.adv_rdp_bond.cv.set_curve_data(self._discount_curve)
+                curve_dates = []
+                for i in range(len(self._discount_curve._zeroDates)):
+                    curve_dates.append(self.dc.yearFrac(self._settlement_date, self._discount_curve._zeroDates[i])[0])
+                self.adv_rdp_bond.cv.curve_data = pd.DataFrame(data={'tenor': curve_dates, 'rate': self._discount_curve._zeroRates})
     
     def _calculate_rdp_pcp(self):
         """ Determine the bond remaining principal."""

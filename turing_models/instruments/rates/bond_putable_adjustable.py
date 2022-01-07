@@ -85,7 +85,7 @@ class BondPutableAdjustable(Bond):
         if getattr(self, 'comb_symbol', None) is not None and getattr(self, 'exercise_dates', None) is not None and \
            getattr(self, 'due_date', None) is not None and getattr(self, 'pay_interest_cycle', None) is not None and \
            getattr(self, 'pay_interest_mode', None) is not None and getattr(self, 'interest_rules', None) is not None and \
-           getattr(self, 'par', None) is not None and getattr(self, 'curve_code', None):
+           getattr(self, 'par', None) is not None and getattr(self, 'curve_code', None) and getattr(self, 'fixed_rate_bond', None) is None:
             self._exercised_bond = BondFixedRate(comb_symbol=self.comb_symbol,
                                                  value_date=self.exercise_dates,
                                                  issue_date=self.exercise_dates,
@@ -246,7 +246,10 @@ class BondPutableAdjustable(Bond):
                                                     interest_rules=self.interest_rules,
                                                     par=self.par,
                                                     curve_code=self.curve_code)
-                self.fixed_rate_bond.cv.set_curve_data(self._discount_curve)
+                curve_dates = []
+                for i in range(len(self._discount_curve._zeroDates)):
+                    curve_dates.append(self.dc.yearFrac(self._settlement_date, self._discount_curve._zeroDates[i])[0])
+                self.fixed_rate_bond.cv.curve_data = pd.DataFrame(data={'tenor': curve_dates, 'rate': self._discount_curve._zeroRates})
 
     def clean_price(self):
         # 定价接口调用
