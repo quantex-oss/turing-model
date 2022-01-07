@@ -409,13 +409,13 @@ class BondPutableAdjustable(Bond):
                 cpnAmounts = []
 
                 for flow_date in self._flow_dates[1:]:
-                    if self._settlement_date < flow_date <= self.exercise_dates:
+                    if self._settlement_date <= flow_date < self.exercise_dates:
                         cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                         cpn_date = flow_date
                         cpnTimes.append(cpnTime)
                         cpn_dates.append(cpn_date)
                         cpnAmounts.append(cpn1)
-                    if flow_date > self.exercise_dates:
+                    if flow_date >= self.exercise_dates:
                         cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                         cpn_date = flow_date
                         cpnTimes.append(cpnTime)
@@ -461,13 +461,13 @@ class BondPutableAdjustable(Bond):
                 cpnAmounts = []
 
                 for flow_date in self._flow_dates[1:]:
-                    if self._settlement_date < flow_date <= self.exercise_dates:
+                    if self._settlement_date <= flow_date < self.exercise_dates:
                         cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                         cpn_date = flow_date
                         cpnTimes.append(cpnTime)
                         cpn_dates.append(cpn_date)
                         cpnAmounts.append(cpn1)
-                    if flow_date > self.exercise_dates:
+                    if flow_date >= self.exercise_dates:
                         cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                         cpn_date = flow_date
                         cpnTimes.append(cpnTime)
@@ -620,7 +620,7 @@ class BondPutableAdjustable(Bond):
 
                 for flow_date in self._flow_dates[1:]:
                     dates = dc.yearFrac(self._settlement_date, flow_date)[0]
-                    if self._settlement_date < flow_date < self.exercise_dates:
+                    if self._settlement_date <= flow_date < self.exercise_dates:
                         cpnTime = (flow_date - self._settlement_date) / gDaysInYear
                         cpn_date = flow_date
                         cpnTimes.append(cpnTime)

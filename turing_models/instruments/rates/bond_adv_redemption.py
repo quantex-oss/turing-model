@@ -17,6 +17,7 @@ from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveF
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondAdvRedemption(Bond):
     ecnomic_terms: EcnomicTerms = None
+    __clean_price: float = None
     __ytm: float = None
     __discount_curve = None
 
@@ -87,7 +88,11 @@ class BondAdvRedemption(Bond):
 
     @property
     def _clean_price(self):
-        return self.ctx_clean_price or self.clean_price_from_discount_curve()
+        return self.__clean_price or self.ctx_clean_price or self.clean_price_from_discount_curve()
+    
+    @_clean_price.setter
+    def _clean_price(self, value: float):
+        self.__clean_price = value
 
     def _calculate_flow_amounts(self):
         """ 保存票息现金流信息 """
