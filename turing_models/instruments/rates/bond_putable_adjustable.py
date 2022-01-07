@@ -75,10 +75,10 @@ class BondPutableAdjustable(Bond):
                     self._bound_down = None
 
             elif self.value_sys == "中证":
-                if getattr(self, 'high_rate_adjust', None) and isinstance(self.high_rate_adjust, (float, int)):
+                if getattr(self, 'high_rate_adjust', None) is None:
                     self.high_rate_adjust = float("inf")
                 self._bound_up = self.coupon_rate + self.high_rate_adjust
-                if getattr(self, 'low_rate_adjust', None) and isinstance(self.low_rate_adjust, (float, int)):
+                if getattr(self, 'low_rate_adjust', None) is None:
                     self.low_rate_adjust = float("-inf")
                 self._bound_down = self.coupon_rate + self.low_rate_adjust
 

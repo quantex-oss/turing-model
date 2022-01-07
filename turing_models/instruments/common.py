@@ -1194,26 +1194,6 @@ class Ctx:
         return getattr(ctx, f"next_base_interest_rate_{floating_rate_benchmark}")
 
     @property
-    def ctx_fx_implied_volatility_curve(self):
-        return getattr(ctx, f"fx_implied_volatility_curve_{getattr(self, 'asset_id', '')}") or \
-               getattr(ctx, f"fx_implied_volatility_curve_{getattr(self, 'underlier', '')}")
-
-    @property
-    def ctx_irs_curve(self):
-        return getattr(ctx, f"irs_curve_{getattr(self, 'asset_id', '')}") or \
-               getattr(ctx, f"irs_curve_{getattr(self, 'underlier', '')}")
-
-    @property
-    def ctx_shibor_curve(self):
-        return getattr(ctx, f"shibor_curve_{getattr(self, 'asset_id', '')}") or \
-               getattr(ctx, f"shibor_curve_{getattr(self, 'underlier', '')}")
-
-    @property
-    def ctx_swap_curve(self):
-        return getattr(ctx, f"swap_curve_{getattr(self, 'asset_id', '')}") or \
-               getattr(ctx, f"swap_curve_{getattr(self, 'underlier', '')}")
-
-    @property
     def ctx_interest_rate(self):
         return ctx.interest_rate
 
@@ -1251,6 +1231,22 @@ class Ctx:
             return getattr(ctx, f"yield_curve_{curve_code}_{curve_type}")
         else:
             return getattr(ctx, f"yield_curve_{curve_code}_{curve_type}_{forward_term}")
+
+    @staticmethod
+    def ctx_global_ibor_curve(ibor_type: str, currency: str):
+        return getattr(ctx, f"global_ibor_curve_{ibor_type}_{currency}")
+
+    @staticmethod
+    def ctx_irs_curve(ir_type: str, currency: str):
+        return getattr(ctx, f"irs_curve_{ir_type}_{currency}")
+
+    @staticmethod
+    def ctx_fx_swap_curve(currency_pair: str):
+        return getattr(ctx, f"fx_swap_curve_{currency_pair}")
+
+    @staticmethod
+    def ctx_fx_implied_volatility_curve(currency_pair: str, volatility_type: list):
+        return getattr(ctx, f"fx_implied_volatility_curve_{currency_pair}_{volatility_type}")
 
 
 class Priceable(Ctx):
