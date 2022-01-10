@@ -8,7 +8,7 @@ from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes
 from turing_models.utilities.global_variables import gNumObsInYear, gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
-    TuringKnockInTypes, TuringOptionType
+    TuringKnockInTypes, OptionType
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
     TuringGBMNumericalScheme
 from turing_models.instruments.eq.equity_option import EqOption
@@ -38,48 +38,47 @@ class SnowballOption(EqOption):
         self.days_in_year = gDaysInYear
         self.num_paths = 10000
         self.seed = 4242
+        self.check_param()
 
-    @property
-    def option_type_(self) -> TuringOptionTypes:
-        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
-            return TuringOptionTypes.SNOWBALL_CALL
-        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
-            return TuringOptionTypes.SNOWBALL_PUT
-        else:
-            raise TuringError('Please check the input of option_type')
+    def check_param(self):
+        if self.option_type is not None:
+            rules = {
+                "CALL": TuringOptionTypes.SNOWBALL_CALL,
+                OptionType.CALL: TuringOptionTypes.SNOWBALL_CALL,
+                "PUT": TuringOptionTypes.SNOWBALL_PUT,
+                OptionType.PUT: TuringOptionTypes.SNOWBALL_PUT
+            }
+            self.option_type = rules.get(self.option_type,
+                                         TuringError('Please check the input of option_type'))
+            if isinstance(self.option_type, TuringError):
+                raise self.option_type
 
-    @property
-    def knock_in_type_(self) -> TuringKnockInTypes:
-        if isinstance(self.knock_in_type, TuringKnockInTypes):
-            return self.knock_in_type
-        else:
-            if self.knock_in_type == 'RETURN':
-                return TuringKnockInTypes.RETURN
-            elif self.knock_in_type == 'VANILLA':
-                return TuringKnockInTypes.VANILLA
-            elif self.knock_in_type == 'SPREADS':
-                return TuringKnockInTypes.SPREADS
-            else:
-                raise TuringError('Please check the input of knock_in_type')
+        if self.knock_in_type is not None:
+            if not isinstance(self.knock_in_type, TuringKnockInTypes):
+                rules = {
+                    "RETURN": TuringKnockInTypes.RETURN,
+                    "VANILLA": TuringKnockInTypes.VANILLA,
+                    "SPREADS": TuringKnockInTypes.SPREADS
+                }
+                self.knock_in_type = rules.get(self.knock_in_type,
+                                               TuringError('Please check the input of knock_in_type'))
+                if isinstance(self.knock_in_type, TuringError):
+                    raise self.knock_in_type
 
-    @property
-    def business_day_adjust_type_(self) -> TuringBusDayAdjustTypes:
-        if isinstance(self.business_day_adjust_type, TuringBusDayAdjustTypes):
-            return self.business_day_adjust_type
+        if self.business_day_adjust_type is None:
+            self.business_day_adjust_type = TuringBusDayAdjustTypes.NONE
         else:
-            if self.business_day_adjust_type == 'FOLLOWING':
-                return TuringBusDayAdjustTypes.FOLLOWING
-            elif self.business_day_adjust_type == 'MODIFIED_FOLLOWING':
-                return TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
-            elif self.business_day_adjust_type == 'PRECDING':
-                return TuringBusDayAdjustTypes.PRECDING
-            elif self.business_day_adjust_type == 'MODIFIED_PRECEDING':
-                return TuringBusDayAdjustTypes.MODIFIED_PRECEDING
-            elif self.business_day_adjust_type is None:
-                return TuringBusDayAdjustTypes.NONE
-            else:
-                raise TuringError(
-                    'Please check the input of business_day_adjust_type')
+            if not isinstance(self.business_day_adjust_type, TuringBusDayAdjustTypes):
+                rules = {
+                    "FOLLOWING": TuringBusDayAdjustTypes.FOLLOWING,
+                    "MODIFIED_FOLLOWING": TuringBusDayAdjustTypes.MODIFIED_FOLLOWING,
+                    "PRECDING": TuringBusDayAdjustTypes.PRECDING,
+                    "MODIFIED_PRECEDING": TuringBusDayAdjustTypes.MODIFIED_PRECEDING
+                }
+                self.business_day_adjust_type = rules.get(self.business_day_adjust_type,
+                                                          TuringError('Please check the input of business_day_adjust_type'))
+                if isinstance(self.business_day_adjust_type, TuringError):
+                    raise self.business_day_adjust_type
 
     @property
     def bus_days(self) -> List[TuringDate]:
@@ -88,11 +87,11 @@ class SnowballOption(EqOption):
                                         self.expiry,
                                         freqType=FrequencyType.DAILY,
                                         calendarType=TuringCalendarTypes.CHINA_SSE,
-                                        busDayAdjustType=self.business_day_adjust_type_)
+                                        busDayAdjustType=self.business_day_adjust_type)
         return schedule_daily._adjustedDates
 
     @property
-    def knock_out_obs_days_whole_(self) -> List[TuringDate]:
+    def _knock_out_obs_days_whole(self) -> List[TuringDate]:
         """如果用户未传入敲出观察日时间表，就按月生成（包含首尾日）；
            如果用户传入敲出观察日时间表，就使用该值"""
         if self.knock_out_obs_days_whole:
@@ -102,14 +101,14 @@ class SnowballOption(EqOption):
                                               self.expiry,
                                               freqType=FrequencyType.MONTHLY,
                                               calendarType=TuringCalendarTypes.CHINA_SSE,
-                                              busDayAdjustType=self.business_day_adjust_type_)
+                                              busDayAdjustType=self.business_day_adjust_type)
             return schedule_monthly._adjustedDates
 
     def price(self) -> float:
-        s0 = self.stock_price_
+        s0 = self._stock_price
         r = self.r
         q = self.q
-        vol = self.volatility_
+        vol = self._volatility
         texp = self.texp
         num_ann_obs = self.num_ann_obs
         num_paths = self.num_paths
@@ -141,8 +140,8 @@ class SnowballOption(EqOption):
         untriggered_rebate = self.untriggered_rebate
         notional = self.notional
         texp = self.texp
-        option_type = self.option_type_
-        knock_in_type = self.knock_in_type_
+        option_type = self.option_type
+        knock_in_type = self.knock_in_type
         flag = self.annualized_flag
         participation_rate = self.participation_rate
         days_in_year = self.days_in_year
@@ -150,7 +149,7 @@ class SnowballOption(EqOption):
 
         # 统计从估值日到到期日之间的敲出观察日
         knock_out_obs_days = sorted(
-            list(set(self.knock_out_obs_days_whole_).intersection(set(bus_days))))
+            list(set(self._knock_out_obs_days_whole).intersection(set(bus_days))))
 
         # 统计敲出观察日在交易日列表中的索引值
         knock_out_obs_days_index = []

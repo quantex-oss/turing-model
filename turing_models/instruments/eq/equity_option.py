@@ -13,7 +13,7 @@ from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveF
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import TuringOptionType
+from turing_models.utilities.global_types import OptionType
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.helper_functions import convert_argument_type, to_turing_date
 from turing_models.utilities.helper_functions import to_string
@@ -29,7 +29,7 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
     underlier: Union[str, List[str]] = None
     underlier_symbol: str = None
     product_type: str = None
-    option_type: Union[str, TuringOptionType] = None
+    option_type: Union[str, OptionType] = None
     notional: float = None
     initial_spot: float = None
     number_of_options: float = None
@@ -52,8 +52,8 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
     zero_rates: List[Any] = field(default_factory=list)
     dividend_yield: Union[float, List[float]] = 0
     _valuation_date = None
-    _stock_price = None
-    _volatility = None
+    _spot = None
+    _vol = None
     _discount_curve = None
     _dividend_curve = None
 
@@ -84,31 +84,31 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         return True
 
     @property
-    def stock_price_(self) -> float:
-        return self._stock_price or self.ctx_spot or self.stock_price
+    def _stock_price(self) -> float:
+        return self._spot or self.ctx_spot or self.stock_price
 
-    @stock_price_.setter
-    def stock_price_(self, value: float):
-        self._stock_price = value
+    @_stock_price.setter
+    def _stock_price(self, value: float):
+        self._spot = value
 
     @property
-    def volatility_(self) -> float:
+    def _volatility(self) -> float:
         return self.ctx_volatility or self.volatility
 
     @property
-    def interest_rate_(self) -> float:
+    def _interest_rate(self) -> float:
         return self.ctx_interest_rate or self.interest_rate
 
     @property
-    def dividend_yield_(self) -> Union[float, List[float]]:
+    def _dividend_yield(self) -> Union[float, List[float]]:
         return self.ctx_dividend_yield or self.dividend_yield
 
     @property
     def model(self) -> TuringModelBlackScholes:
-        return TuringModelBlackScholes(self.volatility_)
+        return TuringModelBlackScholes(self._volatility)
 
     @property
-    def zero_dates_(self):
+    def _zero_dates(self):
         """把年化的时间列表转换为TuringDate格式"""
         return self._value_date.addYears(self.zero_dates)
 
@@ -117,12 +117,12 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         if self._discount_curve:
             return self._discount_curve
         else:
-            if self.interest_rate_:
+            if self._interest_rate:
                 return TuringDiscountCurveFlat(
-                    self._value_date, self.interest_rate_)
-            elif self.zero_dates_ and self.zero_rates:
+                    self._value_date, self._interest_rate)
+            elif self._zero_dates and self.zero_rates:
                 return TuringDiscountCurveZeros(
-                    self._value_date, self.zero_dates_, self.zero_rates)
+                    self._value_date, self._zero_dates, self.zero_rates)
 
     @discount_curve.setter
     def discount_curve(self, value: TuringDiscountCurveZeros):
@@ -134,7 +134,7 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
             return self._dividend_curve
         else:
             return TuringDiscountCurveFlat(
-                self._value_date, self.dividend_yield_)
+                self._value_date, self._dividend_yield)
 
     @dividend_curve.setter
     def dividend_curve(self, value: TuringDiscountCurveFlat):
@@ -164,14 +164,14 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def v(self) -> float:
-        return self._volatility or self.model._volatility
+        return self._vol or self.model._volatility
 
     @v.setter
     def v(self, value: float):
-        self._volatility = value
+        self._vol = value
 
     def spot(self):
-        return self.stock_price_
+        return self._stock_price
 
     def vol(self):
         return self.v
@@ -183,10 +183,10 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         return self.q
 
     def eq_delta(self) -> float:
-        return greek(self, self.price, "stock_price_")
+        return greek(self, self.price, "_stock_price")
 
     def eq_gamma(self) -> float:
-        return greek(self, self.price, "stock_price_", order=2)
+        return greek(self, self.price, "_stock_price", order=2)
 
     def eq_vega(self) -> float:
         return greek(self, self.price, "v")
@@ -242,12 +242,12 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         s += to_string("Strike Price", self.strike_price)
         s += to_string("Multiplier", self.multiplier)
         s += to_string("Annualized Flag", self.annualized_flag)
-        s += to_string("Stock Price", self.stock_price_)
-        s += to_string("Volatility", self.volatility_)
+        s += to_string("Stock Price", self._stock_price)
+        s += to_string("Volatility", self._volatility)
         if self._value_date:
             s += to_string("Value Date", self._value_date)
-        if self.interest_rate_:
-            s += to_string("Interest Rate", self.interest_rate_)
-        if self.dividend_yield_ or self.dividend_yield_ == 0:
-            s += to_string("Dividend Yield", self.dividend_yield_)
+        if self._interest_rate:
+            s += to_string("Interest Rate", self._interest_rate)
+        if self._dividend_yield or self._dividend_yield == 0:
+            s += to_string("Dividend Yield", self._dividend_yield)
         return s

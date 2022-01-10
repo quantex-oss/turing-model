@@ -5,7 +5,7 @@ from fundamental.pricing_context import PricingContext
 
 from turing_models.instruments.common import Currency, CurrencyPair, DayCountType
 from turing_models.instruments.fx.fx_quanto_digital import FXQuantoDigital
-from turing_models.utilities.global_types import TuringOptionType
+from turing_models.utilities.global_types import OptionType
 from turing_models.utilities.turing_date import TuringDate
 
 
@@ -22,7 +22,7 @@ inst = FXQuantoDigital(accrual_start=TuringDate(2021, 10, 29),
                        notional=10000000,
                        # correlation_fd_dq=-0.18,
                        notional_currency=Currency.CNY,
-                       option_type=TuringOptionType.CALL,
+                       option_type=OptionType.CALL,
                        day_count=DayCountType.Actual365Fixed)
 
 scenario_extreme = PricingContext(

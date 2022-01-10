@@ -10,7 +10,7 @@ from turing_models.instruments.eq.knockout_option import KnockOutOption
 from turing_models.instruments.fx.fx_vanilla_option import FXVanillaOption
 from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.frequency import FrequencyType
-from turing_models.utilities.global_types import TuringOptionType
+from turing_models.utilities.global_types import OptionType
 from turing_models.utilities.turing_date import TuringDate
 
 

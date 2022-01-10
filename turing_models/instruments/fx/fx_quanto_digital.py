@@ -14,7 +14,7 @@ from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceG
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.instruments.fx.fx_quanto_digital_ql import FXQuantoDigitalQL
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import TuringOptionType
+from turing_models.utilities.global_types import OptionType
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.helper_functions import turingdate_to_qldate
 
@@ -51,9 +51,9 @@ class FXQuantoDigital(FXOption):
             self.d_q_symbol = self.domestic_name + '/' + self.notional_currency
 
         if self.option_type:
-            if self.option_type == "CALL" or self.option_type == "call" or self.option_type == TuringOptionType.CALL:
+            if self.option_type == "CALL" or self.option_type == "call" or self.option_type == OptionType.CALL:
                 self.option_type = "call"
-            elif self.option_type == "PUT" or self.option_type == "put" or self.option_type == TuringOptionType.PUT:
+            elif self.option_type == "PUT" or self.option_type == "put" or self.option_type == OptionType.PUT:
                 self.option_type = "put"
             else:
                 raise TuringError('Please check the input of option_type')

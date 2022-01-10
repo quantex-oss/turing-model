@@ -6,7 +6,7 @@ from fundamental.turing_db.option_data import FxOptionApi
 from turing_models.instruments.fx.fx_option import FXOption
 from turing_models.instruments.fx.fx_vanilla_option_ql import FXVanilla
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import TuringOptionType
+from turing_models.utilities.global_types import OptionType
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
@@ -41,9 +41,9 @@ class FXVanillaOption(FXOption):
 
     @property
     def option_type_(self):
-        if self.option_type == "CALL" or self.option_type == "call" or self.option_type == TuringOptionType.CALL:
+        if self.option_type == "CALL" or self.option_type == "call" or self.option_type == OptionType.CALL:
             return "call"
-        elif self.option_type == "PUT" or self.option_type == "put" or self.option_type == TuringOptionType.PUT:
+        elif self.option_type == "PUT" or self.option_type == "put" or self.option_type == OptionType.PUT:
             return "put"
         else:
             raise TuringError('Please check the input of option_type')

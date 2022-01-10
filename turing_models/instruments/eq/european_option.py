@@ -4,7 +4,7 @@ from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendarTypes
 from turing_models.utilities.schedule import TuringSchedule
 from turing_models.utilities.global_variables import gNumObsInYear
-from turing_models.utilities.global_types import TuringOptionTypes, TuringOptionType
+from turing_models.utilities.global_types import TuringOptionTypes, OptionType
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta, \
     bs_vega, bs_gamma, bs_rho, bs_psi, bs_theta, bsImpliedVolatility
 from turing_models.instruments.eq.equity_option import EqOption
@@ -16,15 +16,20 @@ class EuropeanOption(EqOption):
 
     def __post_init__(self):
         super().__post_init__()
+        self.check_param()
 
-    @property
-    def option_type_(self) -> TuringOptionTypes:
-        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
-            return TuringOptionTypes.EUROPEAN_CALL
-        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
-            return TuringOptionTypes.EUROPEAN_PUT
-        else:
-            raise TuringError('Please check the input of option_type')
+    def check_param(self):
+        if self.option_type is not None:
+            rules = {
+                "CALL": TuringOptionTypes.EUROPEAN_CALL,
+                OptionType.CALL: TuringOptionTypes.EUROPEAN_CALL,
+                "PUT": TuringOptionTypes.EUROPEAN_PUT,
+                OptionType.PUT: TuringOptionTypes.EUROPEAN_PUT
+            }
+            self.option_type = rules.get(self.option_type,
+                                         TuringError('Please check the input of option_type'))
+            if isinstance(self.option_type, TuringError):
+                raise self.option_type
 
     @property
     def texp(self) -> float:
@@ -42,13 +47,13 @@ class EuropeanOption(EqOption):
 
     def params(self) -> list:
         return [
-            self.stock_price_,
+            self._stock_price,
             self.texp,
             self.strike_price,
             self.r,
             self.q,
             self.v,
-            self.option_type_.value,
+            self.option_type.value,
             False
         ]
 
@@ -74,8 +79,8 @@ class EuropeanOption(EqOption):
         return bs_psi(*self.params()[:-1]) * self.multiplier * self.number_of_options
 
     def implied_volatility(self, mkt, signal):
-        ''' Calculate the Black-Scholes implied volatility of a European
-        vanilla option. '''
+        """ Calculate the Black-Scholes implied volatility of a European
+        vanilla option. """
 
         texp = self.texp
 
@@ -85,11 +90,11 @@ class EuropeanOption(EqOption):
 
         r = self.r
         q = self.q
-        s0 = self.stock_price_
+        s0 = self._stock_price
         k = self.strike_price
         price = mkt
         sigma = bsImpliedVolatility(s0, texp, k, r, q, price,
-                                    self.option_type_.value)
+                                    self.option_type.value)
         if signal == "sigma":
             return sigma
         elif signal == "surface":

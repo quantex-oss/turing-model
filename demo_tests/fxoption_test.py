@@ -2,7 +2,7 @@ from fundamental.pricing_context import PricingContext
 
 from turing_models.instruments.common import Currency, CurrencyPair, RiskMeasure
 from turing_models.instruments.fx.fx_vanilla_option import FXVanillaOption
-from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
+from turing_models.utilities.global_types import OptionType, TuringExerciseType
 from turing_models.utilities.turing_date import TuringDate
 
 
@@ -15,7 +15,7 @@ fxoption = FXVanillaOption(start_date=TuringDate(2021, 5, 18),
                            strike=7.45,
                            notional=20000000,
                            notional_currency=Currency.USD,
-                           option_type=TuringOptionType.CALL,
+                           option_type=OptionType.CALL,
                            exercise_type=TuringExerciseType.EUROPEAN,
                            premium_currency=Currency.CNY)
 # 需要计算的RiskMeasure

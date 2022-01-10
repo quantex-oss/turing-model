@@ -19,7 +19,7 @@ from turing_models.market.curves.curve_generation import DomDiscountCurveGen, Fo
 from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import TuringOptionType, TuringExerciseType
+from turing_models.utilities.global_types import OptionType, TuringExerciseType
 from turing_models.utilities.helper_functions import to_string, to_datetime, to_turing_date
 from turing_models.utilities.turing_date import TuringDate
 
@@ -37,7 +37,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     cut_off_time: TuringDate = None
     exercise_type: (
         str, TuringExerciseType) = TuringExerciseType.EUROPEAN  # EUROPEAN
-    option_type: (str, TuringOptionType) = None  # CALL/PUT
+    option_type: (str, OptionType) = None  # CALL/PUT
     start_date: TuringDate = None
     # 1 unit of foreign in domestic
     premium_currency: (str, Currency) = None
