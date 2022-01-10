@@ -1225,6 +1225,10 @@ class Ctx:
     def ctx_tenor_end(self):
         return getattr(ctx, f"tenor_end_{self.curve_code}")
 
+    @staticmethod
+    def ctx_exchange_rate(currency_pair: str):
+        return getattr(ctx, f"spot_{currency_pair}")
+
     def ctx_yield_curve(self, curve_type: str, forward_term: float = None):
         curve_code = getattr(self, 'curve_code', None)
         if forward_term is None:
