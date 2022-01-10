@@ -6,7 +6,7 @@ from fundamental import PricingContext
 from turing_models.instruments.common import RiskMeasure
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.instruments.rates.bond_floating_rate import BondFloatingRate
-from turing_models.instruments.rates.bond_pa_wiz_adv_rdp import BondPAwizAdvRep
+from turing_models.instruments.rates.bond_pa_wiz_adv_rdp import BondPtbAdjWizAdvRdp
 from turing_models.instruments.rates.bond_putable_adjustable import BondPutableAdjustable
 from turing_models.utilities.bond_terms import FloatingRateTerms, EcnomicTerms, PrepaymentTerms, EmbeddedPutableOptions, \
     EmbeddedRateAdjustmentOptions
@@ -59,7 +59,7 @@ data = pd.DataFrame(data=data_list)
 embedded_rate_adjustment_options = EmbeddedRateAdjustmentOptions(data=data)
 ecnomic_terms = EcnomicTerms(embedded_putable_options, embedded_rate_adjustment_options, prepayment_terms)
 
-bond_adv_redemption = BondPAwizAdvRep(
+bond_adv_redemption = BondPtbAdjWizAdvRdp(
     asset_id="SEC022533308",
     wind_id="",
     bbg_id="",
