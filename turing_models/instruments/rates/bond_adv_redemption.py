@@ -120,7 +120,7 @@ class BondAdvRedemption(Bond):
         px = 0.0
         df = 1.0
         df_settle = discount_curve_flat.df(self._settlement_date)
-        for rdp in range(len(self.pay_dates)):
+        for rdp in range(len(self.pay_dates)):  # 用rdp记录估值日后第一个偿还日在条款中的位置
             if self._settlement_date < self.pay_dates[rdp]:
                 break
         next_rdp = self.pay_dates[rdp]  # 下个提前偿还日
@@ -136,7 +136,7 @@ class BondAdvRedemption(Bond):
                     flow = self.coupon_rate / self.frequency * last_pcp
                     pv = flow * df * self.par * dates
                     px += pv
-                if dt == next_rdp:  # 当提前偿还发生时的现金流
+                if dt == next_rdp:  # 计算当提前偿还发生时的现金流，通过count向后迭代提前偿还条款信息和计算剩余本金
                     flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df * dates * self.par
