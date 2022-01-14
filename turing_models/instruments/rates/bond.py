@@ -136,19 +136,19 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                     raise self.interest_rules
 
     @property
-    def date_for_interface(self):
+    def _original_value_date(self):
         # TuringDate或者latest
         return self.ctx_pricing_date or self.value_date
 
     @property
     def _settlement_date(self):
-        value_date = max(to_turing_date(self.date_for_interface), self.issue_date)
+        value_date = max(to_turing_date(self._original_value_date), self.issue_date)
         return value_date.addDays(self.settlement_terms)
 
     def _curve_resolve(self):
         # 为了实时响应what-if调整pricing date
         if self.ctx_pricing_date is not None:
-            self.cv.set_value_date(self.date_for_interface)
+            self.cv.set_value_date(self._original_value_date)
         # 查询用户是否通过what-if传入self.curve_code对应的即期收益率曲线数据
         ctx_yield_curve = self.ctx_yield_curve(curve_type='spot_rate')
         if ctx_yield_curve is not None:

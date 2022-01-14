@@ -122,7 +122,7 @@ class BondPutableAdjustable(Bond):
 
     def _forward_curve_resolve(self):
         # 为了实时响应what-if调整pricing date
-        self.forward_cv.set_value_date(self.date_for_interface)
+        self.forward_cv.set_value_date(self._original_value_date)
         # 查询用户是否通过what-if传入self.curve_code对应的远期的即期收益率曲线数据
         ctx_forward_curve = self.ctx_yield_curve(curve_type='forward_spot_rate',
                                                  forward_term=self.forward_term)

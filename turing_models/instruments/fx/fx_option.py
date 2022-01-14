@@ -94,7 +94,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def _value_date(self):
         """优先考虑通过what-if传出的估值日期"""
-        date = to_turing_date(self.date_for_interface)
+        date = to_turing_date(self._original_value_date)
         return date if date >= self.start_date else self.start_date
 
     @property
@@ -102,7 +102,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         return ql.Date(self._value_date._d, self._value_date._m, self._value_date._y)
 
     @property
-    def date_for_interface(self):
+    def _original_value_date(self):
         # turing sdk提供的接口支持传datetime.datetime格式的时间或者latest
         if self.ctx_pricing_date is not None:
             if isinstance(self.ctx_pricing_date, str):
@@ -125,7 +125,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_exchange_rate(self):
         """从接口获取汇率"""
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.exchange_rate(symbol=self.underlier_symbol, date=date)
         if original_data is not None:
             data = original_data[self.underlier_symbol]
@@ -141,7 +141,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_shibor_data(self):
         """从接口获取shibor"""
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
         if original_data is not None:
             data = original_data
@@ -152,7 +152,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_shibor_swap_data(self):
         """从接口获取利率互换曲线"""
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = Turing.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
         if original_data is not None:
             data = original_data.loc["Shibor3M"]
@@ -179,7 +179,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_fx_swap_data(self):
         """获取外汇掉期曲线"""
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.get_fx_swap_curve(currency_pair=self.underlier_symbol, start=date, end=date)
         if original_data is not None:
             data = original_data.loc[self.underlier_symbol]
@@ -190,7 +190,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_fx_implied_vol_data(self):
         """获取外汇期权隐含波动率曲线"""
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.get_fx_implied_volatility_curve(currency_pair=self.underlier_symbol,
                                                                  volatility_type=["ATM", "25D BF", "25D RR", "10D BF", "10D RR"],
                                                                  start=date,

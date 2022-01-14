@@ -50,7 +50,7 @@ class CurveGeneration(Base, Ctx):
                     raise self.curve_type
 
     @property
-    def date_for_interface(self):
+    def _original_value_date(self):
         if self.ctx_pricing_date is not None:
             # 目前ctx_pricing_date有两个格式：TuringDate和latest
             if isinstance(self.ctx_pricing_date, TuringDate):
@@ -64,7 +64,7 @@ class CurveGeneration(Base, Ctx):
     @property
     def _value_date(self):
         # 将latest转成TuringDate
-        return to_turing_date(self.date_for_interface)
+        return to_turing_date(self._original_value_date)
 
     @property
     def get_shibor_data(self):
@@ -72,7 +72,7 @@ class CurveGeneration(Base, Ctx):
         shibor_data = self.ctx_global_ibor_curve(ibor_type='Shibor', currency='CNY')
         if shibor_data is not None:
             return pd.DataFrame(shibor_data)
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
         if original_data is not None:
             return original_data
@@ -85,7 +85,7 @@ class CurveGeneration(Base, Ctx):
         irs_curve = self.ctx_irs_curve(ir_type="Shibor3M", currency='CNY')
         if irs_curve is not None:
             return pd.DataFrame(irs_curve)
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
         if original_data is not None:
             return original_data.loc["Shibor3M"]

@@ -55,7 +55,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
                     raise self.volatility_function_type
 
     @property
-    def date_for_interface(self):
+    def _original_value_date(self):
         if self.ctx_pricing_date is not None:
             # 目前ctx_pricing_date有两个格式：TuringDate和latest
             if isinstance(self.ctx_pricing_date, TuringDate):
@@ -69,7 +69,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
     @property
     def _value_date(self):
         # 将latest转成TuringDate
-        return to_turing_date(self.date_for_interface)
+        return to_turing_date(self._original_value_date)
 
     @property
     def get_exchange_rate(self):
@@ -77,7 +77,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
         exchange_rate = self.ctx_exchange_rate(currency_pair=self.fx_symbol)
         if exchange_rate is not None:
             return exchange_rate
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.exchange_rate(symbol=self.fx_symbol, date=date)
         if original_data is not None:
             data = original_data[self.fx_symbol]
@@ -91,7 +91,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
         shibor_data = self.ctx_global_ibor_curve(ibor_type='Shibor', currency='CNY')
         if shibor_data is not None:
             return pd.DataFrame(shibor_data)
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
         if original_data is not None:
             return original_data
@@ -104,7 +104,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
         irs_curve = self.ctx_irs_curve(ir_type="Shibor3M", currency='CNY')
         if irs_curve is not None:
             return pd.DataFrame(irs_curve)
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
         if original_data is not None:
             return original_data.loc["Shibor3M"]
@@ -133,7 +133,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
         fx_swap_curve = self.ctx_fx_swap_curve(currency_pair=self.fx_symbol)
         if fx_swap_curve is not None:
             return pd.DataFrame(fx_swap_curve)
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.get_fx_swap_curve(currency_pair=self.fx_symbol, start=date, end=date)
         if original_data is not None:
             return original_data.loc[self.fx_symbol]
@@ -148,7 +148,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
                                                                            volatility_type=volatility_type)
         if fx_implied_volatility_curve is not None:
             return pd.DataFrame(fx_implied_volatility_curve)
-        date = self.date_for_interface
+        date = self._original_value_date
         original_data = TuringDB.get_fx_implied_volatility_curve(currency_pair=self.fx_symbol,
                                                                  volatility_type=volatility_type,
                                                                  start=date,

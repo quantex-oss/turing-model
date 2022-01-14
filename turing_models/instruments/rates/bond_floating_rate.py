@@ -40,7 +40,7 @@ class BondFloatingRate(Bond):
         if self.ctx_next_base_interest_rate:
             return self.ctx_next_base_interest_rate
         else:
-            date = self.date_for_interface
+            date = self._original_value_date
             original_data = TuringDB.rate_interest_rate_levels(ir_codes=self.floating_rate_benchmark, date=date)
             if original_data is not None:
                 data = original_data.loc[self.floating_rate_benchmark, 'rate']
