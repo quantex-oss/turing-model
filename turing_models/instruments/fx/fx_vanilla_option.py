@@ -51,7 +51,7 @@ class FXVanillaOption(FXOption):
     def params(self) -> list:
         return [
             self.value_date_ql,
-            self.exchange_rate,
+            self.get_exchange_rate,
             self.fx_forward_curve,
             self.domestic_discount_curve,
             self.volatility_surface,
@@ -65,7 +65,7 @@ class FXVanillaOption(FXOption):
 
     def atm(self):
         return self.option.__getATM__(self.value_date_ql,
-                                      self.exchange_rate,
+                                      self.get_exchange_rate,
                                       self.fx_forward_curve,
                                       self.daycount)
 

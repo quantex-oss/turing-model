@@ -108,7 +108,7 @@ class CurveGeneration(Base, Ctx):
         else:
             raise TuringError(f"Cannot find shibor data")
 
-    def generate_discount_curve_and_term(self):
+    def generate_discount_curve(self):
         """ 根据估值日期和曲线类型调用相关接口补全所需数据后，生成对应的曲线 """
         value_date = self._value_date
         if self.curve_type == DiscountCurveType.Shibor3M:
@@ -124,10 +124,18 @@ class CurveGeneration(Base, Ctx):
                 shibor_swap_fixing_rates=self.get_shibor_swap_fixing_data['Fixing'],
                 curve_type=DiscountCurveType.Shibor3M
             ).discount_curve
-            term = self.get_shibor_swap_data['tenor'].iloc[-1]
-            return discount_curve, term
         else:
             raise TuringError('Unsupported curve type')
+        return discount_curve
+
+    def pair_discount_curve_and_term(self):
+        """ 根据曲线类型，将生成的曲线与期限对应 """
+        discount_curve = self.generate_discount_curve()
+        if self.curve_type == DiscountCurveType.Shibor3M:
+            term = self.get_shibor_swap_data['tenor'].iloc[-1]
+        else:
+            raise TuringError('Unsupported curve type')
+        return discount_curve, term
 
     def generate_date_list(
             self,
@@ -149,7 +157,7 @@ class CurveGeneration(Base, Ctx):
 
     def get_curve(self):
         """ 生成dataframe """
-        discount_curve, term = self.generate_discount_curve_and_term()
+        discount_curve, term = self.pair_discount_curve_and_term()
         if isinstance(discount_curve, ql.YieldTermStructure):
             tenors, nature_days = self.generate_date_list(term, ql.Date)
             day_count = ql.Actual365Fixed()
