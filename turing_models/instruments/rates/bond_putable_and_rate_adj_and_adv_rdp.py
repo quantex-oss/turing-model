@@ -32,7 +32,7 @@ dy = 0.0001
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class BondPtbAdjWizAdvRdp(Bond):
+class BondPutableAndRateAdjAndAdvRdp(Bond):
     """ Class for fixed coupon bonds with embedded put optionality and rights to adjust coupon on exercise date. """
     ecnomic_terms: EcnomicTerms = None
     value_sys: str = "中证"
