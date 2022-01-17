@@ -13,7 +13,7 @@ from turing_models.instruments.eq.asian_option import AsianOption
 from turing_models.instruments.eq.snowball_option import SnowballOption
 from turing_models.instruments.eq.knockout_option import KnockOutOption
 from turing_models.instruments.eq.basket_snowball_option import BasketSnowballOption
-from turing_models.utilities.global_types import TuringOptionType
+from turing_models.utilities.global_types import OptionType
 from turing_models.instruments.common import Currency
 from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 
@@ -22,7 +22,7 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 european_option = EuropeanOption(asset_id='OPTIONCN00000001',
                                  underlier='STOCKCN00000011',
                                  underlier_symbol="600059.SH",
-                                 option_type=TuringOptionType.CALL,
+                                 option_type=OptionType.CALL,
                                  start_date=TuringDate(2021, 6, 3),
                                  expiry=TuringDate(2021, 9, 3),
                                  strike_price=5.3,
@@ -38,7 +38,7 @@ european_option = EuropeanOption(asset_id='OPTIONCN00000001',
 
 american_option = AmericanOption(asset_id='OPTIONCN00000001',
                                  underlier='STOCKCN00000011',
-                                 option_type=TuringOptionType.CALL,
+                                 option_type=OptionType.CALL,
                                  expiry=TuringDate(2021, 9, 3),
                                  start_date=TuringDate(2021, 6, 3),
                                  strike_price=5.3,
@@ -54,7 +54,7 @@ american_option = AmericanOption(asset_id='OPTIONCN00000001',
 
 asian_option = AsianOption(asset_id='OPTIONCN00000001',
                            underlier='STOCKCN00000011',
-                           option_type=TuringOptionType.CALL,
+                           option_type=OptionType.CALL,
                            expiry=TuringDate(2021, 9, 3),
                            start_date=TuringDate(2021, 6, 3),
                            start_averaging_date=TuringDate(2021, 8, 15),
@@ -70,7 +70,7 @@ asian_option = AsianOption(asset_id='OPTIONCN00000001',
                            dividend_yield=0)
 
 snowball_option = SnowballOption(asset_id='OPTIONCN00000001',
-                                 option_type=TuringOptionType.CALL,
+                                 option_type=OptionType.CALL,
                                  start_date=TuringDate(2021, 6, 3),
                                  expiry=TuringDate(2021, 10, 3),
                                  participation_rate=1.0,
@@ -94,7 +94,7 @@ snowball_option = SnowballOption(asset_id='OPTIONCN00000001',
 
 knockout_option = KnockOutOption(asset_id='OPTIONCN00000001',
                                  underlier='STOCKCN00000011',
-                                 option_type=TuringOptionType.CALL,
+                                 option_type=OptionType.CALL,
                                  start_date=TuringDate(2021, 6, 3),
                                  expiry=TuringDate(2021, 9, 3),
                                  strike_price=5.3,
@@ -124,7 +124,7 @@ print_result(knockout_option)
 betas = np.ones(5) * 0.1
 corr_matrix = betaVectorToCorrMatrix(betas)
 
-basket_snowball_option = BasketSnowballOption(option_type=TuringOptionType.CALL,
+basket_snowball_option = BasketSnowballOption(option_type=OptionType.CALL,
                                               start_date=TuringDate(2014, 1, 1),
                                               expiry=TuringDate(2016, 1, 1),
                                               initial_spot=100,
@@ -148,7 +148,7 @@ basket_snowball_option = BasketSnowballOption(option_type=TuringOptionType.CALL,
                                               correlation_matrix=corr_matrix)
 
 # start = time.time()
-# price1 = basket_snowball_option.price()
+print(basket_snowball_option.price())
 # end = time.time()
 # print(price1, end-start)
 

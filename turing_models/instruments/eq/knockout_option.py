@@ -8,7 +8,7 @@ from turing_models.instruments.eq.equity_option import EqOption
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
     TuringGBMNumericalScheme
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import TuringKnockOutTypes, TuringOptionType
+from turing_models.utilities.global_types import TuringKnockOutTypes, OptionType
 from turing_models.utilities.global_variables import gNumObsInYear, gDaysInYear
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
@@ -26,18 +26,24 @@ class KnockOutOption(EqOption):
         self.num_paths = 1_000_000
         self.days_in_year = gDaysInYear
         self.seed = 4242
+        self.check_param()
 
-    @property
-    def knock_out_type_(self) -> TuringKnockOutTypes:
-        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
-            return TuringKnockOutTypes.UP_AND_OUT_CALL
-        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
-            return TuringKnockOutTypes.DOWN_AND_OUT_PUT
-        else:
-            raise TuringError('Please check the input of option_type')
+    def check_param(self):
+        if self.knock_out_type is None:
+            if self.option_type is not None:
+                rules = {
+                    "CALL": TuringKnockOutTypes.UP_AND_OUT_CALL,
+                    OptionType.CALL: TuringKnockOutTypes.UP_AND_OUT_CALL,
+                    "PUT": TuringKnockOutTypes.DOWN_AND_OUT_PUT,
+                    OptionType.PUT: TuringKnockOutTypes.DOWN_AND_OUT_PUT
+                }
+                self.knock_out_type = rules.get(self.option_type,
+                                                TuringError('Please check the input of option_type'))
+                if isinstance(self.knock_out_type, TuringError):
+                    raise self.knock_out_type
 
     def price(self) -> float:
-        s0 = self.stock_price_
+        s0 = self._stock_price
         expiry = self.expiry
         start_date = self.start_date
         days_in_year = self.days_in_year
@@ -49,7 +55,7 @@ class KnockOutOption(EqOption):
         rebate = self.rebate
         notional = self.notional
         texp = self.texp
-        knock_out_type = self.knock_out_type_
+        knock_out_type = self.knock_out_type
         flag = self.annualized_flag
         participation_rate = self.participation_rate
         num_ann_obs = self.num_ann_obs
@@ -132,7 +138,7 @@ class KnockOutOption(EqOption):
         return v
 
     def price_mc(self) -> float:
-        s0 = self.stock_price_
+        s0 = self._stock_price
         k = self.strike_price
         b = self.barrier
         r = self.r
@@ -141,7 +147,7 @@ class KnockOutOption(EqOption):
         rebate = self.rebate
         notional = self.notional
         texp = self.texp
-        knock_out_type = self.knock_out_type_
+        knock_out_type = self.knock_out_type
         flag = self.annualized_flag
         participation_rate = self.participation_rate
         num_ann_obs = self.num_ann_obs
@@ -210,17 +216,17 @@ class KnockOutOption(EqOption):
         if self.underlier_symbol and not self.underlier:
             self.underlier = Turing.get_stock_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
         if self.underlier:
-            if not self.stock_price_:
+            if not self._stock_price:
                 setattr(self, "stock_price", OptionApi.stock_price(
                     underlier=self.underlier))
-        if self.value_date_ and self.underlier:
-            if not self.interest_rate_ and not self.zero_dates and not self.zero_rates:
+        if self._value_date and self.underlier:
+            if not self._interest_rate and not self.zero_dates and not self.zero_rates:
                 zero_dates, zero_rates = OptionApi.fill_r()
                 setattr(self, "zero_dates", zero_dates)
                 setattr(self, "zero_rates", zero_rates)
-            if not self.volatility_:
+            if not self._volatility:
                 get_volatility = OptionApi.get_volatility(
-                    value_date_=self.value_date_, underlier=self.underlier)
+                    value_date_=self._value_date, underlier=self.underlier)
                 if get_volatility:
                     setattr(self, 'volatility', get_volatility)
         if not self.product_type:

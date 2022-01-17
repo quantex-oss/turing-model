@@ -6,7 +6,7 @@ from turing_models.utilities.mathematics import N
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
-    TuringAsianOptionValuationMethods, TuringOptionType
+    TuringAsianOptionValuationMethods, OptionType
 from turing_models.instruments.eq.equity_option import EqOption
 from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.error import TuringError
@@ -25,29 +25,34 @@ class AsianOption(EqOption):
     def __post_init__(self):
         super().__post_init__()
         self.num_obs = int(self.expiry - self.start_averaging_date)
+        self.check_param()
 
-    @property
-    def option_type_(self) -> TuringOptionTypes:
-        if self.option_type == "CALL" or self.option_type == TuringOptionType.CALL:
-            return TuringOptionTypes.ASIAN_CALL
-        elif self.option_type == "PUT" or self.option_type == TuringOptionType.PUT:
-            return TuringOptionTypes.ASIAN_PUT
-        else:
-            raise TuringError('Please check the input of option_type')
-
-    @property
-    def valuation_method_(self) -> TuringAsianOptionValuationMethods:
-        if self.valuation_method == 'geometric':
-            return TuringAsianOptionValuationMethods.GEOMETRIC
-        elif self.valuation_method == 'turnbull_wakeman':
-            return TuringAsianOptionValuationMethods.TURNBULL_WAKEMAN
-        elif self.valuation_method == 'curran':
-            return TuringAsianOptionValuationMethods.CURRAN
-        else:
-            raise TuringError('Please check the input of valuation_method')
+    def check_param(self):
+        if self.option_type is not None:
+            rules = {
+                "CALL": TuringOptionTypes.ASIAN_CALL,
+                OptionType.CALL: TuringOptionTypes.ASIAN_CALL,
+                "PUT": TuringOptionTypes.ASIAN_PUT,
+                OptionType.PUT: TuringOptionTypes.ASIAN_PUT
+            }
+            self.option_type = rules.get(self.option_type,
+                                         TuringError('Please check the input of option_type'))
+            if isinstance(self.option_type, TuringError):
+                raise self.option_type
+        if self.valuation_method is not None:
+            if not isinstance(self.valuation_method, TuringAsianOptionValuationMethods):
+                rules = {
+                    "geometric": TuringAsianOptionValuationMethods.GEOMETRIC,
+                    "turnbull_wakeman": TuringAsianOptionValuationMethods.TURNBULL_WAKEMAN,
+                    "curran": TuringAsianOptionValuationMethods.CURRAN
+                }
+                self.valuation_method = rules.get(self.valuation_method,
+                                                  TuringError('Please check the input of valuation_method'))
+                if isinstance(self.valuation_method, TuringError):
+                    raise self.valuation_method
 
     def price(self) -> float:
-        valuation_method = self.valuation_method_
+        valuation_method = self.valuation_method
         if valuation_method == TuringAsianOptionValuationMethods.GEOMETRIC:
             v = self._value_geometric()
 
@@ -61,7 +66,7 @@ class AsianOption(EqOption):
 
     def _value_geometric(self):
         # the years to the start of the averaging period
-        t0 = (self.start_averaging_date - self.value_date_) / gDaysInYear
+        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -72,7 +77,7 @@ class AsianOption(EqOption):
 
         k = self.strike_price
         n = self.num_obs
-        s0 = self.stock_price_
+        s0 = self._stock_price
 
         multiple = 1.0
 
@@ -101,9 +106,9 @@ class AsianOption(EqOption):
         # the Geometric price is the lower bound
         call_g = np.exp(-r * texp) * (eg * N(d1) - k * N(d2))
 
-        if self.option_type_ == TuringOptionTypes.ASIAN_CALL:
+        if self.option_type == TuringOptionTypes.ASIAN_CALL:
             v = call_g
-        elif self.option_type_ == TuringOptionTypes.ASIAN_PUT:
+        elif self.option_type == TuringOptionTypes.ASIAN_PUT:
             put_g = call_g - (eg - k) * np.exp(-r * texp)
             v = put_g
 
@@ -111,7 +116,7 @@ class AsianOption(EqOption):
         return v
 
     def _value_turnbull_wakeman(self):
-        t0 = (self.start_averaging_date - self.value_date_) / gDaysInYear
+        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -143,7 +148,7 @@ class AsianOption(EqOption):
         sigma2 = vol ** 2
         a1 = b + sigma2
         a2 = 2 * b + sigma2
-        s0 = self.stock_price_
+        s0 = self._stock_price
 
         dt = texp - t0
 
@@ -166,10 +171,10 @@ class AsianOption(EqOption):
         d1 = (np.log(f0 / k) + sigma2 * texp / 2) / sigma / np.sqrt(texp)
         d2 = d1 - sigma * np.sqrt(texp)
 
-        if self.option_type_ == TuringOptionTypes.ASIAN_CALL:
+        if self.option_type == TuringOptionTypes.ASIAN_CALL:
             call = np.exp(-r * texp) * (f0 * N(d1) - k * N(d2))
             v = call
-        elif self.option_type_ == TuringOptionTypes.ASIAN_PUT:
+        elif self.option_type == TuringOptionTypes.ASIAN_PUT:
             put = np.exp(-r * texp) * (k * N(-d2) - f0 * N(-d1))
             v = put
 
@@ -178,7 +183,7 @@ class AsianOption(EqOption):
 
     def _value_curran(self):
         # the years to the start of the averaging period
-        t0 = (self.start_averaging_date - self.value_date_) / gDaysInYear
+        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -189,7 +194,7 @@ class AsianOption(EqOption):
 
         vol = self.v
 
-        s0 = self.stock_price_
+        s0 = self._stock_price
         b = r - q
         sigma2 = vol ** 2
         k = self.strike_price
@@ -224,9 +229,9 @@ class AsianOption(EqOption):
               texp / 2.0) / (sigmaA * np.sqrt(texp))
         d2 = d1 - sigmaA * np.sqrt(texp)
 
-        if self.option_type_ == TuringOptionTypes.ASIAN_CALL:
+        if self.option_type == TuringOptionTypes.ASIAN_CALL:
             v = np.exp(-r * texp) * (fa * N(d1) - k * N(d2))
-        elif self.option_type_ == TuringOptionTypes.ASIAN_PUT:
+        elif self.option_type == TuringOptionTypes.ASIAN_PUT:
             v = np.exp(-r * texp) * (k * N(-d2) - fa * N(-d1))
 
         v = v * multiple

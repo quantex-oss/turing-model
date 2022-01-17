@@ -7,7 +7,7 @@ from fundamental.report.web_report import WhatIfReport, WhatIfReportContent
 from turing_models.instruments.eq.knockout_option import KnockOutOption
 from turing_models.utilities.turing_date import TuringDate
 from turing_models.instruments.common import RiskMeasure
-from turing_models.utilities.global_types import TuringOptionType
+from turing_models.utilities.global_types import OptionType
 
 portfolio = Portfolio(portfolio_name="QL")
 
@@ -15,7 +15,7 @@ portfolio = Portfolio(portfolio_name="QL")
 knockout_option = KnockOutOption(
     underlier="STOCKCN00000001",
     initial_spot=3.5,
-    option_type=TuringOptionType.PUT,
+    option_type=OptionType.PUT,
     start_date=TuringDate(2021, 7, 29),
     expiry=TuringDate(2021, 9, 29),
     strike_price=3.3,

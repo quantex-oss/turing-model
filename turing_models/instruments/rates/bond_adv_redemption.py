@@ -3,8 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 
-# from fundamental.turing_db.data import TuringDB
-from turing_models.instruments.common import newton_fun, greek
+from turing_models.instruments.common import newton_fun, greek, Curve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.bond_terms import EcnomicTerms, PrepaymentTerms
@@ -18,6 +17,7 @@ from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveF
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class BondAdvRedemption(Bond):
     ecnomic_terms: EcnomicTerms = None
+    __clean_price: float = None
     __ytm: float = None
     __discount_curve = None
 
@@ -25,6 +25,10 @@ class BondAdvRedemption(Bond):
         super().__post_init__()
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
+        if self.issue_date:
+            self.cv = Curve(value_date=self.value_date, curve_code=self.curve_code)
+            if self.curve_code:
+                self.cv.resolve()
         if self.ecnomic_terms is not None:
             self.check_ecnomic_terms()
             prepayment_terms = self.ecnomic_terms.get_instance(PrepaymentTerms)
@@ -84,7 +88,11 @@ class BondAdvRedemption(Bond):
 
     @property
     def _clean_price(self):
-        return self.ctx_clean_price or self.clean_price_from_discount_curve()
+        return self.__clean_price or self.ctx_clean_price or self.clean_price_from_discount_curve()
+    
+    @_clean_price.setter
+    def _clean_price(self, value: float):
+        self.__clean_price = value
 
     def _calculate_flow_amounts(self):
         """ 保存票息现金流信息 """
@@ -112,7 +120,7 @@ class BondAdvRedemption(Bond):
         px = 0.0
         df = 1.0
         df_settle = discount_curve_flat.df(self._settlement_date)
-        for rdp in range(len(self.pay_dates)):
+        for rdp in range(len(self.pay_dates)):  # 用rdp记录估值日后第一个偿还日在条款中的位置
             if self._settlement_date < self.pay_dates[rdp]:
                 break
         next_rdp = self.pay_dates[rdp]  # 下个提前偿还日
@@ -128,8 +136,8 @@ class BondAdvRedemption(Bond):
                     flow = self.coupon_rate / self.frequency * last_pcp
                     pv = flow * df * self.par * dates
                     px += pv
-                if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
+                if dt == next_rdp:  # 计算当提前偿还发生时的现金流，通过count向后迭代提前偿还条款信息和计算剩余本金
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df * dates * self.par
                     px += pv
@@ -191,7 +199,7 @@ class BondAdvRedemption(Bond):
                     pv = flow * df
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df
                     px += pv
@@ -235,7 +243,7 @@ class BondAdvRedemption(Bond):
                     pv = flow * df
                     px += pv
                 if dt == next_rdp:  # 当提前偿还发生时的现金流
-                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp]
+                    flow = self.coupon_rate / self.frequency * last_pcp + self.pay_rates[rdp - 1 + count]
                     count += 1
                     pv = flow * df
                     px += pv

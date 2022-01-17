@@ -24,9 +24,9 @@ class BasketSnowballOption(SnowballOption):
             self.num_assets = len(self.underlier)
 
     @property
-    def stock_price_(self) -> np.ndarray:
-        if self._stock_price:
-            return self._stock_price
+    def _stock_price(self) -> np.ndarray:
+        if self._spot:
+            return self._spot
 
         # self.underlier是一个列表
         for i in range(len(self.underlier)):
@@ -36,14 +36,14 @@ class BasketSnowballOption(SnowballOption):
 
         return np.array(self.stock_price)
 
-    @stock_price_.setter
-    def stock_price_(self, value: np.ndarray):
-        self._stock_price = value
+    @_stock_price.setter
+    def _stock_price(self, value: np.ndarray):
+        self._spot = value
 
     @property
-    def volatility_(self) -> np.ndarray:
-        if self._volatility:
-            return self._volatility
+    def _volatility(self) -> np.ndarray:
+        if self._vol:
+            return self._vol
 
         # self.underlier是一个列表
         for i in range(len(self.underlier)):
@@ -53,9 +53,9 @@ class BasketSnowballOption(SnowballOption):
 
         return np.array(self.volatility)
 
-    @volatility_.setter
-    def volatility_(self, value: np.ndarray):
-        self._volatility = value
+    @_volatility.setter
+    def _volatility(self, value: np.ndarray):
+        self._vol = value
 
     @property
     def dividend_curve(self) -> List[TuringDiscountCurveFlat]:
@@ -63,9 +63,9 @@ class BasketSnowballOption(SnowballOption):
             return self._dividend_curve
         else:
             curve_list = []
-            for dividend_yield in self.dividend_yield_:
+            for dividend_yield in self._dividend_yield:
                 curve = TuringDiscountCurveFlat(
-                    self.value_date_, dividend_yield)
+                    self._value_date, dividend_yield)
                 curve_list.append(curve)
             return curve_list
 
@@ -75,7 +75,7 @@ class BasketSnowballOption(SnowballOption):
 
     @property
     def q(self) -> np.ndarray:
-        if self.expiry > self.value_date_:
+        if self.expiry > self._value_date:
             q_list = []
             for curve in self.dividend_curve:
                 dq = curve.df(self.expiry)
@@ -86,10 +86,10 @@ class BasketSnowballOption(SnowballOption):
             raise TuringError("Expiry must be > Value_Date")
 
     def price_3dim(self) -> float:
-        s0 = self.stock_price_
+        s0 = self._stock_price
         r = self.r
         q = self.q
-        vol = self.volatility_
+        vol = self._volatility
         texp = self.texp
         num_paths = self.num_paths
         num_assets = self.num_assets
@@ -125,10 +125,10 @@ class BasketSnowballOption(SnowballOption):
         return self._payoff(sall_bskt, num_paths)
 
     def price(self) -> float:
-        s0 = self.stock_price_
+        s0 = self._stock_price
         r = self.r
         q = self.q
-        vol = self.volatility_
+        vol = self._volatility
         texp = self.texp
         num_paths = self.num_paths
         num_assets = self.num_assets

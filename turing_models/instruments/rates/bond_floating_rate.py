@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from scipy import optimize
 
 from fundamental.turing_db.data import TuringDB
-from turing_models.instruments.common import newton_fun, greek
+from turing_models.instruments.common import newton_fun, greek, Curve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
@@ -18,6 +18,10 @@ class BondFloatingRate(Bond):
 
     def __post_init__(self):
         super().__post_init__()
+        if self.issue_date:
+            self.cv = Curve(value_date=self.value_date, curve_code=self.curve_code, curve_type='ytm')
+            if self.curve_code:
+                self.cv.resolve()
         if self.ecnomic_terms is not None:
             self.check_ecnomic_terms()
             floating_rate_terms = self.ecnomic_terms.get_instance(FloatingRateTerms)
@@ -36,7 +40,7 @@ class BondFloatingRate(Bond):
         if self.ctx_next_base_interest_rate:
             return self.ctx_next_base_interest_rate
         else:
-            date = self._settlement_date.datetime()
+            date = self._original_value_date
             original_data = TuringDB.rate_interest_rate_levels(ir_codes=self.floating_rate_benchmark, date=date)
             if original_data is not None:
                 data = original_data.loc[self.floating_rate_benchmark, 'rate']

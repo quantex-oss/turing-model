@@ -1,65 +1,183 @@
 import datetime
 from typing import List, Union
 
-import pandas as pd
 import QuantLib as ql
+import numpy as np
+import pandas as pd
 
 from fundamental.turing_db.data import TuringDB
-from turing_models.instruments.common import CurrencyPair, DiscountCurveType
+from turing_models.instruments.common import CurrencyPair, DiscountCurveType, Ctx
 from turing_models.instruments.rates.irs import create_ibor_single_curve
 from turing_models.market.curves.curve_ql import Shibor3M, FXImpliedAssetCurve, \
      FXForwardCurve, CNYShibor3M, USDLibor3M, FXForwardCurveFQ
 from turing_models.market.curves.curve_ql_real_time import FXForwardCurve as FXForwardCurveFQRealTime, \
-     CNYShibor3M as CNYShibor3MRealTime, \
-     USDLibor3M as USDLibor3MRealTime
+     CNYShibor3M as CNYShibor3MRealTime, USDLibor3M as USDLibor3MRealTime
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.utilities.day_count import DayCountType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.global_types import TuringSwapTypes
+from turing_models.utilities.helper_classes import Base
+from turing_models.utilities.helper_functions import turingdate_to_qldate, to_datetime, \
+     to_turing_date
 from turing_models.utilities.turing_date import TuringDate
 
 
-class CurveGeneration:
-    def __init__(self,
-                 annualized_term: list,
-                 spot_rate: list,
-                 base_date: TuringDate = TuringDate(
-                     *(datetime.date.today().timetuple()[:3])),
-                 frequency_type: FrequencyType = FrequencyType.ANNUAL,
-                 number_of_days: int = 730):
-        self.term = base_date.addYears(annualized_term)
-        self.spot_rate = spot_rate
-        self.base_date = base_date
-        self.frequency_type = frequency_type  # 传入利率的frequency type，默认是年化的
-        self.number_of_days = number_of_days  # 默认是两年的自然日：365*2
-        self.curve = TuringDiscountCurveZeros(
-            self.base_date, self.term, self.spot_rate, self.frequency_type)
-        self._generate_nature_day()
-        self._generate_nature_day_rate()
+class CurveGeneration(Base, Ctx):
+    value_date: Union[str, datetime.datetime, datetime.date] = datetime.datetime.today()
+    curve_type: Union[str, DiscountCurveType] = DiscountCurveType.Shibor3M
+    interval = 0.1  # 表示每隔0.1年计算一个rate
 
-    def _generate_nature_day(self):
-        """根据base_date和number_of_days生成TuringDate列表"""
-        self.nature_days = []
-        for i in range(1, self.number_of_days):
-            day = self.base_date.addDays(i)
-            self.nature_days.append(day)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.check_param()
 
-    def _generate_nature_day_rate(self):
-        """根据nature_days生成对应的即期收益率列表"""
-        self.nature_days_rate = self.curve.zeroRate(self.nature_days, freqType=FrequencyType.ANNUAL).tolist()
+    def check_param(self):
+        """ 将字符串转换为枚举类型、时间转换为datetime.datetime格式 """
+        if self.value_date is not None:
+            self.value_date = to_datetime(self.value_date)
+        if self.curve_type is not None:
+            if not isinstance(self.curve_type, DiscountCurveType):
+                rules = {
+                    "Shibor3M": DiscountCurveType.Shibor3M,
+                    "CNYShibor3M": DiscountCurveType.CNYShibor3M,
+                    "USDLibor3M": DiscountCurveType.USDLibor3M,
+                }
+                self.curve_type = rules.get(self.curve_type,
+                                            TuringError('Please check the input of curve_type'))
+                if isinstance(self.curve_type, TuringError):
+                    raise self.curve_type
 
-    def get_dates(self):
-        return [day.datetime() for day in self.nature_days]
+    @property
+    def _original_value_date(self):
+        if self.ctx_pricing_date is not None:
+            # 目前ctx_pricing_date有两个格式：TuringDate和latest
+            if isinstance(self.ctx_pricing_date, TuringDate):
+                # 接口支持用datetime.datetime格式请求数据
+                return to_datetime(self.ctx_pricing_date)
+            else:
+                # 如果是latest，则保持
+                return self.ctx_pricing_date
+        return self.value_date
 
-    def get_rates(self):
-        return self.nature_days_rate
+    @property
+    def _value_date(self):
+        # 将latest转成TuringDate
+        return to_turing_date(self._original_value_date)
 
-    def get_data_dict(self):
-        nature_days = [day.datetime() for day in self.nature_days]
-        return dict(zip(nature_days, self.nature_days_rate))
+    @property
+    def get_shibor_data(self):
+        """ 从接口获取shibor """
+        shibor_data = self.ctx_global_ibor_curve(ibor_type='Shibor', currency='CNY')
+        if shibor_data is not None:
+            return pd.DataFrame(shibor_data)
+        date = self._original_value_date
+        original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
+        if original_data is not None:
+            return original_data
+        else:
+            raise TuringError(f"Cannot find shibor data")
+
+    @property
+    def get_shibor_swap_data(self):
+        """ 从接口获取利率互换曲线 """
+        irs_curve = self.ctx_irs_curve(ir_type="Shibor3M", currency='CNY')
+        if irs_curve is not None:
+            return pd.DataFrame(irs_curve)
+        date = self._original_value_date
+        original_data = TuringDB.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
+        if original_data is not None:
+            return original_data.loc["Shibor3M"]
+        else:
+            raise TuringError("Cannot find shibor swap curve data for 'CNY'")
+
+    @property
+    def get_shibor_swap_fixing_data(self):
+        """ 参照cicc模型确定数据日期 """
+        date1 = '2019-07-05'
+        date2 = '2019-07-08'
+        date3 = '2019-07-09'
+        original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date1, end=date3)
+        if original_data is not None:
+            rate1 = original_data.loc[datetime.datetime.strptime(date1, '%Y-%m-%d')].loc[4, 'rate']
+            rate2 = original_data.loc[datetime.datetime.strptime(date2, '%Y-%m-%d')].loc[4, 'rate']
+            rate3 = original_data.loc[datetime.datetime.strptime(date3, '%Y-%m-%d')].loc[4, 'rate']
+            fixing_data = {'Date': [date1, date2, date3], 'Fixing': [rate1, rate2, rate3]}
+            return fixing_data
+        else:
+            raise TuringError(f"Cannot find shibor data")
+
+    def generate_discount_curve(self):
+        """ 根据估值日期和曲线类型调用相关接口补全所需数据后，生成对应的曲线 """
+        value_date = self._value_date
+        if self.curve_type == DiscountCurveType.Shibor3M:
+            discount_curve = DomDiscountCurveGen(
+                value_date=value_date,
+                shibor_tenors=self.get_shibor_data['tenor'].tolist(),
+                shibor_origin_tenors=self.get_shibor_data['origin_tenor'].tolist(),
+                shibor_rates=self.get_shibor_data['rate'].tolist(),
+                shibor_swap_tenors=self.get_shibor_swap_data['tenor'].tolist(),
+                shibor_swap_origin_tenors=self.get_shibor_swap_data['origin_tenor'].tolist(),
+                shibor_swap_rates=self.get_shibor_swap_data['average'].tolist(),
+                shibor_swap_fixing_dates=self.get_shibor_swap_fixing_data['Date'],
+                shibor_swap_fixing_rates=self.get_shibor_swap_fixing_data['Fixing'],
+                curve_type=DiscountCurveType.Shibor3M
+            ).discount_curve
+        else:
+            raise TuringError('Unsupported curve type')
+        return discount_curve
+
+    def pair_discount_curve_and_term(self):
+        """ 根据曲线类型，将生成的曲线与期限对应 """
+        discount_curve = self.generate_discount_curve()
+        if self.curve_type == DiscountCurveType.Shibor3M:
+            term = self.get_shibor_swap_data['tenor'].iloc[-1]
+        else:
+            raise TuringError('Unsupported curve type')
+        return discount_curve, term
+
+    def generate_date_list(
+            self,
+            term,
+            date_type: (datetime.datetime, ql.Date, TuringDate) = datetime.datetime
+    ):
+        """ 根据估值日期和传入的期限生成等间隔的时间表 """
+        value_date = self._value_date
+        tenors = np.arange(0, term + self.interval, self.interval)
+        if date_type == datetime.datetime:
+            nature_days = [value_date.addYears(tenor).datetime() for tenor in tenors]
+        elif date_type == ql.Date:
+            nature_days = [turingdate_to_qldate(value_date.addYears(tenor)) for tenor in tenors]
+        elif date_type == TuringDate:
+            nature_days = [value_date.addYears(tenor) for tenor in tenors]
+        else:
+            raise TuringError('Unsupported date type')
+        return tenors, nature_days
+
+    def get_curve(self):
+        """ 生成dataframe """
+        discount_curve, term = self.pair_discount_curve_and_term()
+        if isinstance(discount_curve, ql.YieldTermStructure):
+            tenors, nature_days = self.generate_date_list(term, ql.Date)
+            day_count = ql.Actual365Fixed()
+            compounding = ql.Continuous
+            rates = [discount_curve.zeroRate(day, day_count, compounding).rate() for day in nature_days]
+            result = pd.DataFrame(data={'tenor': tenors, 'rate': rates})
+            return result
+        else:
+            raise TuringError('Unsupported curve type')
+
+    def generate_data(self):
+        """ 提供给定价服务调用 """
+        original_data = self.get_curve()
+        curve_data = []
+        tenors = original_data['tenor'].tolist()
+        rates = original_data['rate'].tolist()
+        length = len(tenors)
+        for i in range(length):
+            curve_data.append({"tenor": tenors[i], 'rate': rates[i]})
+        return curve_data
 
 
 class FXIRCurve:
@@ -108,7 +226,7 @@ class FXIRCurve:
                                                           curve_type=for_curve_type).discount_curve
 
         self.nature_days = []
-        for i in range(1, number_of_days+1):
+        for i in range(1, number_of_days + 1):
             day = value_date.addDays(i)
             self.nature_days.append(day)
 
@@ -358,12 +476,157 @@ class ForDiscountCurveGen:
 
 
 if __name__ == '__main__':
-    fx_curve = FXIRCurve(fx_symbol=CurrencyPair.USDCNY)
-    print('CCY1 Curve\n', fx_curve.get_ccy1_curve())
-    print('CCY2 Curve\n', fx_curve.get_ccy2_curve())
+    # fx_curve = FXIRCurve(fx_symbol=CurrencyPair.USDCNY)
+    # print('CCY1 Curve\n', fx_curve.get_ccy1_curve())
+    # print('CCY2 Curve\n', fx_curve.get_ccy2_curve())
     # dom = DomDiscountCurveGen()
     # day_count = ql.Actual365Fixed()
-    # expiry = ql.Date(16, 10, 2021)
+    # expiry = ql.Date(27, 12, 2021)
+    # period = ql.Period(0.1, ql.Years)
+    # print(expiry+period)
+    # dt = TuringDate(2019, 10, 1).addYears(0.1)
     # print(dom.discount_curve.zeroRate(expiry, day_count, ql.Continuous))
     # fore = ForDiscountCurveGen(currency_pair='USD/CNY')
     # print(fore.discount_curve.zeroRate(expiry, day_count, ql.Continuous))
+    # curve = CurveGeneration(value_date=datetime.datetime(2021, 12, 27), curve_type='Shibor3M')
+    # print(curve.get_curve())
+    from fundamental.pricing_context import PricingContext
+    scenario_extreme = PricingContext(
+        pricing_date="latest",
+        global_ibor_curve=[{
+            "ibor_type": "Shibor",
+            "currency": "CNY",
+            "value": [
+                {
+                    "tenor": 0.003,
+                    "origin_tenor": "ON",
+                    "rate": 0.02042,
+                    "change": 0.00201
+                },
+                {
+                    "tenor": 0.021,
+                    "origin_tenor": "1W",
+                    "rate": 0.02115,
+                    "change": 0.00024
+                },
+                {
+                    "tenor": 0.042,
+                    "origin_tenor": "2W",
+                    "rate": 0.02235,
+                    "change": -0.00013
+                },
+                {
+                    "tenor": 0.083,
+                    "origin_tenor": "1M",
+                    "rate": 0.023,
+                    "change": 0
+                },
+                {
+                    "tenor": 0.25,
+                    "origin_tenor": "3M",
+                    "rate": 0.02353,
+                    "change": -0.00001
+                },
+                {
+                    "tenor": 0.5,
+                    "origin_tenor": "6M",
+                    "rate": 0.02472,
+                    "change": -0.00002
+                },
+                {
+                    "tenor": 0.75,
+                    "origin_tenor": "9M",
+                    "rate": 0.02656,
+                    "change": 0
+                },
+                {
+                    "tenor": 1,
+                    "origin_tenor": "1Y",
+                    "rate": 0.027,
+                    "change": 0
+                }
+            ]
+        }],
+        irs_curve=[{
+            "ir_type": "Shibor3M",
+            "currency": "CNY",
+            "value": [{
+                "tenor": 0.5,
+                "origin_tenor": "6M",
+                "ask": 0.02485,
+                "average": 0.024825,
+                "bid": 0.0248
+            },
+                {
+                    "tenor": 0.75,
+                    "origin_tenor": "9M",
+                    "ask": 0.0253,
+                    "average": 0.02525,
+                    "bid": 0.0252
+                },
+                {
+                    "tenor": 1,
+                    "origin_tenor": "1Y",
+                    "ask": 0.0258,
+                    "average": 0.025775,
+                    "bid": 0.02575
+                },
+                {
+                    "tenor": 2,
+                    "origin_tenor": "2Y",
+                    "ask": 0.027425,
+                    "average": 0.027325,
+                    "bid": 0.027225
+                },
+                {
+                    "tenor": 3,
+                    "origin_tenor": "3Y",
+                    "ask": 0.028725,
+                    "average": 0.028625,
+                    "bid": 0.028525
+                },
+                {
+                    "tenor": 4,
+                    "origin_tenor": "4Y",
+                    "ask": 0.029975,
+                    "average": 0.029875,
+                    "bid": 0.029775
+                },
+                {
+                    "tenor": 5,
+                    "origin_tenor": "5Y",
+                    "ask": 0.031103,
+                    "average": 0.031027,
+                    "bid": 0.03095
+                },
+                {
+                    "tenor": 7,
+                    "origin_tenor": "7Y",
+                    "ask": 0.033025,
+                    "average": 0.0327,
+                    "bid": 0.032375
+                },
+                {
+                    "tenor": 10,
+                    "origin_tenor": "10Y",
+                    "ask": 0.0348,
+                    "average": 0.034363,
+                    "bid": 0.033925
+                }
+            ]
+        }]
+    )
+    # print(curve.generate_data())
+    curve = CurveGeneration(value_date="2021-12-27T00:00:00.000+0800", curve_type='Shibor3M')
+    print(curve._value_date)
+    print(curve.get_shibor_swap_data)
+    # print(curve.get_curve())
+    print(curve.generate_data())
+    with scenario_extreme:
+        print(curve._value_date)
+        print(curve.get_shibor_swap_data)
+        # print(curve.get_curve())
+        print(curve.generate_data())
+    # discount_curve = curve.discount_curve()
+    # print(isinstance(discount_curve, ql.YieldTermStructure))
+    # print(discount_curve.zeroRate(expiry, day_count, ql.Continuous).rate())

@@ -31,7 +31,7 @@ class TuringOptionTypes(Enum):
     QUANTO_DIGITAL_PUT = 16
 
 
-class TuringOptionType(Enum):
+class OptionType(Enum):
 
     """Option Type"""
 
