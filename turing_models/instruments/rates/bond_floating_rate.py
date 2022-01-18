@@ -310,7 +310,7 @@ class BondFloatingRate(Bond):
 
     def __repr__(self):
         s = super().__repr__()
-        separator: str = "\n"
         if self.ecnomic_terms:
-            s += f"{separator}{self.ecnomic_terms}"
+            s += f'''
+{self.ecnomic_terms}'''
         return s

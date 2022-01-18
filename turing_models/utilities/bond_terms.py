@@ -47,12 +47,11 @@ class FloatingRateTerms(EcnomicTerm):
         self.name = "浮息债"
 
     def __repr__(self):
-        separator: str = "\n"
-        s = f"Term Name: {type(self).__name__}"
-        s += f"{separator}Floating Rate Benchmark: {self.floating_rate_benchmark}"
-        s += f"{separator}Floating Spread: {self.floating_spread}"
-        s += f"{separator}Floating Adjust Mode: {self.floating_adjust_mode}"
-        s += f"{separator}Base Interest Rate: {self.base_interest_rate}"
+        s = f'''Term Name: {type(self).__name__}
+Floating Rate Benchmark: {self.floating_rate_benchmark}
+Floating Spread: {self.floating_spread}
+Floating Adjust Mode: {self.floating_adjust_mode}
+Base Interest Rate: {self.base_interest_rate}'''
         return s
 
 
@@ -92,9 +91,8 @@ class PrepaymentTerms(EcnomicTerm):
         self.name = "提前还款条款"
 
     def __repr__(self):
-        separator: str = "\n"
-        s = f"Term Name: {type(self).__name__}"
-        s += f"{separator}{self.data}"
+        s = f'''Term Name: {type(self).__name__}
+{self.data}'''
         return s
 
 
@@ -134,9 +132,8 @@ class EmbeddedPutableOptions(EcnomicTerm):
         self.name = "可回售条款"
 
     def __repr__(self):
-        separator: str = "\n"
-        s = f"Term Name: {type(self).__name__}"
-        s += f"{separator}{self.data}"
+        s = f'''Term Name: {type(self).__name__}
+{self.data}'''
         return s
 
 
@@ -180,9 +177,8 @@ class EmbeddedRateAdjustmentOptions(EcnomicTerm):
         self.name = "票面利率调整条款"
 
     def __repr__(self):
-        separator: str = "\n"
-        s = f"Term Name: {type(self).__name__}"
-        s += f"{separator}{self.data}"
+        s = f'''Term Name: {type(self).__name__}
+{self.data}'''
         return s
 
 
