@@ -227,6 +227,10 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
         if self.tenors is None:
             self.tenors = [1 / 12, 2 / 12, 0.25, 0.5, 1, 2]
 
+        # 数据精度调整
+        self.strikes = np.around(self.strikes, 4)
+        self.tenors = np.around(self.tenors, 2)
+
         expiry = self._value_date.addYears(self.tenors)
         data = {}
         tenors = self.tenors
@@ -245,6 +249,8 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
                 else:
                     raise TuringError('Unsupported volatility function type')
                 data[strike].append(v)
+            # 数据精度调整，波动率保留6位小数
+            data[strike] = np.around(data[strike], 6)
         data_df = pd.DataFrame(data, index=tenors)
         data_df.index.name = 'tenor'
         data_df.columns.name = 'strike'
@@ -805,13 +811,13 @@ if __name__ == '__main__':
     pd.set_option('display.max_rows', None)
     # print('Volatility Surface\n', vol)
     print(fx_vol_surface.generate_data())
-    print(fx_vol_surface._value_date)
-    print(fx_vol_surface.get_fx_implied_vol_data)
+    # print(fx_vol_surface._value_date)
+    # print(fx_vol_surface.get_fx_implied_vol_data)
 
     with scenario_extreme:
-        print(fx_vol_surface._value_date)
+        # print(fx_vol_surface._value_date)
         print(fx_vol_surface.generate_data())
-        print(fx_vol_surface.get_fx_implied_vol_data)
+        # print(fx_vol_surface.get_fx_implied_vol_data)
 
     # print(fx_vol_surface.generate_data())
     # vol_sur = FXVolSurfaceGen(currency_pair=CurrencyPair.USDCNY).volatility_surface
