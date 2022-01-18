@@ -144,7 +144,7 @@ class CurveGeneration(Base, Ctx):
     ):
         """ 根据估值日期和传入的期限生成等间隔的时间表 """
         value_date = self._value_date
-        tenors = np.arange(0, term + self.interval, self.interval)
+        tenors = np.around(np.arange(0, term + self.interval, self.interval), 2)
         if date_type == datetime.datetime:
             nature_days = [value_date.addYears(tenor).datetime() for tenor in tenors]
         elif date_type == ql.Date:
@@ -162,7 +162,7 @@ class CurveGeneration(Base, Ctx):
             tenors, nature_days = self.generate_date_list(term, ql.Date)
             day_count = ql.Actual365Fixed()
             compounding = ql.Continuous
-            rates = [discount_curve.zeroRate(day, day_count, compounding).rate() for day in nature_days]
+            rates = np.around([discount_curve.zeroRate(day, day_count, compounding).rate() for day in nature_days], 6)
             result = pd.DataFrame(data={'tenor': tenors, 'rate': rates})
             return result
         else:
@@ -618,13 +618,13 @@ if __name__ == '__main__':
     )
     # print(curve.generate_data())
     curve = CurveGeneration(value_date="2021-12-27T00:00:00.000+0800", curve_type='Shibor3M')
-    print(curve._value_date)
-    print(curve.get_shibor_swap_data)
+    # print(curve._value_date)
+    # print(curve.get_shibor_swap_data)
     # print(curve.get_curve())
     print(curve.generate_data())
     with scenario_extreme:
-        print(curve._value_date)
-        print(curve.get_shibor_swap_data)
+        # print(curve._value_date)
+        # print(curve.get_shibor_swap_data)
         # print(curve.get_curve())
         print(curve.generate_data())
     # discount_curve = curve.discount_curve()
