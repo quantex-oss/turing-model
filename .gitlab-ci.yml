@@ -1,0 +1,34 @@
+stages:
+  - deploy
+
+Sync_To_Common:
+  stage: deploy
+  image: hub.iquantex.com/base/toolbox:latest
+  before_script:
+    - cat "${KUBE_PASS_CONFIG}" > kubeconfig
+    - cat "${SYNC_JOB}" > sync.yaml
+  script:
+    - |
+      set -x
+      export KUBECONFIG=kubeconfig
+      kubectl create -f sync.yaml
+      sleep 40
+      pods=$(kubectl get pods --selector=job-name=turing-model-repo-pull --output=jsonpath='{.items[*].metadata.name}' -n turing-dev)
+      kubectl exec -it $pods -n turing-dev -- bash -c "cd /home/shared/common/model && git pull && git log -n 1"
+      kubectl exec -it $pods -n turing-dev -- bash -c "cd /home/shared/common/sdk/fundamental && git pull && git log -n 1"
+  after_script:
+    - export KUBECONFIG=kubeconfig
+    - kubectl delete -f sync.yaml
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop" && $KUBE_PASS_CONFIG'
+  tags:
+    - dev
+
+# 增加流水线工作流判断
+workflow:
+  rules:
+    # 匹配项目groups为turing才创建流水线
+    - if: '$CI_PROJECT_ROOT_NAMESPACE == "turing"'
+    # 如果URL包含cicc则不创建流水线动作
+    - if: '$CI_PROJECT_URL =~ /cicc/'
+      when: never

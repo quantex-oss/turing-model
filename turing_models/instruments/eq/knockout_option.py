@@ -23,7 +23,7 @@ class KnockOutOption(EqOption):
     def __post_init__(self):
         super().__post_init__()
         self.num_ann_obs = gNumObsInYear
-        self.num_paths = 10000
+        self.num_paths = 1_000_000
         self.days_in_year = gDaysInYear
         self.seed = 4242
         self.check_param()
