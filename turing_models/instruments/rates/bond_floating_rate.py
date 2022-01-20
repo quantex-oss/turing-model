@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from scipy import optimize
 
 from fundamental.turing_db.data import TuringDB
-from turing_models.instruments.common import newton_fun, greek, Curve
+from turing_models.instruments.common import newton_fun, greek, YieldCurve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
@@ -19,7 +19,7 @@ class BondFloatingRate(Bond):
     def __post_init__(self):
         super().__post_init__()
         if self.issue_date:
-            self.cv = Curve(value_date=self.value_date, curve_code=self.curve_code, curve_type='ytm')
+            self.cv = YieldCurve(value_date=self.value_date, curve_code=self.curve_code, curve_type='ytm')
             if self.curve_code:
                 self.cv.resolve()
         if self.ecnomic_terms is not None:

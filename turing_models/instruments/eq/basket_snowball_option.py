@@ -37,11 +37,11 @@ class BasketSnowballOption(SnowballOption):
         return np.array(self.stock_price)
 
     @_stock_price.setter
-    def _stock_price(self, value: np.ndarray):
+    def stock_price(self, value: np.ndarray):
         self._spot = value
 
     @property
-    def _volatility(self) -> np.ndarray:
+    def volatility(self) -> np.ndarray:
         if self._vol:
             return self._vol
 
@@ -53,7 +53,7 @@ class BasketSnowballOption(SnowballOption):
 
         return np.array(self.volatility)
 
-    @_volatility.setter
+    @volatility.setter
     def _volatility(self, value: np.ndarray):
         self._vol = value
 
@@ -63,9 +63,10 @@ class BasketSnowballOption(SnowballOption):
             return self._dividend_curve
         else:
             curve_list = []
-            for dividend_yield in self._dividend_yield:
+            value_date = self.transformed_value_date
+            for dividend_yield in self.dividend_yield:
                 curve = TuringDiscountCurveFlat(
-                    self._value_date, dividend_yield)
+                    value_date, dividend_yield)
                 curve_list.append(curve)
             return curve_list
 
@@ -75,7 +76,8 @@ class BasketSnowballOption(SnowballOption):
 
     @property
     def q(self) -> np.ndarray:
-        if self.expiry > self._value_date:
+        value_date = self.transformed_value_date
+        if self.expiry > value_date:
             q_list = []
             for curve in self.dividend_curve:
                 dq = curve.df(self.expiry)
@@ -89,7 +91,7 @@ class BasketSnowballOption(SnowballOption):
         s0 = self._stock_price
         r = self.r
         q = self.q
-        vol = self._volatility
+        vol = self.volatility
         texp = self.texp
         num_paths = self.num_paths
         num_assets = self.num_assets
@@ -128,7 +130,7 @@ class BasketSnowballOption(SnowballOption):
         s0 = self._stock_price
         r = self.r
         q = self.q
-        vol = self._volatility
+        vol = self.volatility
         texp = self.texp
         num_paths = self.num_paths
         num_assets = self.num_assets

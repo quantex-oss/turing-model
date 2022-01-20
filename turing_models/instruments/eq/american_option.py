@@ -29,7 +29,7 @@ class AmericanOption(EqOption):
                 raise self.option_type
 
     def price(self) -> float:
-        s0 = self._stock_price
+        s0 = self.stock_price
         k = self.strike_price
         r = self.r
         q = self.q

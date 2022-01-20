@@ -66,7 +66,8 @@ class AsianOption(EqOption):
 
     def _value_geometric(self):
         # the years to the start of the averaging period
-        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
+        value_date = self.transformed_value_date
+        t0 = (self.start_averaging_date - value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -77,7 +78,7 @@ class AsianOption(EqOption):
 
         k = self.strike_price
         n = self.num_obs
-        s0 = self._stock_price
+        s0 = self.stock_price
 
         multiple = 1.0
 
@@ -116,7 +117,8 @@ class AsianOption(EqOption):
         return v
 
     def _value_turnbull_wakeman(self):
-        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
+        value_date = self.transformed_value_date
+        t0 = (self.start_averaging_date - value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -148,7 +150,7 @@ class AsianOption(EqOption):
         sigma2 = vol ** 2
         a1 = b + sigma2
         a2 = 2 * b + sigma2
-        s0 = self._stock_price
+        s0 = self.stock_price
 
         dt = texp - t0
 
@@ -183,7 +185,8 @@ class AsianOption(EqOption):
 
     def _value_curran(self):
         # the years to the start of the averaging period
-        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
+        value_date = self.transformed_value_date
+        t0 = (self.start_averaging_date - value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -194,7 +197,7 @@ class AsianOption(EqOption):
 
         vol = self.v
 
-        s0 = self._stock_price
+        s0 = self.stock_price
         b = r - q
         sigma2 = vol ** 2
         k = self.strike_price

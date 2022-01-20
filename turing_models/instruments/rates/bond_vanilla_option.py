@@ -8,7 +8,7 @@ from turing_models.instruments.rates.ir_option import IROption
 from fundamental.turing_db.data import Turing, TuringDB
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import OptionType
-from turing_models.instruments.common import greek, newton_fun, Curve
+from turing_models.instruments.common import greek, newton_fun, YieldCurve
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.calendar import TuringCalendar
 from turing_models.utilities.day_count import TuringDayCount, DayCountType
@@ -17,7 +17,7 @@ from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 
 from turing_models.utilities.mathematics import NVect, NPrimeVect
 from fundamental.turing_db.bond_data import BondApi
-from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, Curve, CurveAdjustment, Currency
+from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, YieldCurve, CurveAdjustment, Currency
 from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import TuringFrequency, FrequencyType

@@ -183,6 +183,15 @@ JPY/CNY             2021-07-29 00:00:00+08:00        0               0.5       6
 3               0.75  0.019917   0.019819
 4               0.80  0.020108   0.020008
                  ...       ...        ...
+10、股票——查询股票历史波动率
+https://yapi.iquantex.com/project/700/interface/api/36842
+参数：symbol：(str, List[str])   str表示股票代码，类似600067.SH，方法内部需要将symbol转成asset_id再调用Turing DB的接口
+     date：目前支持的几种时间格式
+返回数据格式：
+           date(datetime.datetime格式)   profit_rate  volatility   annual_volatility
+symbol
+018003.SH  2021-07-29 00:00:00+08:00       0.1503      0.0011          0.0178
+127157.SH  2021-07-29 00:00:00+08:00       0.1503      0.0011          0.0178
 
 
 

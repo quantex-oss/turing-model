@@ -6,7 +6,7 @@ import numpy as np
 from enum import Enum
 
 from fundamental.turing_db.bond_data import BondApi
-from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, Curve, CurveAdjustment, Currency
+from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, YieldCurve, CurveAdjustment, Currency
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes, TuringCalendar

@@ -6,7 +6,7 @@ from typing import Union, List, Any
 from turing_models.utilities.bond_terms import EcnomicTerms, EmbeddedPutableOptions, \
      EmbeddedRateAdjustmentOptions, PrepaymentTerms
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.instruments.common import newton_fun, Curve, greek
+from turing_models.instruments.common import newton_fun, YieldCurve, greek
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.frequency import FrequencyType
 from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
@@ -48,7 +48,7 @@ class BondPutableAndRateAdjAndAdvRdp(Bond):
         self._bound_up = None
         self.dc = TuringDayCount(DayCountType.ACT_365F)
         if self.issue_date:
-            self.cv = Curve(value_date=self.settlement_date, curve_code=self.curve_code)
+            self.cv = YieldCurve(value_date=self.settlement_date, curve_code=self.curve_code)
             if self.curve_code:
                 self.cv.resolve()
         if self.ecnomic_terms is not None:
@@ -227,10 +227,10 @@ class BondPutableAndRateAdjAndAdvRdp(Bond):
             forward_term = self.dc.yearFrac(self._settlement_date, self.exercise_dates)
             # 远期曲线目前支持两种生成方式：1、用户通过what-if传入；2、模型自己计算
             # 不需要调用接口获取，故不需要调用resolve
-            self.forward_cv = Curve(value_date=self.settlement_date,
-                                    curve_code=self.curve_code,
-                                    curve_type='forward_spot_rate',
-                                    forward_term=forward_term)
+            self.forward_cv = YieldCurve(value_date=self.settlement_date,
+                                         curve_code=self.curve_code,
+                                         curve_type='forward_spot_rate',
+                                         forward_term=forward_term)
     
     def first_exe_info(self):
         if self.exercise_dates and getattr(self, '_settlement_date', None):

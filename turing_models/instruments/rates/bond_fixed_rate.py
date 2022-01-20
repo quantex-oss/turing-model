@@ -4,7 +4,7 @@ import numpy as np
 from scipy import optimize
 
 from fundamental.turing_db.data import TuringDB
-from turing_models.instruments.common import greek, newton_fun, Curve
+from turing_models.instruments.common import greek, newton_fun, YieldCurve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.calendar import TuringCalendar
@@ -26,7 +26,7 @@ class BondFixedRate(Bond):
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
         if self.issue_date:
-            self.cv = Curve(value_date=self.value_date, curve_code=self.curve_code)
+            self.cv = YieldCurve(value_date=self.value_date, curve_code=self.curve_code)
             if self.curve_code:
                 self.cv.resolve()
         if self.coupon_rate:
