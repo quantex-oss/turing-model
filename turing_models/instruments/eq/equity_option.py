@@ -6,7 +6,7 @@ from typing import List, Union
 from fundamental.turing_db.option_data import OptionApi
 from fundamental.turing_db.data import TuringDB
 from turing_utils.log.request_id_log import logger
-from turing_models.instruments.common import greek, Currency, Eq, YieldCurve
+from turing_models.instruments.common import Currency, Eq, YieldCurve
 from turing_models.instruments.core import InstrumentBase
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 from turing_models.models.model_black_scholes import TuringModelBlackScholes
@@ -35,7 +35,7 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
     participation_rate: float = None
     strike_price: float = None
     multiplier: float = None
-    currency: Union[str, Currency] = None
+    currency: Union[str, Currency] = "CNY"
     premium: float = None
     premium_date: Union[datetime.datetime, str] = None
     annualized_flag: bool = True
@@ -70,7 +70,6 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         """ 调用接口补全股票价格 """
         if self.underlier_symbol is not None \
            and self.value_date is not None:
-            print(self.underlier_symbol, self.value_date)
             original_data = TuringDB.get_stock_price(
                 symbol=self.underlier_symbol,
                 start=self.value_date,
@@ -128,8 +127,14 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
             # 在ctx_pricing_date不为空的情况下，先判断那些需要调用接口获取数据的属性是否有对应的ctx_xx值，优先有这个；
             # 如果没有则调用对应接口补全数据。因为调用接口的时候需要传入value_date，所以一旦估值日期发生改变，就需要重
             # 新调用接口补全数据
-            self.stock_price = ctx_spot or self._get_stock_price()
-            self.volatility = ctx_volatility or self._get_volatility()
+            if ctx_spot is not None:
+                self.stock_price = ctx_spot
+            else:
+                self._get_stock_price()
+            if ctx_volatility is not None:
+                self.volatility = ctx_volatility
+            else:
+                self._get_volatility()
         else:
             # 在ctx_pricing_date为空的情况下，将value_date恢复为原始数据；再判断那些需要调用接口获取数据的属性是否有
             # 对应的ctx_xx值，优先有这个，如果没有则恢复为原始数据
@@ -230,7 +235,7 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
                         setattr(self, k, v)
                 except Exception:
                     logger.warning('option resolve warning')
-        self.check_underlier()  # 补全underlier
+        self.check_underlier()  # 补全underlier和underlier_symbol
         if self.multiplier is None:
             self.multiplier = 1.0
         if self.number_of_options is None:
@@ -245,8 +250,9 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
 
     def check_underlier(self):
         if self.underlier_symbol and not self.underlier:
-            self.underlier = TuringDB.get_stock_symbol_to_id(
-                _id=self.underlier_symbol).get('asset_id')
+            self.underlier = TuringDB.get_stock_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
+        if self.underlier and not self.underlier_symbol:
+            self.underlier_symbol = TuringDB.get_stock(_id=self.underlier)['comb_symbol']
 
     def __repr__(self):
         s = f'''Class Name: {type(self).__name__}
