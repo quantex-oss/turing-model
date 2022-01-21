@@ -22,7 +22,7 @@ class IsPriceable:
 
 
 class PricingMixin:
-    """所有models定价服务入口,默认走main方法"""
+    """所有models的定价服务入口,默认走evaluation方法"""
     def __init__(self):
         self.ctx: Context = ctx
 
@@ -32,6 +32,7 @@ class PricingMixin:
         msg = ''
         response_data = []
         if risk_measure:
+            getattr(self, '_ctx_resolve')()
             if isinstance(risk_measure, list):
                 for risk_fun in risk_measure:
                     try:
@@ -92,11 +93,12 @@ class InstrumentBase(PricingMixin):
         getattr(self, '_')
 
     def calc(self, risk_measure: Union[RiskMeasure, List[RiskMeasure]], option_all=None):
-        if self.__class__.__name__ == "Position" and getattr(self, 'tradble', None) and  not getattr(self.tradble, 'isvalid')():
+        if self.__class__.__name__ == "Position" and getattr(self, 'tradble', None) and not getattr(self.tradble, 'isvalid')():
             logger.debug(f"{getattr(self,'asset_id')}: is not valid")
             return
         result: Union[float, List] = []
         try:
+            getattr(self, '_ctx_resolve')()
             if not isinstance(risk_measure, Iterable) or isinstance(risk_measure, str):
                 rs = risk_measure.value if isinstance(risk_measure, RiskMeasure) else risk_measure
                 result = getattr(self, rs)() if not option_all else getattr(self, rs)(option_all)
@@ -131,7 +133,6 @@ class InstrumentBase(PricingMixin):
         if expand_dict:
             self._set_by_dict(expand_dict)
         getattr(self, '_resolve')()
-        getattr(self, "__post_init__")()
 
     def __repr__(self):
         return self.__class__.__name__

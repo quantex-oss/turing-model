@@ -19,7 +19,7 @@ class EuropeanOption(EqOption):
         self.check_param()
 
     def check_param(self):
-        if self.option_type is not None:
+        if self.option_type is not None and not isinstance(self.option_type, TuringOptionTypes):
             rules = {
                 "CALL": TuringOptionTypes.EUROPEAN_CALL,
                 OptionType.CALL: TuringOptionTypes.EUROPEAN_CALL,
@@ -96,3 +96,9 @@ class EuropeanOption(EqOption):
             return sigma
         elif signal == "surface":
             return k, sigma
+
+    def _resolve(self):
+        super()._resolve()
+        if self.product_type is None:
+            setattr(self, 'product_type', 'European')
+        self.__post_init__()
