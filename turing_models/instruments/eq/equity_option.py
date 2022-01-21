@@ -53,7 +53,8 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         if self.premium_date is not None:
             self.premium_date = to_turing_date(self.premium_date)
         # 生成国债收益率曲线
-        self.cv = YieldCurve(value_date=self.value_date, curve_type='spot_rate', is_treasury_yield_curve=True)
+        self.cv = YieldCurve(value_date=self.value_date,
+                             curve_type='spot_rate', is_treasury_yield_curve=True)
         self.cv.resolve()
         self.discount_curve = self.cv.discount_curve()
         # 调用接口补全mds相关数据
@@ -102,9 +103,12 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         _original_data['value_date'] = self.value_date
         _original_data['stock_price'] = getattr(self, 'stock_price', None)
         _original_data['volatility'] = getattr(self, 'volatility', None)
-        _original_data['dividend_yield'] = getattr(self, 'dividend_yield', None)
-        _original_data['discount_curve'] = getattr(self, 'discount_curve', None)
-        _original_data['dividend_curve'] = getattr(self, 'dividend_curve', None)
+        _original_data['dividend_yield'] = getattr(
+            self, 'dividend_yield', None)
+        _original_data['discount_curve'] = getattr(
+            self, 'discount_curve', None)
+        _original_data['dividend_curve'] = getattr(
+            self, 'dividend_curve', None)
         self._original_data = _original_data
 
     def _ctx_resolve(self):
@@ -114,7 +118,8 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         ctx_spot = self.ctx_spot(symbol=self.underlier_symbol)
         ctx_volatility = self.ctx_volatility(symbol=self.underlier_symbol)
         ctx_interest_rate = self.ctx_interest_rate
-        ctx_dividend_yield = self.ctx_dividend_yield(symbol=self.underlier_symbol)
+        ctx_dividend_yield = self.ctx_dividend_yield(
+            symbol=self.underlier_symbol)
         # 再把原始数据也拿过来
         _original_data = self._original_data
         # 估值日期
@@ -128,9 +133,11 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         else:
             # 在ctx_pricing_date为空的情况下，将value_date恢复为原始数据；再判断那些需要调用接口获取数据的属性是否有
             # 对应的ctx_xx值，优先有这个，如果没有则恢复为原始数据
-            self.value_date = _original_data.get('value_date')  # datetime.datetime/latest格式
+            self.value_date = _original_data.get(
+                'value_date')  # datetime.datetime/latest格式
             self.stock_price = ctx_spot or _original_data.get('stock_price')
-            self.volatility = ctx_volatility or _original_data.get('volatility')
+            self.volatility = ctx_volatility or _original_data.get(
+                'volatility')
         # 无风险利率
         if ctx_interest_rate is not None:
             self.discount_curve = TuringDiscountCurveFlat(
@@ -140,7 +147,8 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         else:
             self.discount_curve = _original_data.get('discount_curve')
         # 分红率
-        self.dividend_yield = ctx_dividend_yield or _original_data.get('dividend_yield')
+        self.dividend_yield = ctx_dividend_yield or _original_data.get(
+            'dividend_yield')
         # 计算定价要用到的中间变量
         self._calculate_intermediate_variable()
 
@@ -162,7 +170,8 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
             self.r = self.discount_curve.zeroRate(self.expiry)
             self.q = self.dividend_curve.zeroRate(self.expiry)
             # 计算年化的剩余期限
-            self.texp = (self.expiry - self.transformed_value_date) / gDaysInYear
+            self.texp = (
+                self.expiry - self.transformed_value_date) / gDaysInYear
 
     def isvalid(self):
         """提供给turing sdk做过期判断"""
@@ -212,7 +221,8 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
                                cus_inc=(self.dividend_curve.bump, bump))
 
     def _resolve(self):
-        if self.asset_id and not self.asset_id.startswith("OPTION_"):  # OPTION_ 为自定义时自动生成
+        # OPTION_ 为自定义时自动生成
+        if self.asset_id and not self.asset_id.startswith("OPTION_"):
             option = OptionApi.fetch_Option(asset_id=self.asset_id)
             for k, v in option.items():
                 try:
@@ -228,35 +238,35 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
                and self.initial_spot is not None \
                and self.participation_rate is not None \
                and self.multiplier is not None:
-                self.number_of_options = (self.notional / self.initial_spot) / self.participation_rate / self.multiplier
+                self.number_of_options = (
+                    self.notional / self.initial_spot) / self.participation_rate / self.multiplier
             else:
                 self.number_of_options = 1.0
 
     def check_underlier(self):
         if self.underlier_symbol and not self.underlier:
-            self.underlier = TuringDB.get_stock_symbol_to_id(_id=self.underlier_symbol).get('asset_id')
+            self.underlier = TuringDB.get_stock_symbol_to_id(
+                _id=self.underlier_symbol).get('asset_id')
 
-    # def __repr__(self):
-    #     s = to_string("Object Type", type(self).__name__)
-    #     s += to_string("Asset Id", self.asset_id)
-    #     s += to_string("Underlier", self.underlier)
-    #     s += to_string("Option Type", self.option_type)
-    #     s += to_string("Notional", self.notional)
-    #     s += to_string("Initial Spot", self.initial_spot)
-    #     s += to_string("Number of Options", self.number_of_options)
-    #     s += to_string("Start Date", self.start_date)
-    #     s += to_string("End Date", self.end_date)
-    #     s += to_string("Expiry", self.expiry)
-    #     s += to_string("Participation Rate", self.participation_rate)
-    #     s += to_string("Strike Price", self.strike_price)
-    #     s += to_string("Multiplier", self.multiplier)
-    #     s += to_string("Annualized Flag", self.annualized_flag)
-    #     s += to_string("Stock Price", self._stock_price)
-    #     s += to_string("Volatility", self._volatility)
-    #     if self._value_date:
-    #         s += to_string("Value Date", self._value_date)
-    #     if self._interest_rate:
-    #         s += to_string("Interest Rate", self._interest_rate)
-    #     if self._dividend_yield or self._dividend_yield == 0:
-    #         s += to_string("Dividend Yield", self._dividend_yield)
-    #     return s
+    def __repr__(self):
+        s = f'''Class Name: {type(self).__name__}
+Object Type： {self.__name__}
+Asset Id: {self.asset_id}
+Underlier: {self.underlier}
+Option Type: {self.option_type}
+Notional: {self.notional}
+Initial Spot: {self.initial_spot}
+Number of Options: {self.number_of_options}
+Start Date: {self.start_date}
+End Date: {self.end_date}
+Expiry: {self.expiry}
+Participation Rate: {self.participation_rate}
+Strike Price: {self.strike_price}
+Multiplier: {self.multiplier}
+Annualized Flag: {self.annualized_flag}
+Stock Price: {self._stock_price}
+Volatility: {self._volatility}
+Value Date: {self._value_date}
+Interest Rate: {self._interest_rate}
+Dividend Yield: {self._dividend_yield}'''
+        return s

@@ -40,3 +40,7 @@ class AmericanOption(EqOption):
                           self.texp, option_type.value, k)['value']
 
         return v * self.multiplier * self.number_of_options
+
+    def __repr__(self):
+        s = super().__repr__()
+        return s

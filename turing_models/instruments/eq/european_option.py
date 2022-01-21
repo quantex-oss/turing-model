@@ -96,3 +96,7 @@ class EuropeanOption(EqOption):
             return sigma
         elif signal == "surface":
             return k, sigma
+
+    def __repr__(self):
+        s = super().__repr__()
+        return s
