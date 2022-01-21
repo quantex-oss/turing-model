@@ -19,10 +19,34 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 
 
 
-european_option = EuropeanOption(asset_id='OPTIONCN00000001')
+european_option = EuropeanOption(asset_id='OPTIONCN00000010')
+# european_option = EuropeanOption(asset_id='OPTIONCN00000010')
 european_option.resolve()
-
+# print(european_option.__dict__)
 print_result(european_option)
+
+scenario_extreme = PricingContext(
+    pricing_date='latest',
+    spot=[{"symbol": "600007.SH", "value": 17}],
+    volatility=[{"symbol": "600007.SH", "value": 0.04}],
+    interest_rate=0.05,
+    dividend_yield=[{"symbol": "600007.SH", "value": 0.04}]
+)
+
+with scenario_extreme:
+    print_result(european_option)
+#     print(european_option.value_date)
+#     print(european_option.stock_price)
+#     print(european_option.volatility)
+#     print(european_option.r)
+#     print(european_option.dividend_yield)
+
+# print_result(european_option)
+# print(european_option.value_date)
+# print(european_option.stock_price)
+# print(european_option.volatility)
+# print(european_option.r)
+# print(european_option.dividend_yield)
 
 # american_option = AmericanOption(asset_id='OPTIONCN00000001',
 #                                  underlier='STOCKCN00000011',
@@ -140,11 +164,4 @@ print_result(european_option)
 # # end = time.time()
 # # print(price1, end-start)
 #
-# scenario_extreme = PricingContext(spot=[
-#     # {"symbol": "600059.SH", "value": 3.5},
-#     {"asset_id": "STOCKCN00000011", "value": 5.3}
-# ]
-# )
-#
-# with scenario_extreme:
-#     print_result(european_option)
+
