@@ -163,12 +163,6 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
             self.bs_model = TuringModelBlackScholes(self.volatility)
             self.v = self.bs_model._volatility
 
-        if getattr(self, 'expiry', None) is not None:
-            self.r = self.discount_curve.zeroRate(self.expiry)
-            self.q = self.dividend_curve.zeroRate(self.expiry)
-            # 计算年化的剩余期限
-            self.texp = (self.expiry - self.transformed_value_date) / gDaysInYear
-
     def isvalid(self):
         """提供给turing sdk做过期判断"""
         if getattr(self, 'transformed_value_date', '') \
@@ -176,6 +170,22 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
            and getattr(self, 'transformed_value_date', '') > getattr(self, 'expiry', ''):
             return False
         return True
+
+    @property
+    def texp(self):
+        if getattr(self, 'expiry', None) is not None:
+            # 计算年化的剩余期限
+            return (self.expiry - self.transformed_value_date) / gDaysInYear
+
+    @property
+    def r(self):
+        if getattr(self, 'expiry', None) is not None:
+            return self.discount_curve.zeroRate(self.expiry)
+
+    @property
+    def q(self):
+        if getattr(self, 'expiry', None) is not None:
+            return self.dividend_curve.zeroRate(self.expiry)
 
     def spot(self):
         """ 提供给定价服务调用 """

@@ -33,6 +33,9 @@ class EuropeanOption(EqOption):
 
     def _calculate_intermediate_variable(self):
         super()._calculate_intermediate_variable()
+
+    @property
+    def texp(self):
         if getattr(self, 'expiry', None) is not None:
             schedule_daily = TuringSchedule(self.transformed_value_date,
                                             self.expiry,
@@ -40,7 +43,7 @@ class EuropeanOption(EqOption):
                                             calendarType=TuringCalendarTypes.CHINA_SSE)
             # 考虑一开一闭区间
             num_days = len(schedule_daily._adjustedDates) - 1
-            self.texp = num_days / gNumObsInYear
+            return num_days / gNumObsInYear
 
     def params(self) -> list:
         return [
