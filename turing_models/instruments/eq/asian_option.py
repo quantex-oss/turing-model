@@ -9,7 +9,7 @@ from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
      TuringAsianOptionValuationMethods, OptionType
 from turing_models.instruments.eq.equity_option import EqOption
-from turing_models.utilities.helper_functions import to_string, to_turing_date
+from turing_models.utilities.helper_functions import to_turing_date
 from turing_models.utilities.error import TuringError
 
 

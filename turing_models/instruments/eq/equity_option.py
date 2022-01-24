@@ -1,7 +1,10 @@
+import copy
 import datetime
 from abc import ABCMeta
 from dataclasses import dataclass
 from typing import List, Union
+
+import numpy as np
 
 from fundamental.turing_db.option_data import OptionApi
 from fundamental.turing_db.data import TuringDB
@@ -23,7 +26,7 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
     """
     asset_id: str = None
     underlier: Union[str, List[str]] = None
-    underlier_symbol: str = None
+    underlier_symbol: Union[str, List[str]] = None
     product_type: str = None
     option_type: Union[str, OptionType] = None
     notional: float = None
@@ -57,10 +60,17 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
                              curve_type='spot_rate', is_treasury_yield_curve=True)
         self.cv.resolve()
         self.discount_curve = self.cv.discount_curve()
+        if self.underlier is not None and isinstance(self.underlier, list):
+            self.num_assets = len(self.underlier)  # 确认底层资产数据
+        elif self.underlier_symbol is not None and isinstance(self.underlier_symbol, list):
+            self.num_assets = len(self.underlier_symbol)  # 确认底层资产数据
         # 调用接口补全mds相关数据
         self._get_stock_price()
         self._get_volatility()
-        self.dividend_yield = 0  # 目前没有接口提供分红率数据，故把默认值设置为0
+        if getattr(self, 'num_assets', None) is not None:
+            self.dividend_yield = np.zeros(self.num_assets)
+        else:
+            self.dividend_yield = 0  # 目前没有接口提供分红率数据，故把默认值设置为0
         # 存储未经ctx修改的属性值
         self._save_original_data()
         # 计算定价要用到的中间变量
@@ -76,10 +86,17 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
                 end=self.value_date
             )
             if not original_data.empty:
-                if isinstance(self.value_date, str) and self.value_date == 'latest':
-                    self.stock_price = original_data.loc[self.underlier_symbol, 'price']
-                else:
-                    self.stock_price = original_data.loc[self.underlier_symbol].loc[0, 'close']
+                if isinstance(self.underlier_symbol, str):
+                    if isinstance(self.value_date, str) and self.value_date == 'latest':
+                        self.stock_price = original_data.loc[self.underlier_symbol, 'price']
+                    else:
+                        self.stock_price = original_data.loc[self.underlier_symbol].loc[0, 'close']
+                elif isinstance(self.underlier_symbol, list):
+                    # 保准股票价格列表中的元素顺序与underlier_symbol中的一一对应
+                    if isinstance(self.value_date, str) and self.value_date == 'latest':
+                        self.stock_price = [original_data.loc[s, 'price'] for s in self.underlier_symbol]
+                    else:
+                        self.stock_price = [original_data.loc[s].loc[0, 'close'] for s in self.underlier_symbol]
             else:
                 raise TuringError('The interface data is empty')
 
@@ -92,7 +109,13 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
                 end=self.value_date
             )
             if not original_data.empty:
-                self.volatility = original_data.loc[self.underlier_symbol, 'volatility']
+                if isinstance(self.underlier_symbol, str):
+                    self.volatility = original_data.loc[self.underlier_symbol, 'volatility']
+                elif isinstance(self.underlier_symbol, list):
+                    # 保准波动率列表中的元素顺序与underlier_symbol中的一一对应
+                    self.volatility = [original_data.loc[s, 'volatility'] for s in self.underlier_symbol]
+                else:
+                    raise TuringError('Please check the input of underlier_symbol')
             else:
                 raise TuringError('The interface data is empty')
 
@@ -100,25 +123,27 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         """ 存储未经ctx修改的属性值，存储在字典中 """
         _original_data = dict()
         _original_data['value_date'] = self.value_date
-        _original_data['stock_price'] = getattr(self, 'stock_price', None)
-        _original_data['volatility'] = getattr(self, 'volatility', None)
-        _original_data['dividend_yield'] = getattr(
-            self, 'dividend_yield', None)
-        _original_data['discount_curve'] = getattr(
-            self, 'discount_curve', None)
-        _original_data['dividend_curve'] = getattr(
-            self, 'dividend_curve', None)
+        _original_data['discount_curve'] = getattr(self, 'discount_curve', None)
+        _original_data['stock_price'] = copy.copy(getattr(self, 'stock_price', None))
+        _original_data['volatility'] = copy.copy(getattr(self, 'volatility', None))
+        _original_data['dividend_yield'] = copy.copy(getattr(self, 'dividend_yield', None))
+        _original_data['dividend_curve'] = copy.copy(getattr(self, 'dividend_curve', None))
         self._original_data = _original_data
 
     def _ctx_resolve(self):
         """根据ctx中的数据，修改实例属性"""
         # 先把ctx中的数据取出
         ctx_pricing_date = self.ctx_pricing_date
-        ctx_spot = self.ctx_spot(symbol=self.underlier_symbol)
-        ctx_volatility = self.ctx_volatility(symbol=self.underlier_symbol)
         ctx_interest_rate = self.ctx_interest_rate
-        ctx_dividend_yield = self.ctx_dividend_yield(
-            symbol=self.underlier_symbol)
+        if isinstance(self.underlier_symbol, str):
+            ctx_spot = self.ctx_spot(symbol=self.underlier_symbol)
+            ctx_volatility = self.ctx_volatility(symbol=self.underlier_symbol)
+            ctx_dividend_yield = self.ctx_dividend_yield(
+                symbol=self.underlier_symbol)
+        else:
+            ctx_spot = [self.ctx_spot(symbol=s) for s in self.underlier_symbol]
+            ctx_volatility = [self.ctx_volatility(symbol=s) for s in self.underlier_symbol]
+            ctx_dividend_yield = [self.ctx_dividend_yield(symbol=s) for s in self.underlier_symbol]
         # 再把原始数据也拿过来
         _original_data = self._original_data
         # 估值日期
@@ -127,22 +152,42 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
             # 在ctx_pricing_date不为空的情况下，先判断那些需要调用接口获取数据的属性是否有对应的ctx_xx值，优先有这个；
             # 如果没有则调用对应接口补全数据。因为调用接口的时候需要传入value_date，所以一旦估值日期发生改变，就需要重
             # 新调用接口补全数据
-            if ctx_spot is not None:
-                self.stock_price = ctx_spot
+            if isinstance(self.underlier_symbol, str):
+                if ctx_spot is not None:
+                    self.stock_price = ctx_spot
+                else:
+                    self._get_stock_price()
+                if ctx_volatility is not None:
+                    self.volatility = ctx_volatility
+                else:
+                    self._get_volatility()
             else:
-                self._get_stock_price()
-            if ctx_volatility is not None:
-                self.volatility = ctx_volatility
-            else:
-                self._get_volatility()
+                if all(ctx_spot):
+                    # case1：通过what-if改变了所有underlier_symbol的股票价格
+                    self.stock_price = ctx_spot
+                elif not any(ctx_spot):
+                    # case2: 未通过what-if改变underlier_symbol的股票价格
+                    self._get_stock_price()
+                else:
+                    # case3: 通过what-if改变了部分underlier_symbol的股票价格
+                    self._get_stock_price()  # 先调用接口按照最新的估值日期把数据取到
+                    stock_price = self.stock_price.copy()
+                    self.stock_price = [ctx_spot[i] if ctx_spot[i] is not None else stock_price[i] for i in
+                                        range(len(self.underlier_symbol))]
         else:
             # 在ctx_pricing_date为空的情况下，将value_date恢复为原始数据；再判断那些需要调用接口获取数据的属性是否有
             # 对应的ctx_xx值，优先有这个，如果没有则恢复为原始数据
-            self.value_date = _original_data.get(
-                'value_date')  # datetime.datetime/latest格式
-            self.stock_price = ctx_spot or _original_data.get('stock_price')
-            self.volatility = ctx_volatility or _original_data.get(
-                'volatility')
+            self.value_date = _original_data.get('value_date')  # datetime.datetime/latest格式
+            if isinstance(self.underlier_symbol, str):
+                self.stock_price = ctx_spot or _original_data.get('stock_price')
+                self.volatility = ctx_volatility or _original_data.get('volatility')
+            else:
+                stock_price = _original_data.get('stock_price')
+                self.stock_price = [ctx_spot[i] if ctx_spot[i] is not None else stock_price[i] for i in
+                                    range(len(self.underlier_symbol))]
+                volatility = _original_data.get('volatility')
+                self.volatility = [ctx_volatility[i] if ctx_volatility[i] is not None else volatility[i] for i in
+                                   range(len(self.underlier_symbol))]
         # 无风险利率
         if ctx_interest_rate is not None:
             self.discount_curve = TuringDiscountCurveFlat(
@@ -152,8 +197,13 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         else:
             self.discount_curve = _original_data.get('discount_curve')
         # 分红率
-        self.dividend_yield = ctx_dividend_yield or _original_data.get(
-            'dividend_yield')
+        if isinstance(self.underlier_symbol, str):
+            self.dividend_yield = ctx_dividend_yield or _original_data.get(
+                'dividend_yield')
+        else:
+            dividend_yield = _original_data.get('dividend_yield')
+            self.dividend_yield = [ctx_dividend_yield[i] if ctx_dividend_yield[i] is not None else dividend_yield[i] for
+                                   i in range(len(self.underlier_symbol))]
         # 计算定价要用到的中间变量
         self._calculate_intermediate_variable()
 
@@ -162,14 +212,20 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         # 估值日期时间格式转换
         self.transformed_value_date = to_turing_date(self.value_date)
 
-        # 根据分红率生成折现曲线
-        self.dividend_curve = TuringDiscountCurveFlat(
-            self.transformed_value_date,
-            self.dividend_yield
-        )
-        if getattr(self, 'volatility', None) is not None:
-            self.bs_model = TuringModelBlackScholes(self.volatility)
-            self.v = self.bs_model._volatility
+        if isinstance(self.underlier_symbol, str):
+            # 根据分红率生成折现曲线
+            self.dividend_curve = TuringDiscountCurveFlat(
+                self.transformed_value_date,
+                self.dividend_yield
+            )
+            if getattr(self, 'volatility', None) is not None:
+                self.bs_model = TuringModelBlackScholes(self.volatility)
+                self.v = self.bs_model._volatility
+        else:
+            self.dividend_curve = [TuringDiscountCurveFlat(self.transformed_value_date, dy) for dy in
+                                   self.dividend_yield]
+            if getattr(self, 'volatility', None) is not None:
+                self.v = [TuringModelBlackScholes(vol)._volatility for vol in self.volatility]
 
     def isvalid(self):
         """提供给turing sdk做过期判断"""

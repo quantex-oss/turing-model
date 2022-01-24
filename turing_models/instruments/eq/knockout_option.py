@@ -2,15 +2,12 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from fundamental.turing_db.data import Turing
-from fundamental.turing_db.option_data import OptionApi
 from turing_models.instruments.eq.equity_option import EqOption
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
     TuringGBMNumericalScheme
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringKnockOutTypes, OptionType
 from turing_models.utilities.global_variables import gNumObsInYear, gDaysInYear
-from turing_models.utilities.helper_functions import to_string
 from turing_models.utilities.mathematics import N
 
 

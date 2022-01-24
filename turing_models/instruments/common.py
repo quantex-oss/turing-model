@@ -1179,10 +1179,12 @@ class Ctx:
         return getattr(ctx, f"spread_adjustment_{getattr(self, 'asset_id', '')}") or \
                getattr(ctx, f"spread_adjustment_{getattr(self, 'comb_symbol', '')}")
 
-    def ctx_spot(self, symbol: str):
+    @staticmethod
+    def ctx_spot(symbol: str):
         return getattr(ctx, f"spot_{symbol}")
 
-    def ctx_volatility(self, symbol: str):
+    @staticmethod
+    def ctx_volatility(symbol: str):
         return getattr(ctx, f"volatility_{symbol}")
 
     @property
@@ -1194,7 +1196,8 @@ class Ctx:
     def ctx_interest_rate(self):
         return ctx.interest_rate
 
-    def ctx_dividend_yield(self, symbol: str):
+    @staticmethod
+    def ctx_dividend_yield(symbol: str):
         return getattr(ctx, f"dividend_yield_{symbol}")
 
     @property

@@ -31,9 +31,6 @@ class EuropeanOption(EqOption):
             if isinstance(self.option_type, TuringError):
                 raise self.option_type
 
-    def _calculate_intermediate_variable(self):
-        super()._calculate_intermediate_variable()
-
     @property
     def texp(self):
         if getattr(self, 'expiry', None) is not None:
