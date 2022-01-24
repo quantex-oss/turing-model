@@ -253,6 +253,7 @@ class AsianOption(EqOption):
 
     def __repr__(self):
         s = super().__repr__()
-        s += to_string("Start Averaging Date", self.start_averaging_date)
-        s += to_string("Accrued Average", self.accrued_average)
+        s += f'''
+Start Averaging Date: {self.start_averaging_date}
+Accrued Average: {self.accrued_average}'''
         return s

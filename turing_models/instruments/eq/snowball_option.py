@@ -267,11 +267,13 @@ class SnowballOption(EqOption):
 
     def __repr__(self):
         s = super().__repr__()
-        s += to_string("Barrier", self.barrier)
-        s += to_string("Rebate", self.rebate)
-        s += to_string("Coupon", self.coupon)
-        s += to_string("Knock In Price", self.knock_in_price)
-        s += to_string("Knock In Type", self.knock_in_type)
-        s += to_string("Knock In Strike1", self.knock_in_strike1)
-        s += to_string("Knock In Strike2", self.knock_in_strike2)
+        s += f'''
+Barrier: {self.barrier}
+Rebate: {self.rebate}
+Coupon: {self.coupon}
+Untriggered Rebate: {self.untriggered_rebate}
+Knock In Price: {self.knock_in_price}
+Knock In Type: {self.knock_in_type}
+Knock In Strike1: {self.knock_in_strike1}
+Knock In Strike2{self.knock_in_strike2}'''
         return s

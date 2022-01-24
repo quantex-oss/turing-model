@@ -46,3 +46,7 @@ class AmericanOption(EqOption):
         if self.product_type is None:
             setattr(self, 'product_type', 'American')
         self.__post_init__()
+
+    def __repr__(self):
+        s = super().__repr__()
+        return s
