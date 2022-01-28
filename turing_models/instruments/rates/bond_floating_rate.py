@@ -40,9 +40,9 @@ class BondFloatingRate(Bond):
         if self.ctx_next_base_interest_rate:
             return self.ctx_next_base_interest_rate
         else:
-            date = self._original_value_date
+            date = self.value_date
             original_data = TuringDB.rate_interest_rate_levels(ir_codes=self.floating_rate_benchmark, date=date)
-            if original_data is not None:
+            if not original_data.empty:
                 data = original_data.loc[self.floating_rate_benchmark, 'rate']
                 return data
 
@@ -170,7 +170,7 @@ class BondFloatingRate(Bond):
         num_flows = len(self._flow_dates)
 
         # We discount using Libor over the period from settlement to the ncd
-        (alpha, _, _) = dc.yearFrac(self._settlement_date, self._ncd)
+        (alpha, _, _) = dc.yearFrac(self.settlement_date, self._ncd)
         df = 1.0 / (1.0 + alpha * (self.base_interest_rate + self.dm))
 
         # A full coupon is paid
@@ -277,13 +277,13 @@ class BondFloatingRate(Bond):
         dc = TuringDayCount(self.interest_rules)
 
         for i in range(1, num_flows):
-            if self._flow_dates[i] > self._settlement_date:
+            if self._flow_dates[i] > self.settlement_date:
                 self._pcd = self._flow_dates[i - 1]
                 self._ncd = self._flow_dates[i]
                 break
 
         (acc_factor, num, _) = dc.yearFrac(self._pcd,
-                                           self._settlement_date,
+                                           self.settlement_date,
                                            self._ncd,
                                            self.pay_interest_cycle)
 

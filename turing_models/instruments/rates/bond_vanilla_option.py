@@ -72,7 +72,7 @@ class BondVanillaOption(IROption):
     def _market_clean_price(self):
         date = self.date_for_interface.datetime()
         original_data = TuringDB.get_bond_valuation_cnbd_history(symbols=self.underlying_comb_symbol, start=date, end=date)
-        if original_data is not None:
+        if not original_data.empty:
             data = original_data.loc[self.underlying_comb_symbol].loc[0, 'net_prc']
             return data
         else:
@@ -107,11 +107,11 @@ class BondVanillaOption(IROption):
         if not self.bond.isvalid():
             raise TuringError("Bond settles after it matures.")
         self.bond._curve_resolve()  # 要调用曲线对象前需要先调用curve_resolve，用以兼容what-if
-        self.bond.curve_fitted = CurveAdjustmentImpl(curve_data=self.bond.cv.curve_data,
-                                                parallel_shift=self.bond._spread_adjustment,
-                                                value_date=self.bond._settlement_date).get_curve_result()
+        self.bond.fitted_curve = CurveAdjustmentImpl(curve_data=self.bond.cv.curve_data,
+                                                     parallel_shift=self.bond._spread_adjustment,
+                                                     value_date=self.bond.settlement_date).get_curve_result()
         
-        forward_price = (self._bond_spot + self.bond.calc_accrued_interest())
+        forward_price = self._bond_spot + self.bond._accrued_interest
         dc = TuringDayCount(DayCountType.ACT_ACT_ISDA)
         for dt in self.bond._flow_dates[1:]:
             # 将结算日的票息加入计算

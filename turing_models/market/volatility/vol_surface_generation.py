@@ -93,7 +93,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
             return pd.DataFrame(shibor_data)
         date = self._original_value_date
         original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date, end=date)
-        if original_data is not None:
+        if not original_data.empty:
             return original_data
         else:
             raise TuringError(f"Cannot find shibor data")
@@ -106,7 +106,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
             return pd.DataFrame(irs_curve)
         date = self._original_value_date
         original_data = TuringDB.get_irs_curve(ir_type="Shibor3M", currency='CNY', start=date, end=date)
-        if original_data is not None:
+        if not original_data.empty:
             return original_data.loc["Shibor3M"]
         else:
             raise TuringError("Cannot find shibor swap curve data for 'CNY'")
@@ -118,7 +118,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
         date2 = '2019-07-08'
         date3 = '2019-07-09'
         original_data = TuringDB.get_global_ibor_curve(ibor_type='Shibor', currency='CNY', start=date1, end=date3)
-        if original_data is not None:
+        if not original_data.empty:
             rate1 = original_data.loc[datetime.datetime.strptime(date1, '%Y-%m-%d')].loc[4, 'rate']
             rate2 = original_data.loc[datetime.datetime.strptime(date2, '%Y-%m-%d')].loc[4, 'rate']
             rate3 = original_data.loc[datetime.datetime.strptime(date3, '%Y-%m-%d')].loc[4, 'rate']
@@ -135,7 +135,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
             return pd.DataFrame(fx_swap_curve)
         date = self._original_value_date
         original_data = TuringDB.get_fx_swap_curve(currency_pair=self.fx_symbol, start=date, end=date)
-        if original_data is not None:
+        if not original_data.empty:
             return original_data.loc[self.fx_symbol]
         else:
             raise TuringError(f"Cannot find fx swap curve data for {self.fx_symbol}")
@@ -153,7 +153,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
                                                                  volatility_type=volatility_type,
                                                                  start=date,
                                                                  end=date)
-        if original_data is not None:
+        if not original_data.empty:
             tenor = original_data.loc[self.fx_symbol].loc["ATM"]['tenor']
             origin_tenor = original_data.loc[self.fx_symbol].loc["ATM"]['origin_tenor']
             atm_vols = original_data.loc[self.fx_symbol].loc["ATM"]['volatility']
