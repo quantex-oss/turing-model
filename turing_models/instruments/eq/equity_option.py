@@ -211,21 +211,21 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
         """ 计算定价要用到的中间变量 """
         # 估值日期时间格式转换
         self.transformed_value_date = to_turing_date(self.value_date)
-
-        if isinstance(self.underlier_symbol, str):
-            # 根据分红率生成折现曲线
-            self.dividend_curve = TuringDiscountCurveFlat(
-                self.transformed_value_date,
-                self.dividend_yield
-            )
-            if getattr(self, 'volatility', None) is not None:
-                self.bs_model = TuringModelBlackScholes(self.volatility)
-                self.v = self.bs_model._volatility
-        else:
-            self.dividend_curve = [TuringDiscountCurveFlat(self.transformed_value_date, dy) for dy in
-                                   self.dividend_yield]
-            if getattr(self, 'volatility', None) is not None:
-                self.v = [TuringModelBlackScholes(vol)._volatility for vol in self.volatility]
+        if getattr(self, 'underlier_symbol', None) is not None:
+            if isinstance(self.underlier_symbol, str):
+                # 根据分红率生成折现曲线
+                self.dividend_curve = TuringDiscountCurveFlat(
+                    self.transformed_value_date,
+                    self.dividend_yield
+                )
+                if getattr(self, 'volatility', None) is not None:
+                    self.bs_model = TuringModelBlackScholes(self.volatility)
+                    self.v = self.bs_model._volatility
+            else:
+                self.dividend_curve = [TuringDiscountCurveFlat(self.transformed_value_date, dy) for dy in
+                                       self.dividend_yield]
+                if getattr(self, 'volatility', None) is not None:
+                    self.v = [TuringModelBlackScholes(vol)._volatility for vol in self.volatility]
 
     def isvalid(self):
         """提供给turing sdk做过期判断"""
