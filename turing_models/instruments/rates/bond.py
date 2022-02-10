@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Union
 
 from fundamental.turing_db.bond_data import BondApi
-from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, YieldCurve, CurveAdjustment, Currency
+from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, CurveAdjustment, Currency
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes, TuringCalendar
@@ -196,11 +196,9 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     def _calculate_intermediate_variable(self):
         """ 计算定价要用到的中间变量 """
         # 估值日期时间格式转换
-        self.transformed_value_date = to_turing_date(self.value_date)
-        if getattr(self, 'issue_date', None) is not None:
-            self.settlement_date = max(self.transformed_value_date, self.issue_date).addDays(self.settlement_terms)
-            if getattr(self, 'due_date', None) is not None:
-                self.time_to_maturity_in_year, _, _ = self.day_count.yearFrac(self.settlement_date, self.due_date)
+        if getattr(self, 'settlement_date', None) is not None and \
+           getattr(self, 'due_date', None) is not None:
+            self.time_to_maturity_in_year, _, _ = self.day_count.yearFrac(self.settlement_date, self.due_date)
 
     def isvalid(self):
         """提供给turing sdk做过期判断"""
