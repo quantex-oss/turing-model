@@ -5,6 +5,7 @@ from typing import Union, List, Iterable
 from fundamental import PricingContext
 from fundamental.base import ctx, Context
 from turing_models.instruments.common import RiskMeasure
+from turing_models.utilities.error import TuringError
 from turing_utils.log.request_id_log import logger
 
 
@@ -32,7 +33,10 @@ class PricingMixin:
         msg = ''
         response_data = []
         if risk_measure:
-            getattr(self, '_ctx_resolve')()
+            if getattr(self, '_ctx_resolve', None) is not None:
+                getattr(self, '_ctx_resolve')()
+            if not getattr(self, 'isvalid')():
+                raise TuringError(f"{getattr(self,'asset_id')}: is not valid")
             if isinstance(risk_measure, list):
                 for risk_fun in risk_measure:
                     try:
@@ -96,9 +100,12 @@ class InstrumentBase(PricingMixin):
         if self.__class__.__name__ == "Position" and getattr(self, 'tradble', None) and not getattr(self.tradble, 'isvalid')():
             logger.debug(f"{getattr(self,'asset_id')}: is not valid")
             return
+        if self.__class__.__name__ != "Position" and not getattr(self, 'isvalid')():
+            raise TuringError("The instrument expired")
         result: Union[float, List] = []
         try:
-            getattr(self, '_ctx_resolve')()
+            if getattr(self, '_ctx_resolve', None) is not None:
+                getattr(self, '_ctx_resolve')()
             if not isinstance(risk_measure, Iterable) or isinstance(risk_measure, str):
                 rs = risk_measure.value if isinstance(risk_measure, RiskMeasure) else risk_measure
                 result = getattr(self, rs)() if not option_all else getattr(self, rs)(option_all)
