@@ -289,7 +289,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def volatility_(self):
-        v = self.ctx_volatility or self.volatility or self.volatility_surface.interp_vol(self.expiry_ql, self.strike)
+        v = self.ctx_volatility(self.underlier_symbol) or self.volatility or self.volatility_surface.interp_vol(self.expiry_ql, self.strike)
         if np.all(v >= 0.0):
             v = np.maximum(v, 1e-10)
             return v
