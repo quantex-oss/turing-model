@@ -229,7 +229,6 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
 
         # 数据精度调整
         self.strikes = np.around(self.strikes, 4)
-        self.tenors = np.around(self.tenors, 2)
 
         expiry = self._value_date.addYears(self.tenors)
         data = {}
@@ -251,6 +250,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
                 data[strike].append(v)
             # 数据精度调整，波动率保留6位小数
             data[strike] = np.around(data[strike], 6)
+        tenors = np.around(tenors, 4)  # 为了便于显示，返回值中的tenor保留4位小数
         data_df = pd.DataFrame(data, index=tenors)
         data_df.index.name = 'tenor'
         data_df.columns.name = 'strike'
