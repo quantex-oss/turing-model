@@ -26,8 +26,6 @@ class BondFixedRate(Bond):
         self._spread_adjustment = 0
         if self.issue_date:
             self.cv = YieldCurve(value_date=self.value_date, curve_code=self.curve_code)
-            if self.curve_code:
-                self.cv.resolve()
         self._calculate_cash_flow_amounts()
         self._get_market_clean_price()
         self.transformed_value_date = to_turing_date(self.value_date)
