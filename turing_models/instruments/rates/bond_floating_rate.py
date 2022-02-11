@@ -20,8 +20,6 @@ class BondFloatingRate(Bond):
         super().__post_init__()
         if self.issue_date:
             self.cv = YieldCurve(value_date=self.value_date, curve_code=self.curve_code, curve_type='ytm')
-            # if self.curve_code:
-            #     self.cv.resolve()
         if self.ecnomic_terms is not None:
             self.check_ecnomic_terms()
             floating_rate_terms = self.ecnomic_terms.get_instance(FloatingRateTerms)
