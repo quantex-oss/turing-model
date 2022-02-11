@@ -77,6 +77,16 @@ class BondFixedRate(Bond):
         """定价服务调用"""
         return self._ytm
 
+    @property
+    def _market_clean_price(self):
+        date = self._original_value_date
+        original_data = TuringDB.get_bond_valuation_cnbd_history(symbols=self.comb_symbol, start=date, end=date)
+        if original_data is not None:
+            data = original_data.loc[self.comb_symbol].loc[0, 'net_prc']
+            return data
+        else:
+            raise TuringError(f"Cannot find cnbd bond clean price for {self.comb_symbol}")
+
     def clean_price(self):
         # 定价接口调用
         return self._clean_price
