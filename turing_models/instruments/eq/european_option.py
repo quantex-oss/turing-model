@@ -19,7 +19,7 @@ class EuropeanOption(EqOption):
         self.check_param()
 
     def check_param(self):
-        if self.option_type is not None:
+        if self.option_type is not None and not isinstance(self.option_type, TuringOptionTypes):
             rules = {
                 "CALL": TuringOptionTypes.EUROPEAN_CALL,
                 OptionType.CALL: TuringOptionTypes.EUROPEAN_CALL,
@@ -32,22 +32,19 @@ class EuropeanOption(EqOption):
                 raise self.option_type
 
     @property
-    def texp(self) -> float:
-        """欧式期权bs模型中的t采用交易日计数"""
-        if self.expiry >= self._value_date:
-            schedule_daily = TuringSchedule(self._value_date,
+    def texp(self):
+        if getattr(self, 'expiry', None) is not None:
+            schedule_daily = TuringSchedule(self.transformed_value_date,
                                             self.expiry,
                                             freqType=FrequencyType.DAILY,
                                             calendarType=TuringCalendarTypes.CHINA_SSE)
             # 考虑一开一闭区间
             num_days = len(schedule_daily._adjustedDates) - 1
             return num_days / gNumObsInYear
-        else:
-            raise TuringError("Expiry must be > Value_Date")
 
     def params(self) -> list:
         return [
-            self._stock_price,
+            self.stock_price,
             self.texp,
             self.strike_price,
             self.r,
@@ -90,7 +87,7 @@ class EuropeanOption(EqOption):
 
         r = self.r
         q = self.q
-        s0 = self._stock_price
+        s0 = self.stock_price
         k = self.strike_price
         price = mkt
         sigma = bsImpliedVolatility(s0, texp, k, r, q, price,
@@ -99,3 +96,13 @@ class EuropeanOption(EqOption):
             return sigma
         elif signal == "surface":
             return k, sigma
+
+    def _resolve(self):
+        super()._resolve()
+        if self.product_type is None:
+            setattr(self, 'product_type', 'European')
+        self.__post_init__()
+
+    def __repr__(self):
+        s = super().__repr__()
+        return s

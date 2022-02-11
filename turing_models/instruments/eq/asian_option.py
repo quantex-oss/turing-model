@@ -1,34 +1,39 @@
+import datetime
 from dataclasses import dataclass
+from typing import Union
 
 import numpy as np
 
 from turing_models.utilities.mathematics import N
-from turing_models.utilities.turing_date import TuringDate
 from turing_models.utilities.global_variables import gDaysInYear
 from turing_models.utilities.global_types import TuringOptionTypes, \
-    TuringAsianOptionValuationMethods, OptionType
+     TuringAsianOptionValuationMethods, OptionType
 from turing_models.instruments.eq.equity_option import EqOption
-from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.helper_functions import to_turing_date
 from turing_models.utilities.error import TuringError
 
 
-errorStr = "In averaging period so need to enter accrued average."
+error_str = "In averaging period so need to enter accrued average."
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class AsianOption(EqOption):
 
-    start_averaging_date: TuringDate = None
+    start_averaging_date: Union[datetime.datetime, str] = None
     accrued_average: float = None
     valuation_method: str = "curran"
 
     def __post_init__(self):
         super().__post_init__()
-        self.num_obs = int(self.expiry - self.start_averaging_date)
+        # 对时间格式做转换
+        if self.start_averaging_date is not None:
+            self.start_averaging_date = to_turing_date(self.start_averaging_date)
+            if self.expiry is not None:
+                self.num_obs = int(self.expiry - self.start_averaging_date)
         self.check_param()
 
     def check_param(self):
-        if self.option_type is not None:
+        if self.option_type is not None and not isinstance(self.option_type, TuringOptionTypes):
             rules = {
                 "CALL": TuringOptionTypes.ASIAN_CALL,
                 OptionType.CALL: TuringOptionTypes.ASIAN_CALL,
@@ -66,7 +71,8 @@ class AsianOption(EqOption):
 
     def _value_geometric(self):
         # the years to the start of the averaging period
-        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
+        value_date = self.transformed_value_date
+        t0 = (self.start_averaging_date - value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -77,14 +83,14 @@ class AsianOption(EqOption):
 
         k = self.strike_price
         n = self.num_obs
-        s0 = self._stock_price
+        s0 = self.stock_price
 
         multiple = 1.0
 
         if t0 < 0:  # we are in the averaging period
 
             if self.accrued_average is None:
-                raise TuringError(errorStr)
+                raise TuringError(error_str)
 
             # we adjust the strike to account for the accrued coupon
             k = (k * tau + self.accrued_average * t0) / texp
@@ -116,7 +122,8 @@ class AsianOption(EqOption):
         return v
 
     def _value_turnbull_wakeman(self):
-        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
+        value_date = self.transformed_value_date
+        t0 = (self.start_averaging_date - value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -132,7 +139,7 @@ class AsianOption(EqOption):
         if t0 < 0:  # we are in the averaging period
 
             if self.accrued_average is None:
-                raise TuringError(errorStr)
+                raise TuringError(error_str)
 
             # we adjust the strike to account for the accrued coupon
             k = (k * tau + self.accrued_average * t0) / texp
@@ -148,7 +155,7 @@ class AsianOption(EqOption):
         sigma2 = vol ** 2
         a1 = b + sigma2
         a2 = 2 * b + sigma2
-        s0 = self._stock_price
+        s0 = self.stock_price
 
         dt = texp - t0
 
@@ -183,7 +190,8 @@ class AsianOption(EqOption):
 
     def _value_curran(self):
         # the years to the start of the averaging period
-        t0 = (self.start_averaging_date - self._value_date) / gDaysInYear
+        value_date = self.transformed_value_date
+        t0 = (self.start_averaging_date - value_date) / gDaysInYear
         texp = self.texp
         tau = (self.expiry - self.start_averaging_date) / gDaysInYear
 
@@ -194,7 +202,7 @@ class AsianOption(EqOption):
 
         vol = self.v
 
-        s0 = self._stock_price
+        s0 = self.stock_price
         b = r - q
         sigma2 = vol ** 2
         k = self.strike_price
@@ -204,7 +212,7 @@ class AsianOption(EqOption):
         if t0 < 0:  # we are in the averaging period
 
             if self.accrued_average is None:
-                raise TuringError(errorStr)
+                raise TuringError(error_str)
 
             # we adjust the strike to account for the accrued coupon
             k = (k * tau + self.accrued_average * t0) / texp
@@ -237,8 +245,15 @@ class AsianOption(EqOption):
         v = v * multiple
         return v
 
+    def _resolve(self):
+        super()._resolve()
+        if self.product_type is None:
+            setattr(self, 'product_type', 'Asian')
+        self.__post_init__()
+
     def __repr__(self):
         s = super().__repr__()
-        s += to_string("Start Averaging Date", self.start_averaging_date)
-        s += to_string("Accrued Average", self.accrued_average)
+        s += f'''
+Start Averaging Date: {self.start_averaging_date}
+Accrued Average: {self.accrued_average}'''
         return s

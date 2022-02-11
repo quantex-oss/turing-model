@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 
-from turing_models.instruments.common import newton_fun, greek, Curve
+from turing_models.instruments.common import newton_fun, greek, YieldCurve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.utilities.bond_terms import EcnomicTerms, PrepaymentTerms
@@ -26,9 +26,9 @@ class BondAdvRedemption(Bond):
         self.num_ex_dividend_days = 0
         self._alpha = 0.0
         if self.issue_date:
-            self.cv = Curve(value_date=self.value_date, curve_code=self.curve_code)
-            if self.curve_code:
-                self.cv.resolve()
+            self.cv = YieldCurve(value_date=self.value_date, curve_code=self.curve_code)
+            # if self.curve_code:
+            #     self.cv.resolve()
         if self.ecnomic_terms is not None:
             self.check_ecnomic_terms()
             prepayment_terms = self.ecnomic_terms.get_instance(PrepaymentTerms)
@@ -364,7 +364,7 @@ class BondAdvRedemption(Bond):
 
     def __repr__(self):
         s = super().__repr__()
-        separator: str = "\n"
         if self.ecnomic_terms:
-            s += f"{separator}{self.ecnomic_terms}"
+            s += f'''
+{self.ecnomic_terms}'''
         return s

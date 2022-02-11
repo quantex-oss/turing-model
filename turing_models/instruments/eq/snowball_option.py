@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import dataclass
 from typing import List, Union
 
@@ -12,7 +13,7 @@ from turing_models.utilities.global_types import TuringOptionTypes, \
 from turing_models.models.process_simulator import TuringProcessSimulator, TuringProcessTypes, \
     TuringGBMNumericalScheme
 from turing_models.instruments.eq.equity_option import EqOption
-from turing_models.utilities.helper_functions import to_string
+from turing_models.utilities.helper_functions import to_turing_date
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.turing_date import TuringDate
 
@@ -30,7 +31,7 @@ class SnowballOption(EqOption):
     knock_in_strike2: float = None
     business_day_adjust_type: Union[str,
                                     TuringBusDayAdjustTypes] = TuringBusDayAdjustTypes.FOLLOWING
-    knock_out_obs_days_whole: List[TuringDate] = None
+    knock_out_obs_days_whole: List[datetime.datetime] = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -80,35 +81,36 @@ class SnowballOption(EqOption):
                 if isinstance(self.business_day_adjust_type, TuringError):
                     raise self.business_day_adjust_type
 
-    @property
-    def bus_days(self) -> List[TuringDate]:
-        """生成从估值日到到期日的交易日时间表（包含首尾日）"""
-        schedule_daily = TuringSchedule(self._value_date,
-                                        self.expiry,
-                                        freqType=FrequencyType.DAILY,
-                                        calendarType=TuringCalendarTypes.CHINA_SSE,
-                                        busDayAdjustType=self.business_day_adjust_type)
-        return schedule_daily._adjustedDates
-
-    @property
-    def _knock_out_obs_days_whole(self) -> List[TuringDate]:
-        """如果用户未传入敲出观察日时间表，就按月生成（包含首尾日）；
-           如果用户传入敲出观察日时间表，就使用该值"""
-        if self.knock_out_obs_days_whole:
-            return self.knock_out_obs_days_whole
+    def _calculate_intermediate_variable(self):
+        super()._calculate_intermediate_variable()
+        if getattr(self, 'expiry', None) is not None \
+           and getattr(self, 'business_day_adjust_type', None) is not None:
+            # 生成从估值日到到期日的交易日时间表（包含首尾日）
+            self.bus_days = TuringSchedule(self.transformed_value_date,
+                                           self.expiry,
+                                           freqType=FrequencyType.DAILY,
+                                           calendarType=TuringCalendarTypes.CHINA_SSE,
+                                           busDayAdjustType=self.business_day_adjust_type)._adjustedDates
+        # 如果用户未传入敲出观察日时间表，就按月生成（包含首尾日）
+        if getattr(self, 'knock_out_obs_days_whole', None) is None:
+            if getattr(self, 'start_date', None) is not None \
+               and getattr(self, 'expiry', None) is not None \
+               and getattr(self, 'business_day_adjust_type', None) is not None:
+                self.knock_out_obs_days_whole = TuringSchedule(self.start_date,
+                                                               self.expiry,
+                                                               freqType=FrequencyType.MONTHLY,
+                                                               calendarType=TuringCalendarTypes.CHINA_SSE,
+                                                               busDayAdjustType=self.business_day_adjust_type)._adjustedDates
+        # 如果用户传入敲出观察日时间表，就使用该值
         else:
-            schedule_monthly = TuringSchedule(self.start_date,
-                                              self.expiry,
-                                              freqType=FrequencyType.MONTHLY,
-                                              calendarType=TuringCalendarTypes.CHINA_SSE,
-                                              busDayAdjustType=self.business_day_adjust_type)
-            return schedule_monthly._adjustedDates
+            if not all(isinstance(day, TuringDate) for day in self.knock_out_obs_days_whole):
+                self.knock_out_obs_days_whole = [to_turing_date(day) for day in self.knock_out_obs_days_whole]
 
     def price(self) -> float:
-        s0 = self._stock_price
+        s0 = self.stock_price
         r = self.r
         q = self.q
-        vol = self._volatility
+        vol = self.volatility
         texp = self.texp
         num_ann_obs = self.num_ann_obs
         num_paths = self.num_paths
@@ -134,7 +136,7 @@ class SnowballOption(EqOption):
         start_date = self.start_date
         initial_spot = self.initial_spot
         expiry = self.expiry
-        value_date = self._value_date
+        value_date = self.transformed_value_date
         r = self.r
         rebate = self.rebate
         untriggered_rebate = self.untriggered_rebate
@@ -149,7 +151,7 @@ class SnowballOption(EqOption):
 
         # 统计从估值日到到期日之间的敲出观察日
         knock_out_obs_days = sorted(
-            list(set(self._knock_out_obs_days_whole).intersection(set(bus_days))))
+            list(set(self.knock_out_obs_days_whole).intersection(set(bus_days))))
 
         # 统计敲出观察日在交易日列表中的索引值
         knock_out_obs_days_index = []
@@ -267,11 +269,13 @@ class SnowballOption(EqOption):
 
     def __repr__(self):
         s = super().__repr__()
-        s += to_string("Barrier", self.barrier)
-        s += to_string("Rebate", self.rebate)
-        s += to_string("Coupon", self.coupon)
-        s += to_string("Knock In Price", self.knock_in_price)
-        s += to_string("Knock In Type", self.knock_in_type)
-        s += to_string("Knock In Strike1", self.knock_in_strike1)
-        s += to_string("Knock In Strike2", self.knock_in_strike2)
+        s += f'''
+Barrier: {self.barrier}
+Rebate: {self.rebate}
+Coupon: {self.coupon}
+Untriggered Rebate: {self.untriggered_rebate}
+Knock In Price: {self.knock_in_price}
+Knock In Type: {self.knock_in_type}
+Knock In Strike1: {self.knock_in_strike1}
+Knock In Strike2{self.knock_in_strike2}'''
         return s

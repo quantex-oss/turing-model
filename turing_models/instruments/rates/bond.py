@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Union
 
 from fundamental.turing_db.bond_data import BondApi
-from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, Curve, CurveAdjustment, Currency
+from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, YieldCurve, CurveAdjustment, Currency
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes, TuringCalendar
@@ -137,7 +137,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def _original_value_date(self):
-        # TuringDate或者latest
+        # datetime.datetime或者latest
         return self.ctx_pricing_date or self.value_date
 
     @property
@@ -225,29 +225,28 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             setattr(self, 'curve_name', curve_name)
 
     def __repr__(self):
-        separator: str = "\n"
-        s = f"Class Name: {type(self).__name__}"
-        s += f"{separator}Wind Id: {self.wind_id}"
-        s += f"{separator}Bbg Id: {self.bbg_id}"
-        s += f"{separator}Cusip: {self.cusip}"
-        s += f"{separator}Sedol: {self.sedol}"
-        s += f"{separator}Ric: {self.ric}"
-        s += f"{separator}Isin: {self.isin}"
-        s += f"{separator}Ext Asset Id: {self.ext_asset_id}"
-        s += f"{separator}Asset Name: {self.asset_name}"
-        s += f"{separator}Asset Type: {self.asset_type}"
-        s += f"{separator}Trd Curr Code: {self.trd_curr_code}"
-        s += f"{separator}Symbol: {self.symbol}"
-        s += f"{separator}Comb Symbol: {self.comb_symbol}"
-        s += f"{separator}Exchange: {self.exchange}"
-        s += f"{separator}Issuer: {self.issuer}"
-        s += f"{separator}Issue Date: {self.issue_date}"
-        s += f"{separator}Due Date: {self.due_date}"
-        s += f"{separator}Par: {self.par}"
-        s += f"{separator}Coupon Rate: {self.coupon_rate}"
-        s += f"{separator}Interest Rate Type: {self.interest_rate_type}"
-        s += f"{separator}Pay Interest Cycle: {self.pay_interest_cycle}"
-        s += f"{separator}Interest Rules: {self.interest_rules}"
-        s += f"{separator}Pay Interest Mode: {self.pay_interest_mode}"
-        s += f"{separator}Curve Code: {self.curve_code}"
+        s = f'''Class Name: {type(self).__name__}
+Wind Id: {self.wind_id}
+Bbg Id: {self.bbg_id}
+Cusip: {self.cusip}
+Sedol: {self.sedol}
+Ric: {self.ric}
+Isin: {self.isin}
+Ext Asset Id: {self.ext_asset_id}
+Asset Name: {self.asset_name}
+Asset Type: {self.asset_type}
+Trd Curr Code: {self.trd_curr_code}
+Symbol: {self.symbol}
+Comb Symbol: {self.comb_symbol}
+Exchange: {self.exchange}
+Issuer: {self.issuer}
+Issue Date: {self.issue_date}
+Due Date: {self.due_date}
+Par: {self.par}
+Coupon Rate: {self.coupon_rate}
+Interest Rate Type: {self.interest_rate_type}
+Pay Interest Cycle: {self.pay_interest_cycle}
+Interest Rules: {self.interest_rules}
+Pay Interest Mode: {self.pay_interest_mode}
+Curve Code: {self.curve_code}'''
         return s

@@ -16,7 +16,7 @@ class AmericanOption(EqOption):
         self.check_param()
 
     def check_param(self):
-        if self.option_type is not None:
+        if self.option_type is not None and not isinstance(self.option_type, TuringOptionTypes):
             rules = {
                 "CALL": TuringOptionTypes.AMERICAN_CALL,
                 OptionType.CALL: TuringOptionTypes.AMERICAN_CALL,
@@ -29,7 +29,7 @@ class AmericanOption(EqOption):
                 raise self.option_type
 
     def price(self) -> float:
-        s0 = self._stock_price
+        s0 = self.stock_price
         k = self.strike_price
         r = self.r
         q = self.q
@@ -40,3 +40,13 @@ class AmericanOption(EqOption):
                           self.texp, option_type.value, k)['value']
 
         return v * self.multiplier * self.number_of_options
+
+    def _resolve(self):
+        super()._resolve()
+        if self.product_type is None:
+            setattr(self, 'product_type', 'American')
+        self.__post_init__()
+
+    def __repr__(self):
+        s = super().__repr__()
+        return s

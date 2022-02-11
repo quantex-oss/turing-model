@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy import optimize
 
-from turing_models.instruments.common import newton_fun, Curve, greek
+from turing_models.instruments.common import newton_fun, YieldCurve, greek
 from turing_models.instruments.rates.bond import Bond
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
@@ -43,9 +43,9 @@ class BondPutableAdjustable(Bond):
         self._bound_down = None
         self._bound_up = None
         if self.issue_date:
-            self.cv = Curve(value_date=self.value_date, curve_code=self.curve_code)
-            if self.curve_code:
-                self.cv.resolve()
+            self.cv = YieldCurve(value_date=self.value_date, curve_code=self.curve_code)
+            # if self.curve_code:
+            #     self.cv.resolve()
         if self.ecnomic_terms is not None:
             self.check_ecnomic_terms()
             embedded_putable_options = self.ecnomic_terms.get_instance(EmbeddedPutableOptions)
@@ -214,10 +214,10 @@ class BondPutableAdjustable(Bond):
             forward_term = self.dc.yearFrac(self._settlement_date, self.exercise_dates)
             # 远期曲线目前支持两种生成方式：1、用户通过what-if传入；2、模型自己计算
             # 不需要调用接口获取，故不需要调用resolve
-            self.forward_cv = Curve(value_date=self.value_date,
-                                    curve_code=self.curve_code,
-                                    curve_type='forward_spot_rate',
-                                    forward_term=forward_term)
+            self.forward_cv = YieldCurve(value_date=self.value_date,
+                                         curve_code=self.curve_code,
+                                         curve_type='forward_spot_rate',
+                                         forward_term=forward_term)
     
     def first_exe_info(self):
         if self.exercise_dates and getattr(self, '_settlement_date', None):
@@ -706,7 +706,7 @@ class BondPutableAdjustable(Bond):
 
     def __repr__(self):
         s = super().__repr__()
-        separator: str = "\n"
         if self.ecnomic_terms:
-            s += f"{separator}{self.ecnomic_terms}"
+            s += f'''
+{self.ecnomic_terms}'''
         return s

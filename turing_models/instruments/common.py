@@ -14,6 +14,7 @@ from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
+from turing_models.utilities.helper_functions import to_datetime, to_turing_date
 from turing_models.utilities.turing_date import TuringDate
 
 bump = 1e-4
@@ -1178,15 +1179,13 @@ class Ctx:
         return getattr(ctx, f"spread_adjustment_{getattr(self, 'asset_id', '')}") or \
                getattr(ctx, f"spread_adjustment_{getattr(self, 'comb_symbol', '')}")
 
-    @property
-    def ctx_spot(self):
-        return getattr(ctx, f"spot_{getattr(self, 'asset_id', '')}") or \
-               getattr(ctx, f"spot_{getattr(self, 'underlier', '')}")
+    @staticmethod
+    def ctx_spot(symbol: str):
+        return getattr(ctx, f"spot_{symbol}")
 
-    @property
-    def ctx_volatility(self):
-        return getattr(ctx, f"volatility_{getattr(self, 'asset_id', '')}") or \
-               getattr(ctx, f"volatility_{getattr(self, 'underlier', '')}")
+    @staticmethod
+    def ctx_volatility(symbol: str):
+        return getattr(ctx, f"volatility_{symbol}")
 
     @property
     def ctx_next_base_interest_rate(self):
@@ -1197,13 +1196,18 @@ class Ctx:
     def ctx_interest_rate(self):
         return ctx.interest_rate
 
-    @property
-    def ctx_dividend_yield(self):
-        return ctx.dividend_yield
+    @staticmethod
+    def ctx_dividend_yield(symbol: str):
+        return getattr(ctx, f"dividend_yield_{symbol}")
 
     @property
     def ctx_pricing_date(self):
-        return ctx.pricing_date
+        pricing_date = ctx.pricing_date
+        if (isinstance(pricing_date, str) and pricing_date == 'latest') or \
+           isinstance(pricing_date, datetime.datetime):
+            return pricing_date
+        else:
+            return to_datetime(pricing_date)
 
     @property
     def ctx_parallel_shift(self):
@@ -1320,18 +1324,19 @@ class FX(Priceable, metaclass=ABCMeta):
 
 
 class IR(Priceable, metaclass=ABCMeta):
+    pass
 
-    @abstractmethod
-    def dv01(self):
-        pass
-
-    @abstractmethod
-    def dollar_duration(self):
-        pass
-
-    @abstractmethod
-    def dollar_convexity(self):
-        pass
+    # @abstractmethod
+    # def dv01(self):
+    #     pass
+    #
+    # @abstractmethod
+    # def dollar_duration(self):
+    #     pass
+    #
+    # @abstractmethod
+    # def dollar_convexity(self):
+    #     pass
 
 
 class CD(Priceable, metaclass=ABCMeta):
@@ -1369,13 +1374,14 @@ class CurveAdjustment:
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
-class Curve:
-    value_date: Union[TuringDate, str] = None  # 估值日期
+class YieldCurve:
+    value_date: Union[TuringDate, datetime.datetime, str] = None  # 估值日期
     curve_code: Union[str, YieldCurveCode] = None  # 曲线编码
     curve_name: str = None  # 曲线名称
     curve_data: pd.DataFrame = None  # 曲线数据，列索引为'tenor'和'rate'
     curve_type: str = 'spot_rate'  # TODO: 处理成枚举类型
     forward_term: float = None
+    is_treasury_yield_curve: bool = False  # 如果是True则调用专门的接口获取国债收益率曲线数据
 
     def __post_init__(self):
         """估值日期和曲线编码不能为空"""
@@ -1383,14 +1389,19 @@ class Curve:
         self.check_param()
 
     def check_param(self):
-        """对时间做格式校验和转换处理"""
-        if isinstance(self.value_date, str) and self.value_date == 'latest':
-            self.value_date = TuringDate(*(datetime.date.today().timetuple()[:3]))
-            self._original_value_date = 'latest'
-        elif isinstance(self.value_date, TuringDate):
+        """
+        对时间做格式校验和转换处理:
+        1、value_date需转换为TuringDate格式以适配目前的底层计算模型
+        2、_original_value_date需为datetime.datetime或latest格式以便于从fundamental获取数据
+        """
+        if (isinstance(self.value_date, str) and self.value_date == 'latest') or \
+           isinstance(self.value_date, datetime.datetime):
             self._original_value_date = self.value_date
+            self.value_date = to_turing_date(self.value_date)
+        elif isinstance(self.value_date, TuringDate):
+            self._original_value_date = to_datetime(self.value_date)
         else:
-            raise TuringError("value must be 'latest'/TuringDate")
+            raise TuringError("value_date must be 'latest'/TuringDate/datetime.datetime")
 
     def set_value_date(self, value):
         """设置估值日期"""
@@ -1419,47 +1430,95 @@ class Curve:
 
     def resolve(self):
         """补全/更新数据"""
-        if self.curve_code is not None:
-            if isinstance(self.curve_code, YieldCurveCode):
-                curve_code = self.curve_code.name
+        if not self.is_treasury_yield_curve:
+            if self.curve_code is not None:
+                if isinstance(self.curve_code, YieldCurveCode):
+                    curve_code = self.curve_code.name
+                else:
+                    curve_code = self.curve_code
+                if self.curve_data is None:
+                    if self.curve_type == 'spot_rate':
+                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date)
+                        if not self.curve_data.empty:
+                            self.curve_data = self.curve_data.loc[curve_code][['tenor', 'spot_rate']]. \
+                                rename(columns={'spot_rate': 'rate'})
+                        else:
+                            raise TuringError('The interface data is empty')
+                    elif self.curve_type == 'ytm':
+                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date)
+                        if not self.curve_data.empty:
+                            self.curve_data = self.curve_data.loc[curve_code][['tenor', 'ytm']].\
+                                rename(columns={'ytm': 'rate'})
+                        else:
+                            raise TuringError('The interface data is empty')
+                    elif self.curve_type == 'forward_spot_rate':
+                        if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
+                            self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date,
+                                                                        forward_term=self.forward_term)
+                            if not self.curve_data.empty:
+                                self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_spot_rate']].\
+                                    rename(columns={'forward_spot_rate': 'rate'})
+                            else:
+                                raise TuringError('The interface data is empty')
+                        else:
+                            raise TuringError('Please check the input of forward_term')
+                    elif self.curve_type == 'forward_ytm':
+                        if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
+                            self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date,
+                                                                        forward_term=self.forward_term)
+                            if not self.curve_data.empty:
+                                self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_ytm']].\
+                                    rename(columns={'forward_ytm': 'rate'})
+                            else:
+                                raise TuringError('The interface data is empty')
+                        else:
+                            raise TuringError('Please check the input of forward_term')
+                    else:
+                        raise TuringError('Please check the input of curve_type')
+                if self.curve_name is None:
+                    self.curve_name = getattr(YieldCurveCode, curve_code, '')
             else:
-                curve_code = self.curve_code
+                if self.curve_data is None:
+                    raise TuringError("curve_code and curve_data can't be empty at the same time")
+        else:
+            # 国债收益率曲线单独处理
             if self.curve_data is None:
                 if self.curve_type == 'spot_rate':
-                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date)
+                    self.curve_data = TuringDB.get_national_debt(date=self._original_value_date)
                     if not self.curve_data.empty:
-                        self.curve_data = self.curve_data.loc[curve_code][['tenor', 'spot_rate']].\
+                        self.curve_data = self.curve_data[['tenor', 'spot_rate']]. \
                             rename(columns={'spot_rate': 'rate'})
+                    else:
+                        raise TuringError('The interface data is empty')
                 elif self.curve_type == 'ytm':
-                    self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date)
+                    self.curve_data = TuringDB.get_national_debt(date=self._original_value_date)
                     if not self.curve_data.empty:
-                        self.curve_data = self.curve_data.loc[curve_code][['tenor', 'ytm']].\
+                        self.curve_data = self.curve_data[['tenor', 'ytm']]. \
                             rename(columns={'ytm': 'rate'})
+                    else:
+                        raise TuringError('The interface data is empty')
                 elif self.curve_type == 'forward_spot_rate':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
-                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date,
-                                                                    forward_term=self.forward_term)
+                        self.curve_data = TuringDB.get_national_debt(date=self._original_value_date)
                         if not self.curve_data.empty:
-                            self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_spot_rate']].\
+                            self.curve_data = self.curve_data[['tenor', 'forward_spot_rate']]. \
                                 rename(columns={'forward_spot_rate': 'rate'})
+                        else:
+                            raise TuringError('The interface data is empty')
                     else:
                         raise TuringError('Please check the input of forward_term')
                 elif self.curve_type == 'forward_ytm':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
-                        self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date,
-                                                                    forward_term=self.forward_term)
+                        self.curve_data = TuringDB.get_national_debt(date=self._original_value_date)
                         if not self.curve_data.empty:
-                            self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_ytm']].\
+                            self.curve_data = self.curve_data[['tenor', 'forward_ytm']]. \
                                 rename(columns={'forward_ytm': 'rate'})
+                        else:
+                            raise TuringError('The interface data is empty')
                     else:
                         raise TuringError('Please check the input of forward_term')
                 else:
                     raise TuringError('Please check the input of curve_type')
-            if self.curve_name is None:
-                self.curve_name = getattr(YieldCurveCode, curve_code, '')
-        else:
-            if self.curve_data is None:
-                raise TuringError("curve_code and curve_data can't be empty at the same time")
 
     def adjust(self, ca: CurveAdjustment):
         """曲线旋转平移"""
@@ -1488,8 +1547,8 @@ class Curve:
 
 
 if __name__ == '__main__':
-    cv = Curve(value_date='latest',
-               curve_code='CBD100461')
+    cv = YieldCurve(value_date='latest',
+                    curve_code='CBD100461')
     cv.resolve()
     print(cv.curve_data)
 
