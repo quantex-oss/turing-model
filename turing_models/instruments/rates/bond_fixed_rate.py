@@ -27,8 +27,8 @@ class BondFixedRate(Bond):
         self._alpha = 0.0
         if self.issue_date:
             self.cv = YieldCurve(value_date=self.value_date, curve_code=self.curve_code)
-            if self.curve_code:
-                self.cv.resolve()
+            # if self.curve_code:
+            #     self.cv.resolve()
         if self.coupon_rate:
             self._calculate_cash_flow_amounts()
 
@@ -56,7 +56,7 @@ class BondFixedRate(Bond):
 
     @property
     def _market_clean_price(self):
-        date = self._original_value_date.datetime()
+        date = self._original_value_date
         original_data = TuringDB.get_bond_valuation_cnbd_history(symbols=self.comb_symbol, start=date, end=date)
         if original_data is not None:
             data = original_data.loc[self.comb_symbol].loc[0, 'net_prc']

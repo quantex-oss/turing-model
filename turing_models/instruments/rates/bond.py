@@ -137,7 +137,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def _original_value_date(self):
-        # TuringDate或者latest
+        # datetime.datetime或者latest
         return self.ctx_pricing_date or self.value_date
 
     @property
