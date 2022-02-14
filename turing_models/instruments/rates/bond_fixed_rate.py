@@ -26,11 +26,11 @@ class BondFixedRate(Bond):
         self._spread_adjustment = 0
         if self.issue_date:
             self.cv = YieldCurve(value_date=self.value_date, curve_code=self.curve_code)
+            if self.curve_code is not None:
+                self.cv.resolve()
         self._calculate_cash_flow_amounts()
         self._get_market_clean_price()
-        self.transformed_value_date = to_turing_date(self.value_date)
         if getattr(self, 'issue_date', None) is not None:
-            self.settlement_date = max(self.transformed_value_date, self.issue_date).addDays(self.settlement_terms)
             self._calc_accrued_interest()
         self._clean_price = self.clean_price_from_discount_curve()
         self._ytm = self.yield_to_maturity()
@@ -55,35 +55,23 @@ class BondFixedRate(Bond):
         self._spread_adjustment = ctx_spread_adjustment or _original_data['_spread_adjustment']
         # 估值日期时间格式转换
         self.transformed_value_date = to_turing_date(self.value_date)
-        if getattr(self, 'issue_date', None) is not None:
-            self.settlement_date = max(self.transformed_value_date, self.issue_date).addDays(self.settlement_terms)
-            self._calc_accrued_interest()
         self._clean_price = ctx_clean_price or self.clean_price_from_discount_curve()
         self._ytm = ctx_ytm or self.yield_to_maturity()
 
     def _get_market_clean_price(self):
-        original_data = TuringDB.get_bond_valuation_cnbd_history(symbols=self.comb_symbol,
-                                                                 start=self.value_date,
-                                                                 end=self.value_date)
+        if getattr(self, 'comb_symbol', None) is not None:
+            original_data = TuringDB.get_bond_valuation_cnbd_history(symbols=self.comb_symbol,
+                                                                     start=self.value_date,
+                                                                     end=self.value_date)
 
-        if not original_data.empty:
-            self._market_clean_price = original_data.loc[self.comb_symbol]['net_prc'][0]
-        else:
-            raise TuringError(f"Cannot find cnbd bond clean price for {self.comb_symbol}")
+            if not original_data.empty:
+                self._market_clean_price = original_data.loc[self.comb_symbol]['net_prc'][0]
+            else:
+                raise TuringError(f"Cannot find cnbd bond clean price for {self.comb_symbol}")
 
     def ytm(self):
         """定价服务调用"""
         return self._ytm
-
-    @property
-    def _market_clean_price(self):
-        date = self._original_value_date
-        original_data = TuringDB.get_bond_valuation_cnbd_history(symbols=self.comb_symbol, start=date, end=date)
-        if original_data is not None:
-            data = original_data.loc[self.comb_symbol].loc[0, 'net_prc']
-            return data
-        else:
-            raise TuringError(f"Cannot find cnbd bond clean price for {self.comb_symbol}")
 
     def clean_price(self):
         # 定价接口调用

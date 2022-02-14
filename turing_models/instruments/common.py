@@ -1443,14 +1443,14 @@ class YieldCurve:
                             self.curve_data = self.curve_data.loc[curve_code][['tenor', 'spot_rate']]. \
                                 rename(columns={'spot_rate': 'rate'})
                         else:
-                            raise TuringError('The interface data is empty')
+                            self.curve_data = None
                     elif self.curve_type == 'ytm':
                         self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date)
                         if not self.curve_data.empty:
                             self.curve_data = self.curve_data.loc[curve_code][['tenor', 'ytm']].\
                                 rename(columns={'ytm': 'rate'})
                         else:
-                            raise TuringError('The interface data is empty')
+                            self.curve_data = None
                     elif self.curve_type == 'forward_spot_rate':
                         if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
                             self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date,
@@ -1459,7 +1459,7 @@ class YieldCurve:
                                 self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_spot_rate']].\
                                     rename(columns={'forward_spot_rate': 'rate'})
                             else:
-                                raise TuringError('The interface data is empty')
+                                self.curve_data = None
                         else:
                             raise TuringError('Please check the input of forward_term')
                     elif self.curve_type == 'forward_ytm':
@@ -1470,7 +1470,7 @@ class YieldCurve:
                                 self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_ytm']].\
                                     rename(columns={'forward_ytm': 'rate'})
                             else:
-                                raise TuringError('The interface data is empty')
+                                self.curve_data = None
                         else:
                             raise TuringError('Please check the input of forward_term')
                     else:
@@ -1489,14 +1489,14 @@ class YieldCurve:
                         self.curve_data = self.curve_data[['tenor', 'spot_rate']]. \
                             rename(columns={'spot_rate': 'rate'})
                     else:
-                        raise TuringError('The interface data is empty')
+                        self.curve_data = None
                 elif self.curve_type == 'ytm':
                     self.curve_data = TuringDB.get_national_debt(date=self._original_value_date)
                     if not self.curve_data.empty:
                         self.curve_data = self.curve_data[['tenor', 'ytm']]. \
                             rename(columns={'ytm': 'rate'})
                     else:
-                        raise TuringError('The interface data is empty')
+                        self.curve_data = None
                 elif self.curve_type == 'forward_spot_rate':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
                         self.curve_data = TuringDB.get_national_debt(date=self._original_value_date)
@@ -1504,7 +1504,7 @@ class YieldCurve:
                             self.curve_data = self.curve_data[['tenor', 'forward_spot_rate']]. \
                                 rename(columns={'forward_spot_rate': 'rate'})
                         else:
-                            raise TuringError('The interface data is empty')
+                            self.curve_data = None
                     else:
                         raise TuringError('Please check the input of forward_term')
                 elif self.curve_type == 'forward_ytm':
@@ -1514,7 +1514,7 @@ class YieldCurve:
                             self.curve_data = self.curve_data[['tenor', 'forward_ytm']]. \
                                 rename(columns={'forward_ytm': 'rate'})
                         else:
-                            raise TuringError('The interface data is empty')
+                            self.curve_data = None
                     else:
                         raise TuringError('Please check the input of forward_term')
                 else:

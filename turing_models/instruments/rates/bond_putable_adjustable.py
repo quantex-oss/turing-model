@@ -44,6 +44,8 @@ class BondPutableAdjustable(Bond):
         self._bound_up = None
         if self.issue_date:
             self.cv = YieldCurve(value_date=self.value_date, curve_code=self.curve_code)
+            if self.curve_code is not None:
+                self.cv.resolve()
         if self.ecnomic_terms is not None:
             self.check_ecnomic_terms()
             embedded_putable_options = self.ecnomic_terms.get_instance(EmbeddedPutableOptions)

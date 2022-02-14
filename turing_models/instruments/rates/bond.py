@@ -47,7 +47,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     pay_interest_mode: (str, CouponType) = None  # 付息方式
     curve_code: Union[str, YieldCurveCode] = None  # 曲线编码
     curve_name: str = None
-    value_date: (datetime.datetime, datetime.date) = datetime.date.today()  # 估值日
+    value_date: (datetime.datetime, datetime.date, str) = 'latest'  # 估值日
     settlement_terms: int = 0  # 结算天数，0即T+0结算
 
     def __post_init__(self):
@@ -137,6 +137,11 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 else:
                     self._flow_dates = [self.issue_date, self.due_date]
                 self.bond_term_year, _, _ = self.day_count.yearFrac(self.issue_date, self.due_date)
+        # 估值日期时间格式转换
+        self.transformed_value_date = to_turing_date(self.value_date)
+        if getattr(self, 'issue_date', None) is not None:
+            self.settlement_date = max(self.transformed_value_date, self.issue_date).addDays(
+                self.settlement_terms)
 
     def _save_original_data(self):
         """ 存储未经ctx修改的属性值，存储在字典中 """
@@ -178,6 +183,10 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 self.cv.set_curve_data(_original_data.get('yield_curve'))
         # 检测用户是否对self.curve_code所对应的收益率曲线做变换
         self._curve_adjust()
+        # 估值日期时间格式转换
+        self.transformed_value_date = to_turing_date(self.value_date)
+        if getattr(self, 'issue_date', None) is not None:
+            self.settlement_date = max(self.transformed_value_date, self.issue_date).addDays(self.settlement_terms)
 
     def _curve_adjust(self):
         if self.ctx_parallel_shift:
