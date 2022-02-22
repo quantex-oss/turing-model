@@ -311,11 +311,11 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     def check_underlier(self):
         if self.underlier_symbol and not self.underlier:
             if isinstance(self.underlier_symbol, Enum):
-                self.underlier = Turing.get_fx_symbol_to_id(
-                    _id=self.underlier_symbol.value).get('asset_id')
+                self.underlier = TuringDB.get_asset(
+                    asset_ids=self.underlier_symbol.value)[0].get('asset_id')
             else:
-                self.underlier = Turing.get_fx_symbol_to_id(
-                    _id=self.underlier_symbol).get('asset_id')
+                self.underlier = Turing.get_asset(
+                    asset_ids=self.underlier_symbol)[0].get('asset_id')
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)
