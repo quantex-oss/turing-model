@@ -1385,7 +1385,8 @@ class YieldCurve:
 
     def __post_init__(self):
         """估值日期和曲线编码不能为空"""
-        assert self.value_date, "value_date can't be None"
+        if self.value_date is None:
+            raise TuringError("value_date can't be None")
         self.check_param()
 
     def check_param(self):
