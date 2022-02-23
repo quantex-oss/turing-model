@@ -1,26 +1,23 @@
-from enum import Enum
-
 from fundamental.pricing_context import PricingContext
+from turing_models.instruments.common import RiskMeasure
 from turing_models.instruments.fx.fx import ForeignExchange
 
 
 fx = ForeignExchange(
                      asset_id='FX00000001',
-                     exchange_rate=6,
-                     symbol='USD/CNY'
+                     comb_symbol='USD/CNY'
 )
 
-print(fx.price())
-print(fx.fx_delta())
+print(fx.calc(RiskMeasure.Price))
+print(fx.calc(RiskMeasure.FxDelta))
 
 scenario_extreme = PricingContext(spot=[
-    {"symbol": "USD/CNY", "value": 5.3},
-    # {"asset_id": "FX00000001", "value": 5.3}
+    {"symbol": "USD/CNY", "value": 5.3}
 ]
 )
 
 with scenario_extreme:
-    print(fx.price())
-    print(fx.fx_delta())
+    print(fx.calc(RiskMeasure.Price))
+    print(fx.calc(RiskMeasure.FxDelta))
 
 
