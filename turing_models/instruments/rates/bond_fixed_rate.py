@@ -4,13 +4,13 @@ import numpy as np
 from scipy import optimize
 
 from fundamental.turing_db.data import TuringDB
-from turing_models.instruments.common import newton_fun, YieldCurve
+from turing_models.instruments.common import YieldCurve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import CouponType, TuringYTMCalcType
 from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
-from turing_models.utilities.helper_functions import calculate_greek, to_turing_date
+from turing_models.utilities.helper_functions import calculate_greek, newton_fun
 
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)

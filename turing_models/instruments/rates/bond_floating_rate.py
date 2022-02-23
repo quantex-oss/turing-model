@@ -3,11 +3,11 @@ from dataclasses import dataclass
 from scipy import optimize
 
 from fundamental.turing_db.data import TuringDB
-from fundamental.turing_db.utils import to_turing_date
-from turing_models.instruments.common import newton_fun, greek, YieldCurve
+from turing_models.instruments.common import YieldCurve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.day_count import TuringDayCount
 from turing_models.utilities.error import TuringError
+from turing_models.utilities.helper_functions import greek, newton_fun
 from turing_models.utilities.bond_terms import EcnomicTerms, FloatingRateTerms
 
 

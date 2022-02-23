@@ -3,12 +3,12 @@ from dataclasses import dataclass
 import numpy as np
 from scipy import optimize
 
-from turing_models.instruments.common import newton_fun, greek, YieldCurve
+from turing_models.instruments.common import YieldCurve
 from turing_models.instruments.rates.bond import Bond, dy
 from turing_models.utilities.bond_terms import EcnomicTerms, PrepaymentTerms
 from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.helper_functions import to_turing_date
+from turing_models.utilities.helper_functions import newton_fun, to_turing_date, greek
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 

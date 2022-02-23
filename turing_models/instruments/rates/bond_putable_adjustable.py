@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy import optimize
 
-from turing_models.instruments.common import newton_fun, YieldCurve, greek
+from turing_models.instruments.common import YieldCurve
 from turing_models.instruments.rates.bond import Bond
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
 from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
@@ -14,7 +14,7 @@ from turing_models.utilities.bond_terms import EcnomicTerms, EmbeddedPutableOpti
 from turing_models.utilities.day_count import TuringDayCount, DayCountType
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.utilities.helper_functions import datetime_to_turingdate
+from turing_models.utilities.helper_functions import datetime_to_turingdate, greek, newton_fun
 
 dy = 0.0001
 

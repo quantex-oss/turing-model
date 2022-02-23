@@ -1,34 +1,16 @@
 from dataclasses import dataclass
 
 import numpy as np
-from scipy import optimize
 from scipy.stats import norm
-import QuantLib as ql
 
 from fundamental.turing_db.option_data import FxOptionApi
-from turing_models.market.curves.curve_generation import FXForwardCurveGen
-from turing_models.instruments.common import greek
+from turing_models.utilities.helper_functions import greek
 from turing_models.instruments.fx.fx_option import FXOption
-from turing_models.market.volatility.vol_surface_generation import FXVolSurfaceGen
-from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import TuringOptionTypes, OptionType, TuringExerciseType
 from turing_models.utilities.mathematics import N
 from turing_models.utilities.mathematics import nprime
-
-
-
-# def f_vega(volatility, *args):
-#     """ This is the derivative of the objective function with respect to the
-#     option volatility. It is used to speed up the determination of the FX
-#     Option implied volatility which is computed in the class below. """
-
-#     self = args[0]
-#     self.volatility = volatility
-#     fprime = self.vega()
-
-#     return fprime
 
 
 ###############################################################################

@@ -1,27 +1,21 @@
-import datetime
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import math
-from typing import Union, List, Any
-# from fundamental.turing_db.data import TuringDB
-from turing_models.utilities.bond_terms import EcnomicTerms, EmbeddedPutableOptions, \
-     EmbeddedRateAdjustmentOptions, PrepaymentTerms
-from turing_models.utilities.global_variables import gDaysInYear
-from turing_models.instruments.common import newton_fun, YieldCurve, greek
-from turing_models.utilities.error import TuringError
-from turing_models.utilities.frequency import FrequencyType
-from turing_models.utilities.calendar import TuringCalendar, TuringBusDayAdjustTypes
-from turing_models.instruments.rates.bond import Bond
-from turing_models.instruments.rates.bond_adv_redemption import BondAdvRedemption
-from turing_models.utilities.day_count import TuringDayCount, DayCountType
-from turing_models.utilities.helper_functions import datetime_to_turingdate
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
-from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.instruments.common import RiskMeasure
 
 import pandas as pd
 import numpy as np
 from scipy import optimize
+
+from turing_models.utilities.bond_terms import EcnomicTerms, EmbeddedPutableOptions, \
+     EmbeddedRateAdjustmentOptions, PrepaymentTerms
+from turing_models.utilities.global_variables import gDaysInYear
+from turing_models.instruments.common import YieldCurve
+from turing_models.utilities.error import TuringError
+from turing_models.instruments.rates.bond import Bond
+from turing_models.instruments.rates.bond_adv_redemption import BondAdvRedemption
+from turing_models.utilities.day_count import TuringDayCount, DayCountType
+from turing_models.utilities.helper_functions import datetime_to_turingdate, greek, newton_fun
+from turing_models.market.curves.discount_curve import TuringDiscountCurve
+from turing_models.market.curves.discount_curve_flat import TuringDiscountCurveFlat
 
 dy = 0.0001
 

@@ -24,7 +24,7 @@ from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.mathematics import norminvcdf
 
 from turing_models.models.model_black_scholes_analytical import bs_value
-from turing_models.instruments.common import fastDelta
+from turing_models.utilities.helper_functions import fastDelta
 from turing_models.utilities.distribution import TuringDistribution
 
 from turing_models.utilities.solvers_1d import newton_secant

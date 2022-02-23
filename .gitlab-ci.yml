@@ -29,6 +29,4 @@ workflow:
   rules:
     # 匹配项目groups为turing才创建流水线
     - if: '$CI_PROJECT_ROOT_NAMESPACE == "turing"'
-    # 如果URL包含cicc则不创建流水线动作
-    - if: '$CI_PROJECT_URL =~ /cicc/'
       when: never

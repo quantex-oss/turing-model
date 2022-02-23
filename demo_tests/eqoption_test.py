@@ -129,7 +129,6 @@ test_american_option_original()
 test_asian_option_original()
 test_snowball_option_original()
 test_knockout_option_original()
-test_basket_snowball_option()
 
 scenario_extreme = PricingContext(
     pricing_date='2021-08-13T00:00:00.000+0800',

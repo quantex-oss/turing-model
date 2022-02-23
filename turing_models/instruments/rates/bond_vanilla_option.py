@@ -1,32 +1,23 @@
 from dataclasses import dataclass
 import datetime
-import QuantLib as ql
 from typing import Union
+
+import QuantLib as ql
 import numpy as np
 
+from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.rates.ir_option import IROption
-from fundamental.turing_db.data import Turing, TuringDB
-from turing_models.utilities.error import TuringError
-from turing_models.utilities.global_types import OptionType
-from turing_models.instruments.common import greek, newton_fun, YieldCurve
-from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.utilities.calendar import TuringCalendar
-from turing_models.utilities.day_count import TuringDayCount, DayCountType
-from turing_models.utilities.global_types import CouponType, TuringYTMCalcType
 from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
-
-from turing_models.utilities.mathematics import NVect, NPrimeVect
-from fundamental.turing_db.bond_data import BondApi
-from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, YieldCurve, CurveAdjustment, Currency
+from turing_models.utilities.mathematics import NVect
+from turing_models.instruments.common import YieldCurveCode
 from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
-from turing_models.utilities.frequency import TuringFrequency, FrequencyType
-from turing_models.utilities.global_types import TuringYTMCalcType, CouponType
-from turing_models.utilities.helper_functions import to_string, to_datetime, to_turing_date
-from turing_models.utilities.global_types import OptionType, TuringExerciseType
-from turing_utils.log.request_id_log import logger
+from turing_models.utilities.frequency import FrequencyType
+from turing_models.utilities.global_types import CouponType
+from turing_models.utilities.helper_functions import greek
+from turing_models.utilities.global_types import OptionType
 from turing_models.instruments.rates.bond_fixed_rate import BondFixedRate
-from turing_models.instruments.common import greek, bump, Currency
+from turing_models.instruments.common import bump, Currency
 from turing_models.utilities.global_variables import gDaysInYear
 
 
@@ -80,7 +71,6 @@ class BondVanillaOption(IROption):
         
     @property
     def _bond_spot(self) -> float:
-        # return self._spot or self.ctx_spot or self._market_clean_price
         return 103.2643
 
     @_bond_spot.setter
@@ -165,90 +155,4 @@ class BondVanillaOption(IROption):
     def bond_rho(self) -> float:
         return greek(self, self.price, "discount_curve_rf",
                      cus_inc=(self.discount_curve_rf.bump, bump))
-        
-    # def spot_path(self):
-    #     return 'turing_models.instruments.fx.fx.ForeignExchange'
-
-    # def _resolve(self):
-    #     if self.asset_id and not self.asset_id.startswith("OPTION_"):
-    #         temp_dict = FxOptionApi.fetch_fx_option(
-    #             gurl=None, asset_id=self.asset_id)
-    #         for k, v in temp_dict.items():
-    #             if not getattr(self, k, None) and v:
-    #                 setattr(self, k, v)
-    #     self.resolve_param()
-
-    # def resolve_param(self):
-    #     self.check_underlier()
-    #     if not self.product_type:
-    #         setattr(self, 'product_type', 'VANILLA')
-    #     self.__post_init__()
-    
-    # def check_param(self):
-    #     """将字符串转换为枚举类型"""
-    #     if self.underlying_pay_interest_mode:
-    #         if not isinstance(self.underlying_pay_interest_mode, CouponType):
-    #             rules = {
-    #                 "ZERO_COUPON": CouponType.ZERO_COUPON,
-    #                 "DISCOUNT": CouponType.DISCOUNT,
-    #                 "COUPON_CARRYING": CouponType.COUPON_CARRYING,
-    #                 # "OTHERS": None
-    #             }
-    #             self.underlying_pay_interest_mode = rules.get(self.underlying_pay_interest_mode,
-    #                                                TuringError('Please check the input of pay_interest_mode'))
-    #             if isinstance(self.underlying_pay_interest_mode, TuringError):
-    #                 raise self.underlying_pay_interest_mode
-
-    #     if self.underlying_pay_interest_cycle:
-    #         if not isinstance(self.underlying_pay_interest_cycle, FrequencyType):
-    #             rules = {
-    #                 "ANNUAL": FrequencyType.ANNUAL,
-    #                 "SEMI_ANNUAL": FrequencyType.SEMI_ANNUAL,
-    #                 # "ONCE_ON_DUE": None,
-    #                 "QUARTERLY": FrequencyType.QUARTERLY,
-    #                 "MONTHLY": FrequencyType.MONTHLY,
-    #                 # "PERIODIC": None,
-    #                 "TRI_ANNUAL": FrequencyType.TRI_ANNUAL,
-    #                 # "THREE_QUARTERLY": None,
-    #                 # "15_DAYS": None,
-    #                 # "BIMONTHLY": None,
-    #                 # "OTHERS": None
-    #             }
-    #             self.underlying_pay_interest_cycle = rules.get(self.underlying_pay_interest_cycle,
-    #                                                 TuringError('Please check the input of pay_interest_cycle'))
-    #             if isinstance(self.underlying_pay_interest_cycle, TuringError):
-    #                 raise self.underlying_pay_interest_cycle
-
-        # if self.underlying_interest_rules:
-        #     if not isinstance(self.underlying_interest_rules, DayCountType):
-        #         rules = {
-        #             "ACT/365": DayCountType.ACT_365L,
-        #             "ACT/ACT": DayCountType.ACT_ACT_ISDA,
-        #             "ACT/360": DayCountType.ACT_360,
-        #             "30/360": DayCountType.THIRTY_E_360,
-        #             # "ACT/366": None,
-        #             "ACT/365F": DayCountType.ACT_365F,
-        #             # "AVG/ACT": None
-        #         }
-        #         self.underlying_interest_rules = rules.get(self.underlying_interest_rules,
-        #                                         TuringError('Please check the input of interest_rules'))
-        #         if isinstance(self.underlying_interest_rules, TuringError):
-        #             raise self.underlying_interest_rules
-    
-    def _bond_resolve(self):
-        if not self.underlying_asset_id:
-            asset_id = BondApi.fetch_comb_symbol_to_asset_id(self.underlying_comb_symbol)
-            if asset_id:
-                setattr(self, 'asset_id', asset_id)
-        if self.underlying_asset_id and not self.underlying_asset_id.startswith("Bond_"):  # Bond_ 为自定义时自动生成
-            bond = BondApi.fetch_one_bond_orm(asset_id=self.underlying_asset_id)
-            for k, v in bond.items():
-                try:
-                    if getattr(self, k, None) is None and v:
-                        setattr(self, k, v)
-                except Exception:
-                    logger.warning('bond resolve warning')
-        if self.underlying_curve_code is not None and self.underlying_curve_name is None:
-            curve_name = getattr(CurveCode, self.underlying_curve_code, '')
-            setattr(self, 'curve_name', curve_name)
             
