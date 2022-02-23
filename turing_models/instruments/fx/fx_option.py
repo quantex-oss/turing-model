@@ -77,9 +77,17 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
         if not self.notional_currency and self.foreign_name:
             self.notional_currency = self.foreign_name
+            self.notional_for = self.notional
+            self.notional_dom = self.notional * self.strike
 
         if self.notional_currency and isinstance(self.notional_currency, Currency):
             self.notional_currency = self.notional_currency.value
+            if self.notional_currency == self.foreign_name:
+                self.notional_for = self.notional
+                self.notional_dom = self.notional * self.strike
+            elif self.notional_currency == self.domestic_name:
+                self.notional_for = self.notional / self.strike
+                self.notional_dom = self.notional
 
         if self.premium_currency and isinstance(self.premium_currency, Currency):
             self.premium_currency = self.premium_currency.value
@@ -94,12 +102,14 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def _value_date(self):
         """优先考虑通过what-if传出的估值日期"""
+        if getattr(self, '_value_date_', None) is not None:
+            return getattr(self, '_value_date_', None)
         date = to_turing_date(self._original_value_date)
         return date if date >= self.start_date else self.start_date
-
-    @property
-    def value_date_ql(self):
-        return ql.Date(self._value_date._d, self._value_date._m, self._value_date._y)
+    
+    @_value_date.setter
+    def _value_date(self, value):
+        self._value_date_ = value
 
     @property
     def _original_value_date(self):
@@ -125,6 +135,8 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def get_exchange_rate(self):
         """从接口获取汇率"""
+        if getattr(self, "_exchange_rate", None) is not None:
+            return getattr(self, "_exchange_rate", None)
         exchange_rate = self.ctx_exchange_rate(currency_pair=self.underlier_symbol)
         if exchange_rate is not None:
             return exchange_rate
@@ -132,9 +144,14 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         original_data = TuringDB.exchange_rate(symbol=self.underlier_symbol, date=date)
         if original_data is not None:
             data = original_data[self.underlier_symbol]
+            self.exchange_rate = data
             return data
         else:
             raise TuringError(f"Cannot find exchange rate for {self.underlier_symbol}")
+    
+    @get_exchange_rate.setter
+    def get_exchange_rate(self, value):
+        self._exchange_rate = value
 
     @property
     def get_shibor_data(self):
@@ -233,13 +250,13 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    shibor_swap_rates=self.get_shibor_swap_data['average'].tolist(),
                                    shibor_swap_fixing_dates=self.get_shibor_swap_fixing_data['Date'],
                                    shibor_swap_fixing_rates=self.get_shibor_swap_fixing_data['Fixing'],
-                                   curve_type=DiscountCurveType.Shibor3M).discount_curve
+                                   curve_type=DiscountCurveType.Shibor3M_tr).discount_curve
 
     @property
     def fx_forward_curve(self):
         return FXForwardCurveGen(value_date=self._value_date,
                                  exchange_rate=self.get_exchange_rate,
-                                 fx_swap_origin_tenors=self.get_fx_swap_data['origin_tenor'].tolist(),
+                                 fx_swap_tenors=self.get_fx_swap_data['tenor'].tolist(),
                                  fx_swap_quotes=self.get_fx_swap_data['swap_point'].tolist()).discount_curve
 
     @property
@@ -247,7 +264,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         return ForDiscountCurveGen(value_date=self._value_date,
                                    domestic_discount_curve=self.domestic_discount_curve,
                                    fx_forward_curve=self.fx_forward_curve,
-                                   curve_type=DiscountCurveType.FX_Implied).discount_curve
+                                   curve_type=DiscountCurveType.FX_Implied_tr).discount_curve
 
     @property
     def volatility_surface(self):
@@ -265,19 +282,15 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
                                    risk_reversal_25delta_vols=self.get_fx_implied_vol_data["25D RR"].tolist(),
                                    butterfly_10delta_vols=self.get_fx_implied_vol_data["10D BF"].tolist(),
                                    risk_reversal_10delta_vols=self.get_fx_implied_vol_data["10D RR"].tolist(),
-                                   volatility_function_type=TuringVolFunctionTypes.QL).volatility_surface
-
-    @property
-    def rd(self):
-        return
-
-    @property
-    def rf(self):
-        return
+                                   volatility_function_type=TuringVolFunctionTypes.VANNA_VOLGA).volatility_surface
 
     @property
     def df_d(self):
-        return self.domestic_discount_curve.discount(self.expiry_ql)
+        return self.domestic_discount_curve.df(self.expiry)
+    
+    @property
+    def rd(self):
+        return self.domestic_discount_curve.zeroRate(self.expiry)
     
     @property
     def tdel(self):
@@ -294,29 +307,39 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
 
     @property
     def df_f(self):
-        return self.foreign_discount_curve.discount(self.expiry_ql)
+        return self.foreign_discount_curve.df(self.expiry)
+    
+    @property
+    def rf(self):
+        return self.foreign_discount_curve.zeroRate(self.expiry)
 
     @property
     def df_fwd(self):
-        return self.fx_forward_curve.discount(self.expiry_ql)
+        return self.fx_forward_curve.df(self.expiry)
 
     @property
     def volatility_(self):
-        v = self.ctx_volatility(self.underlier_symbol) or self.volatility or self.volatility_surface.interp_vol(self.expiry_ql, self.strike)
+        if getattr(self, '_volatility', None) is not None:
+            return getattr(self, '_volatility', None)
+        v = self.ctx_volatility(self.underlier_symbol) or self.volatility or self.volatility_surface.volatilityFromStrikeDate(self.strike, self.expiry)
         if np.all(v >= 0.0):
             v = np.maximum(v, 1e-10)
             return v
         else:
             raise TuringError("Volatility should not be negative.")
+    
+    @volatility_.setter
+    def volatility_(self, value):
+        self._volatility = value
 
     def vol(self):
         return self.volatility_
 
-    def rate_domestic(self):
-        return self.domestic_discount_curve.zeroRate(self.expiry_ql, self.daycount, ql.Continuous).rate()
+    # def rate_domestic(self):
+    #     return self.domestic_discount_curve.zeroRate(self.expiry_ql, self.daycount, ql.Continuous).rate()
 
-    def rate_foreign(self):
-        return self.foreign_discount_curve.zeroRate(self.expiry_ql, self.daycount, ql.Continuous).rate()
+    # def rate_foreign(self):
+    #     return self.foreign_discount_curve.zeroRate(self.expiry_ql, self.daycount, ql.Continuous).rate()
 
     def spot(self):
         return self.get_exchange_rate
@@ -325,10 +348,10 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         if self.underlier_symbol and not self.underlier:
             if isinstance(self.underlier_symbol, Enum):
                 self.underlier = TuringDB.get_asset(
-                    asset_ids=self.underlier_symbol.value)[0].get('asset_id')
+                    comb_symbols=self.underlier_symbol.value)[0].get('asset_id')
             else:
                 self.underlier = Turing.get_asset(
-                    asset_ids=self.underlier_symbol)[0].get('asset_id')
+                    comb_symbols=self.underlier_symbol)[0].get('asset_id')
 
     def __repr__(self):
         s = to_string("Object Type", type(self).__name__)

@@ -109,7 +109,6 @@ class FXVanillaOption(FXOption):
 
         pips_dom = vdf
         pips_for = vdf / (s0 * K)
-
         cash_dom = vdf * notional_dom / K
         cash_for = vdf * notional_for / s0
 
@@ -169,7 +168,7 @@ class FXVanillaOption(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-        return greek(self, self.price, "exchange_rate", bump=bump_local) * bump_local
+        return greek(self, self.price, "get_exchange_rate", bump=bump_local) * bump_local
 
     def fx_gamma(self):
         """ Calculation of the FX option gamma by bumping the spot FX rate by
@@ -177,7 +176,7 @@ class FXVanillaOption(FXOption):
         to use the analytical calculation of the derivative given below. """
 
         bump_local = 0.0001
-        return greek(self, self.price, "exchange_rate", bump=bump_local, order=2) * bump_local ** 2
+        return greek(self, self.price, "get_exchange_rate", bump=bump_local, order=2) * bump_local ** 2
 
     def fx_vega(self):
         """ Calculation of the FX option vega by bumping the spot FX volatility by
@@ -207,12 +206,17 @@ class FXVanillaOption(FXOption):
         """ Calculation of the FX option theta by bumping 1 day. This gives the FX spot theta. For speed we prefer
         to use the analytical calculation of the derivative given below. """
 
-        value_date = self.value_date_
-        calendar = ql.China(ql.China.IB)
-        today = ql.Date(value_date._d, value_date._m, value_date._y)
-        tmr = calendar.advance(today, ql.Period('1D'))
-        day_diff = tmr - today
-        return greek(self, self.price, "value_date_", bump=day_diff, cus_inc=(self.value_date_.addDays, day_diff)) * day_diff
+        value_date = self._value_date
+        day_diff = 1
+        gDaysInYear = 365
+        bump_local = day_diff / gDaysInYear
+        return greek(self, self.price, "_value_date", bump=bump_local, cus_inc=(self._value_date.addDays, day_diff)) * day_diff
+
+    # def eq_theta(self) -> float:
+    #     day_diff = 1
+    #     bump_local = day_diff / gDaysInYear
+    #     return greek(self, self.price, "_value_date", bump=bump_local,
+    #                            cus_inc=(self._value_date.addDays, day_diff))
 
     def fx_gamma_f(self):
         """ This function calculates the FX Option Gamma using the spot delta. """

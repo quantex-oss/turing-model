@@ -8,10 +8,6 @@ import pandas as pd
 from fundamental.turing_db.data import TuringDB
 from turing_models.instruments.common import CurrencyPair, DiscountCurveType, Ctx
 from turing_models.instruments.rates.irs import create_ibor_single_curve
-from turing_models.market.curves.curve_ql import Shibor3M, FXImpliedAssetCurve, \
-     FXForwardCurve, CNYShibor3M, USDLibor3M, FXForwardCurveFQ
-from turing_models.market.curves.curve_ql_real_time import FXForwardCurve as FXForwardCurveFQRealTime, \
-     CNYShibor3M as CNYShibor3MRealTime, USDLibor3M as USDLibor3MRealTime
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
 from turing_models.market.curves.discount_curve_fx_implied import TuringDiscountCurveFXImplied
 from turing_models.utilities.day_count import DayCountType
@@ -40,7 +36,7 @@ class CurveGeneration(Base, Ctx):
         if self.curve_type is not None:
             if not isinstance(self.curve_type, DiscountCurveType):
                 rules = {
-                    "Shibor3M": DiscountCurveType.Shibor3M,
+                    "Shibor3M": DiscountCurveType.Shibor3M_tr,
                     "CNYShibor3M": DiscountCurveType.CNYShibor3M,
                     "USDLibor3M": DiscountCurveType.USDLibor3M,
                 }
@@ -94,7 +90,7 @@ class CurveGeneration(Base, Ctx):
 
     @property
     def get_shibor_swap_fixing_data(self):
-        """ 参照cicc模型确定数据日期 """
+        """ """
         date1 = '2019-07-05'
         date2 = '2019-07-08'
         date3 = '2019-07-09'
@@ -111,7 +107,7 @@ class CurveGeneration(Base, Ctx):
     def generate_discount_curve(self):
         """ 根据估值日期和曲线类型调用相关接口补全所需数据后，生成对应的曲线 """
         value_date = self._value_date
-        if self.curve_type == DiscountCurveType.Shibor3M:
+        if self.curve_type == DiscountCurveType.Shibor3M_tr:
             discount_curve = DomDiscountCurveGen(
                 value_date=value_date,
                 shibor_tenors=self.get_shibor_data['tenor'].tolist(),
@@ -122,7 +118,7 @@ class CurveGeneration(Base, Ctx):
                 shibor_swap_rates=self.get_shibor_swap_data['average'].tolist(),
                 shibor_swap_fixing_dates=self.get_shibor_swap_fixing_data['Date'],
                 shibor_swap_fixing_rates=self.get_shibor_swap_fixing_data['Fixing'],
-                curve_type=DiscountCurveType.Shibor3M
+                curve_type=DiscountCurveType.Shibor3M_tr
             ).discount_curve
         else:
             raise TuringError('Unsupported curve type')
@@ -184,9 +180,9 @@ class FXIRCurve:
     def __init__(self,
                  fx_symbol: (str, CurrencyPair),  # 货币对symbol，例如：'USD/CNY'
                  value_date: TuringDate = TuringDate(*(datetime.date.today().timetuple()[:3])),
-                 dom_curve_type=DiscountCurveType.Shibor3M,
-                 for_curve_type=DiscountCurveType.FX_Implied,
-                 fx_forward_curve_type=DiscountCurveType.FX_Forword,
+                 dom_curve_type=DiscountCurveType.Shibor3M_tr,
+                 for_curve_type=DiscountCurveType.FX_Implied_tr,
+                 fx_forward_curve_type=DiscountCurveType.FX_Forword_tr,
                  number_of_days: int = 730):
 
         if isinstance(fx_symbol, CurrencyPair):
@@ -213,10 +209,10 @@ class FXIRCurve:
                                                            shibor_swap_origin_tenors=shibor_swap_data['origin_tenor'],
                                                            shibor_swap_rates=shibor_swap_data['average'],
                                                            curve_type=dom_curve_type).discount_curve
-
+        print(fx_swap_data['tenor'])
         fx_forward_curve = FXForwardCurveGen(value_date=value_date,
                                              exchange_rate=exchange_rate,
-                                             fx_swap_origin_tenors=fx_swap_data['origin_tenor'],
+                                             fx_swap_tenors=fx_swap_data['tenor'],
                                              fx_swap_quotes=fx_swap_data['swap_point'],
                                              curve_type=fx_forward_curve_type).discount_curve
 
@@ -298,7 +294,7 @@ class DomDiscountCurveGen:
                  libor_swap_fixing_dates: List[str] = None,
                  libor_swap_fixing_rates: List[float] = None,
                  dom_currency_discount: float = None,
-                 curve_type: DiscountCurveType = DiscountCurveType.Shibor3M):
+                 curve_type: DiscountCurveType = DiscountCurveType.Shibor3M_tr):
         if isinstance(value_date, ql.Date):
             value_date_turing = TuringDate(value_date.year(), value_date.month(), value_date.dayOfMonth())
             value_date_ql = value_date
@@ -324,42 +320,6 @@ class DomDiscountCurveGen:
                                                       shibor_swap_rates,
                                                       FrequencyType.QUARTERLY,
                                                       DayCountType.ACT_365F, 0)
-        elif curve_type == DiscountCurveType.Shibor3M:
-            ql.Settings.instance().evaluationDate = value_date_ql
-            if len(shibor_origin_tenors) >= 5:
-                shibor_origin_tenors = shibor_origin_tenors[:5]
-                shibor_rates = shibor_rates[:5]
-            if shibor_origin_tenors[0] == 'ON':
-                shibor_origin_tenors = ['1D'] + shibor_origin_tenors[1:]
-            # 与中金现在的模型代码兼容，故拼成同格式的DataFrame
-            shibor_deposit_mkt_data = pd.DataFrame(data=shibor_rates, index=shibor_origin_tenors).T
-            shibor_swap_mkt_data = pd.DataFrame(data=shibor_swap_rates, index=shibor_swap_origin_tenors).T
-            fixing_data = pd.DataFrame(data={'Date': shibor_swap_fixing_dates, 'Fixing': shibor_swap_fixing_rates})
-            self.dom_curve = Shibor3M(shibor_deposit_mkt_data, shibor_swap_mkt_data, fixing_data, value_date_ql).curve
-        elif curve_type == DiscountCurveType.CNYShibor3M:
-            ql.Settings.instance().evaluationDate = value_date_ql
-            fixing_data = pd.DataFrame(data={'Date': shibor_swap_fixing_dates, 'Fixing': shibor_swap_fixing_rates})
-            if shibor_swap_dates is not None:
-                shibor_swap_mkt_data = pd.DataFrame(data={'Tenor': shibor_swap_origin_tenors,
-                                                          'Date': shibor_swap_dates,
-                                                          'Rate': shibor_swap_rates})
-                self.dom_curve = CNYShibor3MRealTime(shibor_swap_mkt_data, fixing_data, value_date_ql).curve
-            else:
-                shibor_swap_mkt_data = pd.DataFrame(data={'Tenor': shibor_swap_origin_tenors,
-                                                          'Rate': shibor_swap_rates})
-                self.dom_curve = CNYShibor3M(shibor_swap_mkt_data, fixing_data, value_date_ql).curve
-        elif curve_type == DiscountCurveType.USDLibor3M:
-            ql.Settings.instance().evaluationDate = value_date_ql
-            fixing_data = pd.DataFrame(data={'Date': libor_swap_fixing_dates, 'Fixing': libor_swap_fixing_rates})
-            if libor_swap_dates is not None:
-                libor_swap_mkt_data = pd.DataFrame(data={'Tenor': libor_swap_origin_tenors,
-                                                         'Date': libor_swap_dates,
-                                                         'Rate': libor_swap_rates})
-                self.dom_curve = USDLibor3MRealTime(libor_swap_mkt_data, fixing_data, value_date_ql).curve
-            else:
-                libor_swap_mkt_data = pd.DataFrame(data={'Tenor': libor_swap_origin_tenors,
-                                                         'Rate': libor_swap_rates})
-                self.dom_curve = USDLibor3M(libor_swap_mkt_data, fixing_data, value_date_ql).curve
 
     @property
     def discount_curve(self):
@@ -376,7 +336,7 @@ class FXForwardCurveGen:
                  fx_swap_quotes: List[float] = None,
                  calendar: ql.Calendar = ql.UnitedStates(),
                  day_count: ql.DayCounter = ql.Actual365Fixed(),
-                 curve_type: DiscountCurveType = DiscountCurveType.FX_Forword):
+                 curve_type: DiscountCurveType = DiscountCurveType.FX_Forword_tr):
         if isinstance(value_date, ql.Date):
             value_date_turing = TuringDate(value_date.year(), value_date.month(), value_date.dayOfMonth())
             value_date_ql = value_date
@@ -392,42 +352,6 @@ class FXForwardCurveGen:
             for quote in fx_swap_quotes:
                 fwd_dfs.append(exchange_rate / (exchange_rate + quote))
             self.fx_forward_curve = TuringDiscountCurve(value_date_turing, future_dates, fwd_dfs)
-        elif curve_type == DiscountCurveType.FX_Forword:
-            ql.Settings.instance().evaluationDate = value_date_ql
-            if fx_swap_origin_tenors[0: 3] == ['ON', 'TN', 'SN']:
-                # 把'ON', 'TN', 'SN'转换成'1D', '2D', '3D'，ql不支持ON', 'TN', 'SN'
-                fx_swap_origin_tenors = ['1D', '2D', '3D'] + fx_swap_origin_tenors[3:]
-            # 与中金现在的模型代码兼容，故拼成同格式的DataFrame
-            data_dict = {'Tenor': fx_swap_origin_tenors, 'Spread': fx_swap_quotes}
-            fwd_data = pd.DataFrame(data=data_dict)
-            self.fx_forward_curve = FXForwardCurve(exchange_rate,
-                                                   fwd_data,
-                                                   value_date_ql,
-                                                   calendar,
-                                                   day_count).curve
-        elif curve_type == DiscountCurveType.FX_Forword_fq:
-            ql.Settings.instance().evaluationDate = value_date_ql
-            # if fx_swap_origin_tenors[0: 3] == ['ON', 'TN', 'SN']:
-            #     fx_swap_origin_tenors[0: 3] = ['1D', '2D',
-            #                                    '3D']  # 把'ON', 'TN', 'SN'转换成'1D', '2D', '3D'，ql不支持ON', 'TN', 'SN'
-            # 与中金现在的模型代码兼容，故拼成同格式的DataFrame
-            if fx_swap_dates is not None:
-                fwd_data = pd.DataFrame(data={'Tenor': fx_swap_origin_tenors,
-                                              'Date': fx_swap_dates,
-                                              'Spread': fx_swap_quotes})
-                self.fx_forward_curve = FXForwardCurveFQRealTime(exchange_rate,
-                                                                 fwd_data,
-                                                                 value_date_ql,
-                                                                 calendar,
-                                                                 day_count).curve
-            else:
-                fwd_data = pd.DataFrame(data={'Tenor': fx_swap_origin_tenors,
-                                              'Spread': fx_swap_quotes})
-                self.fx_forward_curve = FXForwardCurveFQ(exchange_rate,
-                                                         fwd_data,
-                                                         value_date_ql,
-                                                         calendar,
-                                                         day_count).curve
 
     @property
     def discount_curve(self):
@@ -443,7 +367,7 @@ class ForDiscountCurveGen:
                  fx_forward_curve=None,  # TODO: 类型范围暂未确定
                  calendar: ql.Calendar = ql.UnitedStates(),
                  day_count: ql.DayCounter = ql.Actual365Fixed(),
-                 curve_type: DiscountCurveType = DiscountCurveType.FX_Implied):
+                 curve_type: DiscountCurveType = DiscountCurveType.FX_Implied_tr):
         if isinstance(value_date, ql.Date):
             value_date_turing = TuringDate(value_date.year(), value_date.month(), value_date.dayOfMonth())
             value_date_ql = value_date
@@ -454,21 +378,14 @@ class ForDiscountCurveGen:
             raise TuringError('value_date: (TuringDate, ql.Date)')
 
         if curve_type == DiscountCurveType.FX_Implied_tr:
-            dom_discount_curve_gen = DomDiscountCurveGen(value_date_turing, curve_type=DiscountCurveType.Shibor3M_tr)
-            domestic_discount_curve = dom_discount_curve_gen.discount_curve
-            _tenors = dom_discount_curve_gen.tenors
-            dates = value_date_turing.addYears(_tenors)
+            # dom_discount_curve_gen = DomDiscountCurveGen(value_date_turing, curve_type=DiscountCurveType.Shibor3M_tr)
+            # domestic_discount_curve = dom_discount_curve_gen.discount_curve
+            dates = list(domestic_discount_curve._dfDates)
+            # dates = value_date_turing.addYears(_tenors)
             self.for_curve = TuringDiscountCurveFXImplied(value_date_turing,
                                                           dates,
                                                           domestic_discount_curve,
                                                           fx_forward_curve)
-        elif curve_type == DiscountCurveType.FX_Implied:
-            ql.Settings.instance().evaluationDate = value_date_ql
-            self.for_curve = FXImpliedAssetCurve(domestic_discount_curve,
-                                                 fx_forward_curve,
-                                                 value_date_ql,
-                                                 calendar,
-                                                 day_count).curve
 
     @property
     def discount_curve(self):

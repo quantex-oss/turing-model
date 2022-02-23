@@ -12,8 +12,6 @@ from turing_models.instruments.common import TuringFXATMMethod, TuringFXDeltaMet
 from turing_models.market.curves.curve_generation import ForDiscountCurveGen, DomDiscountCurveGen, \
      FXForwardCurveGen
 from turing_models.market.curves.discount_curve import TuringDiscountCurve
-from turing_models.market.volatility.fx_vol_surface_ql import FXVolSurface
-from turing_models.market.volatility.fx_vol_surface_ql_real_time import FXVolSurface as FXVolSurfaceRealTime
 from turing_models.market.volatility.fx_vol_surface_vv import TuringFXVolSurfaceVV
 from turing_models.models.model_volatility_fns import TuringVolFunctionTypes
 from turing_models.utilities.error import TuringError
@@ -28,7 +26,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
     value_date: Union[str, datetime.datetime, datetime.date] = datetime.datetime.today()
     strikes: List[float] = None                                # 行权价 如果不传，就用exchange_rate * np.linspace(0.8, 1.2, 16)
     tenors: List[float] = None                                 # 期限（年化） 如果不传，就用[1/12, 2/12, 0.25, 0.5, 1, 2]
-    volatility_function_type: Union[str, TuringVolFunctionTypes] = TuringVolFunctionTypes.QL
+    volatility_function_type: Union[str, TuringVolFunctionTypes] = TuringVolFunctionTypes.VANNA_VOLGA
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -200,7 +198,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
 
     @property
     def volatility_surface(self):
-        if self.volatility_function_type == TuringVolFunctionTypes.QL:
+        if self.volatility_function_type == TuringVolFunctionTypes.VANNA_VOLGA:
             return FXVolSurfaceGen(value_date=self._value_date,
                                    currency_pair=self.fx_symbol,
                                    exchange_rate=self.get_exchange_rate,
@@ -214,7 +212,7 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
                                    risk_reversal_25delta_vols=self.get_fx_implied_vol_data["25D RR"].tolist(),
                                    butterfly_10delta_vols=self.get_fx_implied_vol_data["10D BF"].tolist(),
                                    risk_reversal_10delta_vols=self.get_fx_implied_vol_data["10D RR"].tolist(),
-                                   volatility_function_type=TuringVolFunctionTypes.QL).volatility_surface
+                                   volatility_function_type=TuringVolFunctionTypes.VANNA_VOLGA).volatility_surface
 
     def get_vol_surface(self):
         """获取波动率曲面的DataFrame"""
@@ -284,7 +282,7 @@ class FXVolSurfaceGen:
                  risk_reversal_25delta_vols: List[float] = None,
                  butterfly_10delta_vols: List[float] = None,
                  risk_reversal_10delta_vols: List[float] = None,
-                 volatility_function_type: TuringVolFunctionTypes = TuringVolFunctionTypes.QL,
+                 volatility_function_type: TuringVolFunctionTypes = TuringVolFunctionTypes.VANNA_VOLGA,
                  calendar=ql.China(ql.China.IB),
                  convention=ql.Following,
                  day_count=ql.Actual365Fixed(),
