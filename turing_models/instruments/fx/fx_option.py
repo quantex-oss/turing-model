@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from enum import Enum
 
 import numpy as np
-import QuantLib as ql
 import pandas as pd
 
 from fundamental.turing_db.data import Turing, TuringDB
@@ -54,12 +53,6 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
         self.foreign_name = None
         self.notional_dom = None
         self.notional_for = None
-        if self.expiry and isinstance(self.expiry, TuringDate):
-            self.expiry_ql = ql.Date(self.expiry._d, self.expiry._m, self.expiry._y)
-
-        if self.start_date:
-            self.start_date_ql = ql.Date(self.start_date._d, self.start_date._m, self.start_date._y)
-
         if self.underlier_symbol:
             if isinstance(self.underlier_symbol, CurrencyPair):
                 self.underlier_symbol = self.underlier_symbol.value
