@@ -22,7 +22,7 @@ from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_types import OptionType, TuringExerciseType
 from turing_models.utilities.helper_functions import to_string, to_datetime, to_turing_date
 from turing_models.utilities.turing_date import TuringDate
-
+from turing_models.utilities.global_variables import gDaysInYear
 
 @dataclass(repr=False, eq=False, order=False, unsafe_hash=True)
 class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
@@ -41,7 +41,7 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     start_date: TuringDate = None
     # 1 unit of foreign in domestic
     premium_currency: (str, Currency) = None
-    # spot_days: int = 0
+    spot_days: int = 0
     value_date: TuringDate = TuringDate(
         *(datetime.date.today().timetuple()[:3]))
     volatility: float = None
@@ -278,6 +278,19 @@ class FXOption(FX, InstrumentBase, metaclass=ABCMeta):
     @property
     def df_d(self):
         return self.domestic_discount_curve.discount(self.expiry_ql)
+    
+    @property
+    def tdel(self):
+        self.final_delivery = self.expiry.addWeekDays(self.spot_days)
+        spot_date = self._value_date.addWeekDays(self.spot_days)
+        td = (self.final_delivery - spot_date) / gDaysInYear
+        td = np.maximum(td, 1e-10)
+        return td
+
+    @property
+    def texp(self):
+        return (self.cut_off_time - self._value_date) / gDaysInYear
+
 
     @property
     def df_f(self):
