@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
 import numpy as np
-import pandas as pd
 from scipy import optimize
 
 from fundamental.turing_db.data import TuringDB
@@ -29,16 +28,14 @@ class BondFixedRate(Bond):
             if self.curve_code is not None:
                 self.cv.resolve()
         self._calculate_cash_flow_amounts()
-        self._get_market_clean_price()
         if getattr(self, 'issue_date', None) is not None:
             self._calc_accrued_interest()
-        self._clean_price = self.clean_price_from_discount_curve()
-        self._ytm = self.yield_to_maturity()
+            self._clean_price = self.clean_price_from_discount_curve()
+            self._ytm = self.yield_to_maturity()
 
     def _save_original_data(self):
         """ 存储未经ctx修改的属性值，存储在字典中 """
         super()._save_original_data()
-        self._original_data['_market_clean_price'] = self._market_clean_price
         self._original_data['_spread_adjustment'] = self._spread_adjustment
 
     def _adjust_data_based_on_ctx(self):
@@ -48,13 +45,8 @@ class BondFixedRate(Bond):
         ctx_clean_price = self.ctx_clean_price
         ctx_ytm = self.ctx_ytm
         _original_data = self._original_data
-        if ctx_pricing_date is not None:
-            self._get_market_clean_price()
-        else:
-            self._market_clean_price = _original_data['_market_clean_price']
         self._spread_adjustment = ctx_spread_adjustment or _original_data['_spread_adjustment']
-        # 估值日期时间格式转换
-        self.transformed_value_date = to_turing_date(self.value_date)
+        self._calc_accrued_interest()
         self._clean_price = ctx_clean_price or self.clean_price_from_discount_curve()
         self._ytm = ctx_ytm or self.yield_to_maturity()
 
@@ -99,6 +91,7 @@ class BondFixedRate(Bond):
 
     def implied_spread(self):
         """ 通过行情价格和隐含利率曲线推算债券的隐含基差"""
+        self._get_market_clean_price()
 
         full_price = self._market_clean_price + self._accrued_interest
 
@@ -122,13 +115,13 @@ class BondFixedRate(Bond):
 
     def macauley_duration(self):
         """ 麦考利久期 """
-        self.fitted_curve = CurveAdjustmentImpl(curve_data=self.cv.curve_data,
-                                                parallel_shift=self._spread_adjustment,
-                                                value_date=self.settlement_date).get_curve_result()
+        fitted_curve = CurveAdjustmentImpl(curve_data=self.cv.curve_data,
+                                           parallel_shift=self._spread_adjustment,
+                                           value_date=self.settlement_date).get_curve_result()
 
         px = 0.0
         df = 1.0
-        df_settle = self.fitted_curve.df(self.settlement_date)
+        df_settle = fitted_curve.df(self.settlement_date)
         dc = TuringDayCount(DayCountType.ACT_ACT_ISDA)
 
         for dt in self._flow_dates[1:]:
@@ -136,7 +129,7 @@ class BondFixedRate(Bond):
             dates = dc.yearFrac(self.settlement_date, dt)[0]
             # 将结算日的票息加入计算
             if dt >= self.settlement_date:
-                df = self.fitted_curve.df(dt)
+                df = fitted_curve.df(dt)
                 if self.pay_interest_mode == CouponType.COUPON_CARRYING:
                     flow = self.coupon_rate / self.frequency
                     pv = flow * df * dates * self.par
@@ -241,19 +234,19 @@ class BondFixedRate(Bond):
         if getattr(self, 'pay_interest_mode', None) \
            and getattr(self, 'frequency', None) \
            and getattr(self, 'par', None):
-            self.fitted_curve = CurveAdjustmentImpl(curve_data=self.cv.curve_data,
-                                                    parallel_shift=self._spread_adjustment,
-                                                    value_date=self.settlement_date).get_curve_result()
+            fitted_curve = CurveAdjustmentImpl(curve_data=self.cv.curve_data,
+                                               parallel_shift=self._spread_adjustment,
+                                               value_date=self.settlement_date).get_curve_result()
 
             px = 0.0
             df = 1.0
-            df_settle = self.fitted_curve.df(self.settlement_date)
+            df_settle = fitted_curve.df(self.settlement_date)
 
             for dt in self._flow_dates[1:]:
 
                 # 将结算日的票息加入计算
                 if dt >= self.settlement_date:
-                    df = self.fitted_curve.df(dt)
+                    df = fitted_curve.df(dt)
                     if self.pay_interest_mode == CouponType.COUPON_CARRYING:
                         flow = self.coupon_rate / self.frequency
                         pv = flow * df
@@ -295,7 +288,7 @@ class BondFixedRate(Bond):
 
             full_prices = clean_prices + self._accrued_interest
             ytms = []
-            _ytm = self._ytm
+            _ytm = getattr(self, '_ytm', None)
             for full_price in full_prices:
                 argtuple = (self, full_price, '_ytm', 'full_price_from_ytm')
 

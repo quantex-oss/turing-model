@@ -54,7 +54,7 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 # snowball_option = SnowballOption(underlier_symbol='600067.SH',
 #                                  option_type=OptionType.CALL,
 #                                  start_date=datetime.datetime(2021, 6, 3),
-#                                  expiry=datetime.datetime(2021, 10, 3),
+#                                  expiry=datetime.datetime(2022, 10, 3),
 #                                  participation_rate=1.0,
 #                                  barrier=4.25,
 #                                  knock_in_price=4.1,
@@ -146,54 +146,55 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 # )
 
 # def test_european_option_modified():
-#     assert round(european_option.calc(RiskMeasure.Price), 3) == 17.359
-#     assert round(european_option.calc(RiskMeasure.EqDelta), 3) == 152.478
-#     assert round(european_option.calc(RiskMeasure.EqGamma), 3) == 596.351
-#     assert round(european_option.calc(RiskMeasure.EqVega), 3) == 64.117
-#     assert round(european_option.calc(RiskMeasure.EqTheta), 3) == -84.629
-#     assert round(european_option.calc(RiskMeasure.EqRho), 3) == 37.54
-#     assert round(european_option.calc(RiskMeasure.EqRhoQ), 3) == -38.573
+#     assert round(european_option.calc(RiskMeasure.Price), 3) == 15.878
+#     assert round(european_option.calc(RiskMeasure.EqDelta), 3) == 146.022
+#     assert round(european_option.calc(RiskMeasure.EqGamma), 3) == 634.121
+#     assert round(european_option.calc(RiskMeasure.EqVega), 3) == 68.177
+#     assert round(european_option.calc(RiskMeasure.EqTheta), 3) == -62.433
+#     assert round(european_option.calc(RiskMeasure.EqRho), 3) == 35.995
+#     assert round(european_option.calc(RiskMeasure.EqRhoQ), 3) == -36.94
 
 # def test_american_option_modified():
-#     assert round(american_option.calc(RiskMeasure.Price), 3) == 17.192
-#     assert round(american_option.calc(RiskMeasure.EqDelta), 3) == 153.246
+#     assert round(american_option.calc(RiskMeasure.Price), 3) == 15.755
+#     assert round(american_option.calc(RiskMeasure.EqDelta), 3) == 146.953
 #     assert round(american_option.calc(RiskMeasure.EqGamma), 3) == 0.0
-#     assert round(american_option.calc(RiskMeasure.EqVega), 3) == 62.538
-#     assert round(american_option.calc(RiskMeasure.EqTheta), 3) == -85.977
-#     assert round(american_option.calc(RiskMeasure.EqRho), 3) == 34.676
-#     assert round(american_option.calc(RiskMeasure.EqRhoQ), 3) == -37.399
+#     assert round(american_option.calc(RiskMeasure.EqVega), 3) == 66.485
+#     assert round(american_option.calc(RiskMeasure.EqTheta), 3) == -63.706
+#     assert round(american_option.calc(RiskMeasure.EqRho), 3) == 33.29
+#     assert round(american_option.calc(RiskMeasure.EqRhoQ), 3) == -34.481
 
 # def test_asian_option_modified():
-#     assert round(asian_option.calc(RiskMeasure.Price), 3) == 14.219
-#     assert round(asian_option.calc(RiskMeasure.EqDelta), 3) == 170.891
-#     assert round(asian_option.calc(RiskMeasure.EqGamma), 3) == 714.163
-#     assert round(asian_option.calc(RiskMeasure.EqVega), 3) == 28.887
-#     assert round(asian_option.calc(RiskMeasure.EqTheta), 3) == -99.521
-#     assert round(asian_option.calc(RiskMeasure.EqRho), 3) == 21.041
-#     assert round(asian_option.calc(RiskMeasure.EqRhoQ), 3) == -22.915
+#     assert round(asian_option.calc(RiskMeasure.Price), 3) == 13.331
+#     assert round(asian_option.calc(RiskMeasure.EqDelta), 3) == 166.779
+#     assert round(asian_option.calc(RiskMeasure.EqGamma), 3) == 775.95
+#     assert round(asian_option.calc(RiskMeasure.EqVega), 3) == 31.336
+#     assert round(asian_option.calc(RiskMeasure.EqTheta), 3) == -76.378
+#     assert round(asian_option.calc(RiskMeasure.EqRho), 3) == 20.631
+#     assert round(asian_option.calc(RiskMeasure.EqRhoQ), 3) == -21.584
 
 # def test_snowball_option_modified():
-#     assert round(snowball_option.calc(RiskMeasure.Price), 3) == 43745.849
-#     assert round(snowball_option.calc(RiskMeasure.EqDelta), 3) == 110812.057
-#     assert round(snowball_option.calc(RiskMeasure.EqGamma), 3) == 177605318.512
+#     assert round(snowball_option.calc(RiskMeasure.Price), 3) == 45671.897
+#     assert round(snowball_option.calc(RiskMeasure.EqDelta), 3) == 135356.897
+#     assert round(snowball_option.calc(RiskMeasure.EqGamma), 3) == -406912004.98
 #     assert round(snowball_option.calc(RiskMeasure.EqVega), 3) == 0.0
-#     assert round(snowball_option.calc(RiskMeasure.EqTheta), 3) == 2134.51
-#     assert round(snowball_option.calc(RiskMeasure.EqRho), 3) == 38263.095
-#     assert round(snowball_option.calc(RiskMeasure.EqRhoQ), 3) == -43627.685
+#     assert round(snowball_option.calc(RiskMeasure.EqTheta), 3) == 2228.488
+#     assert round(snowball_option.calc(RiskMeasure.EqRho), 3) == 226000.466
+#     assert round(snowball_option.calc(RiskMeasure.EqRhoQ), 3) == -252720.79
 
 # def test_knockout_option_modified():
-#     assert round(knockout_option.calc(RiskMeasure.Price), 3) == 20223.193
-#     assert round(knockout_option.calc(RiskMeasure.EqDelta), 3) == 175190.931
-#     assert round(knockout_option.calc(RiskMeasure.EqGamma), 3) == 627206.51
-#     assert round(knockout_option.calc(RiskMeasure.EqVega), 3) == 73747.496
-#     assert round(knockout_option.calc(RiskMeasure.EqTheta), 3) == -101023.013
-#     assert round(knockout_option.calc(RiskMeasure.EqRho), 3) == 40797.89
-#     assert round(knockout_option.calc(RiskMeasure.EqRhoQ), 3) == -44001.311
+#     assert round(knockout_option.calc(RiskMeasure.Price), 3) == 18532.686
+#     assert round(knockout_option.calc(RiskMeasure.EqDelta), 3) == 168167.517
+#     assert round(knockout_option.calc(RiskMeasure.EqGamma), 3) == 675284.302
+#     assert round(knockout_option.calc(RiskMeasure.EqVega), 3) == 78403.399
+#     assert round(knockout_option.calc(RiskMeasure.EqTheta), 3) == -74812.856
+#     assert round(knockout_option.calc(RiskMeasure.EqRho), 3) == 39162.3
+#     assert round(knockout_option.calc(RiskMeasure.EqRhoQ), 3) == -40564.115
 
 
 # print_result(snowball_option)
 
 # with scenario_extreme:
+#     print_result(european_option)
 # test_european_option_modified()
 # test_american_option_modified()
 # test_asian_option_modified()
@@ -203,56 +204,56 @@ from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 
 ##TODO：basket_snowball_option经with作用域后线程被killed，无法打印结果。
 
-betas = np.ones(5) * 0.1
-corr_matrix = betaVectorToCorrMatrix(betas)
+# betas = np.ones(5) * 0.1
+# corr_matrix = betaVectorToCorrMatrix(betas)
 
 
-basket_snowball_option = BasketSnowballOption(option_type=OptionType.CALL,
-                                            start_date=datetime.datetime(
-                                                2020, 1, 1),
-                                            expiry=datetime.datetime(
-                                                2022, 1, 1),
-                                            initial_spot=100,
-                                            participation_rate=1.0,
-                                            barrier=110,
-                                            knock_in_price=88,
-                                            notional=1000000,
-                                            rebate=0.2,
-                                            untriggered_rebate=0.2,
-                                            underlier_symbol=[
-                                                "600277.SH", "600269.SH", "600201.SH", "600067.SH", "600243.SH"],
-                                            knock_in_type='SPREADS',
-                                            knock_in_strike1=5.3,
-                                            knock_in_strike2=5.4,
-                                            value_date=datetime.datetime(
-                                                2021, 8, 13),
-                                            currency=Currency.CNY,
-                                            weights=[
-                                                0.2, 0.2, 0.2, 0.2, 0.2],
-                                            correlation_matrix=corr_matrix)
+# basket_snowball_option = BasketSnowballOption(option_type=OptionType.CALL,
+#                                             start_date=datetime.datetime(
+#                                                 2020, 1, 1),
+#                                             expiry=datetime.datetime(
+#                                                 2022, 1, 1),
+#                                             initial_spot=100,
+#                                             participation_rate=1.0,
+#                                             barrier=110,
+#                                             knock_in_price=88,
+#                                             notional=1000000,
+#                                             rebate=0.2,
+#                                             untriggered_rebate=0.2,
+#                                             underlier_symbol=[
+#                                                 "600277.SH", "600269.SH", "600201.SH", "600067.SH", "600243.SH"],
+#                                             knock_in_type='SPREADS',
+#                                             knock_in_strike1=5.3,
+#                                             knock_in_strike2=5.4,
+#                                             value_date=datetime.datetime(
+#                                                 2021, 8, 13),
+#                                             currency=Currency.CNY,
+#                                             weights=[
+#                                                 0.2, 0.2, 0.2, 0.2, 0.2],
+#                                             correlation_matrix=corr_matrix)
 
-scenario_extreme = PricingContext(
-    pricing_date='2015-01-01T00:00:00.000+0800',
-    spot=[{"symbol": "600277.SH", "value": 100},
-        {"symbol": "600269.SH", "value": 100},
-        {"symbol": "600201.SH", "value": 100},
-        {"symbol": "600067.SH", "value": 100},
-        {"symbol": "600243.SH", "value": 100}],
-    volatility=[{"symbol": "600277.SH", "value": 0.3},
-                {"symbol": "600269.SH", "value": 0.3},
-                {"symbol": "600201.SH", "value": 0.3},
-                {"symbol": "600067.SH", "value": 0.3},
-                {"symbol": "600243.SH", "value": 0.3}],
-    interest_rate=0.05,
-    dividend_yield=[{"symbol": "600277.SH", "value": 0.01},
-                    {"symbol": "600269.SH", "value": 0.01},
-                    {"symbol": "600201.SH", "value": 0.01},
-                    {"symbol": "600067.SH", "value": 0.01},
-                    {"symbol": "600243.SH", "value": 0.01}]
-)
-print(basket_snowball_option.calc(RiskMeasure.Price))
-with scenario_extreme:
-    print(basket_snowball_option.calc(RiskMeasure.Price))
+# scenario_extreme = PricingContext(
+#     pricing_date='2015-01-01T00:00:00.000+0800',
+#     spot=[{"symbol": "600277.SH", "value": 100},
+#         {"symbol": "600269.SH", "value": 100},
+#         {"symbol": "600201.SH", "value": 100},
+#         {"symbol": "600067.SH", "value": 100},
+#         {"symbol": "600243.SH", "value": 100}],
+#     volatility=[{"symbol": "600277.SH", "value": 0.3},
+#                 {"symbol": "600269.SH", "value": 0.3},
+#                 {"symbol": "600201.SH", "value": 0.3},
+#                 {"symbol": "600067.SH", "value": 0.3},
+#                 {"symbol": "600243.SH", "value": 0.3}],
+#     interest_rate=0.05,
+#     dividend_yield=[{"symbol": "600277.SH", "value": 0.01},
+#                     {"symbol": "600269.SH", "value": 0.01},
+#                     {"symbol": "600201.SH", "value": 0.01},
+#                     {"symbol": "600067.SH", "value": 0.01},
+#                     {"symbol": "600243.SH", "value": 0.01}]
+# )
+# print(basket_snowball_option.calc(RiskMeasure.Price))
+# with scenario_extreme:
+#     print(basket_snowball_option.calc(RiskMeasure.Price))
 
-    # return (basket_snowball_option.calc(RiskMeasure.Price))
-# basket_snowball_option.calc(RiskMeasure.Price)
+#     # return (basket_snowball_option.calc(RiskMeasure.Price))
+# # basket_snowball_option.calc(RiskMeasure.Price)

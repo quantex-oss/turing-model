@@ -163,7 +163,7 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     def _adjust_data_based_on_ctx(self):
         # 先把ctx中的数据取出
         ctx_pricing_date = self.ctx_pricing_date
-        ctx_yield_curve = self.ctx_yield_curve(curve_type='spot_rate')
+        ctx_yield_curve = self.ctx_yield_curve(curve_type=self.cv.curve_type)
         # 再把原始数据也拿过来
         _original_data = self._original_data
         # 估值日期
@@ -173,7 +173,8 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
             if ctx_yield_curve is not None:
                 self.cv.set_curve_data(ctx_yield_curve)
             else:
-                self.cv.resolve()
+                if self.curve_code is not None:
+                    self.cv.resolve()
         else:
             self.value_date = _original_data.get('value_date')  # datetime.datetime/latest格式
             self.cv.set_value_date(self.value_date)

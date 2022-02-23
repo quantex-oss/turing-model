@@ -567,7 +567,7 @@ def datetime_to_qldate(date):
 
 
 def date_str_to_datetime(date_str):
-    """例：2021-08-04T00:00:00.000+080（字符串）转datetime"""
+    """例：2021-08-04T00:00:00.000+0800（字符串）转datetime"""
     date_str = ' '.join(date_str.split('+')[0].split('T'))[:-4]
     return datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
 
@@ -622,7 +622,11 @@ def to_datetime(date: Union[str, datetime.datetime, datetime.date, TuringDate]) 
         logger.debug(str(e))
 
 
-def to_turing_date(res: Union[str, datetime.datetime, datetime.date, TuringDate]) -> TuringDate:
+def to_turing_date(res: Union[str,
+                              datetime.datetime,
+                              datetime.date,
+                              TuringDate,
+                              list]) -> Union[TuringDate, list]:
     if res is None:
         return None
     if isinstance(res, TuringDate):
@@ -630,6 +634,8 @@ def to_turing_date(res: Union[str, datetime.datetime, datetime.date, TuringDate]
     elif isinstance(res, (datetime.datetime, datetime.date)):
         res_tuple = (res.year, res.month, res.day)
         return TuringDate(*res_tuple)
+    elif isinstance(res, list):
+        return [to_turing_date(dt) for dt in res]
     try:
         if res == 'latest':
             return TuringDate(*(datetime.date.today().timetuple()[:3]))
@@ -642,7 +648,8 @@ def to_turing_date(res: Union[str, datetime.datetime, datetime.date, TuringDate]
             elif len(str(res)) == 19:
                 fmt = "%Y-%m-%d %H:%M:%S"
             else:
-                fmt = "%Y-%m-%dT%H:%M:%S.%f%z"
+                fmt = "%Y-%m-%d %H:%M:%S"
+                res = ' '.join(res.split('+')[0].split('T'))[:-4]
             res = datetime.datetime.strptime(str(res), fmt)
         res = utc2local(res)
         res_tuple = (res.year, res.month, res.day,)
