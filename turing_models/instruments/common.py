@@ -1545,18 +1545,3 @@ class YieldCurve:
         return TuringDiscountCurveZeros(valuationDate=self.value_date,
                                         zeroDates=dates,
                                         zeroRates=rates)
-
-
-if __name__ == '__main__':
-    cv = YieldCurve(value_date='latest',
-                    curve_code='CBD100461')
-    cv.resolve()
-    print(cv.curve_data)
-
-    # ca = CurveAdjustment(parallel_shift=1000,
-    #                      curve_shift=1000,
-    #                      pivot_point=1,
-    #                      tenor_start=0.5,
-    #                      tenor_end=1.5)
-    # cv.adjust(ca)
-    # print(cv.curve_data)

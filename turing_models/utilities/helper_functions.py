@@ -713,19 +713,3 @@ def calculate_greek(obj, price, attr, bump=1e-4, order=1, cus_inc=None):
         p_up = price()
         recover()
         return (p_up - 2.0 * p0 + p_down) / bump / bump
-
-
-if __name__ == '__main__':
-    # print(to_datetime(datetime.datetime.today()))
-    # print(to_datetime(datetime.date.today()))
-    # print(to_datetime(TuringDate(2021, 10, 10)))
-    # print(to_datetime('20211010'))
-    # print(to_datetime('2021-10-10'))
-    # print(to_datetime('2021-12-27T00:00:00.000+0800'))
-    print(to_turing_date(datetime.datetime.today()))
-    print(to_turing_date(datetime.date.today()))
-    print(to_turing_date(TuringDate(2021, 10, 10)))
-    print(to_turing_date('20211010'))
-    print(to_turing_date('2021-10-10'))
-    print(to_turing_date('2021-12-27T00:00:00.000+0800'))
-    print(to_turing_date(None))

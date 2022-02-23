@@ -159,20 +159,22 @@ class FXOptionImpliedVolatilitySurface(Base, Ctx):
                                    shibor_rates=self.get_shibor_data['rate'].tolist(),
                                    shibor_swap_tenors=self.get_shibor_swap_data['tenor'].tolist(),
                                    shibor_swap_rates=self.get_shibor_swap_data['average'].tolist(),
-                                   curve_type=DiscountCurveType.Shibor3M).discount_curve
+                                   curve_type=DiscountCurveType.Shibor3M_tr).discount_curve
 
     @property
     def fx_forward_curve(self):
         return FXForwardCurveGen(value_date=self._value_date,
                                  exchange_rate=self.get_exchange_rate,
-                                 fx_swap_quotes=self.get_fx_swap_data['swap_point'].tolist()).discount_curve
+                                 fx_swap_tenors=self.get_fx_swap_data['tenor'].tolist(),
+                                 fx_swap_quotes=self.get_fx_swap_data['swap_point'].tolist(),
+                                 curve_type=DiscountCurveType.FX_Forword_tr).discount_curve
 
     @property
     def foreign_discount_curve(self):
         return ForDiscountCurveGen(value_date=self._value_date,
                                    domestic_discount_curve=self.domestic_discount_curve,
                                    fx_forward_curve=self.fx_forward_curve,
-                                   curve_type=DiscountCurveType.FX_Implied).discount_curve
+                                   curve_type=DiscountCurveType.FX_Implied_tr).discount_curve
 
     @property
     def volatility_surface(self):
