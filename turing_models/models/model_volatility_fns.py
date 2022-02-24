@@ -23,7 +23,6 @@ class TuringVolFunctionTypes(Enum):
     SVI = 6
     SSVI = 7
     VANNA_VOLGA = 8
-    QL = 9
 
 
 ###############################################################################
@@ -271,23 +270,4 @@ def volFunctionVV(params, f, k, t):
     vol = sig_ATM + (-sig_ATM + math.sqrt(sig_ATM**2 + d1_d2 *
                                           (2 * sig_ATM * First_Ord_Approx + Second_Ord_Approx)))/(d1_d2)
 
-    return vol
-
-
-# @njit(float64(float64[:], float64, float64, float64),
-#       fastmath=True, cache=True)
-def volFunctionCICC(params, f, k, t):
-
-    K_10D_P, K_25D_P, K_ATM, K_25D_C, K_10D_C, d10P, d25P, dATM, d25C, d10C = params
-    smile = d10P, d25P, dATM, d25C, d10C
-    strikes = K_10D_P, K_25D_P, K_ATM, K_25D_C, K_10D_C
-
-    interp = CubicSpline(strikes, smile, True)
-
-    if k <= strikes[0]:
-        vol = smile[0]
-    elif k >= strikes[-1]:
-        vol = smile[-1]
-    else:
-        vol = interp(k)
     return vol

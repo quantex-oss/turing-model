@@ -1,17 +1,3 @@
-# import plotly.express as px
-# from turing_models.market.curves.curve_generation import FXIRCurve, CurrencyPair
-#
-#
-# fx_curve = FXIRCurve(fx_symbol=CurrencyPair.USDCNY)
-# foreign_curve = fx_curve.get_ccy1_curve()
-# domestic_curve = fx_curve.get_ccy2_curve()
-# print('CCY1 Curve\n', foreign_curve)
-# print('CCY2 Curve\n', domestic_curve)
-# fig = px.line(foreign_curve, x='date', y='rate', title="Foreign Rates")
-# fig.show()
-# fig = px.line(domestic_curve, x='date', y='rate', title="Domestic Rates")
-# fig.show()
-
 from turing_models.market.volatility.vol_surface_generation import FXOptionImpliedVolatilitySurface, CurrencyPair
 import plotly.graph_objs as go
 

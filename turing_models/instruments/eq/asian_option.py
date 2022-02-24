@@ -30,9 +30,9 @@ class AsianOption(EqOption):
             self.start_averaging_date = to_turing_date(self.start_averaging_date)
             if self.expiry is not None:
                 self.num_obs = int(self.expiry - self.start_averaging_date)
-        self.check_param()
+        self._check_param()
 
-    def check_param(self):
+    def _check_param(self):
         if self.option_type is not None and not isinstance(self.option_type, TuringOptionTypes):
             rules = {
                 "CALL": TuringOptionTypes.ASIAN_CALL,

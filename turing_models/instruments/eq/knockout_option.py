@@ -23,9 +23,9 @@ class KnockOutOption(EqOption):
         self.num_paths = 1_000_000
         self.days_in_year = gDaysInYear
         self.seed = 4242
-        self.check_param()
+        self._check_param()
 
-    def check_param(self):
+    def _check_param(self):
         if self.knock_out_type is None:
             if self.option_type is not None:
                 rules = {

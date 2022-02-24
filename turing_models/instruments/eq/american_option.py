@@ -13,9 +13,9 @@ class AmericanOption(EqOption):
     def __post_init__(self):
         super().__post_init__()
         self.num_ann_obs = gNumObsInYear
-        self.check_param()
+        self._check_param()
 
-    def check_param(self):
+    def _check_param(self):
         if self.option_type is not None and not isinstance(self.option_type, TuringOptionTypes):
             rules = {
                 "CALL": TuringOptionTypes.AMERICAN_CALL,

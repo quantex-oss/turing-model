@@ -4,108 +4,17 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Union
 
-import numpy as np
 import pandas as pd
-from numba import njit
 
 from fundamental import ctx
 from fundamental.turing_db.data import TuringDB
 from turing_models.market.curves.curve_adjust import CurveAdjustmentImpl
 from turing_models.market.curves.discount_curve_zeros import TuringDiscountCurveZeros
-from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.helper_functions import to_datetime, to_turing_date
 from turing_models.utilities.turing_date import TuringDate
 
 bump = 1e-4
-
-
-def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
-    """
-    如果要传cus_inc，格式须为(函数名, 函数参数值)
-    """
-    cus_func = args = None
-    attr_value = getattr(obj, attr)
-    if cus_inc:
-        cus_func, args = cus_inc
-
-    def increment(_attr_value, count=1):
-        if cus_func:
-            _attr_value = cus_func(args * count)
-        else:
-            _attr_value += count * bump
-        setattr(obj, attr, _attr_value)
-
-    def decrement(_attr_value, count=1):
-        if cus_func:
-            _attr_value = cus_func(-args * count)
-        else:
-            _attr_value -= count * bump
-        setattr(obj, attr, _attr_value)
-
-    def clear():
-        setattr(obj, attr, None)
-
-    if order == 1:
-        if isinstance(attr_value, TuringDate):
-            p0 = price()
-            increment(attr_value)
-            p_up = price()
-            clear()
-            return (p_up - p0) / bump
-        increment(attr_value)
-        p_up = price()
-        clear()
-        decrement(attr_value)
-        p_down = price()
-        clear()
-        return (p_up - p_down) / (bump * 2)
-    elif order == 2:
-        p0 = price()
-        decrement(attr_value)
-        p_down = price()
-        increment(attr_value)
-        p_up = price()
-        clear()
-        return (p_up - 2.0 * p0 + p_down) / bump / bump
-
-
-def newton_fun(y, *args):
-    """ Function is used by scipy.optimize.newton """
-    self = args[0]  # 实例对象
-    price = args[1]  # 对照的标准
-    attr = args[2]  # 需要调整的参数
-    fun = args[3]  # 调整参数后需重新计算的方法
-    setattr(self, attr, y)  # 调整参数
-    px = getattr(self, fun)()  # 重新计算方法的返回值
-    obj_fn = px - price  # 计算误差
-    return obj_fn
-
-
-@njit(fastmath=True, cache=True)
-def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
-    ''' Calculation of the FX Option delta. Used in the determination of
-    the volatility surface. Avoids discount curve interpolation so it
-    should be slightly faster than the full calculation of delta. '''
-
-    pips_spot_delta = bs_delta(s, t, k, rd, rf, vol, optionTypeValue, False)
-
-    if deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA.value:
-        return pips_spot_delta
-    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA.value:
-        pips_fwd_delta = pips_spot_delta * np.exp(rf * t)
-        return pips_fwd_delta
-    elif deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
-        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
-        pct_spot_delta_prem_adj = pips_spot_delta - vpctf
-        return pct_spot_delta_prem_adj
-    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
-        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
-        pct_fwd_delta_prem_adj = np.exp(rf * t) * (pips_spot_delta - vpctf)
-        return pct_fwd_delta_prem_adj
-    else:
-        raise TuringError("Unknown TuringFXDeltaMethod")
-
 
 class RiskMeasure(Enum):
     Price = "price"
@@ -1385,7 +1294,8 @@ class YieldCurve:
 
     def __post_init__(self):
         """估值日期和曲线编码不能为空"""
-        assert self.value_date, "value_date can't be None"
+        if self.value_date is None:
+            raise TuringError("value_date can't be None")
         self.check_param()
 
     def check_param(self):
@@ -1443,14 +1353,14 @@ class YieldCurve:
                             self.curve_data = self.curve_data.loc[curve_code][['tenor', 'spot_rate']]. \
                                 rename(columns={'spot_rate': 'rate'})
                         else:
-                            raise TuringError('The interface data is empty')
+                            self.curve_data = None
                     elif self.curve_type == 'ytm':
                         self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date)
                         if not self.curve_data.empty:
                             self.curve_data = self.curve_data.loc[curve_code][['tenor', 'ytm']].\
                                 rename(columns={'ytm': 'rate'})
                         else:
-                            raise TuringError('The interface data is empty')
+                            self.curve_data = None
                     elif self.curve_type == 'forward_spot_rate':
                         if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
                             self.curve_data = TuringDB.bond_yield_curve(curve_code=curve_code, date=self._original_value_date,
@@ -1459,7 +1369,7 @@ class YieldCurve:
                                 self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_spot_rate']].\
                                     rename(columns={'forward_spot_rate': 'rate'})
                             else:
-                                raise TuringError('The interface data is empty')
+                                self.curve_data = None
                         else:
                             raise TuringError('Please check the input of forward_term')
                     elif self.curve_type == 'forward_ytm':
@@ -1470,7 +1380,7 @@ class YieldCurve:
                                 self.curve_data = self.curve_data.loc[curve_code][['tenor', 'forward_ytm']].\
                                     rename(columns={'forward_ytm': 'rate'})
                             else:
-                                raise TuringError('The interface data is empty')
+                                self.curve_data = None
                         else:
                             raise TuringError('Please check the input of forward_term')
                     else:
@@ -1489,14 +1399,14 @@ class YieldCurve:
                         self.curve_data = self.curve_data[['tenor', 'spot_rate']]. \
                             rename(columns={'spot_rate': 'rate'})
                     else:
-                        raise TuringError('The interface data is empty')
+                        self.curve_data = None
                 elif self.curve_type == 'ytm':
                     self.curve_data = TuringDB.get_national_debt(date=self._original_value_date)
                     if not self.curve_data.empty:
                         self.curve_data = self.curve_data[['tenor', 'ytm']]. \
                             rename(columns={'ytm': 'rate'})
                     else:
-                        raise TuringError('The interface data is empty')
+                        self.curve_data = None
                 elif self.curve_type == 'forward_spot_rate':
                     if self.forward_term is not None and isinstance(self.forward_term, (float, int)):
                         self.curve_data = TuringDB.get_national_debt(date=self._original_value_date)
@@ -1504,7 +1414,7 @@ class YieldCurve:
                             self.curve_data = self.curve_data[['tenor', 'forward_spot_rate']]. \
                                 rename(columns={'forward_spot_rate': 'rate'})
                         else:
-                            raise TuringError('The interface data is empty')
+                            self.curve_data = None
                     else:
                         raise TuringError('Please check the input of forward_term')
                 elif self.curve_type == 'forward_ytm':
@@ -1514,7 +1424,7 @@ class YieldCurve:
                             self.curve_data = self.curve_data[['tenor', 'forward_ytm']]. \
                                 rename(columns={'forward_ytm': 'rate'})
                         else:
-                            raise TuringError('The interface data is empty')
+                            self.curve_data = None
                     else:
                         raise TuringError('Please check the input of forward_term')
                 else:
@@ -1544,18 +1454,3 @@ class YieldCurve:
         return TuringDiscountCurveZeros(valuationDate=self.value_date,
                                         zeroDates=dates,
                                         zeroRates=rates)
-
-
-if __name__ == '__main__':
-    cv = YieldCurve(value_date='latest',
-                    curve_code='CBD100461')
-    cv.resolve()
-    print(cv.curve_data)
-
-    # ca = CurveAdjustment(parallel_shift=1000,
-    #                      curve_shift=1000,
-    #                      pivot_point=1,
-    #                      tenor_start=0.5,
-    #                      tenor_end=1.5)
-    # cv.adjust(ca)
-    # print(cv.curve_data)

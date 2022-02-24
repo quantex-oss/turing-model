@@ -12,6 +12,7 @@ from turing_models.utilities.day_count import DayCountType, TuringDayCount
 from turing_models.utilities.error import TuringError
 from turing_models.utilities.global_variables import gDaysInYear, gSmall
 from turing_models.utilities.turing_date import TuringDate
+from turing_models.models.model_black_scholes_analytical import bs_value, bs_delta
 
 
 ###############################################################################
@@ -567,7 +568,7 @@ def datetime_to_qldate(date):
 
 
 def date_str_to_datetime(date_str):
-    """例：2021-08-04T00:00:00.000+080（字符串）转datetime"""
+    """例：2021-08-04T00:00:00.000+0800（字符串）转datetime"""
     date_str = ' '.join(date_str.split('+')[0].split('T'))[:-4]
     return datetime.datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
 
@@ -622,7 +623,11 @@ def to_datetime(date: Union[str, datetime.datetime, datetime.date, TuringDate]) 
         logger.debug(str(e))
 
 
-def to_turing_date(res: Union[str, datetime.datetime, datetime.date, TuringDate]) -> TuringDate:
+def to_turing_date(res: Union[str,
+                              datetime.datetime,
+                              datetime.date,
+                              TuringDate,
+                              list]) -> Union[TuringDate, list]:
     if res is None:
         return None
     if isinstance(res, TuringDate):
@@ -630,6 +635,8 @@ def to_turing_date(res: Union[str, datetime.datetime, datetime.date, TuringDate]
     elif isinstance(res, (datetime.datetime, datetime.date)):
         res_tuple = (res.year, res.month, res.day)
         return TuringDate(*res_tuple)
+    elif isinstance(res, list):
+        return [to_turing_date(dt) for dt in res]
     try:
         if res == 'latest':
             return TuringDate(*(datetime.date.today().timetuple()[:3]))
@@ -642,7 +649,8 @@ def to_turing_date(res: Union[str, datetime.datetime, datetime.date, TuringDate]
             elif len(str(res)) == 19:
                 fmt = "%Y-%m-%d %H:%M:%S"
             else:
-                fmt = "%Y-%m-%dT%H:%M:%S.%f%z"
+                fmt = "%Y-%m-%d %H:%M:%S"
+                res = ' '.join(res.split('+')[0].split('T'))[:-4]
             res = datetime.datetime.strptime(str(res), fmt)
         res = utc2local(res)
         res_tuple = (res.year, res.month, res.day,)
@@ -708,17 +716,89 @@ def calculate_greek(obj, price, attr, bump=1e-4, order=1, cus_inc=None):
         return (p_up - 2.0 * p0 + p_down) / bump / bump
 
 
-if __name__ == '__main__':
-    # print(to_datetime(datetime.datetime.today()))
-    # print(to_datetime(datetime.date.today()))
-    # print(to_datetime(TuringDate(2021, 10, 10)))
-    # print(to_datetime('20211010'))
-    # print(to_datetime('2021-10-10'))
-    # print(to_datetime('2021-12-27T00:00:00.000+0800'))
-    print(to_turing_date(datetime.datetime.today()))
-    print(to_turing_date(datetime.date.today()))
-    print(to_turing_date(TuringDate(2021, 10, 10)))
-    print(to_turing_date('20211010'))
-    print(to_turing_date('2021-10-10'))
-    print(to_turing_date('2021-12-27T00:00:00.000+0800'))
-    print(to_turing_date(None))
+def greek(obj, price, attr, bump=bump, order=1, cus_inc=None):
+    """
+    如果要传cus_inc，格式须为(函数名, 函数参数值)
+    """
+    cus_func = args = None
+    attr_value = getattr(obj, attr)
+    if cus_inc:
+        cus_func, args = cus_inc
+
+    def increment(_attr_value, count=1):
+        if cus_func:
+            _attr_value = cus_func(args * count)
+        else:
+            _attr_value += count * bump
+        setattr(obj, attr, _attr_value)
+
+    def decrement(_attr_value, count=1):
+        if cus_func:
+            _attr_value = cus_func(-args * count)
+        else:
+            _attr_value -= count * bump
+        setattr(obj, attr, _attr_value)
+
+    def clear():
+        setattr(obj, attr, None)
+
+    if order == 1:
+        if isinstance(attr_value, TuringDate):
+            p0 = price()
+            increment(attr_value)
+            p_up = price()
+            clear()
+            return (p_up - p0) / bump
+        increment(attr_value)
+        p_up = price()
+        clear()
+        decrement(attr_value)
+        p_down = price()
+        clear()
+        return (p_up - p_down) / (bump * 2)
+    elif order == 2:
+        p0 = price()
+        decrement(attr_value)
+        p_down = price()
+        increment(attr_value)
+        p_up = price()
+        clear()
+        return (p_up - 2.0 * p0 + p_down) / bump / bump
+
+
+@njit(fastmath=True, cache=True)
+def fastDelta(s, t, k, rd, rf, vol, deltaTypeValue, optionTypeValue):
+    ''' Calculation of the FX Option delta. Used in the determination of
+    the volatility surface. Avoids discount curve interpolation so it
+    should be slightly faster than the full calculation of delta. '''
+
+    pips_spot_delta = bs_delta(s, t, k, rd, rf, vol, optionTypeValue, False)
+    from turing_models.instruments.common import TuringFXDeltaMethod
+
+    if deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA.value:
+        return pips_spot_delta
+    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA.value:
+        pips_fwd_delta = pips_spot_delta * np.exp(rf * t)
+        return pips_fwd_delta
+    elif deltaTypeValue == TuringFXDeltaMethod.SPOT_DELTA_PREM_ADJ.value:
+        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
+        pct_spot_delta_prem_adj = pips_spot_delta - vpctf
+        return pct_spot_delta_prem_adj
+    elif deltaTypeValue == TuringFXDeltaMethod.FORWARD_DELTA_PREM_ADJ.value:
+        vpctf = bs_value(s, t, k, rd, rf, vol, optionTypeValue, False) / s
+        pct_fwd_delta_prem_adj = np.exp(rf * t) * (pips_spot_delta - vpctf)
+        return pct_fwd_delta_prem_adj
+    else:
+        raise TuringError("Unknown TuringFXDeltaMethod")
+
+
+def newton_fun(y, *args):
+    """ Function is used by scipy.optimize.newton """
+    self = args[0]  # 实例对象
+    price = args[1]  # 对照的标准
+    attr = args[2]  # 需要调整的参数
+    fun = args[3]  # 调整参数后需重新计算的方法
+    setattr(self, attr, y)  # 调整参数
+    px = getattr(self, fun)()  # 重新计算方法的返回值
+    obj_fn = px - price  # 计算误差
+    return obj_fn

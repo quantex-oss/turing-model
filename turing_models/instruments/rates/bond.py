@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Union
 
 from fundamental.turing_db.bond_data import BondApi
-from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, YieldCurve, CurveAdjustment, Currency
+from turing_models.instruments.common import IR, YieldCurveCode, CurveCode, CurveAdjustment, Currency
 from turing_models.instruments.core import InstrumentBase
 from turing_models.utilities.calendar import TuringCalendarTypes, TuringBusDayAdjustTypes, \
     TuringDateGenRuleTypes, TuringCalendar
@@ -47,45 +47,26 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
     pay_interest_mode: (str, CouponType) = None  # 付息方式
     curve_code: Union[str, YieldCurveCode] = None  # 曲线编码
     curve_name: str = None
-    value_date: (datetime.datetime, datetime.date) = datetime.date.today()  # 估值日
+    value_date: (datetime.datetime, datetime.date, str) = 'latest'  # 估值日
     settlement_terms: int = 0  # 结算天数，0即T+0结算
 
     def __post_init__(self):
         super().__init__()
-        self.convention = TuringYTMCalcType.UK_DMO  # 惯例
-        self.calendar_type = TuringCalendarTypes.CHINA_IB  # 日历类型
-        self._redemption = 1.0  # 到期支付额
-        self._flow_dates = []  # 现金流发生日
-        self._flow_amounts = []  # 现金流发生额
-        # self._accrued_interest = None
-        self._accrued_days = 0.0  # 应计利息天数
-        self.value_date = to_turing_date(self.value_date)
+        self._check_param()                                # 将一些类型做转换
+        self._init()                                       # 对一些属性做初始化
+        self._calculate_intermediate_variable()            # 计算一些中间变量（主要是一些会受到ctx影响的变量）
+        self._save_original_data()                         # 保存会被ctx影响的属性的原始值
+
+    def _check_param(self):
+        """将字符串转换为枚举类型"""
+        # 对时间格式做转换
         self.issue_date = to_turing_date(self.issue_date)
         self.due_date = to_turing_date(self.due_date)
+
+        # 转换成字符串，便于rich表格显示
         if self.trd_curr_code and isinstance(self.trd_curr_code, Currency):
-            self.trd_curr_code = self.trd_curr_code.value  # 转换成字符串，便于rich表格显示
-        if self.issue_date:
-            self.value_date = max(self.value_date, self.issue_date)
-            self.settlement_date = self.value_date.addDays(self.settlement_terms)  # 计算结算日期
-        self.check_param()
+            self.trd_curr_code = self.trd_curr_code.value
 
-        self.ca = CurveAdjustment()
-        if self.issue_date and self.due_date:
-            dc = TuringDayCount(DayCountType.ACT_365F)
-            cal = TuringCalendar(self.calendar_type)
-            self.maturity_date = cal.adjust(self.due_date, TuringBusDayAdjustTypes.MODIFIED_FOLLOWING)
-            (acc_factor1, _, _) = dc.yearFrac(self.issue_date, self.due_date)
-            self.bond_term_year = acc_factor1
-            (acc_factor2, _, _) = dc.yearFrac(self.settlement_date, self.due_date)
-            self.time_to_maturity_in_year = acc_factor2
-        if self.pay_interest_cycle:
-            self._calculate_cash_flow_dates()
-            self.frequency = TuringFrequency(self.pay_interest_cycle)
-        else:
-            self._flow_dates = [self.issue_date, self.due_date]
-
-    def check_param(self):
-        """将字符串转换为枚举类型"""
         if self.pay_interest_mode:
             if not isinstance(self.pay_interest_mode, CouponType):
                 rules = {
@@ -135,29 +116,78 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
                 if isinstance(self.interest_rules, TuringError):
                     raise self.interest_rules
 
-    @property
-    def _original_value_date(self):
-        # datetime.datetime或者latest
-        return self.ctx_pricing_date or self.value_date
+    def _init(self):
+        self.convention = TuringYTMCalcType.UK_DMO         # 惯例
+        self.calendar_type = TuringCalendarTypes.CHINA_IB  # 日历类型
+        self.calendar = TuringCalendar(self.calendar_type)
+        self.day_count = TuringDayCount(DayCountType.ACT_365F)
+        self.bus_day_adjust_type = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
+        self._redemption = 1.0                             # 到期支付额
+        # self._flow_dates = []                            # 现金流发生日
+        # self._flow_amounts = []                          # 现金流发生额
+        # self._accrued_days = 0.0                         # 应计利息天数
+        self.ca = CurveAdjustment()
+        if self.pay_interest_cycle:
+            self.frequency = TuringFrequency(self.pay_interest_cycle)
+        if self.due_date:
+            self.maturity_date = self.calendar.adjust(self.due_date, self.bus_day_adjust_type)
+            if self.issue_date:
+                if self.pay_interest_cycle:
+                    self._calculate_cash_flow_dates()
+                else:
+                    self._flow_dates = [self.issue_date, self.due_date]
+                self.bond_term_year, _, _ = self.day_count.yearFrac(self.issue_date, self.due_date)
+        # 估值日期时间格式转换
+        self.transformed_value_date = to_turing_date(self.value_date)
+        if getattr(self, 'issue_date', None) is not None:
+            self.settlement_date = max(self.transformed_value_date, self.issue_date).addDays(
+                self.settlement_terms)
 
-    @property
-    def _settlement_date(self):
-        value_date = max(to_turing_date(self._original_value_date), self.issue_date)
-        return value_date.addDays(self.settlement_terms)
-
-    def _curve_resolve(self):
-        # 为了实时响应what-if调整pricing date
-        if self.ctx_pricing_date is not None:
-            self.cv.set_value_date(self._original_value_date)
-        # 查询用户是否通过what-if传入self.curve_code对应的即期收益率曲线数据
-        ctx_yield_curve = self.ctx_yield_curve(curve_type='spot_rate')
-        if ctx_yield_curve is not None:
-            self.cv.set_curve_data(ctx_yield_curve)
+    def _save_original_data(self):
+        """ 存储未经ctx修改的属性值，存储在字典中 """
+        _original_data = dict()
+        _original_data['value_date'] = self.value_date
+        cv = getattr(self, 'cv', None)
+        if cv is not None:
+            _original_data['yield_curve'] = cv.curve_data
         else:
-            self.cv.resolve()
-        # print(self.cv.curve_data)
-        # 检测用户是否对self.curve_code所对应的收益率曲线做变换  TODO: 考虑是否需要区分即期、到期和远期，目前未区分
+            _original_data['yield_curve'] = None
+        self._original_data = _original_data
+
+    def _ctx_resolve(self):
+        """根据ctx中的数据，修改实例属性"""
+        self._adjust_data_based_on_ctx()
+        # 计算定价要用到的中间变量
+        self._calculate_intermediate_variable()
+
+    def _adjust_data_based_on_ctx(self):
+        # 先把ctx中的数据取出
+        ctx_pricing_date = self.ctx_pricing_date
+        ctx_yield_curve = self.ctx_yield_curve(curve_type=self.cv.curve_type)
+        # 再把原始数据也拿过来
+        _original_data = self._original_data
+        # 估值日期
+        if ctx_pricing_date is not None:
+            self.value_date = ctx_pricing_date  # datetime.datetime/latest格式
+            self.cv.set_value_date(self.value_date)  # 对曲线设置估值日期之后，曲线数据会被清空
+            if ctx_yield_curve is not None:
+                self.cv.set_curve_data(ctx_yield_curve)
+            else:
+                if self.curve_code is not None:
+                    self.cv.resolve()
+        else:
+            self.value_date = _original_data.get('value_date')  # datetime.datetime/latest格式
+            self.cv.set_value_date(self.value_date)
+            if ctx_yield_curve is not None:
+                self.cv.set_curve_data(ctx_yield_curve)
+            else:
+                self.cv.set_curve_data(_original_data.get('yield_curve'))
+        # 检测用户是否对self.curve_code所对应的收益率曲线做变换
         self._curve_adjust()
+        # 估值日期时间格式转换
+        self.transformed_value_date = to_turing_date(self.value_date)
+        if getattr(self, 'issue_date', None) is not None:
+            self.settlement_date = max(self.transformed_value_date, self.issue_date).addDays(self.settlement_terms)
 
     def _curve_adjust(self):
         if self.ctx_parallel_shift:
@@ -173,39 +203,39 @@ class Bond(IR, InstrumentBase, metaclass=ABCMeta):
         if self.ca.isvalid():
             self.cv.adjust(self.ca)
 
+    def _calculate_intermediate_variable(self):
+        """ 计算定价要用到的中间变量 """
+        # 估值日期时间格式转换
+        if getattr(self, 'settlement_date', None) is not None and \
+           getattr(self, 'due_date', None) is not None:
+            self.time_to_maturity_in_year, _, _ = self.day_count.yearFrac(self.settlement_date, self.due_date)
+
     def isvalid(self):
         """提供给turing sdk做过期判断"""
-
-        if getattr(self, '_settlement_date', '') \
-                and getattr(self, 'due_date', '') \
-                and getattr(self, '_settlement_date', '') > \
-                    getattr(self, 'due_date', ''):
+        if getattr(self, 'settlement_date', '') \
+           and getattr(self, 'due_date', '') \
+           and getattr(self, 'settlement_date', '') > getattr(self, 'due_date', ''):
             return False
         return True
 
     def _calculate_cash_flow_dates(self):
         """ Determine the bond cashflow payment dates."""
-
-        calendar_type = TuringCalendarTypes.CHINA_IB
-        bus_day_rule_type = TuringBusDayAdjustTypes.MODIFIED_FOLLOWING
         date_gen_rule_type = TuringDateGenRuleTypes.BACKWARD
         self._flow_dates = TuringSchedule(self.issue_date,
                                           self.due_date,
                                           self.pay_interest_cycle,
-                                          calendar_type,
-                                          bus_day_rule_type,
+                                          self.calendar_type,
+                                          self.bus_day_adjust_type,
                                           date_gen_rule_type,
                                           False)._generate()
         self._flow_dates[-1] = self.maturity_date
 
     def dollar_duration(self):
-        if not self.isvalid():
-            raise TuringError("Bond settles after it matures.")
         return self.dv01() / dy
 
     def time_to_maturity(self):
         """剩余期限"""
-        return self.due_date - self._settlement_date
+        return self.due_date - self.settlement_date
 
     def _resolve(self):
         if not self.asset_id:

@@ -68,7 +68,7 @@ class IROption(IR, InstrumentBase, metaclass=ABCMeta):
         self.value_date = to_turing_date(self.value_date)
         # if self.trd_curr_code and isinstance(self.trd_curr_code, Currency):
         #     self.trd_curr_code = self.trd_curr_code.value  # 转换成字符串，便于rich表格显示      
-        self.check_param()
+        self._check_param()
         self.ca = CurveAdjustment()
         
     @property

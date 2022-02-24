@@ -71,10 +71,10 @@ class EqOption(Eq, InstrumentBase, metaclass=ABCMeta):
             self.dividend_yield = np.zeros(self.num_assets)
         else:
             self.dividend_yield = 0  # 目前没有接口提供分红率数据，故把默认值设置为0
-        # 存储未经ctx修改的属性值
-        self._save_original_data()
         # 计算定价要用到的中间变量
         self._calculate_intermediate_variable()
+        # 存储未经ctx修改的属性值
+        self._save_original_data()
 
     def _get_stock_price(self):
         """ 调用接口补全股票价格 """

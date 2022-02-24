@@ -39,9 +39,9 @@ class SnowballOption(EqOption):
         self.days_in_year = gDaysInYear
         self.num_paths = 1_000_000
         self.seed = 4242
-        self.check_param()
+        self._check_param()
 
-    def check_param(self):
+    def _check_param(self):
         if self.option_type is not None:
             rules = {
                 "CALL": TuringOptionTypes.SNOWBALL_CALL,

@@ -29,7 +29,6 @@ class PricingMixin:
 
     def api_calc(self, risk_measure: list):
         """calc 结果集"""
-        logger.debug(self.__dict__)
         msg = ''
         response_data = []
         if risk_measure:
