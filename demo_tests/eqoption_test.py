@@ -14,6 +14,8 @@ from turing_models.utilities.global_types import OptionType
 from turing_models.instruments.common import Currency, RiskMeasure
 from turing_models.utilities.helper_functions import betaVectorToCorrMatrix
 
+
+# 测试数据为mock的数据
 european_option = EuropeanOption(underlier_symbol='600067.SH',
                                  option_type=OptionType.CALL,
                                  expiry=datetime.datetime(2021, 9, 3),
@@ -104,18 +106,18 @@ def test_asian_option_original():
     assert round(asian_option.calc(RiskMeasure.EqRhoQ), 3) == -14.587
 
 def test_snowball_option_original():
-    assert round(snowball_option.calc(RiskMeasure.Price), 3) == 66503.2
-    assert round(snowball_option.calc(RiskMeasure.EqDelta), 3) == -1842.627
-    assert round(snowball_option.calc(RiskMeasure.EqGamma), 3) == 21640994.455
+    assert round(snowball_option.calc(RiskMeasure.Price), 3) == 238997.36
+    assert round(snowball_option.calc(RiskMeasure.EqDelta), 3) == 392831.837
+    assert round(snowball_option.calc(RiskMeasure.EqGamma), 3) == -50763193.829
     assert round(snowball_option.calc(RiskMeasure.EqVega), 3) == 0.0
-    assert round(snowball_option.calc(RiskMeasure.EqTheta), 3) == 1113.619
-    assert round(snowball_option.calc(RiskMeasure.EqRho), 3) == -7067.055
-    assert round(snowball_option.calc(RiskMeasure.EqRhoQ), 3) == -2198.644
+    assert round(snowball_option.calc(RiskMeasure.EqTheta), 3) == 5388.535
+    assert round(snowball_option.calc(RiskMeasure.EqRho), 3) == 1168947.652
+    assert round(snowball_option.calc(RiskMeasure.EqRhoQ), 3) == -1440990.143
 
 def test_knockout_option_original():
     assert round(knockout_option.calc(RiskMeasure.Price), 3) == 2520.706
     assert round(knockout_option.calc(RiskMeasure.EqDelta), 3) == 136019.34
-    assert round(knockout_option.calc(RiskMeasure.EqGamma), 3) == 4326388.227
+    assert round(knockout_option.calc(RiskMeasure.EqGamma), 3) == 4326388.195
     assert round(knockout_option.calc(RiskMeasure.EqVega), 3) == 94109.256
     assert round(knockout_option.calc(RiskMeasure.EqTheta), 3) == -26640.928
     assert round(knockout_option.calc(RiskMeasure.EqRho), 3) == 32781.571
@@ -177,24 +179,21 @@ def test_snowball_option_modified():
 def test_knockout_option_modified():
     assert round(knockout_option.calc(RiskMeasure.Price), 3) == 18532.686
     assert round(knockout_option.calc(RiskMeasure.EqDelta), 3) == 168167.517
-    assert round(knockout_option.calc(RiskMeasure.EqGamma), 3) == 675284.302
+    assert round(knockout_option.calc(RiskMeasure.EqGamma), 3) == 675284.218
     assert round(knockout_option.calc(RiskMeasure.EqVega), 3) == 78403.399
     assert round(knockout_option.calc(RiskMeasure.EqTheta), 3) == -74812.856
     assert round(knockout_option.calc(RiskMeasure.EqRho), 3) == 39162.3
     assert round(knockout_option.calc(RiskMeasure.EqRhoQ), 3) == -40564.115
 
 
-print_result(snowball_option)
-
 with scenario_extreme:
-    print_result(european_option)
-test_european_option_modified()
-test_american_option_modified()
-test_asian_option_modified()
-test_snowball_option_modified()
-test_knockout_option_modified()
+    test_european_option_modified()
+    test_american_option_modified()
+    test_asian_option_modified()
+    test_snowball_option_modified()
+    test_knockout_option_modified()
 
-betas = np.ones(5) * 0.1
+betas = np.ones(2) * 0.1
 corr_matrix = betaVectorToCorrMatrix(betas)
 
 
@@ -210,8 +209,7 @@ basket_snowball_option = BasketSnowballOption(option_type=OptionType.CALL,
                                             notional=1000000,
                                             rebate=0.2,
                                             untriggered_rebate=0.2,
-                                            underlier_symbol=[
-                                                "600277.SH", "600269.SH", "600201.SH", "600067.SH", "600243.SH"],
+                                            underlier_symbol=["600067.SH", "600243.SH"],
                                             knock_in_type='SPREADS',
                                             knock_in_strike1=5.3,
                                             knock_in_strike2=5.4,
@@ -219,7 +217,7 @@ basket_snowball_option = BasketSnowballOption(option_type=OptionType.CALL,
                                                 2021, 8, 13),
                                             currency=Currency.CNY,
                                             weights=[
-                                                0.2, 0.2, 0.2, 0.2, 0.2],
+                                                0.5, 0.5],
                                             correlation_matrix=corr_matrix)
 
 scenario_extreme = PricingContext(
